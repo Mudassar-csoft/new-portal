@@ -7,25 +7,30 @@
 		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
 				<h3 class="reg-title">Create New Registration <small class="text-muted">(All fields marked with * are required)</small></h3>
-				<form>
+				<form method="POST" action="{{ route('registration.store') }}">
+					@csrf
+					@if(!empty($lead))
+						<input type="hidden" name="lead_id" value="{{ $lead->id }}">
+					@endif
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<label class="required">Select Campus</label>
-							<select class="form-control">
-								<option>- Select -</option>
-								<option>CIVTL01</option>
-								<option>CIFSD02</option>
-								<option>CIFSD04</option>
-								<option>CIFSD06</option>
+							<select class="form-control" name="campus_id" required>
+								<option value="">- Select -</option>
+								@foreach($campuses ?? [] as $campus)
+									<option value="{{ $campus->id }}" {{ ($lead->campus_id ?? null) === $campus->id ? 'selected' : '' }}>
+										{{ $campus->code ?? $campus->name }} - {{ $campus->name }}
+									</option>
+								@endforeach
 							</select>
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Full Name (As Per CNIC)</label>
-							<input type="text" class="form-control" placeholder="Enter full name">
+							<input type="text" class="form-control" name="student_name" placeholder="Enter full name" value="{{ $lead->name ?? '' }}" required>
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Primary Contact Number</label>
-							<input type="text" class="form-control" placeholder="03XXXXXXXXX">
+							<input type="text" class="form-control" name="phone" placeholder="03XXXXXXXXX" value="{{ $lead->phone ?? '' }}" required>
 						</div>
 					</div>
 
@@ -51,7 +56,7 @@
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Email Address</label>
-							<input type="email" class="form-control" placeholder="Enter email address">
+							<input type="email" class="form-control" name="email" placeholder="Enter email address" value="{{ $lead->email ?? '' }}">
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Date of Birth</label>
@@ -74,14 +79,16 @@
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Country</label>
-							<input type="text" class="form-control" placeholder="Enter country">
+							<select class="form-control" id="reg-country-select"></select>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<label class="required">City</label>
-							<input type="text" class="form-control" placeholder="Enter city">
+							<select class="form-control" id="reg-city-select">
+								<option>Loading...</option>
+							</select>
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Area</label>
@@ -101,32 +108,63 @@
 					<hr>
 
 					<div class="form-row">
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-6">
+							<label class="required">Program</label>
+							<select class="form-control" name="program_id" required>
+								<option value="">- Select -</option>
+								@foreach($programs ?? [] as $program)
+									<option value="{{ $program->id }}" {{ ($lead->program_id ?? null) === $program->id ? 'selected' : '' }}>
+										{{ $program->title ?? $program->name }}
+									</option>
+								@endforeach
+							</select>
+						</div>
+						<div class="form-group col-md-6">
+							<label>Mode / Shift</label>
+							<input type="text" class="form-control" value="Aligned with lead selection" disabled>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="form-group col-md-4">
+							<label class="required">Admission/Registration Fee</label>
+							<input type="number" step="0.01" class="form-control" name="fee" value="2000" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>Discount</label>
+							<input type="number" step="0.01" class="form-control" name="discount" value="0" readonly>
+						</div>
+						<div class="form-group col-md-4">
+							<label>Net Payable (After Discount)</label>
+							<input type="text" class="form-control" id="net-payable" value="2000" readonly>
+						</div>
+					</div>
+
+					<hr>
+
+					<div class="form-row">
+						<div class="form-group col-md-4">
 							<label class="required">Registration Number</label>
-							<input type="text" class="form-control" value="CIVTL01-1225-07">
+							<input type="text" class="form-control" id="reg-number" value="{{ $preview['registration_number'] ?? '' }}" disabled>
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-4">
 							<label class="required">Date of Registration</label>
-							<input type="text" class="form-control" value="27/12/2025">
+							<input type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" disabled>
 						</div>
-						<div class="form-group col-md-3">
-							<label class="required">Registration Fee</label>
-							<input type="text" class="form-control" value="2000">
-						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-4">
 							<label class="required">Receipt Number</label>
-							<input type="text" class="form-control" value="CIVTL01-1225-000037">
+							<input type="text" class="form-control" id="receipt-number" value="{{ $preview['receipt_number'] ?? '' }}" disabled>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label class="required">Remarks</label>
+						<label>Remarks</label>
 						<textarea class="form-control" rows="2" placeholder="Remarks"></textarea>
 					</div>
 
 					<div class="text-right">
-						<button type="button" class="btn btn-primary">Register Now</button>
-						<button type="button" class="btn btn-outline-danger ml-2">Cancel</button>
+						<button type="submit" class="btn btn-primary">Register Now</button>
+						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2">Cancel</a>
 					</div>
 				</form>
 			</div>
@@ -161,4 +199,41 @@
 			margin-right: 6px;
 		}
 	</style>
+@endpush
+
+@push('scripts')
+	@include('partials.country_city_script')
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			CountryCityLoader.init('reg-country-select', 'reg-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+		});
+	</script>
+	<script>
+		(function() {
+			var campusSelect = document.querySelector('select[name="campus_id"]');
+			var regField = document.getElementById('reg-number');
+			var receiptField = document.getElementById('receipt-number');
+			var netField = document.getElementById('net-payable');
+
+			function updateNumbers() {
+				if (!campusSelect || !campusSelect.value) return;
+				fetch('{{ route('registration.preview') }}?campus_id=' + campusSelect.value)
+					.then(function (res) { return res.json(); })
+					.then(function (data) {
+						if (regField && data.registration_number) regField.value = data.registration_number;
+						if (receiptField && data.receipt_number) receiptField.value = data.receipt_number;
+					})
+					.catch(function () {});
+			}
+
+			if (campusSelect) {
+				campusSelect.addEventListener('change', updateNumbers);
+				updateNumbers();
+			}
+
+			if (netField) {
+				netField.value = '2000';
+			}
+		})();
+	</script>
 @endpush

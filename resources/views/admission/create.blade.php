@@ -83,11 +83,13 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Country</label>
-							<input type="text" class="form-control" placeholder="Enter country">
+							<select class="form-control" id="adm-country-select"></select>
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">City</label>
-							<input type="text" class="form-control" placeholder="Enter city">
+							<select class="form-control" id="adm-city-select">
+								<option>Loading...</option>
+							</select>
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Area</label>
@@ -141,4 +143,13 @@
 			margin-right: 6px;
 		}
 	</style>
+@endpush
+
+@push('scripts')
+	@include('partials.country_city_script')
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			CountryCityLoader.init('adm-country-select', 'adm-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+		});
+	</script>
 @endpush

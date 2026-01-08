@@ -32,13 +32,15 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body lead-body">
-					<form>
+					<form method="POST" action="{{ route('leads.store') }}">
+						@csrf
+						<input type="hidden" name="type" id="lead-type-field" value="training">
 						@include('lead.training')
 						@include('lead.certification')
 						@include('lead.coworking')
 						@include('lead.study_abroad')
 						<div class="form-actions text-right mt-4">
-							<button type="button" class="btn btn-secondary mr-2">Cancel</button>
+							<a href="{{ url()->previous() }}" class="btn btn-secondary mr-2">Cancel</a>
 							<button type="submit" class="btn btn-primary">Create Lead</button>
 						</div>
 					</form>
@@ -258,6 +260,7 @@
 
 			document.addEventListener('DOMContentLoaded', function () {
 				var select = document.getElementById('leadTypeSelect');
+				var typeField = document.getElementById('lead-type-field');
 				if (select) {
 					switchLeadForm(select.value);
 				}
@@ -265,10 +268,18 @@
 				if (select) {
 					select.addEventListener('change', function () {
 						switchLeadForm(this.value);
+						if (typeField) typeField.value = this.value;
 					});
+					if (typeField) typeField.value = select.value;
 				}
 				revealLeadForm();
 			});
 		})();
+	</script>
+	@include('partials.country_city_script')
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			CountryCityLoader.init('lead-country-select', 'lead-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+		});
 	</script>
 @endpush

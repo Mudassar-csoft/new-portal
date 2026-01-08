@@ -183,13 +183,7 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Admission Management</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Today</span><span
-								class="label label-custom label-pill label-danger stage-count">28</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Current Month</span><span
-								class="label label-custom label-pill label-danger stage-count">190</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Current Year</span><span
-								class="label label-custom label-pill label-danger stage-count">1,420</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Admissions</span><span
+					<li><a href="{{ route('admission.status') }}" class="stage-link"><span class="lbl">All Admissions</span><span
 								class="label label-custom label-pill label-danger stage-count">1,638</span></a></li>
 				</ul>
 			</li>
