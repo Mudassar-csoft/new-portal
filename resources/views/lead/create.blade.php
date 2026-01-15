@@ -228,6 +228,65 @@
 		.form-row {
 			margin-bottom: 12px;
 		}
+		.tbl-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between; /* title left, select right */
+    gap: 12px;
+}
+
+/* Right cell holds the select */
+.tbl-cell.text-right {
+    flex: 1 1 auto;
+    text-align: right;
+    min-width: 150px;
+}
+
+/* Select styling */
+.lead-type-select {
+    width: 260px;
+    max-width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* =====================
+   RESPONSIVE FIX
+===================== */
+@media (max-width: 768px) {
+
+    .tbl-row {
+        flex-direction: column;
+        align-items: stretch; /* full width children */
+    }
+
+    /* Equal spacing on both sides */
+    .tbl-cell.tbl-cell-title,
+    .tbl-cell.text-right {
+        width: 100%;
+        padding-left: 12px;
+        padding-right: 12px;
+        box-sizing: border-box;
+    }
+
+    .tbl-cell.text-right {
+        text-align: left;
+        margin-top: 8px;
+    }
+
+    .lead-type-select {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
 	</style>
 @endpush
 

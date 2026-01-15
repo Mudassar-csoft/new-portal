@@ -49,6 +49,12 @@
 							</div>
 						</div>
 					</div>
+					<!-- <div class="form-group row">
+						<label for="inputPassword" class="col-sm-2 form-control-label">Password</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="inputPassword" placeholder="Password">
+						</div>
+					</div> -->
 
 					<div class="text-right mt-3">
 						<a href="{{ route('roles.index') }}" class="btn btn-default mr-2">Cancel</a>

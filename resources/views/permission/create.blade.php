@@ -21,7 +21,7 @@
 								<div class="form-group col-md-6">
 									<label class="required">Resource</label>
 									<input type="text" name="resource" class="form-control" placeholder="lead" value="{{ old('resource') }}">
-								</div>
+								</div> 
 								<div class="form-group col-md-6">
 									<label class="required">Action</label>
 									<input type="text" name="action" class="form-control" placeholder="view" value="{{ old('action') }}">
