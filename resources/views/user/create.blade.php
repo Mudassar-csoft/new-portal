@@ -49,7 +49,6 @@
 						<div class="form-group col-md-6">
 							<label class="required d-flex align-items-center justify-content-between">
 								<span>Password</span>
-								<button type="button" class="btn btn-link btn-sm p-0" id="generate-password">Generate strong password</button>
 							</label>
 							<div class="input-group">
 								<input type="password" name="password" id="password" class="form-control" placeholder="********">
@@ -65,9 +64,11 @@
 								<span class="input-group-btn">
 									<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation">👁</button>
 								</span>
+								
 							</div>
 						</div>
 					</div>
+                        <button class="context-menu-one btn btn-primary">Generate Strong Password</button>
 
 					<div class="text-right mt-3">
 						<a href="{{ route('users.index') }}" class="btn btn-default mr-2">Cancel</a>

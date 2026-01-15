@@ -1,16 +1,20 @@
+
 <div class="mobile-menu-left-overlay"></div>
 	<nav class="side-menu">
+		{{-- DEBUG --}}
+<!-- <div style="background:red;color:white">SIDEBAR LOADED</div> -->
+
 		<ul class="side-menu-list">
 			<li>
 				<span style="padding-left:14px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/dashboard.png" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Dashboard</span></span>
-			</li>
+			</li>                                   
 			<li class="brown with-sub">
 				<span style="padding-left:14px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/enquiry.JPG" alt="Leads"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+					 	style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Leads Management</span></span>
 				<ul>
 					<li><a href="{{ route('leads.create') }}"><span class="lbl">Create New Lead</span></a></li>
@@ -277,7 +281,7 @@
 				<span style="padding-left:13px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/humanresource.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
-					<span class="lbl">Human Resources</span></span>
+					<span class="lbl">Human Resource  s</span></span>
 				<ul>
 					<li><a href="#" class="stage-link"><span class="lbl">New Hires</span><span
 								class="label label-custom label-pill label-danger stage-count">6</span></a></li>
@@ -613,7 +617,7 @@
 								<li><a href="#"><span class="lbl">Level 3</span></a></li>
 								<li><a href="#"><span class="lbl">Level 3</span></a></li>
 							</ul>
-						</li>
+						</li> 
 					</ul>
 				</li>
 			</ul>

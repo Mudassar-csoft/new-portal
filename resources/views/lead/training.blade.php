@@ -68,6 +68,8 @@
 			<div class="radio-group">
 				<label><input type="radio" name="details[teaching_method]" value="online" checked> Online</label>
 				<label><input type="radio" name="details[teaching_method]" value="on-campus"> On-Campus</label>
+				<label><input type="radio" name="details[teaching_method]" value="hybrid"> Hybrid</label>
+
 			</div>
 		</div>
 		<div class="form-group col-md-4">
@@ -84,6 +86,8 @@
 			<div class="radio-group">
 				<label><input type="radio" name="details[gender]" value="male" checked> Male</label>
 				<label><input type="radio" name="details[gender]" value="female"> Female</label>
+				<label><input type="radio" name="details[gender]" value="other"> Other</label>
+
 			</div>
 		</div>
 	</div>
