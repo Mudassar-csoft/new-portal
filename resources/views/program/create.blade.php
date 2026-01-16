@@ -136,5 +136,20 @@
 			content: ' *';
 			color: #e53935;
 		}
+		/* FIX LEFT SPACING ON RESPONSIVE */
+@media (max-width: 992px) {
+    .program-shell {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .program-shell {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
 	</style>
 @endpush

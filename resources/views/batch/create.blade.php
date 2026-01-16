@@ -116,6 +116,19 @@
 		.session-options input {
 			margin-right: 6px;
 		}
+		@media (max-width: 992px) {
+    .batch-shell {
+        padding-left: 15px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .batch-shell {
+        padding-left: 20px;
+        padding-right: 10px;
+    }
+}
 	</style>
 @endpush
 
