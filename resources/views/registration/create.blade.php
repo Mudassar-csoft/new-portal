@@ -198,6 +198,21 @@
 		.gender-options input {
 			margin-right: 6px;
 		}
+		/* FIX LEFT SPACING ON RESPONSIVE */
+@media (max-width: 992px) {
+    .registration-shell {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .registration-shell {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
 	</style>
 @endpush
 
