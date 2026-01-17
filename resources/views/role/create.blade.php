@@ -71,11 +71,16 @@
 		.role-shell {
 			min-height: 100vh;
 			padding: 10px;
+			/* background: #2b68c4; */
 		}
 		.role-card {
-			max-width: 100%;
-			margin: 0 auto;
-		}
+    width: 100%;
+    max-width: 900px;   /* desktop width */
+    margin-left: auto;
+    margin-right: auto;
+	/* background: #2b68c4; */
+	
+}
 		.role-body {
 			padding: 20px;
 		}
@@ -120,5 +125,24 @@
 			background: #fff;
 			padding: 12px;
 		}
+		/* Tablet */
+        @media (max-width: 992px) {
+    .role-card {
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .role-card {
+        max-width: 100%;
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+}
+
+
 	</style>
 @endpush

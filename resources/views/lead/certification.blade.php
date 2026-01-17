@@ -20,7 +20,6 @@
 				<label><input type="radio" name="gender_cert" checked> Male</label>
 				<label><input type="radio" name="gender_cert"> Female</label>
 				<label><input type="radio" name="gender_cert"> Other</label>
-
 			</div>
 		</div>
 		<div class="form-group col-md-4">

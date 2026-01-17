@@ -117,16 +117,18 @@
 			margin-right: 6px;
 		}
 		@media (max-width: 992px) {
-    .batch-shell {
-        padding-left: 15px;
-        padding-right: 10px;
+    .batch-shell,
+    .program-shell,
+    .registration-shell {
+        padding: 15px;
     }
 }
 
 @media (max-width: 576px) {
-    .batch-shell {
-        padding-left: 20px;
-        padding-right: 10px;
+    .batch-shell,
+    .program-shell,
+    .registration-shell {
+        padding: 20px;
     }
 }
 	</style>
