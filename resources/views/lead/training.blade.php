@@ -63,7 +63,7 @@
 		</div>
 	</div>
 	<div class="form-row">
-		<div class="form-group col-md-4">
+		<!-- <div class="form-group col-md-4">
 			<label class="required">Teaching Method</label>
 			<div class="radio-group">
 				<label><input type="radio" name="details[teaching_method]" value="online" checked> Online</label>
@@ -71,7 +71,43 @@
 				<label><input type="radio" name="details[teaching_method]" value="hybrid"> Hybrid</label>
 
 			</div>
-		</div>
+		</div> -->
+		<div class="form-group form-group-radios">
+    <label class="form-label">
+        Teaching Method <span class="color-red">*</span>
+    </label>
+
+    <div class="radio">
+        <input id="teaching-method-online"
+               name="details[teaching_method]"
+               data-validation="[NOTEMPTY]"
+               data-validation-group="teaching-method"
+               data-validation-message="You must select a teaching method"
+               type="radio"
+               value="online"
+               checked>
+        <label for="teaching-method-online">Online</label>
+    </div>
+
+    <div class="radio">
+        <input id="teaching-method-oncampus"
+               name="details[teaching_method]"
+               data-validation-group="teaching-method"
+               type="radio"
+               value="on-campus">
+        <label for="teaching-method-oncampus">On-Campus</label>
+    </div>
+
+    <div class="radio">
+        <input id="teaching-method-hybrid"
+               name="details[teaching_method]"
+               data-validation-group="teaching-method"
+               type="radio"
+               value="hybrid">
+        <label for="teaching-method-hybrid">Hybrid</label>
+    </div>
+</div>
+
 		<div class="form-group col-md-4">
 			<label class="required">Preferred Campus</label>
 			<select class="form-control" name="campus_id">
@@ -81,15 +117,37 @@
 				@endforeach
 			</select>
 		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Gender</label>
-			<div class="radio-group">
-				<label><input type="radio" name="details[gender]" value="male" checked> Male</label>
-				<label><input type="radio" name="details[gender]" value="female"> Female</label>
-				<label><input type="radio" name="details[gender]" value="other"> Other</label>
-
-			</div>
-		</div>
+		<div class="form-group form-group-radios">
+									<label class="form-label" id="signup_v2-gender">
+										Gender <span class="color-red">*</span>
+									</label>
+									<div class="radio">
+										<input id="signup_v2-gender-male"
+											   name="signup_v2[gender]"
+											   data-validation="[NOTEMPTY]"
+											   data-validation-group="signup_v2-gender"
+											   data-validation-message="You must select a gender"
+											   type="radio"
+											   value="male">
+										<label for="signup_v2-gender-male">Male</label>
+									</div>
+									<div class="radio">
+										<input id="signup_v2-gender-female"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="female">
+										<label for="signup_v2-gender-female">Female</label>
+									</div>
+									<div class="radio">
+										<input id="signup_v2-gender-other"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="other">
+										<label for="signup_v2-gender-other">Other</label>
+									</div>
+								</div>
 	</div>
 	<div class="form-row align-items-center">
 		<div class="form-group col-md-4">
