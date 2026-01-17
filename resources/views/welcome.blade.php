@@ -5,7 +5,7 @@
 </head>
 <body class="with-side-menu control-panel control-panel-compact">
     @include('layouts.header')
-    @include('layouts.nav')
+    @include('layouts.nav') 
 
     @yield('content')
 
@@ -13,16 +13,16 @@
     <script src="{{ asset('js/lib/popper/popper.min.js') }}"></script>
     <script src="{{ asset('js/lib/tether/tether.min.js') }}"></script>
     <script src="{{ asset('js/lib/bootstrap/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/plugins.js') }}"></script>
-
+   
     <script src="{{ asset('js/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/lib/lobipanel/lobipanel.min.js') }}"></script>
     <script src="{{ asset('js/lib/match-height/jquery.matchHeight.min.js') }}"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="{{ asset('js/plugins.js') }}"></script>
     <script>
 		$(document).ready(function() {
             $('.panel').each(function () {
-                try {
+                try { 
                     $(this).lobiPanel({
                         sortable: true
                     }).on('dragged.lobiPanel', function(ev, lobiPanel){

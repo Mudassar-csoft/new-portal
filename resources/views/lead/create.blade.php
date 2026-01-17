@@ -32,13 +32,15 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body lead-body">
-					<form>
+					<form method="POST" action="{{ route('leads.store') }}">
+						@csrf
+						<input type="hidden" name="type" id="lead-type-field" value="training">
 						@include('lead.training')
 						@include('lead.certification')
 						@include('lead.coworking')
 						@include('lead.study_abroad')
 						<div class="form-actions text-right mt-4">
-							<button type="button" class="btn btn-secondary mr-2">Cancel</button>
+							<a href="{{ url()->previous() }}" class="btn btn-secondary mr-2">Cancel</a>
 							<button type="submit" class="btn btn-primary">Create Lead</button>
 						</div>
 					</form>
@@ -226,6 +228,65 @@
 		.form-row {
 			margin-bottom: 12px;
 		}
+		.tbl-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between; /* title left, select right */
+    gap: 12px;
+}
+
+/* Right cell holds the select */
+.tbl-cell.text-right {
+    flex: 1 1 auto;
+    text-align: right;
+    min-width: 150px;
+}
+
+/* Select styling */
+.lead-type-select {
+    width: 260px;
+    max-width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* =====================
+   RESPONSIVE FIX
+===================== */
+@media (max-width: 768px) {
+
+    .tbl-row {
+        flex-direction: column;
+        align-items: stretch; /* full width children */
+    }
+
+    /* Equal spacing on both sides */
+    .tbl-cell.tbl-cell-title,
+    .tbl-cell.text-right {
+        width: 100%;
+        padding-left: 12px;
+        padding-right: 12px;
+        box-sizing: border-box;
+    }
+
+    .tbl-cell.text-right {
+        text-align: left;
+        margin-top: 8px;
+    }
+
+    .lead-type-select {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+
 	</style>
 @endpush
 
@@ -258,6 +319,7 @@
 
 			document.addEventListener('DOMContentLoaded', function () {
 				var select = document.getElementById('leadTypeSelect');
+				var typeField = document.getElementById('lead-type-field');
 				if (select) {
 					switchLeadForm(select.value);
 				}
@@ -265,10 +327,18 @@
 				if (select) {
 					select.addEventListener('change', function () {
 						switchLeadForm(this.value);
+						if (typeField) typeField.value = this.value;
 					});
+					if (typeField) typeField.value = select.value;
 				}
 				revealLeadForm();
 			});
 		})();
+	</script>
+	@include('partials.country_city_script')
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			CountryCityLoader.init('lead-country-select', 'lead-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+		});
 	</script>
 @endpush

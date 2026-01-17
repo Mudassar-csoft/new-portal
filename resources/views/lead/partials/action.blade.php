@@ -7,6 +7,15 @@
 		Actions
 	</button>
 	<div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
+		@if(!empty($leadId))
+			<a class="dropdown-item" href="{{ route('leads.show', $leadId) }}">
+				<i class="fa fa-list-ul mr-2 text-primary"></i>Follow-Up
+			</a>
+			<a class="dropdown-item" href="{{ route('leads.transfer.form', $leadId) }}">
+				<i class="fa fa-exchange mr-2 text-warning"></i>Transfer Lead
+			</a>
+			<div class="dropdown-divider"></div>
+		@endif
 		<a class="dropdown-item" href="#"><i class="fa fa-file-text-o mr-2 text-primary"></i>Register Now</a>
 		<a class="dropdown-item" href="#"><i class="fa fa-phone mr-2 text-info"></i>Follow-Up Call</a>
 		<a class="dropdown-item" href="#"><i class="fa fa-commenting-o mr-2 text-info"></i>Send SMS</a>

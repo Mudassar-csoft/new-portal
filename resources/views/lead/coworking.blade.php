@@ -19,6 +19,7 @@
 			<div class="radio-group">
 				<label><input type="radio" name="gender_cowork" checked> Male</label>
 				<label><input type="radio" name="gender_cowork"> Female</label>
+				<label><input type="radio" name="gender_cowork"> Other</label>
 			</div>
 		</div>
 		<div class="form-group col-md-4">

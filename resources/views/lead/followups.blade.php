@@ -1,48 +1,8 @@
 @extends('layouts.theme')
 
-@php use Illuminate\Support\Str; @endphp
-
 @section('title', 'Lead Follow-ups')
 
 @section('content')
-	@php
-		$followups = [
-			['name' => 'Ayesha Khan', 'contact' => '9876543210', 'status' => 'New', 'course' => 'Full Stack Developer'],
-			['name' => 'Ravi Sharma', 'contact' => '9811122233', 'status' => 'Contacted', 'course' => 'Data Science'],
-			['name' => 'Meera Patel', 'contact' => '9898989898', 'status' => 'Need Analysis', 'course' => 'AWS Solutions Architect'],
-			['name' => 'Adil Hussain', 'contact' => '9123456780', 'status' => 'Proposal or Negotiation', 'course' => 'DevOps'],
-			['name' => 'Simran Bedi', 'contact' => '9000011122', 'status' => 'Contacted', 'course' => 'UI/UX Design'],
-			['name' => 'Vivek Gupta', 'contact' => '9777712345', 'status' => 'Branch Visited', 'course' => 'Python for Finance'],
-			['name' => 'Tanvi Joshi', 'contact' => '9333344455', 'status' => 'Need Analysis', 'course' => 'Machine Learning'],
-			['name' => 'Harsh Verma', 'contact' => '9666612345', 'status' => 'Proposal or Negotiation', 'course' => 'Cyber Security']
-		];
-
-		$tabs = [
-			'all' => 'All',
-			'New' => 'New',
-			'Contacted' => 'Contacted',
-			'Need Analysis' => 'Need Analysis',
-			'Branch Visited' => 'Branch Visited',
-			'Proposal or Negotiation' => 'Proposal or Negotiation',
-		];
-
-		$badgeColors = [
-			'all' => 'badge-secondary',
-			'New' => 'badge-primary',
-			'Contacted' => 'badge-success',
-			'Need Analysis' => 'badge-warning',
-			'Branch Visited' => 'badge-secondary',
-			'Proposal or Negotiation' => 'badge-info',
-		];
-
-		$tabCounts = [];
-		foreach ($tabs as $key => $label) {
-			$tabCounts[$key] = $key === 'all'
-				? count($followups)
-				: count(array_filter($followups, fn($f) => $f['status'] === $label));
-		}
-	@endphp
-
 	<div class="follow-shell">
 		<div id="follow-loader" class="follow-loader">
 			<div class="follow-spinner">
@@ -90,34 +50,38 @@
 									<th>Contact No</th>
 									<th>Status</th>
 									<th>Interested Course</th>
+									<th>Campus</th>
 									<th class="text-center" style="width: 110px;">Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach ($followups as $idx => $row)
-									@php $actionId = 'action-' . Str::slug($row['name']) . '-' . $loop->iteration; @endphp
-									<tr data-status="{{ $row['status'] }}">
+									@php $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration; @endphp
+									<tr data-status="{{ $row->stage_label }}">
 										<td class="text-center">{{ $idx + 1 }}</td>
-										<td>{{ $row['name'] }}</td>
-										<td>{{ $row['contact'] }}</td>
+										<td>{{ $row->lead->name ?? '—' }}</td>
+										<td>{{ $row->lead->phone ?? '—' }}</td>
 										<td>
 											@php
-												$labelClass = match ($row['status']) {
+												$labelClass = match ($row->stage_label) {
 													'New' => 'label-primary',
 													'Contacted' => 'label-success',
 													'Need Analysis' => 'label-warning',
 													'Branch Visited' => 'label-default',
 													'Proposal or Negotiation' => 'label-info',
+													'Not Interesting' => 'label-default',
+													'Registered' => 'label-success',
 													default => 'label-default',
 												};
 											@endphp
 											<span class="label {{ $labelClass }}">
-												{{ $row['status'] }}
+												{{ $row->stage_label }}
 											</span>
 										</td>
-										<td>{{ $row['course'] }}</td>
+										<td>{{ $row->lead->program->title ?? $row->lead->program->name ?? '—' }}</td>
+										<td>{{ $row->campus->name ?? '—' }}</td>
 										<td class="text-center action-cell">
-											@include('lead.partials.action', ['actionId' => $actionId])
+											@include('lead.partials.action', ['actionId' => $actionId, 'leadId' => $row->lead->id ?? null])
 										</td>
 									</tr>
 								@endforeach
@@ -380,7 +344,9 @@
 					filterByStatus(status);
 				});
 
-				filterByStatus('all');
+				var activeTab = document.querySelector('.follow-tab.active');
+				var initialStatus = activeTab ? activeTab.getAttribute('data-status') : 'all';
+				filterByStatus(initialStatus);
 			});
 		})();
 	</script>
