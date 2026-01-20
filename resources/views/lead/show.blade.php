@@ -4,52 +4,41 @@
 
 @section('content')
 	@php
-		$lead = [
-			'name' => 'Kashif',
-			'course' => 'Website Development with PHP & MySQL',
-			'campus' => 'CIVTL01',
-			'created_at' => '2025-09-20 09:57:47',
-		];
-
-		$stages = [
-			'New',
-			'Contacted',
-			'Need Analysis',
-			'Branch Visited',
-			'Proposal & Negotiation',
-			'Registered / Not Interested',
-		];
-
-		$currentStage = 'Need Analysis'; // adjust as needed
-
-		$followups = [
-			['follower' => 'Saher Maqbool', 'method' => 'call', 'probability' => '100%', 'status' => 'Pending', 'created_at' => '2025-09-20 09:57:47', 'next_followup' => '2025-09-22 10:40:00', 'campus' => 'CIVTL01', 'remarks' => 'He is interested in just backend development. He has been a front-end dev...'],
-			['follower' => 'Saher Maqbool', 'method' => 'call', 'probability' => '100%', 'status' => 'Pending', 'created_at' => '2025-09-20 10:07:27', 'next_followup' => '2025-09-22 10:40:00', 'campus' => 'CIVTL01', 'remarks' => 'He is from Abbottabad'],
-			['follower' => 'Saher Maqbool', 'method' => 'call', 'probability' => '50%', 'status' => 'Pending', 'created_at' => '2025-09-22 15:37:18', 'next_followup' => '2025-09-24 10:42:00', 'campus' => 'CIVTL01', 'remarks' => 'Miss Ramsha is getting in touch with him..'],
-			['follower' => 'Saher Maqbool', 'method' => 'call', 'probability' => '10%', 'status' => 'Pending', 'created_at' => '2025-09-24 10:16:39', 'next_followup' => '2025-12-27 10:16:00', 'campus' => 'CIVTL01', 'remarks' => "We can't make a customized course for 1 student only..", 'highlight' => true],
-		];
+		$stageKeys = array_keys($stages);
+		$currentIndex = array_search($currentStage, $stageKeys);
+		$progress = $currentIndex !== false && count($stageKeys) > 1 ? ($currentIndex / (count($stageKeys) - 1)) * 100 : 0;
 	@endphp
 
 	<div class="lead-show-shell">
 		<div class="lead-header">
-			<h2 class="lead-name">{{ $lead['name'] }}</h2>
+			<div>
+				<h2 class="lead-name">{{ $lead->name ?? 'Lead' }}</h2>
+				<div class="lead-sub">
+					<span>{{ $lead->program->title ?? $lead->program->name ?? 'N/A' }}</span>
+					@if($lead->campus)
+						<span class="divider">•</span>
+						<span>{{ $lead->campus->code ?? $lead->campus->name }}</span>
+					@endif
+				</div>
+			</div>
 			<div class="lead-actions">
-				@include('lead.partials.action', ['actionId' => 'lead-action-main'])
+				@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'leadId' => $lead->id])
 			</div>
 		</div>
 
 		<div class="stage-bar">
-			@foreach ($stages as $stage)
+			@foreach ($stages as $key => $label)
 				@php
-					$isActive = $stages[array_search($currentStage, $stages)] === $stage || array_search($stage, $stages) <= array_search($currentStage, $stages);
-					$isCurrent = $stage === $currentStage;
+					$idx = array_search($key, $stageKeys);
+					$isActive = $currentIndex !== false && $idx <= $currentIndex;
+					$isCurrent = $key === $currentStage;
 				@endphp
 				<div class="stage {{ $isActive ? 'active' : '' }} {{ $isCurrent ? 'current' : '' }}">
 					<div class="bullet"></div>
-					<div class="label">{{ $stage }}</div>
+					<div class="label">{{ $label }}</div>
 				</div>
 			@endforeach
-			<div class="stage-progress" style="width: {{ (array_search($currentStage, $stages) / (count($stages) - 1)) * 100 }}%;"></div>
+			<div class="stage-progress" style="width: {{ $progress }}%;"></div>
 		</div>
 
 		<div class="lead-tabs">
@@ -62,59 +51,87 @@
 		</div>
 
 		<div class="tab-content" id="tab-followups" style="display: block;">
-			<button class="btn btn-primary add-followup-btn" id="toggle-followup-form">Add Follow-Up</button>
-
-			<div class="followup-form card" id="followup-form" style="display: none;">
+			<div class="d-flex justify-content-between align-items-center mb-2">
+				<h4 class="mb-0">Follow-Ups</h4>
+				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting'], true); @endphp
+				<button id="toggle-followup-form" class="btn btn-primary btn-sm" {{ $isClosed ? 'disabled' : '' }}>
+					Add Follow-Up
+				</button>
+			</div>
+			<div class="card followup-form card-elevated" id="followup-form-card" style="display: none;">
 				<div class="card-body">
-					<div class="form-row">
-						<div class="form-group col-md-3">
-							<label>Follow-Up Method</label>
-							<select class="form-control">
-								<option>- Select -</option>
-								<option>Call</option>
-								<option>SMS</option>
-								<option>Email</option>
-								<option>Whatsapp</option>
-							</select>
+					@if($isClosed)
+						<div class="alert alert-warning mb-3">
+							This lead is marked as <strong>{{ ucfirst(str_replace('_', ' ', $lead->status)) }}</strong>. No further follow-ups can be added.
 						</div>
-						<div class="form-group col-md-3">
-							<label>Status</label>
-							<div class="mt-1">
-								<label class="mr-2"><input type="radio" name="status" checked> Pending</label>
-								<label><input type="radio" name="status"> Not Interested</label>
+					@endif
+					<form method="POST" action="{{ route('leads.followups.store', $lead) }}">
+						@csrf
+						<fieldset {{ $isClosed ? 'disabled' : '' }}>
+							<div class="form-row">
+								<div class="form-group col-md-3 followup-toggle">
+									<label>Follow-Up Method</label>
+									<select class="form-control" name="method">
+										<option value="">- Select -</option>
+										@foreach (['call', 'sms', 'email', 'whatsapp', 'walk-in'] as $method)
+											<option value="{{ $method }}">{{ ucfirst($method) }}</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="form-group col-md-3">
+									<label>Stage *</label>
+									@php
+										$hideRegistered = $lead->status === 'not_interesting';
+										$hideNotInteresting = $lead->status === 'registered';
+									@endphp
+									<select class="form-control" name="stage" id="followup-stage" required>
+										@foreach ($stages as $key => $label)
+											@if ($key === 'new') @continue @endif
+											@if ($hideRegistered && $key === 'registered') @continue @endif
+											@if ($hideNotInteresting && $key === 'not_interesting') @continue @endif
+											<option value="{{ $key }}" {{ $key === ($currentStage === 'new' ? 'contacted' : $currentStage) ? 'selected' : '' }}>
+												{{ $label }}
+											</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="form-group col-md-3 followup-toggle" id="next-followup-wrap">
+									<label>Next Follow Up</label>
+									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date">
+								</div>
+								<div class="form-group col-md-3 followup-toggle" id="campus-wrap">
+									<label>Preferred Campus</label>
+									<select class="form-control" name="campus_id" id="campus_id">
+										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
+										@foreach ($campuses as $campus)
+											<option value="{{ $campus->id }}" {{ $campus->id === $lead->campus_id ? 'selected' : '' }}>
+												{{ $campus->name }} ({{ $campus->code ?? $campus->city ?? $campus->country }})
+											</option>
+										@endforeach
+									</select>
+								</div>
 							</div>
-						</div>
-						<div class="form-group col-md-3">
-							<label>Teaching Method *</label>
-							<div class="mt-1">
-								<label class="mr-2"><input type="radio" name="teaching" checked> On-Campus</label>
-								<label><input type="radio" name="teaching"> Online</label>
+							<div class="form-row align-items-center">
+								<div class="form-group col-md-4 followup-toggle">
+									<label>Probability</label>
+									@php $prob = $latestFollowup->probability ?? 0; @endphp
+									<input type="range" min="0" max="100" step="5" class="form-control-range" name="probability" id="probability-range" value="{{ $prob }}">
+									<div id="probability-value" class="probability-value">Selected: {{ $prob }}%</div>
+								</div>
+								<div class="form-group col-md-8 followup-toggle">
+									<label>Remarks</label>
+									<textarea class="form-control" name="note" rows="2" placeholder="Add remarks for this follow-up"></textarea>
+								</div>
 							</div>
-						</div>
-						<div class="form-group col-md-3">
-							<label>Next Follow Up</label>
-							<input type="text" class="form-control" placeholder="dd/mm/yyyy --:-- --">
-						</div>
-					</div>
-					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label>Preferred Campus *</label>
-							<select class="form-control">
-								<option>Career Institute - Satiana Road Campus</option>
-								<option>Career Institute - Main Campus</option>
-							</select>
-						</div>
-						<div class="form-group col-md-4">
-							<label>Probability *</label>
-							<input type="range" class="form-control-range" min="0" max="100" value="0" id="probability-range">
-							<div id="probability-value" class="probability-value">Selected: 0%</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<label>Remarks</label>
-						<textarea class="form-control" rows="3"></textarea>
-					</div>
-					<button class="btn btn-primary">Save</button>
+							<div class="alert alert-info d-none" id="registration-link">
+								Selecting <strong>Registered</strong>? Complete the registration form first.
+								<a href="{{ route('registration.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
+							</div>
+							<div class="text-right">
+								<button type="submit" class="btn btn-primary">Save Follow-Up</button>
+							</div>
+						</fieldset>
+					</form>
 				</div>
 			</div>
 
@@ -134,30 +151,117 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach ($followups as $idx => $row)
-							<tr class="{{ !empty($row['highlight']) ? 'row-highlight' : '' }}">
+						@forelse ($followups as $idx => $row)
+							@php
+								$label = $stages[$row->stage] ?? ucfirst(str_replace('_', ' ', $row->stage));
+								$rowHighlight = $row->stage === 'not_interesting';
+							@endphp
+							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }}">
 								<td class="text-center">{{ $idx + 1 }}</td>
-								<td>{{ $row['follower'] }}</td>
-								<td>{{ $row['method'] }}</td>
-								<td>{{ $row['probability'] }}</td>
-								<td>{{ $row['status'] }}</td>
-								<td>{{ $row['created_at'] }}</td>
-								<td>{{ $row['next_followup'] }}</td>
-								<td>{{ $row['campus'] }}</td>
-								<td>{{ $row['remarks'] }}</td>
+								<td>{{ $row->user->name ?? 'System' }}</td>
+								<td>{{ $row->method ? ucfirst($row->method) : '—' }}</td>
+								<td>{{ !is_null($row->probability) ? $row->probability . '%' : '—' }}</td>
+								<td>{{ $label }}</td>
+								<td>{{ optional($row->created_at)->format('Y-m-d H:i') }}</td>
+								<td>{{ $row->next_action_date ? \Illuminate\Support\Carbon::parse($row->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
+								<td>{{ $row->campus->code ?? $row->campus->name ?? '—' }}</td>
+								<td>{{ $row->note ?? '—' }}</td>
 							</tr>
-						@endforeach
+						@empty
+							<tr>
+								<td colspan="9" class="text-center text-muted">No follow-ups yet.</td>
+							</tr>
+						@endforelse
 					</tbody>
 				</table>
 			</div>
 		</div>
 
 		<div class="tab-content" id="tab-personal" style="display: none;">
-			<div class="card">
+			<div class="card card-elevated">
 				<div class="card-body">
-					<p><strong>Course:</strong> {{ $lead['course'] }}</p>
-					<p><strong>Campus:</strong> {{ $lead['campus'] }}</p>
-					<p><strong>Created At:</strong> {{ $lead['created_at'] }}</p>
+					<table class="table table-bordered info-table mb-0">
+						<tbody>
+							<tr>
+								<th>Contact No</th>
+								<td>{{ $lead->phone ?? '—' }}</td>
+								<th>Email Address</th>
+								<td>{{ $lead->email ?? '—' }}</td>
+							</tr>
+							<tr>
+								<th>Interested Program</th>
+								<td>{{ $lead->program->title ?? $lead->program->name ?? '—' }}</td>
+								<th>Origin</th>
+								<td>{{ $lead->origin ?? '—' }}</td>
+							</tr>
+							<tr>
+								<th>Country</th>
+								<td>{{ data_get($lead->details, 'country', '—') }}</td>
+								<th>City</th>
+								<td>{{ $lead->city ?? '—' }}</td>
+							</tr>
+							<tr>
+								<th>Marketing Source</th>
+								<td>{{ $lead->marketing_source ?? '—' }}</td>
+								<th>Gender</th>
+								<td>{{ ucfirst(data_get($lead->details, 'gender', '—')) }}</td>
+							</tr>
+							<tr>
+								<th>Teaching Method</th>
+								<td>{{ ucfirst(data_get($lead->details, 'teaching_method', '—')) }}</td>
+								<th>Probability</th>
+								<td>{{ !is_null($latestFollowup?->probability) ? $latestFollowup->probability . '%' : '—' }}</td>
+							</tr>
+							<tr>
+								<th>Status</th>
+								<td>{{ ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')) }}</td>
+								<th>Next Follow-Up</th>
+								<td>{{ $nextFollowup?->next_action_date ? \Illuminate\Support\Carbon::parse($nextFollowup->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
+							</tr>
+							<tr>
+								<th>Campus Code</th>
+								<td>{{ $lead->campus->code ?? '—' }}</td>
+								<th>Campus Name</th>
+								<td>{{ $lead->campus->name ?? '—' }}</td>
+							</tr>
+							<tr>
+								<th>Remarks</th>
+								<td colspan="3">{{ $latestFollowup->note ?? data_get($lead->details, 'remarks', '—') }}</td>
+							</tr>
+						</tbody>
+					</table>
+					@if(isset($transfers) && $transfers->count())
+						<hr>
+						<h5 class="mb-2">Campus Transfer History</h5>
+						<table class="table table-bordered info-table mb-0">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>From</th>
+									<th>To</th>
+									<th>Status</th>
+									<th>Requested By</th>
+									<th>Approved By</th>
+									<th>Approved At</th>
+									<th>Reason</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($transfers as $idx => $transfer)
+									<tr>
+										<td>{{ $idx + 1 }}</td>
+										<td>{{ $transfer->fromCampus->name ?? '—' }}</td>
+										<td>{{ $transfer->toCampus->name ?? '—' }}</td>
+										<td>{{ ucfirst($transfer->status) }}</td>
+										<td>{{ $transfer->requester->name ?? '—' }}</td>
+										<td>{{ $transfer->approver->name ?? '—' }}</td>
+										<td>{{ optional($transfer->approved_at)->format('Y-m-d H:i') ?? '—' }}</td>
+										<td>{{ $transfer->reason ?? '—' }}</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
+					@endif
 				</div>
 			</div>
 		</div>
@@ -184,10 +288,22 @@
 			color: #2f3b52;
 		}
 
+		.lead-sub {
+			color: #5f6f7f;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		.lead-sub .divider {
+			color: #b0b8c2;
+		}
+
 		.stage-bar {
 			position: relative;
 			display: grid;
-			grid-template-columns: repeat(6, 1fr);
+			grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 			gap: 6px;
 			padding: 16px 10px 12px;
 			border: 1px solid #dbe4ed;
@@ -266,13 +382,12 @@
 			border-bottom-color: #00a8ff;
 		}
 
-		.add-followup-btn {
-			margin-bottom: 10px;
+		.card-elevated {
+			border: 1px solid #dbe4ed;
+			box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
 		}
 
 		.followup-form {
-			border: 1px solid #dbe4ed;
-			box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
 			margin-bottom: 14px;
 		}
 
@@ -317,9 +432,20 @@
 			color: #b00020;
 		}
 
+		.info-table th {
+			width: 22%;
+			background: #f6f8fb;
+			color: #4c5a6a;
+		}
+
+		.info-table td {
+			background: #fff;
+			color: #334155;
+		}
+
 		@media (max-width: 991px) {
 			.stage-bar {
-				grid-template-columns: repeat(3, 1fr);
+				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 			}
 		}
 	</style>
@@ -341,16 +467,6 @@
 				});
 			}
 
-			function toggleFollowUpForm() {
-				var btn = document.getElementById('toggle-followup-form');
-				var form = document.getElementById('followup-form');
-				btn.addEventListener('click', function () {
-					var showing = form.style.display === 'block';
-					form.style.display = showing ? 'none' : 'block';
-					btn.textContent = showing ? 'Add Follow-Up' : 'Hide Follow-Up';
-				});
-			}
-
 			function bindProbability() {
 				var range = document.getElementById('probability-range');
 				var label = document.getElementById('probability-value');
@@ -360,10 +476,46 @@
 				update();
 			}
 
+			function bindFollowupToggle() {
+				var btn = document.getElementById('toggle-followup-form');
+				var card = document.getElementById('followup-form-card');
+				if (!btn || !card) return;
+				btn.addEventListener('click', function () {
+					var isOpen = card.style.display === 'block';
+					card.style.display = isOpen ? 'none' : 'block';
+					btn.textContent = isOpen ? 'Add Follow-Up' : 'Hide Follow-Up';
+				});
+			}
+
+			function bindStageFields() {
+				var stage = document.getElementById('followup-stage');
+				var nextWrap = document.getElementById('next-followup-wrap');
+				var campusWrap = document.getElementById('campus-wrap');
+				var nextInput = document.getElementById('next_action_date');
+				var campusInput = document.getElementById('campus_id');
+				var regLink = document.getElementById('registration-link');
+				var toggleables = document.querySelectorAll('.followup-toggle');
+				if (!stage || !nextWrap || !campusWrap) return;
+
+				var toggle = function () {
+					var val = stage.value;
+					var hide = (val === 'registered' || val === 'not_interesting');
+					toggleables.forEach(function (el) {
+						el.style.display = hide ? 'none' : '';
+					});
+					if (nextInput) nextInput.disabled = hide;
+					if (campusInput) campusInput.disabled = hide;
+					if (regLink) regLink.classList.toggle('d-none', val !== 'registered');
+				};
+				stage.addEventListener('change', toggle);
+				toggle();
+			}
+
 			document.addEventListener('DOMContentLoaded', function () {
 				toggleTabs();
-				toggleFollowUpForm();
 				bindProbability();
+				bindFollowupToggle();
+				bindStageFields();
 			});
 		})();
 	</script>

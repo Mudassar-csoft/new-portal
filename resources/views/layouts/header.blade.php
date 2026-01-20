@@ -7,7 +7,7 @@
 					style="height: 40px; width: 40px; margin-top: -5px;">
 			</a>
 
-			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar padding" style="margin-left: 20px;">
+			<button id="show-hide-sidebar-t-oggle" class="show-hide-sidebar padding" style="margin-left: 20px;">
 				<span>toggle menu</span>
 			</button>
 

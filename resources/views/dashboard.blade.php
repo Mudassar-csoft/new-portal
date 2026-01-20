@@ -261,7 +261,7 @@
 @endsection
 
 @push('styles')
-	<link rel="stylesheet" href="css/lib/lobipanel/lobipanel.min.css">
+	<!-- <link rel="stylesheet" href="css/lib/lobipanel/lobipanel.min.css"> -->
 	<link rel="stylesheet" href="css/separate/vendor/lobipanel.min.css">
 	<link rel="stylesheet" href="css/lib/jqueryui/jquery-ui.min.css">
 	<link rel="stylesheet" href="css/separate/pages/widgets.min.css">
@@ -295,7 +295,7 @@
             margin-top: 8px;
             padding-bottom: 6px;
         }
-
+ 
         .statistic-box .stat-inner {
             position: relative;
         }
