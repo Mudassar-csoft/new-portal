@@ -14,14 +14,49 @@
 		</div>
 	</div>
 	<div class="form-row">
-		<div class="form-group col-md-4">
+		<!-- <div class="form-group col-md-4">
 			<label class="required">Gender</label>
 			<div class="radio-group">
 				<label><input type="radio" name="gender_study" checked> Male</label>
 				<label><input type="radio" name="gender_study"> Female</label>
 				<label><input type="radio" name="gender_study"> Other</label>
 			</div>
-		</div>
+		</div> -->
+		<div class="form-group form-group-radios">
+    <label class="form-label" id="studyabroad-gender">
+        Gender <span class="color-red">*</span>
+    </label>
+
+    <div class="radio">
+        <input id="studyabroad-gender-male"
+               name="studyabroad[gender]"
+               data-validation="[NOTEMPTY]"
+               data-validation-group="studyabroad-gender"
+               data-validation-message="You must select a gender"
+               type="radio"
+               value="male">
+        <label for="studyabroad-gender-male">Male</label>
+    </div>
+
+    <div class="radio">
+        <input id="studyabroad-gender-female"
+               name="studyabroad[gender]"
+               data-validation-group="studyabroad-gender"
+               type="radio"
+               value="female">
+        <label for="studyabroad-gender-female">Female</label>
+    </div>
+
+    <div class="radio">
+        <input id="studyabroad-gender-other"
+               name="studyabroad[gender]"
+               data-validation-group="studyabroad-gender"
+               type="radio"
+               value="other">
+        <label for="studyabroad-gender-other">Other</label>
+    </div>
+</div>
+ 
 		<div class="form-group col-md-4">
 			<label class="required">Current Education</label>
 			<input type="text" class="form-control" placeholder="Current Education">

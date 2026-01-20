@@ -1,9 +1,6 @@
 
 <div class="mobile-menu-left-overlay"></div>
 	<nav class="side-menu">
-		{{-- DEBUG --}}
-<!-- <div style="background:red;color:white">SIDEBAR LOADED</div> -->
-
 		<ul class="side-menu-list">
 			<li>
 				<span style="padding-left:14px">
