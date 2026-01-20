@@ -51,12 +51,48 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="required">Batch Session</label>
+							<!-- <label class="required">Batch Session</label>
 							<div class="mt-1 session-options">
 								<label class="mr-3"><input type="radio" name="session" value="morning" checked> Morning</label>
 								<label class="mr-3"><input type="radio" name="session" value="evening"> Evening</label>
 								<label><input type="radio" name="session" value="weekend"> Weekend</label>
-							</div>
+							</div> -->
+							<div class="form-group form-group-radios">
+    <label class="form-label" id="signup_v2-session">
+        Batch Session <span class="color-red">*</span>
+    </label>
+
+    <div class="radio">
+        <input id="signup_v2-session-morning"
+               name="signup_v2[session]"
+               data-validation="[NOTEMPTY]"
+               data-validation-group="signup_v2-session"
+               data-validation-message="You must select a session"
+               type="radio"
+               value="morning"
+               checked>
+        <label for="signup_v2-session-morning">Morning</label>
+    </div>
+
+    <div class="radio">
+        <input id="signup_v2-session-evening"
+               name="signup_v2[session]"
+               data-validation-group="signup_v2-session"
+               type="radio"
+               value="evening">
+        <label for="signup_v2-session-evening">Evening</label>
+    </div>
+
+    <div class="radio">
+        <input id="signup_v2-session-weekend"
+               name="signup_v2[session]"
+               data-validation-group="signup_v2-session"
+               type="radio"
+               value="weekend">
+        <label for="signup_v2-session-weekend">Weekend</label>
+    </div>
+</div>
+
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Batch Start Time</label>
