@@ -60,20 +60,51 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Date of Birth</label>
-							<input type="text" class="form-control" placeholder="dd/mm/yyyy">
+							<input type="date" class="form-control" placeholder="dd/mm/yyyy">
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Email</label>
 							<input type="email" class="form-control" placeholder="Enter email">
 						</div>
-						<div class="form-group col-md-3">
+						<!-- <div class="form-group col-md-3">
 							<label class="required">Gender</label>
 							<div class="mt-1 gender-options">
 								<label class="mr-3"><input type="radio" name="gender" checked> Male</label>
 								<label class="mr-3"><input type="radio" name="gender"> Female</label>
 								<label><input type="radio" name="gender"> Other</label>
 							</div>
-						</div>
+						</div> -->
+							<div class="form-group form-group-radios">
+									<label class="form-label" id="signup_v2-gender">
+										Gender <span class="color-red">*</span>
+									</label>
+									<div class="radio">
+										<input id="signup_v2-gender-male"
+											   name="signup_v2[gender]"
+											   data-validation="[NOTEMPTY]"
+											   data-validation-group="signup_v2-gender"
+											   data-validation-message="You must select a gender"
+											   type="radio"
+											   value="male">
+										<label for="signup_v2-gender-male">Male</label>
+									</div>
+									<div class="radio">
+										<input id="signup_v2-gender-female"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="female">
+										<label for="signup_v2-gender-female">Female</label>
+									</div>
+									<div class="radio">
+										<input id="signup_v2-gender-other"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="other">
+										<label for="signup_v2-gender-other">Other</label>
+									</div>
+								</div>
 						<div class="form-group col-md-3">
 							<label class="required">Current Education Level</label>
 							<input type="text" class="form-control" placeholder="Enter recent completed degree">
@@ -142,6 +173,36 @@
 		.gender-options input {
 			margin-right: 6px;
 		}
+		/* Equal height for all form groups */
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* Fix radio alignment */
+.gender-col .gender-box {
+    height: 38px; /* same as input height */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 10px;
+}
+
+/* Radio spacing */
+.gender-box input {
+    margin-right: 4px;
+}
+
+/* Mobile fix */
+@media (max-width: 768px) {
+    .gender-col .gender-box {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 8px;
+    }
+}
+
 	</style>
 @endpush
 

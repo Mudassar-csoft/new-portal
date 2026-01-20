@@ -38,11 +38,11 @@
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<label class="required">Full Name</label>
-							<input type="text" name="name" class="form-control" placeholder="Alex Morgan" value="{{ old('name') }}">
+							<input type="text" name="name" class="form-control" placeholder="Enter Full Name" value="{{ old('name') }}">
 						</div>
 						<div class="form-group col-md-6">
 							<label class="required">Email</label>
-							<input type="email" name="email" class="form-control" placeholder="alex@example.com" value="{{ old('email') }}">
+							<input type="email" name="email" class="form-control" placeholder="Enter Email" value="{{ old('email') }}">
 						</div>
 					</div>
 					<div class="form-row align-items-end">
