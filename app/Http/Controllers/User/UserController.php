@@ -9,16 +9,50 @@ use App\Models\User\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request)
     {
-        $users = User::with(['campus', 'roles'])->latest()->paginate(15);
+        if ($request->ajax()) {
+            $query = User::with(['campus', 'roles'])->select('users.*');
 
-        return view('user.index', compact('users'));
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('name', fn (User $user) => e($user->name))
+                ->editColumn('email', fn (User $user) => e($user->email))
+                ->addColumn('role', function (User $user) {
+                    $roles = $user->roles->pluck('name');
+
+                    if ($roles->isEmpty()) {
+                        return '<span class="text-muted">N/A</span>';
+                    }
+
+                    return e($roles->first());
+                })
+                ->addColumn('status', fn () => '<span class="label label-success">Active</span>')
+                ->addColumn('campus_code', fn (User $user) => e(data_get($user, 'campus.code', 'N/A')))
+                ->addColumn('date', fn (User $user) => optional($user->created_at)->format('d-M-Y') ?? 'N/A')
+                ->addColumn('actions', fn (User $user) => view('user.partials.action', ['user' => $user])->render())
+                ->filterColumn('role', function ($query, $keyword) {
+                    $query->whereHas('roles', function ($roleQuery) use ($keyword) {
+                        $roleQuery->where('name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('campus_code', function ($query, $keyword) {
+                    $query->whereHas('campus', function ($campusQuery) use ($keyword) {
+                        $campusQuery->where('code', 'like', "%{$keyword}%");
+                    });
+                })
+                ->rawColumns(['status', 'actions'])
+                ->make(true);
+        }
+
+        return view('user.index');
     }
 
     public function create(): View
@@ -40,22 +74,29 @@ class UserController extends Controller
             'roles.*' => ['exists:roles,id'],
         ]);
 
-        $user = User::create([
-            'campus_id' => $validated['campus_id'] ?? null,
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+        try {
+            $user = User::create([
+                'campus_id' => $validated['campus_id'] ?? null,
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        if (!empty($validated['roles'])) {
-            $user->roles()->sync(
-                collect($validated['roles'])->mapWithKeys(fn ($id) => [
-                    $id => ['assigned_by' => optional($request->user())->id],
-                ])
-            );
+            if (!empty($validated['roles'])) {
+                $user->roles()->sync(
+                    collect($validated['roles'])->mapWithKeys(fn ($id) => [
+                        $id => ['assigned_by' => optional($request->user())->id],
+                    ])
+                );
+            }
+
+            return redirect()->route('users.index')->with('status', 'User created.');
+        } catch (Throwable $e) {
+            report($e);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unable to save the user right now. Please try again.');
         }
-
-        return redirect()->route('users.index')->with('status', 'User created.');
     }
 
     public function edit(User $user): View
@@ -101,8 +142,15 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
-        $user->delete();
+        $user->update(['at_deleted' => now()]);
 
         return redirect()->route('users.index')->with('status', 'User deleted.');
     }
 }
+
+
+
+
+
+
+

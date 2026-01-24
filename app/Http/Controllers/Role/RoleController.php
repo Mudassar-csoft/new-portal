@@ -10,14 +10,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Yajra\DataTables\Facades\DataTables;
+use Throwable;
 
 class RoleController extends Controller
 {
-    public function index(): View
+    public function index(Request $request)
     {
-        $roles = Role::with('permissions')->latest()->paginate(15);
+        if ($request->ajax()) {
+            $query = Role::with('permissions')->select('roles.*');
 
-        return view('role.index', compact('roles'));
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('name', fn (Role $role) => e($role->name))
+                ->editColumn('slug', fn (Role $role) => e($role->slug))
+                ->addColumn('permissions', fn (Role $role) => $role->permissions->count())
+                ->addColumn('date', fn (Role $role) => optional($role->created_at)->format('d-M-Y') ?? 'N/A')
+                ->addColumn('actions', fn (Role $role) => view('role.partials.action', ['role' => $role])->render())
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('role.index');
     }
 
     public function create(): View
@@ -37,17 +51,24 @@ class RoleController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        $slug = $validated['slug'] ?? Str::slug($validated['name']);
+        try {
+            $slug = $validated['slug'] ?? Str::slug($validated['name']);
 
-        $role = Role::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'description' => $validated['description'] ?? null,
-        ]);
+            $role = Role::create([
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'description' => $validated['description'] ?? null,
+            ]);
 
-        $role->permissions()->sync($validated['permissions'] ?? []);
+            $role->permissions()->sync($validated['permissions'] ?? []);
 
-        return redirect()->route('roles.index')->with('status', 'Role created.');
+            return redirect()->route('roles.index')->with('status', 'Role created.');
+        } catch (Throwable $e) {
+            report($e);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unable to save the role right now. Please try again.');
+        }
     }
 
     public function edit(Role $role): View
@@ -83,7 +104,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role): RedirectResponse
     {
-        $role->delete();
+        $role->update(['at_deleted' => now()]);
 
         return redirect()->route('roles.index')->with('status', 'Role deleted.');
     }

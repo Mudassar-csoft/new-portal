@@ -103,12 +103,12 @@
                             Define a permission for a resource and action.
                         </small>
                     </div>
-                    <a href="#" class="btn btn-secondary btn-sm">Back</a>
+                    <a href="{{ route('permissions.index') }}" class="btn btn-secondary btn-sm">Back</a>
                 </div>
 
                 <!-- Body -->
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" action="{{ route('permissions.store') }}">
                         @csrf
 
                         <div class="form-row">
@@ -118,9 +118,14 @@
                                 </label>
                                 <input
                                     type="text"
-                                    class="form-control"
+                                    class="form-control @error('resource') is-invalid @enderror"
+                                    name="resource"
                                     placeholder="lead"
+                                    value="{{ old('resource') }}"
                                 >
+                                @error('resource')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="form-group col-md-6">
@@ -129,19 +134,28 @@
                                 </label>
                                 <input
                                     type="text"
-                                    class="form-control"
+                                    class="form-control @error('action') is-invalid @enderror"
+                                    name="action"
                                     placeholder="view"
+                                    value="{{ old('action') }}"
                                 >
+                                @error('action')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label>Description</label>
                             <textarea
-                                class="form-control"
+                                class="form-control @error('description') is-invalid @enderror"
+                                name="description"
                                 rows="3"
                                 placeholder="Optional description"
-                            ></textarea>
+                            >{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <!-- Buttons -->

@@ -3,8 +3,8 @@
 @section('title', 'Create Role')
 
 @section('content')
-	<div class="role-shell">
-		<div class="box-typical box-typical-dashboard panel panel-default role-card">
+	<div class="user-shell">
+		<div class="box-typical box-typical-dashboard panel panel-default user-card">
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Create Role</h3>
@@ -12,27 +12,39 @@
 				</div>
 				<a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
 			</header>
-			<div class="box-typical-body panel-body role-body">
+			<div class="box-typical-body panel-body user-body">
 				<form method="POST" action="{{ route('roles.store') }}">
 					@csrf
-					<div class="form-row">
-						<div class="form-group col-md-6">
-							<label class="required">Name</label>
-							<input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Admin">
+					<div class="form-section">
+						<div class="section-title">Role Details</div>
+						<div class="form-row">
+							<div class="form-group col-md-6">
+								<label class="required">Name</label>
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin">
+								@error('name')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							<div class="form-group col-md-6">
+								<label>Slug</label>
+								<input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
+								<small class="text-muted">Auto from name if left blank.</small>
+								@error('slug')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
 						</div>
-						<div class="form-group col-md-6">
-							<label>Slug</label>
-							<input type="text" name="slug" class="form-control" value="{{ old('slug') }}" placeholder="admin">
-							<small class="text-muted">Auto from name if left blank.</small>
+						<div class="form-group">
+							<label>Description</label>
+							<textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
+							@error('description')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
-					</div>
-					<div class="form-group">
-						<label>Description</label>
-						<textarea name="description" class="form-control" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
 					</div>
 
-					<div class="form-group mt-3">
-						<label class="required d-block mb-2">Permissions</label>
+					<div class="form-section">
+						<div class="section-title">Permissions</div>
 						<div class="permission-wrapper">
 							<div class="permission-grid">
 								@foreach($permissions as $resource => $perms)
@@ -48,6 +60,12 @@
 								@endforeach
 							</div>
 						</div>
+						@error('permissions')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
+						@error('permissions.*')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
 					</div>
 					<!-- <div class="form-group row">
 						<label for="inputPassword" class="col-sm-2 form-control-label">Password</label>
@@ -68,23 +86,33 @@
 
 @push('styles')
 	<style>
-		.role-shell {
+		.user-shell {
 			min-height: 100vh;
-			padding: 10px;
-			/* background: #2b68c4; */
-		}
-		.role-card {
-    width: 100%;
-    max-width: 900px;   /* desktop width */
-    margin-left: auto;
-    margin-right: auto;
-	/* background: #2b68c4; */
-	
-}
-		.role-body {
 			padding: 20px;
+			background: linear-gradient(160deg, #f6f8fc 0%, #eef3fb 100%);
+		}
+		.user-card {
+			max-width: 1200px;
+			margin: 0 auto;
+			border-radius: 14px;
+			box-shadow: 0 18px 40px rgba(25, 45, 85, 0.12);
+		}
+		.user-body {
+			padding: 24px 24px 10px;
 		}
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
+		.form-section {
+			background: #fff;
+			border: 1px solid #e6edf5;
+			border-radius: 12px;
+			padding: 18px 18px 6px;
+			margin-bottom: 18px;
+		}
+		.section-title {
+			font-weight: 600;
+			color: #1f2d3d;
+			margin-bottom: 12px;
+		}
 		.permission-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

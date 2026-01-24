@@ -275,7 +275,12 @@
 @push('styles')
 	<style>
 		.lead-show-shell {
-			padding: 8px 0 16px;
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 16px;
+			background: #fff;
+			border: 1px solid #dbe4ed;
+			border-radius: 10px;
 		}
 
 		.lead-header {

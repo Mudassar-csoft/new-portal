@@ -350,4 +350,16 @@
 			});
 		})();
 	</script>
+	@if(session('status'))
+		<script>
+			(function () {
+				if (!window.swal) return;
+				swal({
+					title: 'Success',
+					text: @json(session('status')),
+					type: 'success'
+				});
+			})();
+		</script>
+	@endif
 @endpush

@@ -340,10 +340,10 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">User Management</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Add User</span><span
-								class="label label-custom label-pill label-danger stage-count">5</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Manage Users</span><span
-								class="label label-custom label-pill label-danger stage-count">140</span></a></li>
+					<li><a href="{{ route('users.index') }}"><span class="lbl">Users</span></a></li>
+					<li><a href="{{ route('roles.index') }}"><span class="lbl">Roles</span></a></li>
+					<li><a href="{{ route('permissions.index') }}"><span class="lbl">Permissions</span></a></li>
+					<li><a href="{{ route('login-logs.index') }}"><span class="lbl">User Activities</span></a></li>
 				</ul>
 			</li>
 			<li class="gold orange with-sub">
@@ -657,4 +657,3 @@
 			</ul>
 		</section>
 	</nav><!--.side-menu-->
-

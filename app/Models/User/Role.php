@@ -15,11 +15,30 @@ class Role extends Model
         'slug',
         'description',
         'is_system',
+        'at_deleted',
     ];
 
     protected $casts = [
         'is_system' => 'boolean',
+        'at_deleted' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('not_deleted', function ($query) {
+            $query->whereNull('at_deleted');
+        });
+    }
+
+    public function scopeWithTrashed($query)
+    {
+        return $query->withoutGlobalScope('not_deleted');
+    }
+
+    public function scopeOnlyTrashed($query)
+    {
+        return $query->withoutGlobalScope('not_deleted')->whereNotNull('at_deleted');
+    }
 
     public function users(): BelongsToMany
     {

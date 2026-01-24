@@ -8,6 +8,7 @@ use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'at_deleted',
     ];
 
     /**
@@ -48,7 +50,25 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'at_deleted' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('not_deleted', function ($query) {
+            $query->whereNull('at_deleted');
+        });
+    }
+
+    public function scopeWithTrashed($query)
+    {
+        return $query->withoutGlobalScope('not_deleted');
+    }
+
+    public function scopeOnlyTrashed($query)
+    {
+        return $query->withoutGlobalScope('not_deleted')->whereNotNull('at_deleted');
     }
 
     public function campus(): BelongsTo
@@ -67,6 +87,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Permission::class)
             ->withTimestamps();
+    }
+
+    public function loginLogs(): HasMany
+    {
+        return $this->hasMany(UserLoginLog::class);
     }
 
 }

@@ -180,12 +180,20 @@
 							</div>
 						</div>
 
+						
 						<div class="dropdown user-menu">
 							<button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown"
 								aria-haspopup="true" aria-expanded="false">
 								<img src="img/avatar-2-64.png" alt="">
 							</button>
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd-user-menu">
+								<span class=" dropdown-item user-greeting">
+							@if(auth()->check())
+								Hi, {{ auth()->user()->name }}
+							@else
+								Hi, Guest
+							@endif
+						</span>
 								<a class="dropdown-item" href="#"><span
 										class="font-icon glyphicon glyphicon-user"></span>Profile</a>
 								<a class="dropdown-item" href="#"><span
@@ -193,8 +201,12 @@
 								<a class="dropdown-item" href="#"><span
 										class="font-icon glyphicon glyphicon-question-sign"></span>Help</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#"><span
-										class="font-icon glyphicon glyphicon-log-out"></span>Logout</a>
+								<form action="{{ route('logout') }}" method="POST">
+									@csrf
+									<button type="submit" class="dropdown-item">
+										<span class="font-icon glyphicon glyphicon-log-out"></span>Logout
+									</button>
+								</form>
 							</div>
 						</div>
 
@@ -324,4 +336,3 @@
 			</div><!--.site-header-content-->
 		</div><!--.container-fluid-->
 	</header><!--.site-header-->
-

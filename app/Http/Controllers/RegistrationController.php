@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use RuntimeException;
+use Throwable;
 
 class RegistrationController extends Controller
 {
@@ -47,54 +49,61 @@ class RegistrationController extends Controller
             'discount' => ['nullable', 'numeric'],
         ]);
 
-        $campus = Campus::findOrFail($validated['campus_id']);
-        $regNumbers = $this->previewNumbers($campus->code);
+        try {
+            $campus = Campus::findOrFail($validated['campus_id']);
+            $regNumbers = $this->ensureUniqueNumbers($this->previewNumbers($campus->code));
 
-        // Fixed fee and no discount per request
-        $fee = 2000;
-        $discount = 0;
-        $net = $fee - $discount;
+            // Fixed fee and no discount per request
+            $fee = 2000;
+            $discount = 0;
+            $net = $fee - $discount;
 
-        $registration = Registration::create([
-            'lead_id' => $validated['lead_id'] ?? null,
-            'campus_id' => $validated['campus_id'],
-            'program_id' => $validated['program_id'],
-            'registration_number' => $regNumbers['registration_number'],
-            'receipt_number' => $regNumbers['receipt_number'],
-            'student_name' => $validated['student_name'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'] ?? null,
-            'fee' => $fee,
-            'discount' => $discount,
-            'net_payable' => $net,
-            'status' => 'registered',
-            'registered_at' => Carbon::now(),
-        ]);
+            $registration = Registration::create([
+                'lead_id' => $validated['lead_id'] ?? null,
+                'campus_id' => $validated['campus_id'],
+                'program_id' => $validated['program_id'],
+                'registration_number' => $regNumbers['registration_number'],
+                'receipt_number' => $regNumbers['receipt_number'],
+                'student_name' => $validated['student_name'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'] ?? null,
+                'fee' => $fee,
+                'discount' => $discount,
+                'net_payable' => $net,
+                'status' => 'registered',
+                'registered_at' => Carbon::now(),
+            ]);
 
-        if ($registration->lead_id) {
-            $lead = Lead::find($registration->lead_id);
-            if ($lead) {
-                $leadStatus = $lead->status === 'enrolled' ? 'enrolled' : 'registered';
-                $lead->update([
-                    'status' => $leadStatus,
-                    'campus_id' => $registration->campus_id,
-                    'program_id' => $registration->program_id,
-                ]);
+            if ($registration->lead_id) {
+                $lead = Lead::find($registration->lead_id);
+                if ($lead) {
+                    $leadStatus = $lead->status === 'enrolled' ? 'enrolled' : 'registered';
+                    $lead->update([
+                        'status' => $leadStatus,
+                        'campus_id' => $registration->campus_id,
+                        'program_id' => $registration->program_id,
+                    ]);
 
-                LeadFollowup::create([
-                    'lead_id' => $lead->id,
-                    'campus_id' => $registration->campus_id,
-                    'user_id' => $request->user()?->id,
-                    'method' => 'walk-in',
-                    'probability' => 100,
-                    'note' => 'Lead registered via registration form.',
-                    'stage' => 'registered',
-                    'lead_status' => $leadStatus,
-                ]);
+                    LeadFollowup::create([
+                        'lead_id' => $lead->id,
+                        'campus_id' => $registration->campus_id,
+                        'user_id' => $request->user()?->id,
+                        'method' => 'walk-in',
+                        'probability' => 100,
+                        'note' => 'Lead registered via registration form.',
+                        'stage' => 'registered',
+                        'lead_status' => $leadStatus,
+                    ]);
+                }
             }
-        }
 
-        return redirect()->route('registration.status')->with('status', 'Registration created.');
+            return redirect()->route('registration.status')->with('status', 'Registration created.');
+        } catch (Throwable $e) {
+            report($e);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unable to save the registration right now. Please try again.');
+        }
     }
 
     public function preview(Request $request)
@@ -138,5 +147,33 @@ class RegistrationController extends Controller
             'registration_number' => $campusCode . '-' . $monthYear . '-' . $countPadded,
             'receipt_number' => $campusCode . '-' . $monthYear . '-' . $receiptPadded,
         ];
+    }
+
+    private function ensureUniqueNumbers(array $numbers): array
+    {
+        $attempts = 0;
+        while (
+            Registration::where('registration_number', $numbers['registration_number'])
+                ->orWhere('receipt_number', $numbers['receipt_number'])
+                ->exists()
+        ) {
+            $numbers['registration_number'] = $this->incrementNumber($numbers['registration_number'], 2);
+            $numbers['receipt_number'] = $this->incrementNumber($numbers['receipt_number'], 6);
+            $attempts++;
+            if ($attempts > 20) {
+                throw new RuntimeException('Unable to generate unique registration numbers.');
+            }
+        }
+
+        return $numbers;
+    }
+
+    private function incrementNumber(string $value, int $pad): string
+    {
+        $parts = explode('-', $value);
+        $last = array_pop($parts);
+        $next = str_pad((string)((int)$last + 1), $pad, '0', STR_PAD_LEFT);
+        $parts[] = $next;
+        return implode('-', $parts);
     }
 }

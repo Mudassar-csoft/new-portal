@@ -15,7 +15,7 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Select Campus</label>
-							<select class="form-control" name="campus_id" required>
+							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
 								<option value="">- Select -</option>
 								@foreach($campuses ?? [] as $campus)
 									<option value="{{ $campus->id }}" {{ old('campus_id', $lead->campus_id ?? '') == $campus->id ? 'selected' : '' }}>
@@ -23,10 +23,13 @@
 									</option>
 								@endforeach
 							</select>
+							@error('campus_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Select Program</label>
-							<select class="form-control" name="program_id" required>
+							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
 								<option value="">- Select -</option>
 								@foreach($programs ?? [] as $program)
 									<option value="{{ $program->id }}" {{ old('program_id', $lead->program_id ?? '') == $program->id ? 'selected' : '' }}>
@@ -34,10 +37,13 @@
 									</option>
 								@endforeach
 							</select>
+							@error('program_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Select Batch</label>
-							<select class="form-control" name="batch_id" required>
+							<select class="form-control @error('batch_id') is-invalid @enderror" name="batch_id" required>
 								<option value="">- Select -</option>
 								@foreach($batches ?? [] as $batch)
 									<option value="{{ $batch->id }}" {{ old('batch_id') == $batch->id ? 'selected' : '' }}>
@@ -45,175 +51,207 @@
 									</option>
 								@endforeach
 							</select>
+							@error('batch_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Student Name (As per CNIC)</label>
-							<input type="text" class="form-control" name="student_name" value="{{ old('student_name', $lead->name ?? '') }}" placeholder="Enter full name" required>
+							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" value="{{ old('student_name', $lead->name ?? '') }}" placeholder="Enter full name" required>
+							@error('student_name')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Primary Contact Number</label>
-							<input type="text" class="form-control" name="phone" value="{{ old('phone', $lead->phone ?? '') }}" placeholder="03XXXXXXXXX" required>
+							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $lead->phone ?? '') }}" placeholder="03XXXXXXXXX" required>
+							@error('phone')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Guardian Name</label>
-							<input type="text" class="form-control" name="guardian_name" value="{{ old('guardian_name') }}" placeholder="Enter guardian name" required>
+							<input type="text" class="form-control @error('guardian_name') is-invalid @enderror" name="guardian_name" value="{{ old('guardian_name') }}" placeholder="Enter guardian name" required>
+							@error('guardian_name')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Guardian Contact Number</label>
-							<input type="text" class="form-control" name="guardian_phone" value="{{ old('guardian_phone') }}" placeholder="03XXXXXXXXX" required>
+							<input type="text" class="form-control @error('guardian_phone') is-invalid @enderror" name="guardian_phone" value="{{ old('guardian_phone') }}" placeholder="03XXXXXXXXX" required>
+							@error('guardian_phone')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">National Identity Card (CNIC)</label>
-							<input type="text" class="form-control" name="cnic" value="{{ old('cnic') }}" placeholder="Numbers only" required>
+							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic') }}" placeholder="Numbers only" required>
+							@error('cnic')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-<<<<<<< HEAD
-							<label class="required">Date of Birth</label>
-							<input type="date" class="form-control" placeholder="dd/mm/yyyy">
-=======
 							<label>Email Address</label>
-							<input type="email" class="form-control" name="email" value="{{ old('email', $lead->email ?? '') }}" placeholder="Enter email address" required>
->>>>>>> bc2710b (new  updates)
+							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $lead->email ?? '') }}" placeholder="Enter email address" required>
+							@error('email')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Education</label>
-							<input type="text" class="form-control" name="education" value="{{ old('education') }}" placeholder="Enter education" required>
+							<input type="text" class="form-control @error('education') is-invalid @enderror" name="education" value="{{ old('education') }}" placeholder="Enter education" required>
+							@error('education')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Date of Birth</label>
-							<input type="date" class="form-control" name="date_of_birth" value="{{ old('date_of_birth') }}" required>
+							<input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" name="date_of_birth" value="{{ old('date_of_birth') }}" required>
+							@error('date_of_birth')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
-						<!-- <div class="form-group col-md-3">
+						<div class="form-group col-md-3">
 							<label class="required">Gender</label>
-							<div class="mt-1 gender-options">
+							<div class="mt-1 gender-options @error('gender') is-invalid @enderror">
 								<label class="mr-3"><input type="radio" name="gender" value="male" {{ old('gender', 'male') === 'male' ? 'checked' : '' }}> Male</label>
 								<label class="mr-3"><input type="radio" name="gender" value="female" {{ old('gender') === 'female' ? 'checked' : '' }}> Female</label>
 								<label><input type="radio" name="gender" value="other" {{ old('gender') === 'other' ? 'checked' : '' }}> Other</label>
 							</div>
-<<<<<<< HEAD
-						</div> -->
-							<div class="form-group form-group-radios">
-									<label class="form-label" id="signup_v2-gender">
-										Gender <span class="color-red">*</span>
-									</label>
-									<div class="radio">
-										<input id="signup_v2-gender-male"
-											   name="signup_v2[gender]"
-											   data-validation="[NOTEMPTY]"
-											   data-validation-group="signup_v2-gender"
-											   data-validation-message="You must select a gender"
-											   type="radio"
-											   value="male">
-										<label for="signup_v2-gender-male">Male</label>
-									</div>
-									<div class="radio">
-										<input id="signup_v2-gender-female"
-											   name="signup_v2[gender]"
-											   data-validation-group="signup_v2-gender"
-											   type="radio"
-											   value="female">
-										<label for="signup_v2-gender-female">Female</label>
-									</div>
-									<div class="radio">
-										<input id="signup_v2-gender-other"
-											   name="signup_v2[gender]"
-											   data-validation-group="signup_v2-gender"
-											   type="radio"
-											   value="other">
-										<label for="signup_v2-gender-other">Other</label>
-									</div>
-								</div>
-						<div class="form-group col-md-3">
-							<label class="required">Current Education Level</label>
-							<input type="text" class="form-control" placeholder="Enter recent completed degree">
-=======
->>>>>>> bc2710b (new  updates)
+							@error('gender')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Country</label>
-							<select class="form-control" id="adm-country-select" name="country" required></select>
+							<select class="form-control @error('country') is-invalid @enderror" id="adm-country-select" name="country" required></select>
+							@error('country')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">City</label>
-							<select class="form-control" id="adm-city-select" name="city" required>
+							<select class="form-control @error('city') is-invalid @enderror" id="adm-city-select" name="city" required>
 								<option>Loading...</option>
 							</select>
+							@error('city')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Area</label>
-							<input type="text" class="form-control" name="area" value="{{ old('area') }}" placeholder="Enter area" required>
+							<input type="text" class="form-control @error('area') is-invalid @enderror" name="area" value="{{ old('area') }}" placeholder="Enter area" required>
+							@error('area')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="required">Postal Address</label>
-						<textarea class="form-control" name="postal_address" rows="2" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
+						<textarea class="form-control @error('postal_address') is-invalid @enderror" name="postal_address" rows="2" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
+						@error('postal_address')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label>Passport Number (Optional)</label>
-							<input type="text" class="form-control" name="passport_number" value="{{ old('passport_number') }}" placeholder="Enter passport number">
+							<input type="text" class="form-control @error('passport_number') is-invalid @enderror" name="passport_number" value="{{ old('passport_number') }}" placeholder="Enter passport number">
+							@error('passport_number')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Registration Number</label>
-							<input type="text" class="form-control" name="registration_number" value="{{ old('registration_number') }}" placeholder="Enter registration number" required>
+							<input type="text" class="form-control @error('registration_number') is-invalid @enderror" name="registration_number" value="{{ old('registration_number') }}" placeholder="Enter registration number" required>
+							@error('registration_number')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Roll Number</label>
-							<input type="text" class="form-control" name="roll_number" value="{{ old('roll_number') }}" placeholder="Enter roll number" required>
+							<input type="text" class="form-control @error('roll_number') is-invalid @enderror" name="roll_number" value="{{ old('roll_number') }}" placeholder="Enter roll number" required>
+							@error('roll_number')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Date of Admission</label>
-							<input type="date" class="form-control" name="admission_date" value="{{ old('admission_date') }}" required>
+							<input type="date" class="form-control @error('admission_date') is-invalid @enderror" name="admission_date" value="{{ old('admission_date') }}" required>
+							@error('admission_date')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Fee Package</label>
-							<input type="number" step="0.01" class="form-control" name="fee_package" value="{{ old('fee_package') }}" required>
+							<input type="number" step="0.01" class="form-control @error('fee_package') is-invalid @enderror" name="fee_package" value="{{ old('fee_package') }}" required>
+							@error('fee_package')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Discount Amount</label>
-							<input type="number" step="0.01" class="form-control" name="discount_amount" value="{{ old('discount_amount') }}" required>
+							<input type="number" step="0.01" class="form-control @error('discount_amount') is-invalid @enderror" name="discount_amount" value="{{ old('discount_amount') }}" required>
+							@error('discount_amount')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Discount %</label>
-							<input type="number" step="0.01" class="form-control" name="discount_percent" value="{{ old('discount_percent') }}" required>
+							<input type="number" step="0.01" class="form-control @error('discount_percent') is-invalid @enderror" name="discount_percent" value="{{ old('discount_percent') }}" required>
+							@error('discount_percent')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="required">Discounted Fee</label>
-							<input type="number" step="0.01" class="form-control" name="discounted_fee" value="{{ old('discounted_fee') }}" required>
+							<input type="number" step="0.01" class="form-control @error('discounted_fee') is-invalid @enderror" name="discounted_fee" value="{{ old('discounted_fee') }}" required>
+							@error('discounted_fee')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="required">Fee Type</label>
-							<div class="mt-1 gender-options">
+							<div class="mt-1 gender-options @error('fee_type') is-invalid @enderror">
 								<label class="mr-3"><input type="radio" name="fee_type" value="full" {{ old('fee_type', 'full') === 'full' ? 'checked' : '' }}> Full Fee</label>
 								<label><input type="radio" name="fee_type" value="installments" {{ old('fee_type') === 'installments' ? 'checked' : '' }}> Installments</label>
 							</div>
+							@error('fee_type')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-9">
 							<label class="required">Remarks</label>
-							<textarea class="form-control" name="remarks" rows="2" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
+							<textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="2" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
+							@error('remarks')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="required">Receipt Number</label>
-						<input type="text" class="form-control" name="receipt_number" value="{{ old('receipt_number') }}" placeholder="Enter receipt number" required>
+						<input type="text" class="form-control @error('receipt_number') is-invalid @enderror" name="receipt_number" value="{{ old('receipt_number') }}" placeholder="Enter receipt number" required>
+						@error('receipt_number')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
 					</div>
 
 					<div class="text-right">
@@ -289,7 +327,10 @@
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			CountryCityLoader.init('adm-country-select', 'adm-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+			CountryCityLoader.init('adm-country-select', 'adm-city-select', {
+				country: @json(old('country', 'Pakistan')),
+				city: @json(old('city', 'Faisalabad'))
+			});
 		});
 	</script>
 @endpush

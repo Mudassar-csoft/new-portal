@@ -6,51 +6,31 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
-				<div class="box-typical box-typical-dashboard panel panel-default">
+				<div class="box-typical box-typical-dashboard panel panel-default permission-directory">
 					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0">Permissions</h3>
 							<small class="text-muted">Manage permission definitions.</small>
 						</div>
-						<a href="{{ route('permissions.create') }}" class="btn btn-primary">New Permission</a>
+						<div class="d-flex gap-2">
+							<a href="{{ route('permissions.create') }}" class="btn btn-primary">New Permission</a>
+						</div>
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
-							<table class="table table-hover">
+							<table class="table table-hover table-striped" id="permissions-table">
 								<thead>
 									<tr>
+										<th>Sr#</th>
 										<th>Resource</th>
 										<th>Action</th>
+										<th>Slug</th>
+										<th>Date</th>
 										<th class="text-right">Actions</th>
 									</tr>
 								</thead>
-								<tbody>
-									@forelse($permissions as $permission)
-										<tr>
-											<td>{{ $permission->resource }}</td>
-											<td>{{ $permission->action }}</td>
-											<td class="text-right">
-												<a href="{{ route('permissions.edit', $permission) }}" class="btn btn-sm btn-secondary">Edit</a>
-												<form action="{{ route('permissions.destroy', $permission) }}" method="POST" class="d-inline">
-													@csrf
-													@method('DELETE')
-													<button type="submit" class="btn btn-sm btn-danger-outline" onclick="return confirm('Delete this permission?')">Delete</button>
-												</form>
-											</td>
-										</tr>
-									@empty
-										<tr>
-											<td colspan="4" class="text-center text-muted">No permissions found.</td>
-										</tr>
-									@endforelse
-								</tbody>
 							</table>
 						</div>
-						@if(method_exists($permissions, 'links'))
-							<div class="mt-3">
-								{{ $permissions->links() }}
-							</div>
-						@endif
 					</div>
 				</div>
 			</div>
@@ -59,7 +39,128 @@
 @endsection
 
 @push('styles')
+	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
 	<style>
-		.btn-danger-outline { border: 1px solid #e74c3c; color: #e74c3c; background: transparent; }
+		.gap-2 { gap: 8px; }
+		#permissions-table thead th {
+			background: #1fb2ff;
+			color: #fff;
+			border-color: #1aa4ea;
+			font-weight: 600;
+			vertical-align: middle;
+		}
+		#permissions-table {
+			border: 1px solid #d9e2ef;
+			border-radius: 6px;
+			overflow: visible;
+			background: #fff;
+		}
+		#permissions-table th,
+		#permissions-table td {
+			border-color: #d9e2ef;
+			padding: 6px 10px;
+			vertical-align: middle;
+			border-right: 1px solid #d9e2ef;
+			border-bottom: 1px solid #d9e2ef;
+		}
+		#permissions-table th:first-child,
+		#permissions-table td:first-child {
+			border-left: 1px solid #d9e2ef;
+		}
+		#permissions-table tbody tr:nth-of-type(odd) {
+			background-color: #f5f6ff;
+		}
+		.permission-directory .box-typical-body {
+			padding: 16px;
+			overflow: visible;
+		}
+		.permission-directory .dataTables_wrapper {
+			border-top: 1px solid #d9e2ef;
+			padding-top: 12px;
+		}
+		.permission-directory .dataTables_wrapper .dataTables_length,
+		.permission-directory .dataTables_wrapper .dataTables_filter {
+			padding: 0 4px;
+		}
+		.permission-directory .table-responsive {
+			overflow-x: visible;
+			overflow-y: visible;
+		}
+		#permissions-table td.actions-cell {
+			text-align: right;
+			white-space: nowrap;
+		}
+		#permissions-table td.actions-cell .dropdown {
+			display: inline-block;
+		}
+		.dataTables_wrapper .dataTables_length {
+			float: left;
+			margin-bottom: 12px;
+		}
+		.dataTables_wrapper .dataTables_filter {
+			float: right;
+			margin-bottom: 12px;
+		}
+		.dataTables_wrapper .dataTables_filter label {
+			margin: 0;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+		.dataTables_wrapper .dataTables_filter input {
+			border: 1px solid #d9e2ef;
+			border-radius: 22px;
+			padding: 7px 14px;
+			height: 40px;
+			width: 240px;
+			box-shadow: none;
+		}
+		.dataTables_wrapper .dataTables_info {
+			padding-top: 8px;
+		}
+		.dataTables_wrapper .dataTables_paginate {
+			padding-top: 8px;
+		}
+		.dataTables_wrapper:after {
+			content: "";
+			display: block;
+			clear: both;
+		}
 	</style>
+@endpush
+
+@push('scripts')
+	<script src="js/lib/bootstrap-sweetalert/sweetalert.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+	<script>
+		$(function () {
+			$('#permissions-table').DataTable({
+				processing: true,
+				serverSide: true,
+				ajax: "{{ route('permissions.index') }}",
+				order: [[1, 'asc']],
+				columns: [
+					{ data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+					{ data: 'resource', name: 'resource' },
+					{ data: 'action', name: 'action' },
+					{ data: 'slug', name: 'slug' },
+					{ data: 'date', name: 'date', orderable: false, searchable: false },
+					{ data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
+				]
+			});
+
+			var statusMessage = @json(session('status'));
+			if (statusMessage) {
+				swal({
+					title: 'Success',
+					text: statusMessage,
+					type: 'success',
+					timer: 1800,
+					showConfirmButton: false
+				});
+			}
+		});
+	</script>
 @endpush

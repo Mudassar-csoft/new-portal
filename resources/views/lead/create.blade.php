@@ -174,6 +174,24 @@
 			margin-left: 4px;
 		}
 
+		.field-error {
+			color: #e53935;
+			font-size: 12px;
+			margin-top: 6px;
+		}
+
+		.form-control.is-invalid,
+		.form-control-range.is-invalid {
+			border-color: #e53935;
+			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+		}
+
+		.radio-group.is-invalid {
+			border: 1px solid #e53935;
+			border-radius: 6px;
+			padding: 6px 10px;
+		}
+
 		.radio-group label {
 			margin-right: 14px;
 			font-weight: 600;
@@ -338,7 +356,10 @@
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			CountryCityLoader.init('lead-country-select', 'lead-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+			CountryCityLoader.init('lead-country-select', 'lead-city-select', {
+				country: @json(old('details.country', 'Pakistan')),
+				city: @json(old('city', 'Faisalabad'))
+			});
 		});
 	</script>
 @endpush

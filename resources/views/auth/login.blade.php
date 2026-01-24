@@ -28,101 +28,254 @@
         }
 
         .login-shell {
-            display: flex;
             min-height: 100vh;
         }
 
         .login-media {
             position: relative;
-            width: 70%;
+            width: 100%;
+            min-height: 100vh;
             overflow: hidden;
             background: #0b1622;
         }
 
-        .login-media-grid {
+        .media-glow {
             position: absolute;
             inset: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            background:
+                radial-gradient(600px 300px at 20% 20%, rgba(0, 122, 255, 0.35), transparent 60%),
+                radial-gradient(500px 300px at 80% 70%, rgba(0, 214, 155, 0.25), transparent 60%);
+            pointer-events: none;
         }
 
-        .login-media-tile {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-video {
+        .login-slider {
             position: absolute;
             inset: 0;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        .slide.is-active {
+            opacity: 1;
+        }
+
+        .slide img {
             width: 100%;
             height: 100%;
-            object-fit: fill;
+            object-fit: cover;
             object-position: center;
+            transform: scale(1.02);
+            transition: transform 6s ease;
         }
 
-        .login-overlay {
+        .slide-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(6, 16, 28, 0.2);
+            background: linear-gradient(140deg, rgba(6, 16, 28, 0.35), rgba(6, 16, 28, 0.15));
+        }
+
+        .slider-caption {
+            position: absolute;
+            left: 40px;
+            bottom: 40px;
+            color: #fff;
+            max-width: 420px;
+        }
+
+        .slider-caption h2 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .slider-caption p {
+            font-size: 14px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .slider-dots {
+            position: absolute;
+            right: 32px;
+            bottom: 32px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .slider-dot.is-active {
+            background: #fff;
         }
 
         .login-form-panel {
-            width: 30%;
-            min-width: 320px;
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
-            background: #ffffff;
+            pointer-events: none;
         }
 
         .sign-box {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(215, 225, 238, 0.7);
+            box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
+            border-radius: 16px;
             width: 100%;
             max-width: 420px;
+            padding: 24px 24px 30px;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
         }
 
-        .sound-toggle {
+        .sign-box::before {
+            content: "";
             position: absolute;
-            right: 24px;
-            bottom: 24px;
-            background: #0a69d6;
-            color: #fff;
+            inset: -2px;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(120deg, rgba(23, 140, 255, 0.5), rgba(0, 214, 155, 0.4), rgba(255, 178, 89, 0.4));
+            background-size: 300% 300%;
+            animation: borderGlow 6s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .sign-box .sign-avatar {
+            margin-bottom: 8px;
+        }
+
+        .sign-box .form-control {
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid #dbe5f1;
+            padding-left: 14px;
+        }
+
+        .sign-box .form-control:focus {
+            border-color: #2b78ff;
+            box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.15);
+        }
+
+        .sign-box .btn.btn-rounded {
+            width: 100%;
+            margin-top: 8px;
+            background: linear-gradient(120deg, #2b78ff, #00c2ff);
             border: 0;
-            padding: 10px 16px;
-            border-radius: 20px;
+            box-shadow: 0 12px 24px rgba(43, 120, 255, 0.3);
+        }
+
+        .sign-box .btn.btn-rounded:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(43, 120, 255, 0.35);
+        }
+
+        .sign-note {
+            margin-top: 12px;
+        }
+
+        .sign-note.secondary {
+            margin-top: 14px;
+            font-size: 12px;
+            color: #6b7a90;
+        }
+
+        .trust-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 11px;
+            color: #6b7a90;
+        }
+
+        .sign-box .checkbox label {
+            color: #4a5b73;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            font-size: 13px;
-            z-index: 2;
         }
 
-        .sound-toggle.is-hidden {
+        .sign-box .checkbox label::before,
+        .sign-box .checkbox label::after {
             display: none;
+            content: none;
         }
 
-        @media (max-width: 991px) {
-            .login-shell {
-                flex-direction: column;
-            }
+        .sign-box .checkbox input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            appearance: none;
+            -webkit-appearance: none;
+        }
 
-            .login-media,
-            .login-form-panel {
-                width: 100%;
-            }
+        .sign-box .checkbox .custom-check {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid #2b78ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
 
-            .login-media {
-                min-height: 45vh;
-            }
+        .sign-box .checkbox input[type="checkbox"]:checked + label .custom-check {
+            background: #2b78ff;
+            border-color: #2b78ff;
+        }
 
-            .login-form-panel {
-                min-height: 55vh;
-            }
+        .sign-box .checkbox input[type="checkbox"]:checked + label .custom-check::after {
+            content: "";
+            width: 6px;
+            height: 10px;
+            border: solid #fff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            margin-top: -2px;
+        }
+
+        .slide.is-active img {
+            transform: scale(1.07);
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         @media (max-width: 768px) {
-            .sound-toggle {
-                right: 12px;
-                bottom: 12px;
+            .slider-caption {
+                left: 20px;
+                right: 20px;
+                bottom: 24px;
+            }
+
+            .slider-caption h2 {
+                font-size: 22px;
             }
         }
     </style>
@@ -130,48 +283,67 @@
 <body>
     <div class="login-shell">
         <div class="login-media">
-            <div class="login-media-grid">
-                  <div class="login-media-tile">
-                    <video class="login-video" autoplay loop playsinline muted>
-                        <source src="{{ asset('media/IMG_1498.MP4') }}" type="video/mp4">
-                    </video>
-                    <div class="login-overlay" aria-hidden="true"></div>
+            <div class="login-slider" id="loginSlider">
+                <div class="slide is-active">
+                    <img src="{{ asset('media/3.jpg') }}" alt="Career Institute">
+                    <div class="slide-overlay" aria-hidden="true"></div>
+                    <div class="slider-caption">
+                        <h2>Build a future-ready career</h2>
+                        <p>Hands-on training, industry mentors, and job-ready skills.</p>
+                    </div>
                 </div>
-                <div class="login-media-tile">
-                    <video class="login-video" autoplay loop playsinline muted>
-                        <source src="{{ asset('media/IMG_1497.MP4') }}" type="video/mp4">
-                    </video>
-                    <div class="login-overlay" aria-hidden="true"></div>
+                <div class="slide">
+                    <img src="{{ asset('media/4.jpg') }}" alt="Career Institute">
+                    <div class="slide-overlay" aria-hidden="true"></div>
+                    <div class="slider-caption">
+                        <h2>Learn from real projects</h2>
+                        <p>Practice with live assignments and industry-grade tools.</p>
+                    </div>
                 </div>
-              
+                <div class="slider-dots">
+                    <span class="slider-dot is-active"></span>
+                    <span class="slider-dot"></span>
+                </div>
             </div>
-            <button id="toggleSound" class="sound-toggle" type="button">Enable sound</button>
-        </div>
-
-        <div class="login-form-panel">
-            <form class="sign-box" onsubmit="return false;">
-                <div class="sign-avatar">
-                    <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
-                </div>
-                {{-- <header class="sign-title">S</header> --}}
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="E-Mail or Phone">
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Password">
-                </div>
+            <div class="media-glow" aria-hidden="true"></div>
+            <div class="login-form-panel">
+                <form class="sign-box" method="POST" action="{{ route('login.store') }}">
+                    @csrf
+                    <div class="sign-avatar">
+                        <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
+                    </div>
+                    <header class="sign-title">Welcome back</header>
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" placeholder="E-Mail" value="{{ old('email') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
                 <div class="form-group">
                     <div class="checkbox float-left">
-                        <input type="checkbox" id="signed-in">
-                        <label for="signed-in">Keep me signed in</label>
+                        <input type="checkbox" id="signed-in" name="remember">
+                        <label for="signed-in">
+                            <span class="custom-check" aria-hidden="true"></span>
+                            Keep me signed in
+                        </label>
                     </div>
                     <div class="float-right reset">
                         <a href="#">Reset Password</a>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-rounded">Sign in</button>
-                <p class="sign-note">New to our website? <a href="#">Sign up</a></p>
-            </form>
+                    <button type="submit" class="btn btn-rounded">Sign in</button>
+                    @if($errors->any())
+                        <div class="sign-note secondary">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
+                    <div class="trust-row">
+                        <span>Flexible timings</span>
+                        <span>Industry mentors</span>
+                        <span>Career support</span>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -183,43 +355,26 @@
     <script src="{{ asset('theme/js/app.js') }}"></script>
     <script>
         (function () {
-            var videos = document.querySelectorAll('.login-video');
-            var toggle = document.getElementById('toggleSound');
-
-            if (!videos.length || !toggle) {
+            var slider = document.getElementById('loginSlider');
+            if (!slider) {
                 return;
             }
 
-            var tryPlay = function () {
-                videos.forEach(function (item) {
-                    var playAttempt = item.play();
-                    if (playAttempt && typeof playAttempt.catch === 'function') {
-                        playAttempt.catch(function () {});
-                    }
-                });
+            var slides = slider.querySelectorAll('.slide');
+            var dots = slider.querySelectorAll('.slider-dot');
+            var index = 0;
+
+            var showSlide = function (nextIndex) {
+                slides[index].classList.remove('is-active');
+                dots[index].classList.remove('is-active');
+                index = nextIndex;
+                slides[index].classList.add('is-active');
+                dots[index].classList.add('is-active');
             };
 
-            toggle.addEventListener('click', function () {
-                videos.forEach(function (item) {
-                    item.muted = false;
-                    item.volume = 1;
-                });
-                tryPlay();
-                toggle.classList.add('is-hidden');
-            });
-
-            document.addEventListener('click', function () {
-                if (!toggle.classList.contains('is-hidden')) {
-                    videos.forEach(function (item) {
-                        item.muted = false;
-                        item.volume = 1;
-                    });
-                    tryPlay();
-                    toggle.classList.add('is-hidden');
-                }
-            }, { once: true });
-
-            tryPlay();
+            setInterval(function () {
+                showSlide((index + 1) % slides.length);
+            }, 5000);
         })();
     </script>
 </body>

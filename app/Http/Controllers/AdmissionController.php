@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class AdmissionController extends Controller
 {
@@ -64,175 +65,182 @@ class AdmissionController extends Controller
             'receipt_number' => ['nullable', 'string', 'max:100', 'unique:admissions,receipt_number'],
         ]);
 
-        $campus = Campus::findOrFail($validated['campus_id']);
-        $program = Program::findOrFail($validated['program_id']);
+        try {
+            $campus = Campus::findOrFail($validated['campus_id']);
+            $program = Program::findOrFail($validated['program_id']);
 
-        $feePackage = $validated['fee_package'];
-        $discountPercent = $validated['discount_percent'];
-        $discountAmount = $validated['discount_amount'];
-        $discountedFee = $validated['discounted_fee'];
+            $feePackage = $validated['fee_package'];
+            $discountPercent = $validated['discount_percent'];
+            $discountAmount = $validated['discount_amount'];
+            $discountedFee = $validated['discounted_fee'];
 
-        if (!is_null($program->fee)) {
-            $feePackage = $program->fee;
-            $discountPercent = $this->resolveDiscountPercent($program->id, $campus->id);
-            $discountAmount = round($feePackage * ($discountPercent / 100), 2);
-            $discountedFee = $feePackage - $discountAmount;
-        }
-        $feePackage = $feePackage ?? 0;
-        $discountPercent = $discountPercent ?? 0;
-        $discountAmount = $discountAmount ?? 0;
-        $discountedFee = $discountedFee ?? ($feePackage - $discountAmount);
+            if (!is_null($program->fee)) {
+                $feePackage = $program->fee;
+                $discountPercent = $this->resolveDiscountPercent($program->id, $campus->id);
+                $discountAmount = round($feePackage * ($discountPercent / 100), 2);
+                $discountedFee = $feePackage - $discountAmount;
+            }
+            $feePackage = $feePackage ?? 0;
+            $discountPercent = $discountPercent ?? 0;
+            $discountAmount = $discountAmount ?? 0;
+            $discountedFee = $discountedFee ?? ($feePackage - $discountAmount);
 
-        $lead = null;
-        if (!empty($validated['lead_id'])) {
-            $lead = Lead::find($validated['lead_id']);
-        }
+            $lead = null;
+            if (!empty($validated['lead_id'])) {
+                $lead = Lead::find($validated['lead_id']);
+            }
 
-        if (!$lead) {
-            $lead = Lead::create([
+            if (!$lead) {
+                $lead = Lead::create([
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'type' => null,
+                    'name' => $validated['student_name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'city' => $validated['city'],
+                    'origin' => 'Admission',
+                    'marketing_source' => 'Admission',
+                    'status' => 'pending',
+                    'details' => [
+                        'gender' => $validated['gender'],
+                        'education' => $validated['education'],
+                        'country' => $validated['country'],
+                        'area' => $validated['area'],
+                        'postal_address' => $validated['postal_address'],
+                        'guardian_name' => $validated['guardian_name'],
+                        'guardian_phone' => $validated['guardian_phone'],
+                        'cnic' => $validated['cnic'],
+                        'passport_number' => $validated['passport_number'] ?? null,
+                        'date_of_birth' => $validated['date_of_birth'],
+                    ],
+                ]);
+
+                LeadFollowup::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $lead->campus_id,
+                    'user_id' => $request->user()?->id,
+                    'note' => 'Initial follow-up created via admission form.',
+                    'method' => null,
+                    'probability' => null,
+                    'next_action_date' => null,
+                    'stage' => 'new',
+                    'lead_status' => 'pending',
+                ]);
+            } else {
+                $lead->update([
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'name' => $validated['student_name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'city' => $validated['city'],
+                ]);
+            }
+
+            $registration = Registration::where('lead_id', $lead->id)->latest()->first();
+            if (!$registration) {
+                $regNumbers = $this->previewNumbers($campus->code);
+                $registration = Registration::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'registration_number' => $regNumbers['registration_number'],
+                    'receipt_number' => $regNumbers['receipt_number'],
+                    'student_name' => $validated['student_name'],
+                    'phone' => $validated['phone'],
+                    'email' => $validated['email'],
+                    'fee' => 2000,
+                    'discount' => 0,
+                    'net_payable' => 2000,
+                    'status' => 'registered',
+                    'registered_at' => Carbon::now(),
+                ]);
+            } else {
+                $registration->update([
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'student_name' => $validated['student_name'],
+                    'phone' => $validated['phone'],
+                    'email' => $validated['email'],
+                ]);
+            }
+
+            if ($lead->status !== 'enrolled') {
+                $lead->update([
+                    'status' => 'registered',
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                ]);
+
+                LeadFollowup::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $validated['campus_id'],
+                    'user_id' => $request->user()?->id,
+                    'method' => 'walk-in',
+                    'probability' => 100,
+                    'note' => 'Lead registered via admission form.',
+                    'stage' => 'registered',
+                    'lead_status' => 'registered',
+                ]);
+
+                $lead->update(['status' => 'enrolled']);
+
+                LeadFollowup::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $validated['campus_id'],
+                    'user_id' => $request->user()?->id,
+                    'method' => 'walk-in',
+                    'probability' => 100,
+                    'note' => 'Lead enrolled via admission form.',
+                    'stage' => 'enroll',
+                    'lead_status' => 'enrolled',
+                ]);
+            }
+
+            $registrationNumber = $validated['registration_number'] ?? $registration->registration_number ?? null;
+            if (!$registrationNumber) {
+                $registrationNumber = $this->previewNumbers($campus->code)['registration_number'];
+            }
+            $receiptNumber = $validated['receipt_number'] ?? $this->generateAdmissionReceiptNumber($campus->code);
+
+            Admission::create([
                 'campus_id' => $validated['campus_id'],
                 'program_id' => $validated['program_id'],
-                'type' => null,
-                'name' => $validated['student_name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'city' => $validated['city'],
-                'origin' => 'Admission',
-                'marketing_source' => 'Admission',
-                'status' => 'pending',
-                'details' => [
-                    'gender' => $validated['gender'],
-                    'education' => $validated['education'],
-                    'country' => $validated['country'],
-                    'area' => $validated['area'],
-                    'postal_address' => $validated['postal_address'],
-                    'guardian_name' => $validated['guardian_name'],
-                    'guardian_phone' => $validated['guardian_phone'],
-                    'cnic' => $validated['cnic'],
-                    'passport_number' => $validated['passport_number'] ?? null,
-                    'date_of_birth' => $validated['date_of_birth'],
-                ],
-            ]);
-
-            LeadFollowup::create([
-                'lead_id' => $lead->id,
-                'campus_id' => $lead->campus_id,
-                'user_id' => $request->user()?->id,
-                'note' => 'Initial follow-up created via admission form.',
-                'method' => null,
-                'probability' => null,
-                'next_action_date' => null,
-                'stage' => 'new',
-                'lead_status' => 'pending',
-            ]);
-        } else {
-            $lead->update([
-                'campus_id' => $validated['campus_id'],
-                'program_id' => $validated['program_id'],
-                'name' => $validated['student_name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'city' => $validated['city'],
-            ]);
-        }
-
-        $registration = Registration::where('lead_id', $lead->id)->latest()->first();
-        if (!$registration) {
-            $regNumbers = $this->previewNumbers($campus->code);
-            $registration = Registration::create([
-                'lead_id' => $lead->id,
-                'campus_id' => $validated['campus_id'],
-                'program_id' => $validated['program_id'],
-                'registration_number' => $regNumbers['registration_number'],
-                'receipt_number' => $regNumbers['receipt_number'],
+                'batch_id' => $validated['batch_id'],
                 'student_name' => $validated['student_name'],
                 'phone' => $validated['phone'],
+                'guardian_name' => $validated['guardian_name'],
+                'guardian_phone' => $validated['guardian_phone'],
+                'cnic' => $validated['cnic'],
+                'passport_number' => $validated['passport_number'] ?? null,
                 'email' => $validated['email'],
-                'fee' => 2000,
-                'discount' => 0,
-                'net_payable' => 2000,
-                'status' => 'registered',
-                'registered_at' => Carbon::now(),
+                'education' => $validated['education'],
+                'date_of_birth' => $validated['date_of_birth'],
+                'gender' => $validated['gender'],
+                'country' => $validated['country'],
+                'city' => $validated['city'],
+                'area' => $validated['area'],
+                'postal_address' => $validated['postal_address'],
+                'registration_number' => $registrationNumber,
+                'roll_number' => $validated['roll_number'],
+                'admission_date' => $validated['admission_date'],
+                'fee_package' => $feePackage,
+                'discount_amount' => $discountAmount,
+                'discount_percent' => $discountPercent,
+                'discounted_fee' => $discountedFee,
+                'fee_type' => $validated['fee_type'],
+                'remarks' => $validated['remarks'],
+                'receipt_number' => $receiptNumber,
             ]);
-        } else {
-            $registration->update([
-                'campus_id' => $validated['campus_id'],
-                'program_id' => $validated['program_id'],
-                'student_name' => $validated['student_name'],
-                'phone' => $validated['phone'],
-                'email' => $validated['email'],
-            ]);
+
+            return redirect()->route('admission.status')->with('status', 'Admission created.');
+        } catch (Throwable $e) {
+            report($e);
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unable to save the admission right now. Please try again.');
         }
-
-        if ($lead->status !== 'enrolled') {
-            $lead->update([
-                'status' => 'registered',
-                'campus_id' => $validated['campus_id'],
-                'program_id' => $validated['program_id'],
-            ]);
-
-            LeadFollowup::create([
-                'lead_id' => $lead->id,
-                'campus_id' => $validated['campus_id'],
-                'user_id' => $request->user()?->id,
-                'method' => 'walk-in',
-                'probability' => 100,
-                'note' => 'Lead registered via admission form.',
-                'stage' => 'registered',
-                'lead_status' => 'registered',
-            ]);
-
-            $lead->update(['status' => 'enrolled']);
-
-            LeadFollowup::create([
-                'lead_id' => $lead->id,
-                'campus_id' => $validated['campus_id'],
-                'user_id' => $request->user()?->id,
-                'method' => 'walk-in',
-                'probability' => 100,
-                'note' => 'Lead enrolled via admission form.',
-                'stage' => 'enroll',
-                'lead_status' => 'enrolled',
-            ]);
-        }
-
-        $registrationNumber = $validated['registration_number'] ?? $registration->registration_number ?? null;
-        if (!$registrationNumber) {
-            $registrationNumber = $this->previewNumbers($campus->code)['registration_number'];
-        }
-        $receiptNumber = $validated['receipt_number'] ?? $this->generateAdmissionReceiptNumber($campus->code);
-
-        Admission::create([
-            'campus_id' => $validated['campus_id'],
-            'program_id' => $validated['program_id'],
-            'batch_id' => $validated['batch_id'],
-            'student_name' => $validated['student_name'],
-            'phone' => $validated['phone'],
-            'guardian_name' => $validated['guardian_name'],
-            'guardian_phone' => $validated['guardian_phone'],
-            'cnic' => $validated['cnic'],
-            'passport_number' => $validated['passport_number'] ?? null,
-            'email' => $validated['email'],
-            'education' => $validated['education'],
-            'date_of_birth' => $validated['date_of_birth'],
-            'gender' => $validated['gender'],
-            'country' => $validated['country'],
-            'city' => $validated['city'],
-            'area' => $validated['area'],
-            'postal_address' => $validated['postal_address'],
-            'registration_number' => $registrationNumber,
-            'roll_number' => $validated['roll_number'],
-            'admission_date' => $validated['admission_date'],
-            'fee_package' => $feePackage,
-            'discount_amount' => $discountAmount,
-            'discount_percent' => $discountPercent,
-            'discounted_fee' => $discountedFee,
-            'fee_type' => $validated['fee_type'],
-            'remarks' => $validated['remarks'],
-            'receipt_number' => $receiptNumber,
-        ]);
-
-        return redirect()->route('admission.status')->with('status', 'Admission created.');
     }
 
     public function status(): View

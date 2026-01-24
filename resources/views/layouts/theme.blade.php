@@ -24,6 +24,8 @@
 	<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 	<link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
 	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 	<style>
 		/* Keep stage labels and count pills on one line in the side menu */
 		.side-menu .stage-link {
@@ -167,6 +169,35 @@
 		body.sidebar-hidden .page-content>.container-fluid {
 			max-width: 100%;
 		}
+		.site-header .user-greeting {
+			margin-right: 10px;
+			color: #6c7a89;
+			font-size: 14px;
+			display: inline-flex;
+			align-items: center;
+		}
+		.welcome-swal .sweet-alert p {
+			color: #28a745;
+			font-size: 13px;
+			font-weight: 600;
+		}
+		.field-error {
+			color: #e53935;
+			font-size: 12px;
+			margin-top: 6px;
+		}
+		.form-control.is-invalid,
+		.form-control-range.is-invalid {
+			border-color: #e53935;
+			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+		}
+		.radio-group.is-invalid,
+		.gender-options.is-invalid {
+			border: 1px solid #e53935;
+			border-radius: 6px;
+			padding: 6px 10px;
+		}
+		
 		@media (max-width: 991px) {
 			.with-side-menu .page-content {
 				padding: 110px 40px 24px;
@@ -177,6 +208,12 @@
 				padding-right: 0;
 			}
 		}
+		.dataTables_wrapper .table-responsive {
+			overflow-x: hidden;
+		}
+		.dataTables_wrapper table {
+			width: 100%;
+		}
 	</style>
 	@stack('styles')
 </head>
@@ -186,7 +223,7 @@
 	@include('layouts.header')
 	@include('layouts.nav')
 
-	<div class="page-content" style="margin-right: 20px;">
+	<div class="page-content">
 		<div class="container-fluid">
 			@yield('content')
 		</div><!--.container-fluid-->
@@ -199,8 +236,38 @@
 	<script src="js/lib/tether/tether.min.js"></script>
 	<script src="js/lib/bootstrap/bootstrap.min.js"></script>
 	<script src="js/plugins.js"></script>
+	<script src="js/lib/bootstrap-sweetalert/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 	<script src="js/app.js"></script>
+	@if(session('welcome'))
+		<script>
+			(function () {
+				if (!window.swal) return;
+				var name = @json(session('welcome'));
+				swal({
+					title: 'Welcome back',
+					text: name,
+					type: 'success',
+					customClass: 'welcome-swal',
+					timer: 2000,
+					showConfirmButton: false
+				});
+			})();
+		</script>
+	@endif
+	@if(session('error'))
+		<script>
+			(function () {
+				if (!window.swal) return;
+				swal({
+					title: 'Error',
+					text: @json(session('error')),
+					type: 'error'
+				});
+			})();
+		</script>
+	@endif
 	@stack('scripts')
 </body>
 

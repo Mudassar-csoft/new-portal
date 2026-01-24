@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 class LeadController extends Controller
 {
@@ -27,52 +28,68 @@ class LeadController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $isTraining = $request->input('type') === 'training';
+
         $validated = $request->validate([
-            'campus_id' => ['nullable', 'exists:campuses,id'],
-            'program_id' => ['nullable', 'exists:programs,id'],
+            'program_id' => ['nullable', Rule::requiredIf($isTraining), 'exists:programs,id'],
             'assigned_user_id' => ['nullable', 'exists:users,id'],
             'type' => ['nullable', 'string', 'max:50'],
-            'name' => ['nullable', 'string', 'max:255'],
+            'name' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'origin' => ['nullable', 'string', 'max:255'],
-            'marketing_source' => ['nullable', 'string', 'max:255'],
+            'phone' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50', 'unique:leads,phone'],
+            'city' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
+            'origin' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
+            'marketing_source' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
+            'campus_id' => ['nullable', Rule::requiredIf($isTraining), 'exists:campuses,id'],
             'details' => ['array'],
+            'details.country' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
+            'details.area' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
+            'details.teaching_method' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50'],
+            'details.gender' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50'],
+            'details.next_followup_at' => ['nullable', Rule::requiredIf($isTraining), 'date'],
+            'details.probability' => ['nullable', Rule::requiredIf($isTraining), 'integer', 'min:0', 'max:100'],
+            'details.remarks' => ['nullable', Rule::requiredIf($isTraining), 'string'],
         ]);
 
-        $details = $validated['details'] ?? [];
-        $initialProbability = $details['probability'] ?? null;
-        $initialNext = $details['next_followup_at'] ?? null;
+        try {
+            $details = $validated['details'] ?? [];
+            $initialProbability = $details['probability'] ?? null;
+            $initialNext = $details['next_followup_at'] ?? null;
 
-        $lead = Lead::create([
-            'campus_id' => $validated['campus_id'] ?? null,
-            'program_id' => $validated['program_id'] ?? null,
-            'assigned_user_id' => $validated['assigned_user_id'] ?? null,
-            'type' => $validated['type'] ?? null,
-            'name' => $validated['name'] ?? null,
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'city' => $validated['city'] ?? null,
-            'origin' => $validated['origin'] ?? null,
-            'marketing_source' => $validated['marketing_source'] ?? null,
-            'status' => 'pending',
-            'details' => $details,
-        ]);
+            $lead = Lead::create([
+                'campus_id' => $validated['campus_id'] ?? null,
+                'program_id' => $validated['program_id'] ?? null,
+                'assigned_user_id' => $validated['assigned_user_id'] ?? null,
+                'type' => $validated['type'] ?? null,
+                'name' => $validated['name'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'origin' => $validated['origin'] ?? null,
+                'marketing_source' => $validated['marketing_source'] ?? null,
+                'status' => 'pending',
+                'details' => $details,
+            ]);
 
-        LeadFollowup::create([
-            'lead_id' => $lead->id,
-            'campus_id' => $lead->campus_id,
-            'user_id' => $request->user()?->id,
-            'note' => 'Initial follow-up created automatically.',
-            'method' => null,
-            'probability' => $initialProbability,
-            'next_action_date' => $initialNext,
-            'stage' => 'new',
-            'lead_status' => 'pending',
-        ]);
+            LeadFollowup::create([
+                'lead_id' => $lead->id,
+                'campus_id' => $lead->campus_id,
+                'user_id' => $request->user()?->id,
+                'note' => 'Initial follow-up created automatically.',
+                'method' => null,
+                'probability' => $initialProbability,
+                'next_action_date' => $initialNext,
+                'stage' => 'new',
+                'lead_status' => 'pending',
+            ]);
 
-        return Redirect::route('leads.create')->with('status', 'Lead created with initial follow-up.');
+            return Redirect::route('leads.followups')->with('status', 'Lead created with initial follow-up.');
+        } catch (Throwable $e) {
+            report($e);
+            return Redirect::back()
+                ->withInput()
+                ->with('error', 'Unable to save the lead right now. Please try again.');
+        }
     }
 
     public function addFollowup(Request $request, Lead $lead): RedirectResponse

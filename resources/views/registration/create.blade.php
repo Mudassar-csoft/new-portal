@@ -15,22 +15,31 @@
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<label class="required">Select Campus</label>
-							<select class="form-control" name="campus_id" required>
+							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
 								<option value="">- Select -</option>
 								@foreach($campuses ?? [] as $campus)
-									<option value="{{ $campus->id }}" {{ ($lead->campus_id ?? null) === $campus->id ? 'selected' : '' }}>
+									<option value="{{ $campus->id }}" {{ old('campus_id', $lead->campus_id ?? null) == $campus->id ? 'selected' : '' }}>
 										{{ $campus->code ?? $campus->name }} - {{ $campus->name }}
 									</option>
 								@endforeach
 							</select>
+							@error('campus_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Full Name (As Per CNIC)</label>
-							<input type="text" class="form-control" name="student_name" placeholder="Enter full name" value="{{ $lead->name ?? '' }}" required>
+							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" placeholder="Enter full name" value="{{ old('student_name', $lead->name ?? '') }}" required>
+							@error('student_name')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Primary Contact Number</label>
-							<input type="text" class="form-control" name="phone" placeholder="03XXXXXXXXX" value="{{ $lead->phone ?? '' }}" required>
+							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" placeholder="03XXXXXXXXX" value="{{ old('phone', $lead->phone ?? '') }}" required>
+							@error('phone')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
@@ -56,7 +65,10 @@
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Email Address</label>
-							<input type="email" class="form-control" name="email" placeholder="Enter email address" value="{{ $lead->email ?? '' }}">
+							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" placeholder="Enter email address" value="{{ old('email', $lead->email ?? '') }}">
+							@error('email')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-4">
 							<label class="required">Date of Birth</label>
@@ -135,14 +147,17 @@
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<label class="required">Program</label>
-							<select class="form-control" name="program_id" required>
+							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
 								<option value="">- Select -</option>
 								@foreach($programs ?? [] as $program)
-									<option value="{{ $program->id }}" {{ ($lead->program_id ?? null) === $program->id ? 'selected' : '' }}>
+									<option value="{{ $program->id }}" {{ old('program_id', $lead->program_id ?? null) == $program->id ? 'selected' : '' }}>
 										{{ $program->title ?? $program->name }}
 									</option>
 								@endforeach
 							</select>
+							@error('program_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-6">
 							<label>Mode / Shift</label>
@@ -153,11 +168,17 @@
 					<div class="form-row">
 						<div class="form-group col-md-4">
 							<label class="required">Admission/Registration Fee</label>
-							<input type="number" step="0.01" class="form-control" name="fee" value="2000" readonly>
+							<input type="number" step="0.01" class="form-control @error('fee') is-invalid @enderror" name="fee" value="2000" readonly>
+							@error('fee')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-4">
 							<label>Discount</label>
-							<input type="number" step="0.01" class="form-control" name="discount" value="0" readonly>
+							<input type="number" step="0.01" class="form-control @error('discount') is-invalid @enderror" name="discount" value="0" readonly>
+							@error('discount')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-4">
 							<label>Net Payable (After Discount)</label>
@@ -245,7 +266,10 @@
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			CountryCityLoader.init('reg-country-select', 'reg-city-select', { country: 'Pakistan', city: 'Faisalabad' });
+			CountryCityLoader.init('reg-country-select', 'reg-city-select', {
+				country: @json(old('country', 'Pakistan')),
+				city: @json(old('city', 'Faisalabad'))
+			});
 		});
 	</script>
 	<script>
