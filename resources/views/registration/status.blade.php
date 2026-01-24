@@ -4,12 +4,7 @@
 
 @section('content')
 	@php
-		$registrations = [
-			['name' => 'Ayesha Khan', 'program' => 'Full Stack Developer', 'reg_no' => 'CIVTL01-1225-07', 'date' => '2025-12-27', 'contact' => '03038251031', 'fee' => '2000', 'receipt' => 'CIVTL01-1225-000037'],
-			['name' => 'Ravi Sharma', 'program' => 'Data Science', 'reg_no' => 'CIFSD04-1225-11', 'date' => now()->format('Y-m-d'), 'contact' => '9811122233', 'fee' => '2000', 'receipt' => 'CIFSD04-1225-000041'],
-			['name' => 'Meera Patel', 'program' => 'AWS Solutions Architect', 'reg_no' => 'CIFSD02-1225-05', 'date' => now()->subDays(1)->format('Y-m-d'), 'contact' => '9898989898', 'fee' => '2000', 'receipt' => 'CIFSD02-1225-000023'],
-			['name' => 'Adil Hussain', 'program' => 'DevOps', 'reg_no' => 'CIFSD06-1125-21', 'date' => now()->subMonths(1)->format('Y-m-d'), 'contact' => '9123456780', 'fee' => '2000', 'receipt' => 'CIFSD06-1125-000019'],
-		];
+		$registrations = $registrations ?? collect();
 
 		$tabs = [
 			'all' => 'All',
@@ -28,10 +23,10 @@
 		$tabCounts = [];
 		foreach ($tabs as $key => $label) {
 			$tabCounts[$key] = match ($key) {
-				'today' => count(array_filter($registrations, fn($r) => $r['date'] === now()->format('Y-m-d'))),
-				'month' => count(array_filter($registrations, fn($r) => \Illuminate\Support\Carbon::parse($r['date'])->isSameMonth(now()))),
-				'year' => count(array_filter($registrations, fn($r) => \Illuminate\Support\Carbon::parse($r['date'])->isSameYear(now()))),
-				default => count($registrations),
+				'today' => $registrations->filter(fn($r) => optional($r->registered_at)->isToday())->count(),
+				'month' => $registrations->filter(fn($r) => optional($r->registered_at)->isSameMonth(now()))->count(),
+				'year' => $registrations->filter(fn($r) => optional($r->registered_at)->isSameYear(now()))->count(),
+				default => $registrations->count(),
 			};
 		}
 	@endphp
@@ -81,15 +76,18 @@
 						</thead>
 						<tbody>
 							@foreach ($registrations as $idx => $row)
-								<tr data-date="{{ $row['date'] }}">
+								@php
+									$regDate = optional($row->registered_at ?? $row->created_at)->format('Y-m-d');
+								@endphp
+								<tr data-date="{{ $regDate }}">
 									<td class="text-center">{{ $idx + 1 }}</td>
-									<td>{{ $row['name'] }}</td>
-									<td>{{ $row['program'] }}</td>
-									<td>{{ $row['reg_no'] }}</td>
-									<td>{{ $row['date'] }}</td>
-									<td>{{ $row['contact'] }}</td>
-									<td>{{ $row['fee'] }}</td>
-									<td>{{ $row['receipt'] }}</td>
+									<td>{{ $row->student_name }}</td>
+									<td>{{ $row->program->title ?? $row->program->name ?? '' }}</td>
+									<td>{{ $row->registration_number }}</td>
+									<td>{{ $regDate }}</td>
+									<td>{{ $row->phone }}</td>
+									<td>{{ $row->fee }}</td>
+									<td>{{ $row->receipt_number }}</td>
 									<td class="text-center action-cell">
 										@include('registration.partials.action', ['actionId' => 'reg-action-' . $idx])
 									</td>

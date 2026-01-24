@@ -77,7 +77,7 @@ class LeadController extends Controller
 
     public function addFollowup(Request $request, Lead $lead): RedirectResponse
     {
-        if (in_array($lead->status, ['registered', 'not_interesting'], true)) {
+        if (in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true)) {
             return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.');
         }
 
@@ -87,7 +87,7 @@ class LeadController extends Controller
             'probability' => ['nullable', 'integer', 'min:0', 'max:100'],
             'note' => ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
-            'stage' => ['required', Rule::in(['new', 'contacted', 'need_analysis', 'branch_visited', 'proposal_negotiation', 'not_interesting', 'registered'])],
+            'stage' => ['required', Rule::in(['new', 'contacted', 'need_analysis', 'branch_visited', 'proposal_negotiation', 'not_interesting', 'registered', 'enroll'])],
         ]);
 
         $followup = LeadFollowup::create([
@@ -102,8 +102,14 @@ class LeadController extends Controller
             'lead_status' => $lead->status,
         ]);
 
-        if (in_array($validated['stage'], ['registered', 'not_interesting'], true)) {
-            $lead->update(['status' => $validated['stage'] === 'registered' ? 'registered' : 'not_interesting']);
+        if (in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true)) {
+            $lead->update([
+                'status' => match ($validated['stage']) {
+                    'registered' => 'registered',
+                    'enroll' => 'enrolled',
+                    default => 'not_interesting',
+                },
+            ]);
         }
 
         return Redirect::back()->with('status', 'Follow-up added.');
@@ -130,6 +136,7 @@ class LeadController extends Controller
             'proposal_negotiation' => 'Proposal / Negotiation',
             'not_interesting' => 'Not Interesting',
             'registered' => 'Registered',
+            'enroll' => 'Enrolled',
         ];
 
         $followups = $lead->followups->sortByDesc('created_at')->values();
@@ -141,7 +148,10 @@ class LeadController extends Controller
         // Hide the opposite terminal state to avoid showing both end states together
         if ($lead->status === 'not_interesting') {
             unset($stages['registered']);
+            unset($stages['enroll']);
         } elseif ($lead->status === 'registered') {
+            unset($stages['not_interesting']);
+        } elseif ($lead->status === 'enrolled') {
             unset($stages['not_interesting']);
         }
 
@@ -163,8 +173,8 @@ class LeadController extends Controller
 
     public function transferForm(Lead $lead): View
     {
-        if ($lead->status === 'registered') {
-            abort(403, 'Registered leads cannot be transferred.');
+        if (in_array($lead->status, ['registered', 'enrolled'], true)) {
+            abort(403, 'Registered or enrolled leads cannot be transferred.');
         }
         $campuses = Campus::orderBy('name')->get();
         return view('lead.transfer', compact('lead', 'campuses'));
@@ -172,8 +182,8 @@ class LeadController extends Controller
 
     public function transferStore(Request $request, Lead $lead): RedirectResponse
     {
-        if ($lead->status === 'registered') {
-            return Redirect::back()->withErrors(['transfer' => 'Registered leads cannot be transferred.']);
+        if (in_array($lead->status, ['registered', 'enrolled'], true)) {
+            return Redirect::back()->withErrors(['transfer' => 'Registered or enrolled leads cannot be transferred.']);
         }
         $validated = $request->validate([
             'to_campus_id' => ['required', 'exists:campuses,id', 'different:from_campus_id'],
@@ -240,6 +250,7 @@ class LeadController extends Controller
                     'proposal_negotiation' => 'Proposal or Negotiation',
                     'not_interesting' => 'Not Interesting',
                     'registered' => 'Registered',
+                    'enroll' => 'Enrolled',
                 ];
                 $f->stage_label = $stageMap[$f->stage] ?? ucfirst(str_replace('_', ' ', $f->stage));
                 return $f;
@@ -254,6 +265,7 @@ class LeadController extends Controller
             'Proposal or Negotiation' => 'Proposal or Negotiation',
             'Not Interesting' => 'Not Interesting',
             'Registered' => 'Registered',
+            'Enrolled' => 'Enrolled',
         ];
 
         $badgeColors = [
@@ -265,6 +277,7 @@ class LeadController extends Controller
             'Proposal or Negotiation' => 'badge-info',
             'Not Interesting' => 'badge-default',
             'Registered' => 'badge-success',
+            'Enrolled' => 'badge-success',
         ];
 
         $tabCounts = [];

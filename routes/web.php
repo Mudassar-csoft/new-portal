@@ -6,6 +6,8 @@ Route::get('/', function () {
     return view('dashboard');
 });
 
+Route::view('/login', 'auth.login')->name('login');
+
 // Leads routes
 require __DIR__ . '/lead.php';
 

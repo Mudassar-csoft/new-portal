@@ -74,8 +74,9 @@ class RegistrationController extends Controller
         if ($registration->lead_id) {
             $lead = Lead::find($registration->lead_id);
             if ($lead) {
+                $leadStatus = $lead->status === 'enrolled' ? 'enrolled' : 'registered';
                 $lead->update([
-                    'status' => 'registered',
+                    'status' => $leadStatus,
                     'campus_id' => $registration->campus_id,
                     'program_id' => $registration->program_id,
                 ]);
@@ -88,7 +89,7 @@ class RegistrationController extends Controller
                     'probability' => 100,
                     'note' => 'Lead registered via registration form.',
                     'stage' => 'registered',
-                    'lead_status' => 'registered',
+                    'lead_status' => $leadStatus,
                 ]);
             }
         }
@@ -104,6 +105,16 @@ class RegistrationController extends Controller
 
         $campus = Campus::findOrFail($request->campus_id);
         return response()->json($this->previewNumbers($campus->code));
+    }
+
+    public function status(): View
+    {
+        $registrations = Registration::with(['program'])
+            ->orderByDesc('registered_at')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('registration.status', compact('registrations'));
     }
 
     public function voucher(Registration $registration): View

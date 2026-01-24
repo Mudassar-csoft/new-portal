@@ -53,7 +53,7 @@
 		<div class="tab-content" id="tab-followups" style="display: block;">
 			<div class="d-flex justify-content-between align-items-center mb-2">
 				<h4 class="mb-0">Follow-Ups</h4>
-				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting'], true); @endphp
+				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
 				<button id="toggle-followup-form" class="btn btn-primary btn-sm" {{ $isClosed ? 'disabled' : '' }}>
 					Add Follow-Up
 				</button>
@@ -82,7 +82,7 @@
 									<label>Stage *</label>
 									@php
 										$hideRegistered = $lead->status === 'not_interesting';
-										$hideNotInteresting = $lead->status === 'registered';
+										$hideNotInteresting = in_array($lead->status, ['registered', 'enrolled'], true);
 									@endphp
 									<select class="form-control" name="stage" id="followup-stage" required>
 										@foreach ($stages as $key => $label)
@@ -126,6 +126,10 @@
 							<div class="alert alert-info d-none" id="registration-link">
 								Selecting <strong>Registered</strong>? Complete the registration form first.
 								<a href="{{ route('registration.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
+							</div>
+							<div class="alert alert-info d-none" id="admission-link">
+								Selecting <strong>Enrolled</strong>? Complete the admission form first.
+								<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
 							</div>
 							<div class="text-right">
 								<button type="submit" class="btn btn-primary">Save Follow-Up</button>
@@ -494,18 +498,20 @@
 				var nextInput = document.getElementById('next_action_date');
 				var campusInput = document.getElementById('campus_id');
 				var regLink = document.getElementById('registration-link');
+				var admLink = document.getElementById('admission-link');
 				var toggleables = document.querySelectorAll('.followup-toggle');
 				if (!stage || !nextWrap || !campusWrap) return;
 
 				var toggle = function () {
 					var val = stage.value;
-					var hide = (val === 'registered' || val === 'not_interesting');
+					var hide = (val === 'registered' || val === 'not_interesting' || val === 'enroll');
 					toggleables.forEach(function (el) {
 						el.style.display = hide ? 'none' : '';
 					});
 					if (nextInput) nextInput.disabled = hide;
 					if (campusInput) campusInput.disabled = hide;
 					if (regLink) regLink.classList.toggle('d-none', val !== 'registered');
+					if (admLink) admLink.classList.toggle('d-none', val !== 'enroll');
 				};
 				stage.addEventListener('change', toggle);
 				toggle();

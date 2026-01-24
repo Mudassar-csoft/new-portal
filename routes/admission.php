@@ -1,11 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdmissionController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/admission/new', function () {
-    return view('admission.create');
-})->name('admission.create');
+Route::get('/admission/new', [AdmissionController::class, 'create'])->name('admission.create');
+Route::post('/admission', [AdmissionController::class, 'store'])->name('admission.store');
 
-Route::get('/admission/status', function () {
-    return view('admission.status');
-})->name('admission.status');
+Route::get('/admission/status', [AdmissionController::class, 'status'])->name('admission.status');

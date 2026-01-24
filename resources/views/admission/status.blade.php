@@ -4,12 +4,7 @@
 
 @section('content')
 	@php
-		$admissions = [
-			['name' => 'Ayesha Khan', 'course' => 'Full Stack Developer', 'batch' => 'Batch A', 'date' => now()->format('Y-m-d'), 'contact' => '03038251031', 'city' => 'Faisalabad'],
-			['name' => 'Ravi Sharma', 'course' => 'Data Science', 'batch' => 'Batch B', 'date' => now()->subDays(1)->format('Y-m-d'), 'contact' => '9811122233', 'city' => 'Lahore'],
-			['name' => 'Meera Patel', 'course' => 'AWS Solutions Architect', 'batch' => 'Batch A', 'date' => now()->subMonths(1)->format('Y-m-d'), 'contact' => '9898989898', 'city' => 'Karachi'],
-			['name' => 'Adil Hussain', 'course' => 'DevOps', 'batch' => 'Batch C', 'date' => now()->subMonths(2)->format('Y-m-d'), 'contact' => '9123456780', 'city' => 'Islamabad'],
-		];
+		$admissions = $admissions ?? collect();
 
 		$tabs = [
 			'all' => 'All',
@@ -28,10 +23,10 @@
 		$tabCounts = [];
 		foreach ($tabs as $key => $label) {
 			$tabCounts[$key] = match ($key) {
-				'today' => count(array_filter($admissions, fn($a) => $a['date'] === now()->format('Y-m-d'))),
-				'month' => count(array_filter($admissions, fn($a) => \Illuminate\Support\Carbon::parse($a['date'])->isSameMonth(now()))),
-				'year' => count(array_filter($admissions, fn($a) => \Illuminate\Support\Carbon::parse($a['date'])->isSameYear(now()))),
-				default => count($admissions),
+				'today' => $admissions->filter(fn($a) => optional($a->admission_date)->isToday())->count(),
+				'month' => $admissions->filter(fn($a) => optional($a->admission_date)->isSameMonth(now()))->count(),
+				'year' => $admissions->filter(fn($a) => optional($a->admission_date)->isSameYear(now()))->count(),
+				default => $admissions->count(),
 			};
 		}
 	@endphp
@@ -80,14 +75,17 @@
 						</thead>
 						<tbody>
 							@foreach ($admissions as $idx => $row)
-								<tr data-date="{{ $row['date'] }}">
+								@php
+									$admDate = optional($row->admission_date ?? $row->created_at)->format('Y-m-d');
+								@endphp
+								<tr data-date="{{ $admDate }}">
 									<td class="text-center">{{ $idx + 1 }}</td>
-									<td>{{ $row['name'] }}</td>
-									<td>{{ $row['course'] }}</td>
-									<td>{{ $row['batch'] }}</td>
-									<td>{{ $row['date'] }}</td>
-									<td>{{ $row['contact'] }}</td>
-									<td>{{ $row['city'] }}</td>
+									<td>{{ $row->student_name }}</td>
+									<td>{{ $row->program->title ?? $row->program->name ?? '' }}</td>
+									<td>{{ $row->batch->name ?? $row->batch->code ?? '' }}</td>
+									<td>{{ $admDate }}</td>
+									<td>{{ $row->phone }}</td>
+									<td>{{ $row->city }}</td>
 									<td class="text-center action-cell">
 										@include('admission.partials.action', ['actionId' => 'adm-action-' . $idx])
 									</td>
