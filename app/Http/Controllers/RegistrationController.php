@@ -6,6 +6,7 @@ use App\Models\Campus;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\Program;
+use App\Models\FeeCollection;
 use App\Models\Registration;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -74,6 +75,28 @@ class RegistrationController extends Controller
                 'registered_at' => Carbon::now(),
             ]);
 
+            $hasRegistrationFee = FeeCollection::where('registration_id', $registration->id)
+                ->where('fee_type', 'registration')
+                ->exists();
+            if (!$hasRegistrationFee) {
+                FeeCollection::create([
+                    'lead_id' => $registration->lead_id,
+                    'registration_id' => $registration->id,
+                    'campus_id' => $registration->campus_id,
+                    'program_id' => $registration->program_id,
+                    'fee_type' => 'registration',
+                    'amount' => $fee,
+                    'discount_percent' => 0,
+                    'discount_amount' => $discount,
+                    'net_amount' => $net,
+                    'receipt_number' => $registration->receipt_number,
+                    'status' => 'paid',
+                    'paid_at' => Carbon::now(),
+                    'created_by' => $request->user()?->id,
+                    'notes' => 'Registration fee collected.',
+                ]);
+            }
+
             if ($registration->lead_id) {
                 $lead = Lead::find($registration->lead_id);
                 if ($lead) {
@@ -82,6 +105,9 @@ class RegistrationController extends Controller
                         'status' => $leadStatus,
                         'campus_id' => $registration->campus_id,
                         'program_id' => $registration->program_id,
+                        'name' => $registration->student_name,
+                        'email' => $registration->email,
+                        'phone' => $registration->phone,
                     ]);
 
                     LeadFollowup::create([
@@ -94,10 +120,11 @@ class RegistrationController extends Controller
                         'stage' => 'registered',
                         'lead_status' => $leadStatus,
                     ]);
+
                 }
             }
 
-            return redirect()->route('registration.status')->with('status', 'Registration created.');
+            return redirect()->route('registration.voucher', $registration);
         } catch (Throwable $e) {
             report($e);
             return redirect()->back()

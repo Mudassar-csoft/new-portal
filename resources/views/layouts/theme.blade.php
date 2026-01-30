@@ -23,9 +23,9 @@
 	<![endif]-->
 	<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 	<link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 	<style>
 		/* Keep stage labels and count pills on one line in the side menu */
 		.side-menu .stage-link {
@@ -237,7 +237,7 @@
 	<script src="js/lib/bootstrap/bootstrap.min.js"></script>
 	<script src="js/plugins.js"></script>
 	<script src="js/lib/bootstrap-sweetalert/sweetalert.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
 	<script src="js/app.js"></script>
 	@if(session('welcome'))

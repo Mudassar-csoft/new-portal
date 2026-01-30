@@ -18,9 +18,9 @@
 					<div class="tbl w-100">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title">Create New Lead <small class="text-muted ml-2">(All fields marked with * are required)</small></h3>
+								<h2 class="panel-title lead-title">Create New Lead <small class="text-muted ml-2">(All fields marked with * are required)</small></h2>
 							</div>
-							<div class="tbl-cell text-right">
+							<div class="text-right" style="width: 300px; text-align: left !important;">
 								<select id="leadTypeSelect" class="form-control lead-type-select">
 									<option value="training" selected>Trainings</option>
 									<option value="certification">Certification Exam</option>
@@ -148,7 +148,13 @@
 
 		.lead-type-select {
 			display: inline-block;
-			width: 260px;
+			width: 180px !important;
+			min-width: 180px;
+		}
+
+		.lead-title {
+			font-size: 22px;
+			font-weight: 700;
 		}
 
 		.lead-form {
@@ -246,6 +252,38 @@
 		.form-row {
 			margin-bottom: 12px;
 		}
+
+		.follow-action-dropdown .dropdown-menu {
+			min-width: 220px;
+			padding: 6px 0;
+			border-radius: 8px;
+			box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+		}
+
+		.follow-action-dropdown .dropdown-item {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 8px 14px;
+			border: 0 !important;
+			white-space: normal;
+			background: transparent;
+		}
+
+		.follow-action-dropdown .dropdown-item i {
+			width: 18px;
+			text-align: center;
+			flex: 0 0 18px;
+		}
+
+		.follow-action-dropdown .dropdown-item:focus,
+		.follow-action-dropdown .dropdown-item:hover {
+			background: #f3f8ff;
+		}
+
+		.follow-action-dropdown .dropdown-divider {
+			margin: 6px 0;
+		}
 		.tbl-row {
     display: flex;
     flex-wrap: wrap;
@@ -263,7 +301,8 @@
 
 /* Select styling */
 .lead-type-select {
-    width: 260px;
+    width: 180px !important;
+    min-width: 180px;
     max-width: 100%;
     padding: 6px 12px;
     font-size: 14px;

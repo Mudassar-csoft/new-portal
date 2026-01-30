@@ -1,5 +1,10 @@
 <div class="lead-form active" data-type="training">
 	<div class="form-row">
+		<div class="form-group" style="flex-basis: 100%; text-align: right;">
+			@include('lead.partials.action', ['actionId' => 'training-action-dropdown'])
+		</div>
+	</div>
+	<div class="form-row">
 		<div class="form-group col-md-4">
 			<label class="required">Full Name (As Per CNIC)</label>
 			<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name') }}">
@@ -15,20 +20,25 @@
 			@enderror
 		</div>
 		<div class="form-group col-md-4">
-			<label class="required">Course Interested</label>
-			<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
+			<label class="form-label semibold text-dark" for="program-dropdown">
+				COURSE INTERESTED <span class="required-feild_symbol">*</span>
+			</label>
+			<select class="form-control @error('program_id') is-invalid @enderror" id="program-dropdown" name="program_id" required>
 				<option value="">-Select-</option>
-				@foreach($programs as $program)
-					<option value="{{ $program->id }}" @selected(old('program_id') == $program->id)>
-						{{ $program->title ?? $program->name }}
-						@if(!is_null($program->fee)) - Fee: {{ number_format($program->fee, 0) }} @endif
-						@if(!is_null($program->duration_weeks)) (Duration: {{ $program->duration_weeks }} weeks) @endif
+				@foreach ($programs as $program)
+					<option value="{{ $program->id }}"
+						data-title="{{ $program->title ?? $program->name }}"
+						data-fee="{{ number_format($program->fee) }}"
+						data-duration="{{ $program->duration_weeks / 4 }}">
+						{{ $program->title ?? $program->name }} - Fee: {{ number_format($program->fee) }}
+						({{ $program->duration_weeks / 4 }} months)
 					</option>
 				@endforeach
 			</select>
 			@error('program_id')
 				<div class="field-error">{{ $message }}</div>
 			@enderror
+			<div class="error-message" id="program_id-error"></div>
 		</div>
 	</div>
 	<div class="form-row">

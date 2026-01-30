@@ -59,7 +59,15 @@
 									@php $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration; @endphp
 									<tr data-status="{{ $row->stage_label }}">
 										<td class="text-center">{{ $idx + 1 }}</td>
-										<td>{{ $row->lead->name ?? '—' }}</td>
+										<td>
+											@if(!empty($row->lead?->id))
+												<a href="{{ route('leads.show', $row->lead->id) }}" class="lead-link">
+													{{ $row->lead->name ?? '—' }}
+												</a>
+											@else
+												{{ $row->lead->name ?? '—' }}
+											@endif
+										</td>
 										<td>{{ $row->lead->phone ?? '—' }}</td>
 										<td>
 											@php
@@ -281,6 +289,17 @@
 
 		.follow-table tbody tr:hover td {
 			background: #eef5ff;
+		}
+
+		.lead-link {
+			color: #0099f8;
+			font-weight: 700;
+			text-decoration: none !important;
+		}
+
+		.lead-link:hover {
+			color: #0086d8;
+			text-decoration: none !important;
 		}
 
 		.follow-footer {

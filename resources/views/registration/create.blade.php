@@ -208,9 +208,9 @@
 						<textarea class="form-control" rows="2" placeholder="Remarks"></textarea>
 					</div>
 
-					<div class="text-right">
+					<div class="text-right embed-actions">
 						<button type="submit" class="btn btn-primary">Register Now</button>
-						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2">Cancel</a>
+						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2 embed-cancel">Cancel</a>
 					</div>
 				</form>
 			</div>
@@ -244,6 +244,50 @@
 		.gender-options input {
 			margin-right: 6px;
 		}
+
+		.embed-actions .btn-primary {
+			color: #0099f8 !important;
+			background: transparent;
+			border-color: #0099f8;
+		}
+
+		.embed-actions .btn-primary:hover,
+		.embed-actions .btn-primary:focus {
+			color: #fff !important;
+			background: #0099f8;
+			border-color: #0099f8;
+		}
+
+		.embed-actions .btn-outline-danger {
+			color: #dc3545 !important;
+			border-color: #dc3545;
+			background: transparent;
+		}
+
+		.embed-actions .btn-outline-danger:hover,
+		.embed-actions .btn-outline-danger:focus {
+			color: #fff !important;
+			background: #dc3545;
+			border-color: #dc3545;
+		}
+
+		.btn-primary {
+			background: #0099f8;
+			border-color: #0099f8;
+		}
+
+		.btn-primary:hover,
+		.btn-primary:focus {
+			background: #0086d8;
+			border-color: #0086d8;
+		}
+
+		.btn-outline-danger:hover,
+		.btn-outline-danger:focus {
+			background: #dc3545;
+			border-color: #dc3545;
+			color: #fff;
+		}
 		/* FIX LEFT SPACING ON RESPONSIVE */
 @media (max-width: 992px) {
     .registration-shell {
@@ -259,6 +303,32 @@
     }
 }
 
+@if(request()->boolean('embed'))
+		.site-header,
+		.side-menu,
+		.taskbar,
+		.control-panel-container {
+			display: none !important;
+		}
+
+		.with-side-menu .page-content {
+			margin-left: 0 !important;
+			padding: 24px !important;
+		}
+
+		.page-content > .container-fluid {
+			max-width: 100% !important;
+			padding: 0 !important;
+		}
+
+		.registration-shell {
+			padding: 0 !important;
+		}
+
+		.embed-cancel {
+			display: inline-block;
+		}
+@endif
 	</style>
 @endpush
 
@@ -300,4 +370,18 @@
 			}
 		})();
 	</script>
+	@if(request()->boolean('embed'))
+	<script>
+		(function () {
+			document.querySelectorAll('.embed-cancel').forEach(function (btn) {
+				btn.addEventListener('click', function (event) {
+					event.preventDefault();
+					if (window.parent) {
+						window.parent.postMessage({ type: 'lead-modal-close' }, '*');
+					}
+				});
+			});
+		})();
+	</script>
+	@endif
 @endpush

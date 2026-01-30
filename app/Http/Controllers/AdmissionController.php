@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\Campus;
+use App\Models\FeeCollection;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\Program;
@@ -156,6 +157,28 @@ class AdmissionController extends Controller
                     'status' => 'registered',
                     'registered_at' => Carbon::now(),
                 ]);
+
+                $hasRegistrationFee = FeeCollection::where('registration_id', $registration->id)
+                    ->where('fee_type', 'registration')
+                    ->exists();
+                if (!$hasRegistrationFee) {
+                    FeeCollection::create([
+                        'lead_id' => $lead->id,
+                        'registration_id' => $registration->id,
+                        'campus_id' => $validated['campus_id'],
+                        'program_id' => $validated['program_id'],
+                        'fee_type' => 'registration',
+                        'amount' => 2000,
+                        'discount_percent' => 0,
+                        'discount_amount' => 0,
+                        'net_amount' => 2000,
+                        'receipt_number' => $registration->receipt_number,
+                        'status' => 'paid',
+                        'paid_at' => Carbon::now(),
+                        'created_by' => $request->user()?->id,
+                        'notes' => 'Registration fee auto-collected during admission.',
+                    ]);
+                }
             } else {
                 $registration->update([
                     'campus_id' => $validated['campus_id'],
@@ -204,7 +227,7 @@ class AdmissionController extends Controller
             }
             $receiptNumber = $validated['receipt_number'] ?? $this->generateAdmissionReceiptNumber($campus->code);
 
-            Admission::create([
+            $admission = Admission::create([
                 'campus_id' => $validated['campus_id'],
                 'program_id' => $validated['program_id'],
                 'batch_id' => $validated['batch_id'],
@@ -234,7 +257,60 @@ class AdmissionController extends Controller
                 'receipt_number' => $receiptNumber,
             ]);
 
-            return redirect()->route('admission.status')->with('status', 'Admission created.');
+            $hasAdmissionFee = FeeCollection::where('admission_id', $admission->id)
+                ->where('fee_type', 'admission')
+                ->exists();
+            if (!$hasAdmissionFee) {
+                $installmentsTotal = max(1, (int)($program->installments ?? 1));
+                $feeType = $validated['fee_type'];
+                $amounts = [];
+
+                if ($feeType === 'installments' && is_array($request->input('installment_amounts'))) {
+                    $inputAmounts = array_values(array_filter($request->input('installment_amounts'), fn($v) => $v !== null && $v !== ''));
+                    if (count($inputAmounts) === $installmentsTotal) {
+                        $amounts = array_map(fn($v) => round((float)$v, 2), $inputAmounts);
+                    }
+                }
+
+                if (empty($amounts)) {
+                    $base = $discountedFee > 0 ? $discountedFee : $feePackage;
+                    if ($feeType === 'installments') {
+                        $split = round($base / $installmentsTotal, 2);
+                        $amounts = array_fill(0, $installmentsTotal, $split);
+                        $diff = round($base - array_sum($amounts), 2);
+                        if ($diff !== 0.0) {
+                            $amounts[$installmentsTotal - 1] = round($amounts[$installmentsTotal - 1] + $diff, 2);
+                        }
+                    } else {
+                        $amounts = [$base];
+                        $installmentsTotal = 1;
+                    }
+                }
+
+                foreach ($amounts as $index => $amount) {
+                    FeeCollection::create([
+                        'lead_id' => $lead?->id,
+                        'registration_id' => $registration?->id,
+                        'admission_id' => $admission->id,
+                        'campus_id' => $validated['campus_id'],
+                        'program_id' => $validated['program_id'],
+                        'fee_type' => 'admission',
+                        'installment_no' => $feeType === 'installments' ? $index + 1 : null,
+                        'installments_total' => $feeType === 'installments' ? $installmentsTotal : null,
+                        'amount' => $amount,
+                        'discount_percent' => $discountPercent,
+                        'discount_amount' => $discountAmount,
+                        'net_amount' => $amount,
+                        'receipt_number' => $receiptNumber,
+                        'status' => $feeType === 'installments' ? 'pending' : 'paid',
+                        'paid_at' => $feeType === 'installments' ? null : Carbon::now(),
+                        'created_by' => $request->user()?->id,
+                        'notes' => $feeType === 'installments' ? 'Admission fee installment scheduled.' : 'Admission fee collected.',
+                    ]);
+                }
+            }
+
+            return redirect()->route('admission.voucher', $admission);
         } catch (Throwable $e) {
             report($e);
             return redirect()->back()
@@ -248,9 +324,15 @@ class AdmissionController extends Controller
         $admissions = Admission::with(['program', 'batch'])
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
-            ->get();
+        ->get();
 
         return view('admission.status', compact('admissions'));
+    }
+
+    public function voucher(Admission $admission): View
+    {
+        $admission->load(['program', 'campus', 'batch']);
+        return view('admission.voucher', compact('admission'));
     }
 
     private function previewNumbers(string $campusCode): array
