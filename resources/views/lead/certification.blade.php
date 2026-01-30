@@ -14,13 +14,41 @@
 		</div>
 	</div>
 	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Gender</label>
-			<div class="radio-group">
-				<label><input type="radio" name="gender_cert" checked> Male</label>
-				<label><input type="radio" name="gender_cert"> Female</label>
-			</div>
-		</div>
+	    	<div class="form-group form-group-radios">
+    <label class="form-label" id="certificate-gender">
+        Gender <span class="color-red">*</span>
+    </label>
+
+    <div class="radio">
+        <input id="certificate-gender-male"
+               name="certificate[gender]"
+               data-validation="[NOTEMPTY]"
+               data-validation-group="certificate-gender"
+               data-validation-message="You must select a gender"
+               type="radio"
+               value="male">
+        <label for="certificate-gender-male">Male</label>
+    </div>
+
+    <div class="radio">
+        <input id="certificate-gender-female"
+               name="certificate[gender]"
+               data-validation-group="certificate-gender"
+               type="radio"
+               value="female">
+        <label for="certificate-gender-female">Female</label>
+    </div>
+
+    <div class="radio">
+        <input id="certificate-gender-other"
+               name="certificate[gender]"
+               data-validation-group="certificate-gender"
+               type="radio"
+               value="other">
+        <label for="certificate-gender-other">Other</label>
+    </div>
+</div>
+
 		<div class="form-group col-md-4">
 			<label class="required">Organization/Vender</label>
 			<input type="text" class="form-control" placeholder="Organization">
@@ -35,14 +63,50 @@
 			<label>Exam Code</label>
 			<input type="text" class="form-control" placeholder="Exam Code">
 		</div>
-		<div class="form-group col-md-4">
+		<!-- <div class="form-group col-md-4">
 			<label class="required">Training &amp; Exam Booking</label>
 			<div class="radio-group">
 				<label><input type="radio" name="booking_cert" checked> Training</label>
 				<label><input type="radio" name="booking_cert"> Exam</label>
 				<label><input type="radio" name="booking_cert"> Both</label>
 			</div>
-		</div>
+		</div> -->
+		<div class="form-group form-group-radios">
+    <label class="form-label" id="training-teaching-method">
+        Teaching Method <span class="color-red">*</span>
+    </label>
+
+    <div class="radio">
+        <input id="training-teaching-method-online"
+               name="training[teaching_method]"
+               data-validation="[NOTEMPTY]"
+               data-validation-group="training-teaching-method"
+               data-validation-message="You must select a teaching method"
+               type="radio"
+               value="online"
+               checked>
+        <label for="training-teaching-method-online">Online</label>
+    </div>
+
+    <div class="radio">
+        <input id="training-teaching-method-oncampus"
+               name="training[teaching_method]"
+               data-validation-group="training-teaching-method"
+               type="radio"
+               value="on-campus">
+        <label for="training-teaching-method-oncampus">On-Campus</label>
+    </div>
+
+    <div class="radio">
+        <input id="training-teaching-method-hybrid"
+               name="training[teaching_method]"
+               data-validation-group="training-teaching-method"
+               type="radio"
+               value="hybrid">
+        <label for="training-teaching-method-hybrid">Hybrid</label>
+    </div>
+</div>
+
 		<div class="form-group col-md-4">
 			<label class="required">Marketing Source</label>
 			<select class="form-control">
