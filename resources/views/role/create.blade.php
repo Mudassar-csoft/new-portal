@@ -75,8 +75,8 @@
 					</div> -->
 
 					<div class="text-right mt-3">
-						<a href="{{ route('roles.index') }}" class="btn btn-default mr-2">Cancel</a>
-						<button type="submit" class="btn btn-primary">Create Role</button>
+						<button type="submit" class="btn btn-inline btn-primary-outline">Create Role</button>
+						<a href="{{ route('roles.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 					</div>
 				</form>
 			</div>

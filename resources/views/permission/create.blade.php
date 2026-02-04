@@ -160,11 +160,11 @@
 
                         <!-- Buttons -->
                         <div class="btn-group-custom mt-4">
-                            <button type="button" class="btn btn-secondary">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-inline btn-primary-outline">
                                 Create Permission
+                            </button>
+                            <button type="button" class="btn btn-inline btn-secondary-outline">
+                                Cancel
                             </button>
                         </div>
                     </form>

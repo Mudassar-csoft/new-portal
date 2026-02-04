@@ -1,8 +1,8 @@
 <div class="lead-form active" data-type="training">
 	<div class="form-row">
-		<div class="form-group" style="flex-basis: 100%; text-align: right;">
+		<!-- <div class="form-group" style="flex-basis: 100%; text-align: right;">
 			@include('lead.partials.action', ['actionId' => 'training-action-dropdown'])
-		</div>
+		</div> -->
 	</div>
 	<div class="form-row">
 		<div class="form-group col-md-4">
@@ -100,7 +100,7 @@
 		</div>
 	</div>
 	<div class="form-row">
-		<div class="form-group col-md-4">
+		<!-- <div class="form-group col-md-4">
 			<label class="required">Teaching Method</label>
 			<div class="radio-group @error('details.teaching_method') is-invalid @enderror">
 				<label><input type="radio" name="details[teaching_method]" value="online" @checked(old('details.teaching_method', 'online') === 'online')> Online</label>
@@ -111,7 +111,49 @@
 			@error('details.teaching_method')
 				<div class="field-error">{{ $message }}</div>
 			@enderror
-		</div>
+		</div> -->
+		<div class="form-group form-group-radios col-md-4">
+	<label class="form-label" id="teaching-method">
+		Teaching Method <span class="color-red">*</span>
+	</label>
+
+	<div class="radio">
+		<input id="teaching-method-online"
+			   name="details[teaching_method]"
+			   type="radio"
+			   value="online"
+			   data-validation="[NOTEMPTY]"
+			   data-validation-group="teaching-method"
+			   data-validation-message="You must select a teaching method"
+			   @checked(old('details.teaching_method', 'online') === 'online')>
+		<label for="teaching-method-online">Online</label>
+	</div>
+
+	<div class="radio">
+		<input id="teaching-method-campus"
+			   name="details[teaching_method]"
+			   type="radio"
+			   data-validation-group="teaching-method"
+			   value="on-campus"
+			   @checked(old('details.teaching_method') === 'on-campus')>
+		<label for="teaching-method-campus">On-Campus</label>
+	</div>
+
+	<div class="radio">
+		<input id="teaching-method-hybrid"
+			   name="details[teaching_method]"
+			   type="radio"
+			   data-validation-group="teaching-method"
+			   value="hybrid"
+			   @checked(old('details.teaching_method') === 'hybrid')>
+		<label for="teaching-method-hybrid">Hybrid</label>
+	</div>
+
+	@error('details.teaching_method')
+		<div class="field-error">{{ $message }}</div>
+	@enderror
+</div>
+
 		<div class="form-group col-md-4">
 			<label class="required">Preferred Campus</label>
 			<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id">
@@ -124,7 +166,7 @@
 				<div class="field-error">{{ $message }}</div>
 			@enderror
 		</div>
-		<div class="form-group col-md-4">
+		<!-- <div class="form-group col-md-4">
 			<label class="required">Gender</label>
 			<div class="radio-group @error('details.gender') is-invalid @enderror">
 				<label><input type="radio" name="details[gender]" value="male" @checked(old('details.gender', 'male') === 'male')> Male</label>
@@ -135,7 +177,49 @@
 			@error('details.gender')
 				<div class="field-error">{{ $message }}</div>
 			@enderror
-		</div>
+		</div> -->
+		<div class="form-group form-group-radios col-md-4">
+	<label class="form-label" id="details-gender">
+		Gender <span class="color-red">*</span>
+	</label>
+
+	<div class="radio">
+		<input id="details-gender-male"
+			   name="details[gender]"
+			   type="radio"
+			   value="male"
+			   data-validation="[NOTEMPTY]"
+			   data-validation-group="details-gender"
+			   data-validation-message="You must select a gender"
+			   @checked(old('details.gender', 'male') === 'male')>
+		<label for="details-gender-male">Male</label>
+	</div>
+
+	<div class="radio">
+		<input id="details-gender-female"
+			   name="details[gender]"
+			   type="radio"
+			   data-validation-group="details-gender"
+			   value="female"
+			   @checked(old('details.gender') === 'female')>
+		<label for="details-gender-female">Female</label>
+	</div>
+
+	<div class="radio">
+		<input id="details-gender-other"
+			   name="details[gender]"
+			   type="radio"
+			   data-validation-group="details-gender"
+			   value="other"
+			   @checked(old('details.gender') === 'other')>
+		<label for="details-gender-other">Other</label>
+	</div>
+
+	@error('details.gender')
+		<div class="field-error">{{ $message }}</div>
+	@enderror
+</div>
+
 	</div>
 	<div class="form-row align-items-center">
 		<div class="form-group col-md-4">

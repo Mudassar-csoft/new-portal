@@ -117,8 +117,8 @@
 					</div>
 
 					<div class="text-right">
-						<button type="submit" class="btn btn-primary">Create Batch</button>
-						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2">Cancel</a>
+						<button type="submit" class="btn btn-inline btn-primary-outline">Create Batch</button>
+						<a href="{{ url()->previous() }}" class="btn btn-inline btn-secondary-outline btn-outline-danger ml-2">Cancel</a>
 					</div>
 				</form>
 			</div>

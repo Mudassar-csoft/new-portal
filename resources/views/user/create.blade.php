@@ -106,8 +106,8 @@
 					</div>
 
 					<div class="text-right mt-3">
-						<a href="{{ route('users.index') }}" class="btn btn-default mr-2">Cancel</a>
-						<button type="submit" class="btn btn-primary">Create User</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline">Create User</button>
+						<a href="{{ route('users.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 					</div>
 				</form>
 			</div>

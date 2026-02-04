@@ -91,8 +91,8 @@
                     </div>
 
                     <div class="text-right">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <a href="{{ route('campus.index') }}" class="btn btn-outline-danger ml-2">Cancel</a>
+                        <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>
+                        <a href="{{ route('campus.index') }}" class="btn btn-inline btn-secondary-outline btn-outline-danger">Cancel</a>
                     </div>
                 </form>
             </div>

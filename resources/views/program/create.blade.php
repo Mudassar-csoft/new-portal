@@ -105,8 +105,8 @@
 					</div>
 
 					<div class="text-right">
-						<button type="submit" class="btn btn-primary">Create Program</button>
-						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2">Cancel</a>
+						<button type="submit" class="btn btn-inline btn-primary-outline">Create Program</button>
+						<a href="{{ url()->previous() }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 					</div>
 				</form>
 			</div>

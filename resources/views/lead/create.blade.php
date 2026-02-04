@@ -40,8 +40,10 @@
 						@include('lead.coworking')
 						@include('lead.study_abroad')
 						<div class="form-actions text-right mt-4">
-							<a href="{{ url()->previous() }}" class="btn btn-secondary mr-2">Cancel</a>
-							<button type="submit" class="btn btn-primary">Create Lead</button>
+							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
+							<button type="submit" class="btn btn-inline btn-primary-outline">Create Lead</button>
+
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 						</div>
 					</form>
 				</div>
