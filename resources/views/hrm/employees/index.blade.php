@@ -1,0 +1,256 @@
+@extends('layouts.theme')
+
+@section('title', 'Employee Master')
+
+@section('content')
+    @php
+        $filters = $filters ?? ['campus_id' => null, 'department_id' => null, 'status' => null];
+    @endphp
+
+    <div class="hrm-shell">
+        @if(session('status'))
+            <div class="alert alert-success">{{ session('status') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
+            <header class="box-typical-header panel-heading">
+                <h3 class="panel-title">Employee Master / Profile</h3>
+            </header>
+            <div class="box-typical-body panel-body">
+                <form method="GET" action="{{ route('hrm.employees.index') }}" class="mb-3">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>Campus</label>
+                            <select name="campus_id" class="form-control">
+                                <option value="">All Campuses</option>
+                                @foreach($campuses as $campus)
+                                    <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
+                                        {{ $campus->code }} - {{ $campus->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Department</label>
+                            <select name="department_id" class="form-control">
+                                <option value="">All Departments</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" @selected(($filters['department_id'] ?? null) == $department->id)>
+                                        {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="">All</option>
+                                <option value="active" @selected(($filters['status'] ?? '') === 'active')>Active</option>
+                                <option value="inactive" @selected(($filters['status'] ?? '') === 'inactive')>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
+                    <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                </form>
+
+                <hr>
+
+                <form method="POST" action="{{ route('hrm.employees.store') }}" class="mb-4">
+                    @csrf
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label>Employee Code</label>
+                            <input type="text" name="employee_code" class="form-control" placeholder="Auto if blank">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="required">First Name</label>
+                            <input type="text" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" class="form-control">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>CNIC</label>
+                            <input type="text" name="cnic" class="form-control" placeholder="xxxxx-xxxxxxx-x">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Contact</label>
+                            <input type="text" name="contact_no" class="form-control">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>Address</label>
+                            <input type="text" name="address" class="form-control">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Emergency Name</label>
+                            <input type="text" name="emergency_contact_name" class="form-control">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Emergency Phone</label>
+                            <input type="text" name="emergency_contact_phone" class="form-control">
+                        </div>
+                        <div class="form-group col-md-1">
+                            <label>Relation</label>
+                            <input type="text" name="emergency_contact_relation" class="form-control">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Campus</label>
+                            <select name="campus_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($campuses as $campus)
+                                    <option value="{{ $campus->id }}">{{ $campus->code }} - {{ $campus->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Department</label>
+                            <select name="department_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label>Designation</label>
+                            <select name="designation_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Reporting Manager</label>
+                            <select name="reporting_manager_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($managers as $manager)
+                                    <option value="{{ $manager->id }}">{{ $manager->employee_code ?: 'EMP' }} - {{ trim($manager->first_name . ' ' . $manager->last_name) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>System User</label>
+                            <select name="user_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Joining Date</label>
+                            <input type="date" name="joining_date" class="form-control" value="{{ now()->toDateString() }}">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Employment Type</label>
+                            <select name="employment_type" class="form-control">
+                                <option value="full_time">Full Time</option>
+                                <option value="part_time">Part Time</option>
+                                <option value="contract">Contract</option>
+                                <option value="intern">Intern</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Status</label>
+                            <select name="status" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" name="notes" class="form-control">
+                    </div>
+
+                    <button class="btn btn-inline btn-primary" type="submit">Save Employee</button>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered hrm-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>CNIC</th>
+                                <th>Contact</th>
+                                <th>Campus</th>
+                                <th>Department / Designation</th>
+                                <th>Manager</th>
+                                <th>Joining</th>
+                                <th>Status</th>
+                                <th>Quick Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($employees as $employee)
+                                <tr>
+                                    <td>{{ $employee->employee_code ?: 'N/A' }}</td>
+                                    <td>{{ $employee->full_name }}</td>
+                                    <td>{{ $employee->cnic ?: '-' }}</td>
+                                    <td>{{ $employee->contact_no ?: '-' }}</td>
+                                    <td>{{ $employee->campus->code ?? '-' }}</td>
+                                    <td>{{ $employee->department->name ?? '-' }} / {{ $employee->designation->name ?? '-' }}</td>
+                                    <td>{{ $employee->manager?->full_name ?: '-' }}</td>
+                                    <td>{{ optional($employee->joining_date)->format('Y-m-d') ?: '-' }}</td>
+                                    <td>
+                                        <span class="badge {{ $employee->status === 'active' ? 'badge-success' : 'badge-secondary' }}">
+                                            {{ ucfirst($employee->status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ route('hrm.employees.status', $employee) }}" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="status" value="{{ $employee->status === 'active' ? 'inactive' : 'active' }}">
+                                            <button class="btn btn-sm btn-outline-primary" type="submit">
+                                                {{ $employee->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted">No employee records found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{ $employees->links() }}
+            </div>
+        </section>
+    </div>
+@endsection
+
+@push('styles')
+    <style>
+        .hrm-shell { padding: 8px 0 16px; }
+        .required::after { content: ' *'; color: #dc2626; }
+        .hrm-table thead th { background: #0ea5e9; color: #fff; }
+    </style>
+@endpush
+

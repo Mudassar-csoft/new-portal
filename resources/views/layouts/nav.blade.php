@@ -3,10 +3,11 @@
 	<nav class="side-menu">
 		<ul class="side-menu-list">
 			<li>
-				<span style="padding-left:14px">
+				<a href="{{ url('/') }}" style="padding-left:14px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/dashboard.png" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
-					<span class="lbl">Dashboard</span></span>
+					<span class="lbl">Dashboard</span>
+				</a>
 			</li>                                   
 			<li class="brown with-sub">
 				<span style="padding-left:14px">
@@ -278,20 +279,17 @@
 				<span style="padding-left:13px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/humanresource.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
-					<span class="lbl">Human Resource  s</span></span>
+					<span class="lbl">Human Resources</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">New Hires</span><span
-								class="label label-custom label-pill label-danger stage-count">6</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Active Staff</span><span
-								class="label label-custom label-pill label-danger stage-count">180</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Leave Requests</span><span
-								class="label label-custom label-pill label-danger stage-count">14</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Attendance</span><span
-								class="label label-custom label-pill label-danger stage-count">35</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Performance Reviews</span><span
-								class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Staff</span><span
-								class="label label-custom label-pill label-danger stage-count">215</span></a></li>
+					<li><a href="{{ route('hrm.dashboard') }}" class="stage-link"><span class="lbl">HRM Dashboard</span></a></li>
+					<li><a href="{{ route('hrm.employees.index') }}" class="stage-link"><span class="lbl">Employee Master / Profile</span></a></li>
+					<li><a href="{{ route('hrm.masters.index') }}" class="stage-link"><span class="lbl">Departments / Designations / Holidays</span></a></li>
+					<li><a href="{{ route('hrm.attendance.index') }}" class="stage-link"><span class="lbl">Attendance (Daily)</span></a></li>
+					<li><a href="{{ route('hrm.leaves.index') }}" class="stage-link"><span class="lbl">Leave Management</span></a></li>
+					<li><a href="{{ route('hrm.payroll.index') }}" class="stage-link"><span class="lbl">Payroll</span></a></li>
+					<li><a href="{{ route('hrm.shifts.index') }}" class="stage-link"><span class="lbl">Shift / Timetable</span></a></li>
+					<li><a href="{{ route('hrm.announcements.index') }}" class="stage-link"><span class="lbl">Announcements / Notifications</span></a></li>
+					<li><a href="{{ route('hrm.documents.index') }}" class="stage-link"><span class="lbl">Documents</span></a></li>
 				</ul>
 			</li>
 			<li class="gold with-sub">
@@ -300,18 +298,34 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Finance Management</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Invoices Pending</span><span
-								class="label label-custom label-pill label-danger stage-count">18</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Invoices Paid</span><span
-								class="label label-custom label-pill label-danger stage-count">74</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Expenses</span><span
-								class="label label-custom label-pill label-danger stage-count">42</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Payroll</span><span
-								class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Pending Approvals</span><span
-								class="label label-custom label-pill label-danger stage-count">11</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Finance</span><span
-								class="label label-custom label-pill label-danger stage-count">154</span></a></li>
+					<li><a href="{{ route('finance.dashboard') }}" class="stage-link"><span class="lbl">Dashboard</span></a></li>
+					<li class="with-sub">
+						<span>
+							<span class="lbl">Expense</span>
+						</span>
+						<ul>
+							<li><a href="{{ route('finance.expense.add') }}" class="stage-link"><span class="lbl">Add Expense</span></a></li>
+							<li><a href="{{ route('finance.expense.types') }}" class="stage-link"><span class="lbl">Add Expense Type</span></a></li>
+							<li class="with-sub">
+								<span>
+									<span class="lbl">Utility Bills</span>
+								</span>
+								<ul>
+									<li><a href="{{ route('finance.utility.pay') }}" class="stage-link"><span class="lbl">Pay Bill</span></a></li>
+									<li><a href="{{ route('finance.utility.types') }}" class="stage-link"><span class="lbl">Add Bill Type</span></a></li>
+									<li><a href="{{ route('finance.utility.bills') }}" class="stage-link"><span class="lbl">Add New Bill</span></a></li>
+								</ul>
+							</li>
+							<li><a href="{{ route('finance.expense.rent') }}" class="stage-link"><span class="lbl">Building Rent</span></a></li>
+							<li><a href="{{ route('finance.expense.marketing') }}" class="stage-link"><span class="lbl">Marketing</span></a></li>
+							<li><a href="{{ route('finance.expense.assets') }}" class="stage-link"><span class="lbl">Asset Purchase</span></a></li>
+							<li><a href="{{ route('finance.expense.payroll') }}" class="stage-link"><span class="lbl">Payroll</span></a></li>
+							<li><a href="{{ route('finance.expense.all') }}" class="stage-link"><span class="lbl">All Expenses</span></a></li>
+						</ul>
+					</li>
+					<li><a href="{{ route('finance.payees') }}" class="stage-link"><span class="lbl">Supplier &amp; Payee</span></a></li>
+					<li><a href="{{ route('finance.payables') }}" class="stage-link"><span class="lbl">Payables</span></a></li>
+					<li><a href="{{ route('finance.receivables') }}" class="stage-link"><span class="lbl">Receivables</span></a></li>
 				</ul>
 			</li>
 			<li class="blue with-sub">

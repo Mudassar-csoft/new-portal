@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserLoginLogController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,9 +10,7 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('dashboard');
-    });
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::view('/student', 'student.portal')->name('student.portal');
 
@@ -41,6 +40,12 @@ Route::middleware('auth')->group(function () {
 
     // Campus routes
     require __DIR__ . '/campus.php';
+
+    // Finance routes
+    require __DIR__ . '/finance.php';
+
+    // HRM routes
+    require __DIR__ . '/hrm.php';
 
     Route::get('/login-logs', [UserLoginLogController::class, 'index'])->name('login-logs.index');
 });

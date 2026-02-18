@@ -3,6 +3,18 @@
 @section('title', 'Dashboard')
 
 @section('content')
+	@php
+		$stats = $dashboard['stats'] ?? [];
+		$incomeSummary = $dashboard['incomeSummary'] ?? [];
+		$dailyActivity = $dashboard['dailyActivity'] ?? [];
+		$dailyRows = $dailyActivity['rows'] ?? [];
+		$dailyTotals = $dailyActivity['totals'] ?? [
+			'leads' => 0,
+			'followups' => 0,
+			'admissions' => 0,
+			'collection' => 0,
+		];
+	@endphp
 	<div class="dashboard-shell">
 		<div id="dashboard-loader" class="dashboard-loader">
 			<div class="dashboard-spinner">
@@ -13,12 +25,12 @@
 			<p>Loading dashboard...</p>
 		</div>
 		<div id="dashboard-content" class="dashboard-content">
-	<div class="row">
+		<div class="row">
 		<div class="col-xl-6">
 			<div class="chart-statistic-box">
 				<div class="chart-txt">
 					<div class="chart-txt-top">
-						<p><span class="unit">RS.</span><span class="number">1540</span></p>
+						<p><span class="unit">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
 						<p class="caption">Income</p>
 					</div>
 					<div class="chart-range">
@@ -41,16 +53,16 @@
 					</div>
 					<table class="tbl-data">
 						<tr>
-							<td class="price color-purple">RS. 120</td>
-							<td>Income</td>
+							<td class="price color-purple">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+							<td>Today Collection</td>
 						</tr>
 						<tr>
-							<td class="price color-yellow">RS. 15</td>
-							<td>Expenses</td>
+							<td class="price color-yellow">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+							<td>Weekly Collection</td>
 						</tr>
 						<tr>
-							<td class="price color-lime">RS. 55</td>
-							<td>Others</td>
+							<td class="price color-lime">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+							<td>Monthly Collection</td>
 						</tr>
 					</table>
 				</div>
@@ -78,6 +90,7 @@
 								<circle cx="380" cy="170" r="5" fill="#fff" />
 							</svg>
 						</div>
+						<div class="chart-caption"></div>
 						<div class="chart-container-x"></div>
 						<div class="chart-container-y"></div>
 					</div>
@@ -90,8 +103,8 @@
 				<div class="col-sm-6">
 					<article class="statistic-box red">
 						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-1"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="26" data-target="stat-1">***</div>
+							<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
+							<div class="number stat-number" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
 							<div class="caption">
 								<div>Total Leads</div>
 							</div>
@@ -101,8 +114,8 @@
 				<div class="col-sm-6">
 					<article class="statistic-box purple">
 						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-2"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="12" data-target="stat-2">***</div>
+							<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
+							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
 							<div class="caption">
 								<div>Current Students</div>
 							</div>
@@ -112,8 +125,8 @@
 				<div class="col-sm-6">
 					<article class="statistic-box yellow">
 						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-3"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="104" data-target="stat-3">***</div>
+							<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
+							<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3">***</div>
 							<div class="caption">
 								<div>Current Month Collection</div>
 							</div>
@@ -123,8 +136,8 @@
 				<div class="col-sm-6">
 					<article class="statistic-box green">
 						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-4"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="29" data-target="stat-4">***</div>
+							<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
+							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
 							<div class="caption">
 								<div>Current Month Pending</div>
 							</div>
@@ -196,40 +209,29 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td><span class="badge badge-pill badge-warning daily-campus">CILHR02</span></td>
-								<td>0</td>
-								<td>0</td>
-								<td>0</td>
-								<td>0</td>
-							</tr>
-							<tr>
-								<td><span class="badge badge-pill badge-warning daily-campus">CIFSD06</span></td>
-								<td>1</td>
-								<td>0</td>
-								<td>0</td>
-								<td>0</td>
-							</tr>
-							<tr>
-								<td><span class="badge badge-pill badge-warning daily-campus">CIHOO1</span></td>
-								<td>0</td>
-								<td>0</td>
-								<td>0</td>
-								<td>0</td>
-							</tr>
-							<tr>
-								<td><span class="badge badge-pill badge-warning daily-campus">CIJHG01</span></td>
-								<td>2</td>
-								<td>0</td>
-								<td>0</td>
-								<td>34500</td>
-							</tr>
+							@forelse($dailyRows as $row)
+								<tr>
+									<td><span class="badge badge-pill badge-warning daily-campus">{{ $row['campus'] }}</span></td>
+									<td>{{ number_format((int) ($row['leads'] ?? 0)) }}</td>
+									<td>{{ number_format((int) ($row['followups'] ?? 0)) }}</td>
+									<td>{{ number_format((int) ($row['admissions'] ?? 0)) }}</td>
+									<td>RS. {{ number_format((float) ($row['collection'] ?? 0), 0) }}</td>
+								</tr>
+							@empty
+								<tr>
+									<td><span class="badge badge-pill badge-warning daily-campus">N/A</span></td>
+									<td>0</td>
+									<td>0</td>
+									<td>0</td>
+									<td>RS. 0</td>
+								</tr>
+							@endforelse
 							<tr class="daily-activity-total">
 								<td><strong>Total</strong></td>
-								<td>4</td>
-								<td>1</td>
-								<td>0</td>
-								<td>39500</td>
+								<td>{{ number_format((int) ($dailyTotals['leads'] ?? 0)) }}</td>
+								<td>{{ number_format((int) ($dailyTotals['followups'] ?? 0)) }}</td>
+								<td>{{ number_format((int) ($dailyTotals['admissions'] ?? 0)) }}</td>
+								<td>RS. {{ number_format((float) ($dailyTotals['collection'] ?? 0), 0) }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -453,63 +455,15 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js"></script>
 	<script>
-		var incomeRanges = {
-			today: {
-				label: 'Today income (hourly)',
-				points: [
-					['08 AM', 80],
-					['10 AM', 120],
-					['12 PM', 160],
-					['02 PM', 140],
-					['04 PM', 200],
-					['06 PM', 220],
-					['08 PM', 180],
-					['10 PM', 160]
-				],
-				ticks: [0, 50, 100, 150, 200, 250]
-			},
-			week: {
-				label: 'Week income (daily)',
-				points: [
-					['Mon', 130],
-					['Tue', 150],
-					['Wed', 200],
-					['Thu', 180],
-					['Fri', 230],
-					['Sat', 170],
-					['Sun', 210]
-				],
-				ticks: [0, 50, 100, 150, 200, 250, 300]
-			},
-			month: {
-				label: 'Month income (weekly)',
-				points: [
-					['Week 1', 320],
-					['Week 2', 360],
-					['Week 3', 340],
-					['Week 4', 390]
-				],
-				ticks: [0, 100, 200, 300, 400, 500]
-			},
-			year: {
-				label: 'Year income (monthly)',
-				points: [
-					['Jan', 240],
-					['Feb', 260],
-					['Mar', 280],
-					['Apr', 300],
-					['May', 320],
-					['Jun', 310],
-					['Jul', 350],
-					['Aug', 340],
-					['Sep', 360],
-					['Oct', 380],
-					['Nov', 370],
-					['Dec', 400]
-				],
-				ticks: [0, 100, 200, 300, 400, 500]
-			}
+		var incomeRanges = @json($dashboard['incomeRanges'] ?? []);
+		var chartSeries = @json($dashboard['charts'] ?? []);
+		var defaultIncomeRanges = {
+			today: { label: 'Today income (hourly)', points: [['08 AM', 0]], ticks: [0, 10] },
+			week: { label: 'Week income (daily)', points: [['Mon', 0]], ticks: [0, 10] },
+			month: { label: 'Month income (weekly)', points: [['Week 1', 0]], ticks: [0, 10] },
+			year: { label: 'Year income (monthly)', points: [['Jan', 0]], ticks: [0, 10] }
 		};
+		incomeRanges = Object.assign({}, defaultIncomeRanges, incomeRanges || {});
 
 		var currentIncomeRange = 'today';
 
@@ -530,6 +484,7 @@
 				$('#chart_fallback').show();
 				var range = incomeRanges[currentIncomeRange] || incomeRanges.today;
 				$('.chart-caption').text(range.label);
+				updateIncomeHeadline();
 			}
 
 			$(document).on('click', '.panel-action', function (e) {
@@ -591,15 +546,53 @@
 				$(this).find('i').toggleClass('fa-eye fa-eye-slash');
 			});
 
-			// Current month charts (fake data)
-			var leadCodes = ['DMS', 'GRD', 'OTH', 'OMT', 'PHP', 'AVA', 'IEA', 'SPE', 'LAR', 'SHY'];
-			var leadCounts = [70, 30, 8, 15, 1, 14, 12, 9, 8, 10];
+			function toNumber(value) {
+				var parsed = Number(value);
+				return Number.isFinite(parsed) ? parsed : 0;
+			}
 
-			var admissionPrograms = ['OMT', 'GRD', 'PHP', 'MER', 'QUK', 'DMS', 'SPE', 'IEA', 'AVA', 'ITE', 'SHY', 'AIG', 'CYF', 'LAR', 'ADM'];
-			var admissionCounts = [10, 2, 2, 1, 6, 1, 4, 3, 1, 1, 1, 1, 1, 2, 1];
-			var campusCodes = ['CIFSD01', 'CIFSD02', 'CIFSD03', 'CILHR01', 'CILHR02'];
-			var campusAdmissions = [12, 9, 15, 7, 11];
+			function formatAmount(value) {
+				return toNumber(value).toLocaleString();
+			}
+
+			function buildTicks(maxValue, segments) {
+				var safeMax = Math.max(toNumber(maxValue), 10);
+				var parts = segments || 5;
+				var step = safeMax / parts;
+				var ticks = [];
+				for (var i = 0; i <= parts; i += 1) {
+					ticks.push(Math.round(step * i));
+				}
+				return ticks;
+			}
+
+			function rangeTotal(range) {
+				if (!range || !Array.isArray(range.points)) {
+					return 0;
+				}
+
+				return range.points.reduce(function (sum, point) {
+					return sum + toNumber(point[1]);
+				}, 0);
+			}
+
+			function updateIncomeHeadline() {
+				var range = incomeRanges[currentIncomeRange] || incomeRanges.today || { points: [] };
+				$('.chart-txt-top .number').text(formatAmount(rangeTotal(range)));
+			}
+
+			var leadCodes = (chartSeries.leads && chartSeries.leads.categories) ? chartSeries.leads.categories : ['No Data'];
+			var leadCounts = (chartSeries.leads && chartSeries.leads.counts) ? chartSeries.leads.counts.map(toNumber) : [0];
+			var admissionPrograms = (chartSeries.admissions && chartSeries.admissions.categories) ? chartSeries.admissions.categories : ['No Data'];
+			var admissionCounts = (chartSeries.admissions && chartSeries.admissions.counts) ? chartSeries.admissions.counts.map(toNumber) : [0];
+			var campusCodes = (chartSeries.campusAdmissions && chartSeries.campusAdmissions.categories) ? chartSeries.campusAdmissions.categories : ['No Data'];
+			var campusAdmissions = (chartSeries.campusAdmissions && chartSeries.campusAdmissions.counts) ? chartSeries.campusAdmissions.counts.map(toNumber) : [0];
+			var leadTicks = buildTicks(Math.max.apply(Math, leadCounts.concat([0])), 6);
+			var admissionTicks = buildTicks(Math.max.apply(Math, admissionCounts.concat([0])), 6);
+			var campusTicks = buildTicks(Math.max.apply(Math, campusAdmissions.concat([0])), 5);
 			var campusMax = Math.max.apply(Math, campusAdmissions);
+
+			updateIncomeHeadline();
 			// Reveal content once charts/data ready
 			$('body').addClass('dashboard-ready');
 
@@ -630,7 +623,7 @@
 						padding: { top: 10, bottom: 0 },
 						min: 0,
 						tick: {
-							values: [0, 10, 20, 30, 40, 50, 60, 70, 80]
+							values: leadTicks
 						}
 					}
 				},
@@ -671,7 +664,7 @@
 						padding: { top: 10, bottom: 0 },
 						min: 0,
 						tick: {
-							values: [0, 2, 4, 6, 8, 10, 12]
+							values: admissionTicks
 						}
 					}
 				},
@@ -712,7 +705,7 @@
 						label: 'Admissions this month',
 						min: 0,
 						padding: { top: 10, bottom: 0 },
-						tick: { values: [0, 5, 10, 15, 20] }
+						tick: { values: campusTicks }
 					}
 				},
 				bar: { width: { ratio: 0.55 } },
@@ -729,13 +722,15 @@
 
 				var range = incomeRanges[currentIncomeRange] || incomeRanges.today;
 				$('.chart-caption').text(range.label);
+				updateIncomeHeadline();
 
 				var dataTable = new google.visualization.DataTable();
 				dataTable.addColumn('string', 'X');
 				dataTable.addColumn('number', 'Values');
 				dataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true } });
 				dataTable.addRows(range.points.map(function (point) {
-					return [point[0], point[1], point[0] + ': RS. ' + point[1]];
+					var amount = toNumber(point[1]);
+					return [point[0], amount, point[0] + ': RS. ' + formatAmount(amount)];
 				}));
 
 				var options = {
@@ -768,10 +763,10 @@
 							italic: false
 						},
 						baselineColor: '#16b4fc',
-						ticks: range.ticks || [0, 50, 100, 150, 200, 250, 300],
+						ticks: (range.ticks || [0, 10]).map(toNumber),
 						gridlines: {
 							color: '#1ba0fc',
-							count: (range.ticks || []).length || 10
+							count: (range.ticks || []).length || 5
 						}
 					},
 					lineWidth: 2,
