@@ -18,7 +18,7 @@
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
-							<table class="table table-hover table-striped" id="roles-table">
+							<table class="table table-hover table-striped text-center" id="roles-table">
 								<thead>
 									<tr>
 										<th>Sr#</th>
@@ -26,7 +26,7 @@
 										<th>Slug</th>
 										<th>Permissions</th>
 										<th>Date</th>
-										<th class="text-right">Actions</th>
+										<th class="text-center">Actions</th>
 									</tr>
 								</thead>
 							</table>
@@ -42,6 +42,9 @@
 	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
 	<style>
+		*{
+			text-align:center !important;
+		}
 		.fw-600 { font-weight: 600; }
 		.gap-2 { gap: 8px; }
 		.btn-danger-outline {
@@ -156,7 +159,7 @@
 					{ data: 'slug', name: 'slug' },
 					{ data: 'permissions', name: 'permissions', orderable: false, searchable: false },
 					{ data: 'date', name: 'date', orderable: false, searchable: false },
-					{ data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
+					{ data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center actions-cell' },
 				]
 			});
 

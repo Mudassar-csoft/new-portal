@@ -23,13 +23,13 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Leave Requests</h3>
+                <h3 class="panel-title form-label">Leave Requests</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.leaves.index') }}" class="mb-3">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Status</label>
+                    <div class="form-row ">
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
                                 @foreach(['pending','approved','rejected','cancelled'] as $status)
@@ -37,18 +37,18 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-9 d-flex align-items-end">
-                            <button class="btn btn-inline btn-primary-outline mr-2" type="submit">Filter</button>
-                            <a href="{{ route('hrm.leaves.index') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                        <div class="form-group col-md-8 text-right mt-2 ml-4">
+                            <button class="btn btn-inline btn-primary-outline mr-2  mt-4 mb-0 " type="submit">Filter</button>
+                            <a href="{{ route('hrm.leaves.index') }}" class="btn btn-inline btn-danger-outline p-2 mb-0 mt-4">Reset</a>
                         </div>
                     </div>
                 </form>
 
                 <form method="POST" action="{{ route('hrm.leaves.requests.store') }}" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Employee</label>
+                    <div class="form-row justify-between" style="gap:8px;">
+                        <div class="form-group col-md-2">
+                            <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($employees as $employee)
@@ -57,7 +57,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Leave Type</label>
+                            <label class="form-label required" >Leave Type</label>
                             <select name="leave_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($leaveTypes as $leaveType)
@@ -66,23 +66,23 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>From</label>
+                            <label class="form-label required" >From</label>
                             <input type="date" name="from_date" class="form-control" required>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>To</label>
+                            <label class="form-label required" >To</label>
                             <input type="date" name="to_date" class="form-control" required>
                         </div>
-                        <div class="form-group col-md-1">
-                            <label>Days</label>
+                        <div class="form-group col-md-2">
+                            <label class="form-label required" >Days</label>
                             <input type="number" step="0.5" min="0.5" name="days" class="form-control" placeholder="Auto">
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Reason</label>
+                            <label class="form-label required" >Reason</label>
                             <input type="text" name="reason" class="form-control">
                         </div>
+                        <button class="btn btn-inline btn-primary-outline mt-4 ml-4" type="submit">Submit Leave</button>
                     </div>
-                    <button class="btn btn-inline btn-primary-outline" type="submit">Submit Leave</button>
                 </form>
 
                 <div class="table-responsive">
@@ -137,14 +137,14 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card mt-3">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Leave Balances / Accrual</h3>
+                <h3 class="panel-title form-label">Leave Balances / Accrual</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('hrm.leaves.balances.store') }}" class="mb-3 hrm-box">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-3">
-                            <label>Employee</label>
+                            <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($employees as $employee)
@@ -153,7 +153,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Leave Type</label>
+                            <label class="form-label required" >Leave Type</label>
                             <select name="leave_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($leaveTypes as $leaveType)
@@ -162,34 +162,34 @@
                             </select>
                         </div>
                         <div class="form-group col-md-1">
-                            <label>Year</label>
+                            <label class="form-label required" >Year</label>
                             <input type="number" name="year" class="form-control" value="{{ now()->year }}" required>
                         </div>
                         <div class="form-group col-md-1">
-                            <label>Opening</label>
+                            <label class="form-label required" >Opening</label>
                             <input type="number" step="0.01" min="0" name="opening_balance" class="form-control">
                         </div>
                         <div class="form-group col-md-1">
-                            <label>Accrued</label>
+                            <label class="form-label required" >Accrued</label>
                             <input type="number" step="0.01" min="0" name="accrued" class="form-control">
                         </div>
                         <div class="form-group col-md-1">
-                            <label>Used</label>
+                            <label class="form-label required" >Used</label>
                             <input type="number" step="0.01" min="0" name="used" class="form-control">
                         </div>
                         <div class="form-group col-md-1">
-                            <label>Encashed</label>
+                            <label class="form-label required" >Encashed</label>
                             <input type="number" step="0.01" min="0" name="encashed" class="form-control">
                         </div>
                         <div class="form-group col-md-2 d-flex align-items-end">
-                            <button class="btn btn-inline btn-primary-outline w-100" type="submit">Save Balance</button>
+                            <button class="btn btn-inline btn-primary-outline w-100 mt-4 ml-3" type="submit">Save Balance</button>
                         </div>
                     </div>
                 </form>
 
                 <div class="table-responsive">
                     <table class="table table-bordered hrm-table">
-                        <thead><tr><th>Employee</th><th>Type</th><th>Year</th><th>Opening</th><th>Accrued</th><th>Used</th><th>Closing</th></tr></thead>
+                        <thead class=""><tr><th>Employee</th><th>Type</th><th>Year</th><th>Opening</th><th>Accrued</th><th>Used</th><th>Closing</th></tr></thead>
                         <tbody>
                             @forelse($balances as $balance)
                                 <tr>
@@ -215,6 +215,11 @@
 
 @push('styles')
     <style>
+
+        .col-md-2{
+            flex: 0 0 12.996667%;
+        max-width: 12.996997%;
+        }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }

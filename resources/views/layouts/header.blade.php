@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <header class="site-header">
 		<div class="container-fluid">
 			<a href="https://www.portal.career.edu.pk" class="site-logo">
@@ -7,7 +9,7 @@
 					style="height: 40px; width: 40px; margin-top: -5px;">
 			</a>
 
-			<button id="show-hide-sidebar-t-oggle" class="show-hide-sidebar padding" style="margin-left: 20px;">
+			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar padding" style="margin-left: 20px;">
 				<span>toggle menu</span>
 			</button>
 
@@ -22,46 +24,95 @@
 								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="font-icon-alarm"></i>
 							</a>
-							<div class="dropdown-menu dropdown-menu-right dropdown-menu-notif"
+							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
+     style="min-width: 900px; font-size:12px;"
 								aria-labelledby="dd-notification">
-								<div class="dropdown-menu-notif-header">
-									Notifications
-									<span class="label label-pill label-danger">4</span>
+								<div class="dropdown-menu-notif-header w-ful">
+									<div class="lead-tabs-wrapper w-100">
+  <ul class="nav lead-tabs p-0 m-0 gap-0">
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        Coworking FollowUp
+        <span class="count">0</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link">
+        Follow Up
+        <span class="count">0</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link active">
+        Quick Leads
+        <span class="count">4</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link">
+        Website Enrollments
+        <span class="count">0</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link">
+        Website Admissions
+        <span class="count">0</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link">
+        Brochure Downloads
+        <span class="count">4</span>
+      </a>
+    </li>
+  </ul>
+</div>
+									
 								</div>
 								<div class="dropdown-menu-notif-list">
-									<div class="dropdown-menu-notif-item">
-										<div class="photo">
-											<img src="img/photo-64-1.jpg" alt="">
-										</div>
-										<div class="dot"></div>
-										<a href="#">Morgan</a> was bothering about something
-										<div class="color-blue-grey-lighter">7 hours ago</div>
-									</div>
-									<div class="dropdown-menu-notif-item">
-										<div class="photo">
-											<img src="img/photo-64-2.jpg" alt="">
-										</div>
-										<div class="dot"></div>
-										<a href="#">Lioneli</a> had commented on this <a href="#">Super Important
-											Thing</a>
-										<div class="color-blue-grey-lighter">7 hours ago</div>
-									</div>
-									<div class="dropdown-menu-notif-item">
-										<div class="photo">
-											<img src="img/photo-64-3.jpg" alt="">
-										</div>
-										<div class="dot"></div>
-										<a href="#">Xavier</a> had commented on the <a href="#">Movie title</a>
-										<div class="color-blue-grey-lighter">7 hours ago</div>
-									</div>
-									<div class="dropdown-menu-notif-item">
-										<div class="photo">
-											<img src="img/photo-64-4.jpg" alt="">
-										</div>
-										<a href="#">Lionely</a> wants to go to <a href="#">Cinema</a> with you to see <a
-											href="#">This Movie</a>
-										<div class="color-blue-grey-lighter">7 hours ago</div>
-									</div>
+									
+  <!-- Table Section -->
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 notification-table">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ateeqa Mubarik</td>
+          <td>12-Feb-26</td>
+          <td>10:27 AM</td>
+        </tr>
+        <tr>
+          <td>Ali Raza</td>
+          <td>12-Feb-26</td>
+          <td>09:15 AM</td>
+        </tr>
+		<tr>
+          <td>Ali Raza</td>
+          <td>12-Feb-26</td>
+          <td>09:15 AM</td>
+        </tr>
+		
+        <tr>
+          <td>Sara Khan</td>
+          <td>11-Feb-26</td>
+          <td>04:42 PM</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 								</div>
 								<div class="dropdown-menu-notif-more">
 									<a href="#">See more</a>
@@ -180,19 +231,59 @@
 							</div>
 						</div>
 
+
+
+						<div class=" dropdown user-menu user-profile-dropdown">
+            <a href="" class="nav-link user" id="notify" data-bs-toggle="dropdown">
+              <img src="data:image/png;base64,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" alt="" class="icon" />
+            </a>
+            <div class="dropdown-menu">
+              <div class="user-profile-section">
+                <div class="media mx-auto">
+                  <img src="data:image/jpeg;base64,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" alt="" class="img">
+                  <div class="media-body">
+                    @if(auth()->check())
+								{{ auth()->user()->name }}
+							@else
+								Guest 
+							@endif
+                  </div>
+                </div>
+              </div>
+              <div class="dp-main-menu ">
+               <div class="dp-main-menu">
+
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-user me-2"></i> Profile
+  </a>
+
+ 
+
+  <a href="#" class="dropdown-item">
+    <i class="fas fa-key me-2"></i> Change Password
+  </a>
+
+  <a href="#" class="dropdown-item text-danger">
+    <i class="
+	 fa-solid fa-right-from-bracket me-2"></i> Log Out
+  </a>
+
+</div>
+              </div>
+            </div>
+          </div>
+
+
+
 						
-						<div class="dropdown user-menu">
+						<!-- <div class="dropdown user-menu">
 							<button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown"
 								aria-haspopup="true" aria-expanded="false">
 								<img src="img/avatar-2-64.png" alt="">
 							</button>
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd-user-menu">
 								<span class=" dropdown-item user-greeting">
-							@if(auth()->check())
-								Hi, {{ auth()->user()->name }}
-							@else
-								Hi, Guest
-							@endif
+							
 						</span>
 								<a class="dropdown-item" href="#"><span
 										class="font-icon glyphicon glyphicon-user"></span>Profile</a>
@@ -208,11 +299,11 @@
 									</button>
 								</form>
 							</div>
-						</div>
+						</div>-->
 
 						<button type="button" class="burger-right">
 							<i class="font-icon-menu-addl"></i>
-						</button>
+						</button> 
 					</div><!--.site-header-shown-->
 
 					<div class="mobile-menu-right-overlay"></div>
@@ -336,3 +427,149 @@
 			</div><!--.site-header-content-->
 		</div><!--.container-fluid-->
 	</header><!--.site-header-->
+
+
+
+	<style>
+
+		.fa-classic,
+.fa-regular,
+.fa-solid,
+.far,
+.fas {
+    font-family: "Font Awesome 6 Free" !important;
+}
+		.nav.nav-pills .nav-link.active{
+			color: black;
+		}
+		.nav.nav-pills .nav-link{
+			border-radius:0.5rem !important;
+
+		}
+		.lead-tabs-wrapper {
+  border: 1px solid #e5e5e5;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.site-header{
+	height:70px;
+	padding: 13px 15px 0 0 !important;
+}
+.site-header .dropdown-menu-notif-item{
+	width: 600px !important;
+}
+.lead-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+}
+
+.lead-tabs .nav-item {
+  flex: 0 0 auto;
+}
+.lead-tabs .nav-link.active {
+  background: #0d6efd;
+  color: #fff;
+}
+.lead-tabs .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-right: 1px solid #e5e5e5;
+  border-radius: 0;
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.lead-tabs .nav-link.active {
+  background: #0d6efd;
+  color: #fff;
+}
+
+.lead-tabs .count {
+  background: #dc3545;
+  color: #fff;
+  font-size: 12px;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 50%;
+}
+.dropdown{
+    position: relative;
+}
+.site-header .user-menu.dropdown{
+    margin: 0px 0px 0px 0px!important;
+}
+.user-profile-dropdown{
+    /* margin-left: 20px; */
+    margin-right: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+.dropdown-menu{
+    
+    max-width: 15rem;
+    right:0px;
+    left: auto;
+    min-width: 14rem;
+    padding: 0;
+    border-radius: 5px;
+}
+
+.media{
+    background-color: #00a8ff;
+    text-align: center;
+    padding-top: 10px;
+	    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+img.img{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+
+}
+.media-body{
+    color: white ;
+    padding: 15px;
+}
+
+.media-body h5{
+    font-weight: 600;
+}
+img.icon{
+    width: 35px;
+    height: 35px;
+    margin-left: -10px;
+
+}
+	</style>
+
+
+<script>
+  document.querySelectorAll('.lead-tabs .nav-link').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+
+      // remove active from all
+      document.querySelectorAll('.lead-tabs .nav-link')
+        .forEach(el => el.classList.remove('active'));
+
+      // add active to clicked
+      this.classList.add('active');
+
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

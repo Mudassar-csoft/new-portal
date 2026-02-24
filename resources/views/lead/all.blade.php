@@ -67,14 +67,14 @@
 
 				<div class="box-typical-body panel-body follow-body">
 					<div class="follow-controls">
-						<div class="form-inline">
+						<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 							<label class="mr-2 mb-0">Show</label>
 							<select class="form-control form-control-sm">
 								<option>10</option>
 								<option>25</option>
 								<option>50</option>
 							</select>
-							<label class="ml-2 mb-0">entries</label>
+							<label class="ml-2 mb-0">Entries</label>
 						</div>
 						<div class="follow-search">
 							<input type="text" id="lead-status-search" class="form-control form-control-sm" placeholder="Search...">
@@ -128,7 +128,7 @@
 
 					<div class="follow-footer">
 						<div id="lead-status-count">Showing 1 to {{ count($leads) }} of {{ count($leads) }} entries</div>
-						<ul class="pagination pagination-sm mb-0">
+						<ul class="pagination pagination-sm mb-0 m-0">
 							<li class="page-item disabled"><span class="page-link">Previous</span></li>
 							<li class="page-item active"><span class="page-link">1</span></li>
 							<li class="page-item disabled"><span class="page-link">Next</span></li>
@@ -142,6 +142,19 @@
 
 @push('styles')
 	<style>
+		* {
+    font-family: 'Proxima Nova', sans-serif;
+    font-size: 12px !important;
+    margin: 0;
+    padding: 0;
+    
+}
+.bootstrap-table .table a, .fixed-table-body .table a, .table a {
+    border-bottom: none;
+    position: relative;
+    top: -1px;
+}
+
 		.lead-status-shell {
 			position: relative;
 			min-height: 100vh;
@@ -229,16 +242,19 @@
 			background: #fff;
 			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
 		}
+		.follow-tab{
+			padding:3px 14px !important;
+		}
 
 		.follow-tab-bar {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			padding: 14px 18px 10px;
-			border-bottom: 3px solid #008efb;
-			background: #f6f8fb;
-			border-radius: 10px 10px 0 0;
-		}
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 7px 18px 6px;
+    border-bottom: 3px solid #008efb;
+    background: #f6f8fb;
+    border-radius: 10px 10px 0 0;
+}
 
 		.follow-tab {
 			display: inline-flex;
@@ -249,32 +265,36 @@
 			color: #5f6f7f;
 			cursor: pointer;
 			position: relative;
+			text-align: center !important;
+
 			border-bottom: 3px solid transparent;
 		}
 
 		.follow-tab.active {
 			color: #0f3c6e;
-			border-bottom-color: #00a8ff;
+			background-color:white;	
+			border-radius: 5px;
+			border-bottom: 2px solid #008efb;
 		}
 
 		.follow-tab .badge {
 			padding: 6px 10px;
 			border-radius: 999px;
-			font-size: 12px;
+			font-size: 11px;
 			line-height: 1;
 		}
 
 		.follow-body {
-			padding: 16px;
+			padding: 8px;
 		}
 
 		.follow-controls {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 12px;
-			margin-bottom: 12px;
-		}
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
 
 		.follow-search {
 			position: relative;
@@ -294,8 +314,10 @@
 		}
 
 		.follow-table {
-			margin-bottom: 12px;
+			margin-bottom: 7px;
 			border: 1px solid #dbe4ed;
+			text-align: center !important;
+
 		}
 
 		.follow-table thead th {
@@ -327,17 +349,50 @@
 			justify-content: space-between;
 			font-size: 13px;
 			color: #54667a;
-			padding: 4px 4px 0;
+			padding: 0px 4px 0;
 		}
 
 		.follow-table .action-cell {
 			min-width: 110px;
 			white-space: nowrap;
 		}
+.table-responsive {
+    overflow: visible !important;  
+}
+		.follow-card, .follow-body {
+    overflow: visible !important;
+}
+	
+		.follow-action-dropdown {
+    position: relative;
 
-		.follow-action-dropdown .dropdown-menu {
-			min-width: 220px;
+}
+
+.follow-action-dropdown .dropdown-menu {
+	font-size:12px !important;
+	min-width: 180px;
+    position: absolute;  
+    top:-33px !important;          
+    left: -73px !important;
+    z-index: 9999;       
+}
+		.table td{
+			padding:2px 2px;
+			height:38px;
 		}
+		.select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 21px !important;
+    background: #fff
+}
+		
+		
 	</style>
 @endpush
 

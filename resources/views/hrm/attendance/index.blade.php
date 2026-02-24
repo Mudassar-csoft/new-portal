@@ -23,17 +23,17 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Attendance (Daily)</h3>
+                <h3 class="form-label panel-title">Attendance (Daily)</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.attendance.index') }}" class="mb-3">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Date</label>
+                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
+                        <div class="form-group col-md-5">
+                            <label class="form-label required" >Date</label>
                             <input type="date" class="form-control" name="date" value="{{ $filters['date'] ?? now()->toDateString() }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Campus</label>
+                        <div class="form-group col-md-5">
+                            <label class="form-label required" >Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -43,8 +43,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Request Status</label>
+                        <div class="form-group col-md-5">
+                            <label class="form-label required" >Request Status</label>
                             <select class="form-control" name="request_status">
                                 <option value="">All</option>
                                 @foreach(['pending','approved','rejected'] as $status)
@@ -52,21 +52,21 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3 d-flex align-items-end">
-                            <button class="btn btn-inline btn-primary-outline mr-2" type="submit">Filter</button>
-                            <a href="{{ route('hrm.attendance.index') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                        <div class="form-group col-md-1 d-flex align-items-end justify-end">
+                            <button class="btn btn-inline btn-primary-outline mr-2 p-2  mt-4" type="submit">Filter</button>
+                            <a href="{{ route('hrm.attendance.index') }}" class="btn btn-inline btn-danger-outline p-2 mt-4">Reset</a>
                         </div>
                     </div>
                 </form>
 
-                <div class="row">
-                    <div class="col-lg-6">
+                <div class="row" >
+                    <div class="col-lg-6" style = "gap:18px;padding-left:15px">
                         <form method="POST" action="{{ route('hrm.attendance.checkin') }}" class="mb-3 hrm-box">
                             @csrf
-                            <h5>Check-in</h5>
-                            <div class="form-row">
-                                <div class="form-group col-md-5">
-                                    <label>Employee</label>
+                            <h5 class="form-label required" >Check-in</h5>
+                            <div class="form-row" style = "gap:0px;padding-left:5px">
+                                <div class="form-group col-md-4">
+                                    <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
                                         @foreach($employees as $employee)
@@ -75,11 +75,11 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label>Check-in At</label>
+                                    <label class="form-label required" >Check-in At</label>
                                     <input type="datetime-local" name="check_in_at" class="form-control">
                                 </div>
-                                <div class="form-group col-md-3">
-                                    <label>Shift</label>
+                                <div class="form-group col-md-4">
+                                    <label class="form-label required" >Shift</label>
                                     <select name="shift_id" class="form-control">
                                         <option value="">Auto/None</option>
                                         @foreach($shifts as $shift)
@@ -87,30 +87,31 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <button class="btn btn-inline btn-primary-outline p-2  ml-2" style="margin-top:30px;" type="submit">Save Check-in</button>
                             </div>
-                            <button class="btn btn-inline btn-primary-outline" type="submit">Save Check-in</button>
                         </form>
                     </div>
 
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" >
                         <form method="POST" action="{{ route('hrm.attendance.import') }}" enctype="multipart/form-data" class="mb-3 hrm-box">
                             @csrf
-                            <h5>Biometric / Device Import (Optional)</h5>
-                            <div class="form-row">
+                            <h5 class="form-label required" >Biometric / Device Import (Optional)</h5>
+                            <div class="form-row" style = "gap:0px;padding-left:5px">
                                 <div class="form-group col-md-4">
-                                    <label>Source Name</label>
+                                    <label class="form-label required" >Source Name</label>
                                     <input type="text" name="source_name" class="form-control" placeholder="ZKTeco Device A">
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label>Import File (CSV)</label>
-                                    <input type="file" name="import_file" class="form-control-file">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label>Remarks</label>
+                                    <label class="form-label required" >Remarks</label>
                                     <input type="text" name="remarks" class="form-control">
                                 </div>
+                                <div class="form-group col-md-4">
+                                    <label class="form-label required" >Import File (CSV)</label>
+                                    <input type="file" name="import_file" class="form-control-file">
+                                </div>
+                                
+                                <button class="btn btn-inline btn-primary-outline p-2  mt-3 ml-4" type="submit">Log Import</button>
                             </div>
-                            <button class="btn btn-inline btn-primary-outline" type="submit">Log Import</button>
                         </form>
                     </div>
                 </div>
@@ -169,14 +170,14 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card mt-3">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Manual Attendance Requests</h3>
+                <h3 class="panel-title form-label">Manual Attendance Requests</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('hrm.attendance.requests.store') }}" class="mb-3">
                     @csrf
-                    <div class="form-row">
+                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
                         <div class="form-group col-md-3">
-                            <label>Employee</label>
+                            <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($employees as $employee)
@@ -184,28 +185,28 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-2">
-                            <label>Type</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required" >Type</label>
                             <select name="request_type" class="form-control">
                                 <option value="checkin_correction">Check-in</option>
                                 <option value="checkout_correction">Check-out</option>
                                 <option value="full_day_correction">Full Day</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-2">
-                            <label>Requested In</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required" >Requested In</label>
                             <input type="datetime-local" name="requested_check_in_at" class="form-control">
                         </div>
-                        <div class="form-group col-md-2">
-                            <label>Requested Out</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required" >Requested Out</label>
                             <input type="datetime-local" name="requested_check_out_at" class="form-control">
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Reason</label>
+                            <label class="form-label required" >Reason</label>
                             <input type="text" name="reason" class="form-control">
                         </div>
+                        <button class="btn btn-inline btn-primary-outline text-right p-2  mt-4"" type="submit">Submit Request</button>
                     </div>
-                    <button class="btn btn-inline btn-primary-outline" type="submit">Submit Request</button>
                 </form>
 
                 <div class="table-responsive">
@@ -260,6 +261,7 @@
 
 @push('styles')
     <style>
+       
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box {

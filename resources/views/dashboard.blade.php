@@ -24,8 +24,13 @@
 			</div>
 			<p>Loading dashboard...</p>
 		</div>
+
+		<div id="dashboard-content " class="dashboard-content bg-white">
+	<div class="row ">
+
 		<div id="dashboard-content" class="dashboard-content">
 		<div class="row">
+
 		<div class="col-xl-6">
 			<div class="chart-statistic-box">
 				<div class="chart-txt">
@@ -150,7 +155,7 @@
 		<!--.col-->
 	</div>
 <!--Current Month Charts-->
-	<div class="row">
+	<div class="row ">
 		<div class="col-xl-6">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
 				<header class="box-typical-header panel-heading">
@@ -173,7 +178,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title">Current Month Admissions</h3>
+								<h3 class="panel-title p-2 ">Current Month Admissions</h3>
 							</div>
 						</div>
 					</div>
@@ -352,6 +357,7 @@
             min-height: 100vh;
             width: 100%;
             overflow: hidden;
+			font-size:10px;
         }
 
         .dashboard-loader {
@@ -400,16 +406,18 @@
         }
 
         .dashboard-content {
+			padding: 0;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease;
             position: relative;
             min-height: 400px;
         }
-
+		
         body.dashboard-ready .dashboard-content {
-            opacity: 1;
+			opacity: 1;
             visibility: visible;
+			width: 100%
         }
 
         body.dashboard-ready #dashboard-loader {
@@ -436,7 +444,7 @@
             color: #fff;
             font-weight: 700;
             padding: 6px 12px;
-            font-size: 12px;
+            
         }
 
         .daily-activity-total td {
@@ -522,7 +530,6 @@
 				currentIncomeRange = $(this).val();
 				drawChart();
 			});
-
 			// Reflow chart when menu toggles to avoid leftover blank space
 			$('#show-hide-sidebar-toggle, .hamburger').on('click', function () {
 				setTimeout(drawChart, 200);

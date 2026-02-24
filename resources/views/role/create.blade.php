@@ -25,7 +25,7 @@
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
-							<div class="form-group col-md-6">
+							<div class="form-group col-md-6 text-center">
 								<label>Slug</label>
 								<input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
 								<small class="text-muted">Auto from name if left blank.</small>

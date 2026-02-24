@@ -12,7 +12,7 @@
 	<div class="lead-show-shell">
 		<div class="lead-header">
 			<div>
-				<h2 class="lead-name">{{ $lead->name ?? 'Lead' }}</h2>
+				<h2 class="lead-name " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
 				<div class="lead-sub">
 					<span>{{ $lead->program->title ?? $lead->program->name ?? 'N/A' }}</span>
 					@if($lead->campus)
@@ -51,8 +51,8 @@
 		</div>
 
 		<div class="tab-content" id="tab-followups" style="display: block;">
-			<div class="d-flex justify-content-between align-items-center mb-2">
-				<h4 class="mb-0">Follow-Ups</h4>
+			<div class="d-flex justify-content-end align-items-center mb-2 p-1">
+				
 				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
 				<button id="toggle-followup-form" class="btn btn-primary btn-sm" {{ $isClosed ? 'disabled' : '' }}>
 					Add Follow-Up
@@ -70,7 +70,7 @@
 						data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}">
 						@csrf
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
-							<div class="form-row">
+							<div class="form-row" style = "gap:18px;padding-left:15px">
 								<div class="form-group col-md-3 followup-toggle">
 									<label>Follow-Up Method</label>
 									<select class="form-control" name="method">
@@ -113,18 +113,47 @@
 									</select>
 								</div>
 							</div>
-							<div class="form-row align-items-center">
-								<div class="form-group col-md-4 followup-toggle followup-hide-on-close" id="probability-wrap">
-									<label>Probability</label>
-									@php $prob = $latestFollowup->probability ?? 0; @endphp
-									<input type="range" min="0" max="100" step="5" class="form-control-range" name="probability" id="probability-range" value="{{ $prob }}">
-									<div id="probability-value" class="probability-value">Selected: {{ $prob }}%</div>
-								</div>
-								<div class="form-group col-md-8 followup-toggle">
-									<label>Remarks</label>
-									<textarea class="form-control" name="note" rows="2" placeholder="Add remarks for this follow-up"></textarea>
-								</div>
-							</div>
+							<div class="form-row align-items-center" style = "gap:18px;padding-left:15px">
+
+    <!-- Probability -->
+    <div class="form-group col-md-3  followup-toggle followup-hide-on-close" id="probability-wrap">
+        <label class="form-label small fw-semibold text-dark required">Probability</label>
+
+        <input type="range"
+               min="0"
+               max="100"
+               step="5"
+               id="probabilitySlider"
+               name="details[probability]"
+               value="{{ old('details.probability', 10) }}"
+               class="custom-range">
+
+        <div class="range-numbers pt-0 mt-1">
+            <span>0</span>
+            <span>10</span>
+            <span>20</span>
+            <span>40</span>
+            <span>60</span>
+            <span>80</span>
+            <span>100</span>
+        </div>
+
+        <div class="small semibold">
+            Selected: <span id="probabilityValue">
+                {{ old('details.probability', 10) }}%
+            </span>
+        </div>
+    </div>
+
+    <!-- Remarks -->
+    <div class="form-group col-md-9 followup-toggle">
+        <label>Remarks</label>
+        <textarea class="form-control" name="note" rows="2"
+                  placeholder="Add remarks for this follow-up"
+				  style="width:92%"></textarea>
+    </div>
+
+</div>
 							<div class="alert alert-info d-none" id="registration-link">
 								Selecting <strong>Registered</strong>? Complete the registration form first.
 								<a href="{{ route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
@@ -133,8 +162,10 @@
 								Selecting <strong>Enrolled</strong>? Complete the admission form first.
 								<a href="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
 							</div>
-							<div class="text-right">
-								<button type="submit" class="btn btn-primary">Save Follow-Up</button>
+</div>
+							<div class="text-right p-1">
+								<button type="submit" class="btn btn-primary-outline">Save Follow-Up</button>
+								<button type="button" id="cancel-followup-btn" class="btn btn-danger-outline">Cancel Follow-Up</button>
 							</div>
 						</fieldset>
 					</form>
@@ -181,72 +212,70 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
-
-		<div class="tab-content" id="tab-personal" style="display: none;">
-			<div class="card card-elevated">
-				<div class="card-body">
-					<table class="table table-bordered info-table mb-0">
-						<tbody>
-							<tr>
-								<th>Contact No</th>
-								<td>{{ $lead->phone ?? '—' }}</td>
-								<th>Email Address</th>
-								<td>{{ $lead->email ?? '—' }}</td>
-							</tr>
-							<tr>
-								<th>Interested Program</th>
-								<td>{{ $lead->program->title ?? $lead->program->name ?? '—' }}</td>
-								<th>Origin</th>
-								<td>{{ $lead->origin ?? '—' }}</td>
-							</tr>
-							<tr>
-								<th>Country</th>
-								<td>{{ data_get($lead->details, 'country', '—') }}</td>
-								<th>City</th>
-								<td>{{ $lead->city ?? '—' }}</td>
-							</tr>
-							<tr>
-								<th>Marketing Source</th>
-								<td>{{ $lead->marketing_source ?? '—' }}</td>
-								<th>Gender</th>
-								<td>{{ ucfirst(data_get($lead->details, 'gender', '—')) }}</td>
-							</tr>
-							<tr>
-								<th>Teaching Method</th>
-								<td>{{ ucfirst(data_get($lead->details, 'teaching_method', '—')) }}</td>
-								<th>Probability</th>
-								<td>{{ !is_null($latestFollowup?->probability) ? $latestFollowup->probability . '%' : '—' }}</td>
-							</tr>
-							<tr>
+			
+			<div class="tab-content" id="tab-personal" style="display: none;">
+				<div class="card card-elevated">
+					<div class="card-body">
+						<table class="table table-bordered info-table mb-0">
+							<tbody>
+								<tr>
+									<th>Contact No</th>
+									<td>{{ $lead->phone ?? '—' }}</td>
+									<th>Email Address</th>
+									<td>{{ $lead->email ?? '—' }}</td>
+									<th>Interested Program</th>
+									<td>{{ $lead->program->title ?? $lead->program->name ?? '—' }}</td>
+								</tr>
+								<tr>
+									
+									<th>Origin</th>
+									<td>{{ $lead->origin ?? '—' }}</td>
+									<th>Country</th>
+									<td>{{ data_get($lead->details, 'country', '—') }}</td>
+									<th>City</th>
+									<td>{{ $lead->city ?? '—' }}</td>
+								</tr>
+								<tr>
+									<th>Marketing Source</th>
+									<td>{{ $lead->marketing_source ?? '—' }}</td>
+									<th>Gender</th>
+									<td>{{ ucfirst(data_get($lead->details, 'gender', '—')) }}</td>
+									<th>Probability</th>
+									<td>{{ !is_null($latestFollowup?->probability) ? $latestFollowup->probability . '%' : '—' }}</td>
+								</tr>
+								<tr>
+									
+									
 								<th>Status</th>
 								<td>{{ ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')) }}</td>
 								<th>Next Follow-Up</th>
 								<td>{{ $nextFollowup?->next_action_date ? \Illuminate\Support\Carbon::parse($nextFollowup->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
-							</tr>
-							<tr>
 								<th>Campus Code</th>
 								<td>{{ $lead->campus->code ?? '—' }}</td>
+								
+							</tr>
+							
+							<tr>
+								
 								<th>Campus Name</th>
 								<td>{{ $lead->campus->name ?? '—' }}</td>
-							</tr>
-							<tr>
 								<th>Remarks</th>
 								<td colspan="3">{{ $latestFollowup->note ?? data_get($lead->details, 'remarks', '—') }}</td>
 							</tr>
+							
 						</tbody>
 					</table>
 					@if(isset($transfers) && $transfers->count())
-						<hr>
-						<h5 class="mb-2">Campus Transfer History</h5>
-						<table class="table table-bordered info-table mb-0">
-							<thead>
-								<tr>
-									<th>#</th>
-									<th>From</th>
-									<th>To</th>
-									<th>Status</th>
-									<th>Requested By</th>
+					<hr>
+					<h5 class="mb-2">Campus Transfer History</h5>
+					<table class="table table-bordered info-table mb-0">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>From</th>
+								<th>To</th>
+								<th>Status</th>
+								<th>Requested By</th>
 									<th>Approved By</th>
 									<th>Approved At</th>
 									<th>Reason</th>
@@ -267,13 +296,14 @@
 								@endforeach
 							</tbody>
 						</table>
-					@endif
+						@endif
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="lead-modal" id="lead-form-modal" aria-hidden="true">
+	</div>
+		<div class="lead-modal" id="lead-form-modal" aria-hidden="true">
 		<div class="modal-card" role="dialog" aria-modal="true">
 			<div class="modal-header">
 				<h5 class="modal-title" id="lead-form-modal-title">Form</h5>
@@ -286,10 +316,86 @@
 
 @push('styles')
 	<style>
+		*{
+			font-family: 'Proxima Nova', sans-serif;
+			font-size: 12px !important; 
+			margin: 0;
+			padding: 0;
+        }
+   .lead-show-shell {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 7px;
+    background: #fff;
+    border: 1px solid #dbe4ed;
+    border-radius: 10px;
+	height:85vh !important
+}
+		 .followup-table-wrapper {
+	max-width: 1400px;
+    border: 1px solid #dbe4ed;
+    border-radius: 6px;
+    overflow-x: auto;
+    overflow-y: scroll;
+    height: 20vh !important;
+}
+		.box-typical.box-typical-dashboard .box-typical-body {
+   			 overflow: hidden;
+		}
+		.box-typical.box-typical-dashboard{
+   			 margin:0px 0px 5px !important;
+    
+		}
+		.box-typical.box-typical-dashboard .box-typical-header{
+    		display:flex;
+
+		}
+    
+
+		.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+		.select2-container--default .select2-selection--single .select2-selection__rendered,
+		.select2-container--white .select2-selection--single .select2-selection__rendered {
+			border: solid 1px #d8e2e7;
+			-webkit-border-radius: .25rem;
+			border-radius: .25rem;
+			font-size: 1rem;
+			line-height: 1.5;
+			color: #343434;
+			padding: .375rem 25px .375rem 1rem;
+			min-height: 32px;
+			background: #fff
+		}
+		.form-label{
+			font-size: 11px;
+			font-weight: 600 ;
+			color: #343434;
+			text-transform: uppercase;
+			margin-bottom: 3px;
+			
+		}
+
+		body, button, html, input, select, textarea {
+			color: #343434;
+			height: 32px;
+			font-family: 'Proxima Nova', sans-serif;
+			line-height: 1.4;
+			text-rendering: optimizeLegibility;
+			-moz-osx-font-smoothing: grayscale;
+			-webkit-font-smoothing: antialiased;
+			-moz-font-smoothing: antialiased;
+			-o-font-smoothing: antialiased;
+		}
+        .col-md-3 {
+			flex: 0 0 200px !important;
+			max-width: 200px !important;
+			height: 62px;
+			margin-bottom: 2px ;
+			/* margin-top: 2px;    */
+		}
 		.lead-show-shell {
 			max-width: 1400px;
-			margin: 0 auto;
-			padding: 16px;
+			margin: 0 auto;	
+			padding: 7px;
 			background: #fff;
 			border: 1px solid #dbe4ed;
 			border-radius: 10px;
@@ -324,22 +430,22 @@
 		.stage-bar {
 			position: relative;
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-			gap: 6px;
-			padding: 18px 16px 16px;
+			grid-template-columns: repeat(8, 1fr);
+			gap: 10px;
+			padding: 13px 16px 7px;
 			border: 1px solid #d6e6f7;
 			border-radius: 10px;
 			background: linear-gradient(180deg, #f4f9ff 0%, #ffffff 100%);
 			overflow: hidden;
-			margin-bottom: 14px;
+			margin-bottom: 8px;
 		}
 
 		.stage-bar::before {
 			content: '';
 			position: absolute;
-			top: 30px;
-			left: 24px;
-			right: 24px;
+			top: 25px;
+			left: 66px;
+			right: 75px;
 			height: 4px;
 			background: #dbeafe;
 			border-radius: 999px;
@@ -348,7 +454,7 @@
 
 		.stage-progress {
 			position: absolute;
-			top: 30px;
+			top: 25px;
 			height: 4px;
 			background: linear-gradient(90deg, #0099f8, #00c2ff);
 			border-radius: 999px;
@@ -366,25 +472,41 @@
 		}
 
 		.stage .bullet {
-			width: 18px;
-			height: 18px;
+			width: 15px;
+			height: 15px;
 			border-radius: 50%;
 			background: #cdd9e6;
+			margin-top:5px;
+			grid-template-columns: repeat(8, 1fr);
+			gap: 10px;
 			box-shadow: 0 0 0 4px #f4f9ff;
 			transition: background 0.3s ease, transform 0.3s ease;
 		}
 
-		.stage .label {
+
+
+
+	.dropdown-menu.dropdown-menu-right {
+		top: -33px !important;
+		left: -70px !important;
+	}
+
+	.stage .label {
 			font-size: 12px;
 			text-align: center;
-			color: #4b5d73;
+			color: white !important;
 			font-weight: 700;
 			min-height: 30px;
 			padding: 6px 10px;
 			border-radius: 999px;
-			background: #e8f2fb;
+   			background: #00a8ff !important;
+    		line-height: 1.5;
 			border: 1px solid #d6e6f7;
 			white-space: nowrap;
+			grid-template-columns: repeat(8, 1fr);
+			gap: 10px;
+			margin-top:3px;
+		
 		}
 
 		.stage.active .bullet {
@@ -404,9 +526,10 @@
 		}
 
 		.stage.current .label {
-			background: #cfeaff;
-			border-color: #9fd1ff;
-			color: #0f3c6e;
+			background: #00a8ff;
+			color:white;
+			margin-top: 3px;
+			line-height: 1.5;
 		}
 
 		.lead-tabs {
@@ -436,10 +559,18 @@
 			border: 1px solid #dbe4ed;
 			box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
 		}
+		.card-body{
+			padding:0.50rem;
+		}
 
 		.followup-form {
-			margin-bottom: 14px;
+			margin-bottom: 5px;
 		}
+
+		.tab {
+   			 padding: 2px 16px !important;
+		}
+
 
 		.followup-form.hide-all .followup-toggle {
 			display: none !important;
@@ -449,11 +580,7 @@
 			display: none !important;
 		}
 
-		.probability-value {
-			margin-top: 6px;
-			font-weight: 700;
-			color: #334155;
-		}
+		
 
 		.followup-table-wrapper {
 			border: 1px solid #dbe4ed;
@@ -474,7 +601,8 @@
 			color: #334155;
 			background: #fdfefe;
 			border-color: #e6ecf2;
-			min-width: 110px;
+			width: auto;
+			height: 35px !important;
 		}
 
 		.followup-table tbody tr:nth-child(even) td {
@@ -489,9 +617,14 @@
 			background: #ffeded;
 			color: #b00020;
 		}
+		.table td{
+			height:20px !important;
+			padding:2px
+		}
 
 		.info-table th {
-			width: 22%;
+			width: 14%;
+			height:auto;
 			background: #f6f8fb;
 			color: #4c5a6a;
 		}
@@ -558,6 +691,70 @@
 			width: 100%;
 		}
 
+		.custom-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 4px;
+    background: #ddd;
+    outline: none;
+}
+
+/* Webkit Track */
+.custom-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 4px;
+}
+
+/* Webkit Thumb */
+.custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #1e88e5;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+    margin-top: -8px;
+}
+
+/* Firefox Thumb */
+.custom-range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #1e88e5;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    cursor: pointer;
+}
+	.range-numbers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+}
+.range-numbers span{
+    font-size:10px;
+    margin-bottom: 3px ;
+}
+
+
+input[name="details[probability]"] + .small {
+    margin-top: 0px;
+    font-size: 12px;
+}
+
+
+
+
+
+
+
+
+
+
 		@media (max-width: 991px) {
 			.stage-bar {
 				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -568,306 +765,263 @@
 
 @push('scripts')
 	<script>
-		(function () {
-			function toggleTabs() {
-				var tabs = document.querySelectorAll('.lead-tabs .tab');
-				tabs.forEach(function (tab) {
-					tab.addEventListener('click', function () {
-						tabs.forEach(function (t) { t.classList.remove('active'); });
-						document.querySelectorAll('.tab-content').forEach(function (c) { c.style.display = 'none'; });
-						this.classList.add('active');
-						var target = this.getAttribute('data-target');
-						document.querySelector(target).style.display = 'block';
-					});
-				});
-			}
+(function () {
 
-			function bindProbability() {
-				var range = document.getElementById('probability-range');
-				var label = document.getElementById('probability-value');
-				if (!range || !label) return;
-				var update = function () { label.textContent = 'Selected: ' + range.value + '%'; };
-				range.addEventListener('input', update);
-				update();
-			}
+    /* ===============================
+       Helpers
+    =============================== */
 
-			function bindFollowupToggle() {
-				var btn = document.getElementById('toggle-followup-form');
-				var card = document.getElementById('followup-form-card');
-				if (!btn || !card) return;
-				btn.addEventListener('click', function () {
-					var isOpen = card.style.display === 'block';
-					card.style.display = isOpen ? 'none' : 'block';
-					btn.textContent = isOpen ? 'Add Follow-Up' : 'Hide Follow-Up';
-				});
-			}
+    const $ = (selector, parent = document) => parent.querySelector(selector);
+    const $$ = (selector, parent = document) => parent.querySelectorAll(selector);
 
-			function bindFollowupSubmit() {
-				var form = document.getElementById('followup-form');
-				if (!form) return;
-				form.addEventListener('submit', function (event) {
-					event.preventDefault();
-					var submitBtn = form.querySelector('button[type="submit"]');
-					if (submitBtn) submitBtn.disabled = true;
-					var tokenInput = form.querySelector('input[name="_token"]');
-					var csrf = tokenInput ? tokenInput.value : '';
-					var formData = new FormData(form);
+    function normalize(value) {
+        return (value || '')
+            .toString()
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '_');
+    }
 
-					fetch(form.action, {
-						method: 'POST',
-						headers: {
-							'X-Requested-With': 'XMLHttpRequest',
-							'X-CSRF-TOKEN': csrf
-						},
-						credentials: 'same-origin',
-						body: formData
-					})
-						.then(function (response) {
-							if (response.ok) return response.text();
-							if (response.status === 422) {
-								return response.json().then(function (data) {
-									throw { type: 'validation', data: data };
-								});
-							}
-							throw { type: 'generic' };
-						})
-						.then(function () {
-							if (window.swal) {
-								swal({
-									title: 'Success',
-									text: 'Follow-up saved successfully.',
-									type: 'success'
-								});
-							} else {
-								alert('Follow-up saved successfully.');
-							}
-							form.reset();
-							bindProbability();
-							refreshFollowupHistory();
-						})
-						.catch(function (err) {
-							var message = 'Unable to save follow-up. Please try again.';
-							if (err && err.type === 'validation' && err.data) {
-								message = err.data.message || 'Please fix the highlighted errors and try again.';
-							}
-							if (window.swal) {
-								swal({
-									title: 'Error',
-									text: message,
-									type: 'error'
-								});
-							} else {
-								alert(message);
-							}
-						})
-						.finally(function () {
-							if (submitBtn) submitBtn.disabled = false;
-						});
-				});
-			}
+    /* ===============================
+       Tabs
+    =============================== */
 
-			function refreshFollowupHistory() {
-				var table = document.querySelector('.followup-table');
-				if (!table) return;
-				fetch(window.location.href, {
-					headers: { 'X-Requested-With': 'XMLHttpRequest' },
-					credentials: 'same-origin'
-				})
-					.then(function (response) { return response.text(); })
-					.then(function (html) {
-						var doc = document.implementation.createHTMLDocument('');
-						doc.documentElement.innerHTML = html;
-						var newTbody = doc.querySelector('.followup-table tbody');
-						var oldTbody = table.querySelector('tbody');
-						if (newTbody && oldTbody) {
-							oldTbody.innerHTML = newTbody.innerHTML;
-						}
-					})
-					.catch(function () {
-						// If refresh fails, user can still manually refresh.
-					});
-			}
+    function initTabs() {
+        const tabs = $$('.lead-tabs .tab');
+        const contents = $$('.tab-content');
 
-			function openLeadModal(url, title) {
-				var modal = document.getElementById('lead-form-modal');
-				var frame = document.getElementById('lead-form-modal-frame');
-				var label = document.getElementById('lead-form-modal-title');
-				if (!modal || !frame) return;
-				if (label) label.textContent = title || 'Form';
-				frame.src = url;
-				modal.classList.add('show');
-				modal.setAttribute('aria-hidden', 'false');
-				document.body.style.overflow = 'hidden';
-			}
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.style.display = 'none');
 
-			function closeLeadModal() {
-				var modal = document.getElementById('lead-form-modal');
-				var frame = document.getElementById('lead-form-modal-frame');
-				if (!modal) return;
-				modal.classList.remove('show');
-				modal.setAttribute('aria-hidden', 'true');
-				if (frame) frame.src = '';
-				document.body.style.overflow = '';
-			}
+                this.classList.add('active');
+                const target = this.dataset.target;
+                if (target) $(target).style.display = 'block';
+            });
+        });
+    }
 
-			function bindLeadModal() {
-				var modal = document.getElementById('lead-form-modal');
-				var closeBtn = document.getElementById('lead-form-modal-close');
-				if (closeBtn) closeBtn.addEventListener('click', closeLeadModal);
-				if (modal) {
-					modal.addEventListener('click', function (event) {
-						if (event.target === modal) closeLeadModal();
-					});
-				}
-				document.addEventListener('keydown', function (event) {
-					if (event.key === 'Escape') closeLeadModal();
-				});
-				window.addEventListener('message', function (event) {
-					if (event && event.data && event.data.type === 'lead-modal-close') {
-						closeLeadModal();
-					}
-				});
-			}
+    /* ===============================
+       Probability Slider
+    =============================== */
 
-			function updateStageProgress() {
-				var bar = document.querySelector('.stage-bar');
-				var progress = document.querySelector('.stage-progress');
-				if (!bar || !progress) return;
+    function initProbability() {
+        const range = $('#probability-range');
+        const label = $('#probability-value');
+        if (!range || !label) return;
 
-				var bullets = bar.querySelectorAll('.stage .bullet');
-				if (!bullets.length) return;
+        const update = () => {
+            label.textContent = `Selected: ${range.value}%`;
+        };
 
-				var currentStage = bar.querySelector('.stage.current .bullet') ||
-					bar.querySelector('.stage.active:last-child .bullet') ||
-					bullets[0];
+        range.addEventListener('input', update);
+        update();
+    }
 
-				var barRect = bar.getBoundingClientRect();
-				var firstRect = bullets[0].getBoundingClientRect();
-				var currentRect = currentStage.getBoundingClientRect();
+    /* ===============================
+       Followup Toggle
+    =============================== */
 
-				var start = firstRect.left + firstRect.width / 2 - barRect.left;
-				var end = currentRect.left + currentRect.width / 2 - barRect.left;
-				var width = Math.max(0, end - start);
+    function initFollowupToggle() {
+        const btn = $('#toggle-followup-form');
+        const card = $('#followup-form-card');
+        if (!btn || !card) return;
 
-				progress.style.left = start + 'px';
-				progress.style.width = width + 'px';
-			}
+        btn.addEventListener('click', () => {
+            const isOpen = card.style.display === 'block';
+            card.style.display = isOpen ? 'none' : 'block';
+            btn.textContent = isOpen ? 'Add Follow-Up' : 'Hide Follow-Up';
+        });
+    }
 
-			function bindStageProgressResize() {
-				updateStageProgress();
-				var timeout;
-				window.addEventListener('resize', function () {
-					clearTimeout(timeout);
-					timeout = setTimeout(updateStageProgress, 100);
-				});
-			}
+    /* ===============================
+       Followup Submit (AJAX)
+    =============================== */
 
-			function bindStageFields() {
-				var stage = document.getElementById('followup-stage');
-				var nextWrap = document.getElementById('next-followup-wrap');
-				var campusWrap = document.getElementById('campus-wrap');
-				var nextInput = document.getElementById('next_action_date');
-				var campusInput = document.getElementById('campus_id');
-				var probabilityWrap = document.getElementById('probability-wrap');
-				var regLink = document.getElementById('registration-link');
-				var admLink = document.getElementById('admission-link');
-				var toggleables = document.querySelectorAll('.followup-toggle');
-				var hideOnClose = document.querySelectorAll('.followup-hide-on-close');
-				var form = document.getElementById('followup-form');
-				var card = document.getElementById('followup-form-card');
-				if (!stage || !nextWrap || !campusWrap) return;
+    function initFollowupSubmit() {
+        const form = $('#followup-form');
+        if (!form) return;
 
-				function normalizeStage(value) {
-					return (value || '').toString().trim().toLowerCase().replace(/\s+/g, '_');
-				}
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-				function getStageKey(stageEl) {
-					var el = stageEl || stage;
-					var val = normalizeStage(el.value);
-					var option = el.options[el.selectedIndex];
-					var text = option ? option.text : '';
-					var textKey = normalizeStage(text);
-					return val || textKey;
-				}
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
 
-				function getStageFlags(stageEl) {
-					var el = stageEl || stage;
-					var key = getStageKey(el);
-					var option = el.options[el.selectedIndex];
-					var text = option ? option.text : '';
-					var textLower = (text || '').toString().toLowerCase();
-					var isRegistered = key.indexOf('register') !== -1 || textLower.indexOf('register') !== -1;
-					var isNotInterested = key.indexOf('not_interesting') !== -1 || textLower.indexOf('not interesting') !== -1;
-					var isEnrolled = key.indexOf('enroll') !== -1 || textLower.indexOf('enroll') !== -1;
-					return { isRegistered: isRegistered, isNotInterested: isNotInterested, isEnrolled: isEnrolled };
-				}
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': form.querySelector('[name="_token"]')?.value || ''
+                    },
+                    credentials: 'same-origin',
+                    body: new FormData(form)
+                });
 
-				if (regLink && form) {
-					regLink.addEventListener('click', function (event) {
-						event.preventDefault();
-						var regUrl = form.getAttribute('data-registration-url');
-						if (regUrl) openLeadModal(regUrl, 'Registration Form');
-					});
-				}
+                if (response.status === 422) {
+                    const data = await response.json();
+                    throw new Error(data.message || 'Validation error.');
+                }
 
-				function applyStageRules(stageEl, allowModal) {
-					var key = getStageKey(stageEl);
-					var flags = getStageFlags(stageEl);
-					var hideAll = flags.isRegistered || flags.isEnrolled;
-					var hideClosedFields = flags.isNotInterested;
+                if (!response.ok) throw new Error();
 
-					if (card) {
-						card.classList.toggle('hide-all', hideAll);
-						card.classList.toggle('hide-closed', hideClosedFields);
-					}
+                showAlert('Success', 'Follow-up saved successfully.', 'success');
+                form.reset();
+                initProbability();
+                refreshFollowupHistory();
 
-					toggleables.forEach(function (el) {
-						el.style.display = hideAll ? 'none' : '';
-					});
+            } catch (err) {
+                showAlert('Error', err.message || 'Unable to save follow-up.', 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        });
+    }
 
-					hideOnClose.forEach(function (el) {
-						el.style.display = hideClosedFields ? 'none' : '';
-					});
+    function showAlert(title, text, type) {
+        if (window.swal) {
+            swal({ title, text, type });
+        } else {
+            alert(text);
+        }
+    }
 
-					if (nextInput) nextInput.disabled = hideAll || hideClosedFields;
-					if (campusInput) campusInput.disabled = hideAll || hideClosedFields;
-					if (probabilityWrap) {
-						var probInput = probabilityWrap.querySelector('input');
-						if (probInput) probInput.disabled = hideAll || hideClosedFields;
-					}
-					if (regLink) regLink.classList.toggle('d-none', key !== 'registered' && !flags.isRegistered);
-					if (admLink) admLink.classList.toggle('d-none', key !== 'enroll' && !flags.isEnrolled);
+    /* ===============================
+       Cancel Followup
+    =============================== */
 
-					if (allowModal && flags.isRegistered && form) {
-						var regUrl = form.getAttribute('data-registration-url');
-						if (regUrl) openLeadModal(regUrl, 'Registration Form');
-					}
-					if (allowModal && flags.isEnrolled && form) {
-						var admUrl = form.getAttribute('data-admission-url');
-						if (admUrl) openLeadModal(admUrl, 'Admission Form');
-					}
-				}
+   function initFollowupCancel() {
+    const btn = document.getElementById('cancel-followup-btn');
+    const form = document.getElementById('followup-form');
+    const card = document.getElementById('followup-form-card');
 
-				window.handleFollowupStageChange = function (el) {
-					applyStageRules(el || stage, true);
-				};
+    if (!btn || !form) return;
 
-				stage.addEventListener('change', function () { applyStageRules(stage, true); });
-				stage.addEventListener('input', function () { applyStageRules(stage, true); });
-				stage.addEventListener('select2:select', function () { applyStageRules(stage, true); });
-				stage.addEventListener('select2:close', function () { applyStageRules(stage, true); });
-				applyStageRules(stage, false);
-			}
+    btn.addEventListener('click', function () {
 
-			document.addEventListener('DOMContentLoaded', function () {
-				toggleTabs();
-				bindProbability();
-				bindFollowupToggle();
-				bindFollowupSubmit();
-				bindStageFields();
-				bindStageProgressResize();
-				bindLeadModal();
-			});
-		})();
-	</script>
+        form.reset();
+
+        // probability update
+        const range = document.getElementById('probability-range');
+        const label = document.getElementById('probability-value');
+        if (range && label) {
+            label.textContent = 'Selected: ' + range.value + '%';
+        }
+
+        if (card) {
+            card.style.display = 'none';
+        }
+
+        if (window.swal) {
+            swal({
+                title: 'Cancelled',
+                text: 'Follow-up cancelled successfully.',
+                type: 'success'
+            });
+        } else {
+            alert('Follow-up cancelled successfully.');
+        }
+
+    });
+}
+
+    /* ===============================
+       Refresh History
+    =============================== */
+
+    async function refreshFollowupHistory() {
+        const table = $('.followup-table');
+        if (!table) return;
+
+        try {
+            const response = await fetch(window.location.href, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+
+            const html = await response.text();
+            const doc = document.implementation.createHTMLDocument('');
+            doc.documentElement.innerHTML = html;
+
+            const newBody = doc.querySelector('.followup-table tbody');
+            const oldBody = table.querySelector('tbody');
+
+            if (newBody && oldBody) {
+                oldBody.innerHTML = newBody.innerHTML;
+            }
+        } catch (_) { }
+    }
+
+    /* ===============================
+       Stage Progress Bar
+    =============================== */
+
+    function updateStageProgress() {
+        const bar = $('.stage-bar');
+        const progress = $('.stage-progress');
+        if (!bar || !progress) return;
+
+        const bullets = $$('.stage .bullet', bar);
+        if (!bullets.length) return;
+
+        const current =
+            $('.stage.current .bullet', bar) ||
+            $('.stage.active:last-child .bullet', bar) ||
+            bullets[0];
+
+        const barRect = bar.getBoundingClientRect();
+        const startRect = bullets[0].getBoundingClientRect();
+        const currentRect = current.getBoundingClientRect();
+
+        const start = startRect.left + startRect.width / 2 - barRect.left;
+        const end = currentRect.left + currentRect.width / 2 - barRect.left;
+
+        progress.style.left = start + 'px';
+        progress.style.width = Math.max(0, end - start) + 'px';
+    }
+
+    function initStageProgress() {
+        updateStageProgress();
+        window.addEventListener('resize', () => {
+            setTimeout(updateStageProgress, 100);
+        });
+    }
+
+    /* ===============================
+       INIT ALL
+    =============================== */
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initTabs();
+        initProbability();
+        initFollowupToggle();
+        initFollowupSubmit();
+        initFollowupCancel();
+        initStageProgress();
+    });
+
+})();
+</script>
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const slider = document.getElementById("probabilitySlider");
+    const output = document.getElementById("probabilityValue");
+
+    function updateSlider() {
+        const value = slider.value;
+        const percent = (value - slider.min) / (slider.max - slider.min) * 100;
+
+        slider.style.background =
+            `linear-gradient(to right, #1e88e5 0%, #1e88e5 ${percent}%, #ddd ${percent}%, #ddd 100%)`;
+
+        output.textContent = value + "%";
+    }
+
+    updateSlider();
+    slider.addEventListener("input", updateSlider);
+});
+</script>
 @endpush

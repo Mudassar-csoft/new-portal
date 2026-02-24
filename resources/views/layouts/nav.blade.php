@@ -3,14 +3,15 @@
 	<nav class="side-menu">
 		<ul class="side-menu-list">
 			<li>
-				<a href="{{ url('/') }}" style="padding-left:14px">
+				<span style="padding-left:10px">
+				<!-- <a href="{{ url('/') }}" style="padding-left:10px"> -->
 					<img class="font-icon-dashboard" src="img/navbarIcons/dashboard.png" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Dashboard</span>
 				</a>
 			</li>                                   
 			<li class="brown with-sub">
-				<span style="padding-left:14px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/enquiry.JPG" alt="Leads"
 					 	style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Leads Management</span></span>
@@ -170,7 +171,7 @@
 				</ul>
 			</li>
 			<li class="purple with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/admission.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Registration Management</span></span>
@@ -180,7 +181,7 @@
 				</ul>
 			</li>
 			<li class="gold orange with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/admissions.webp" alt="Admissions"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Admission Management</span></span>
@@ -190,7 +191,7 @@
 				</ul>
 			</li>
 			<li class="magenta with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/students.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Student Management</span></span>
@@ -218,7 +219,7 @@
 				</ul>
 			</li>
 			<li class="blue with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/batch-time.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Batches &amp; Time Table</span></span>
@@ -242,7 +243,7 @@
 				</ul>
 			</li>
 			<li class="green with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/courses.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Programmes</span></span>
@@ -258,7 +259,7 @@
 				</ul>
 			</li>
 			<li class="orange-red with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/campuses.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Campuses / Franchise</span></span>
@@ -276,7 +277,7 @@
 				</ul>
 			</li>
 			<li class="grey with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/humanresource.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Human Resources</span></span>
@@ -293,7 +294,7 @@
 				</ul>
 			</li>
 			<li class="gold with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/expense.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Finance Management</span></span>
@@ -317,10 +318,10 @@
 								</ul>
 							</li>
 							<li><a href="{{ route('finance.expense.rent') }}" class="stage-link"><span class="lbl">Building Rent</span></a></li>
-							<li><a href="{{ route('finance.expense.marketing') }}" class="stage-link"><span class="lbl">Marketing</span></a></li>
-							<li><a href="{{ route('finance.expense.assets') }}" class="stage-link"><span class="lbl">Asset Purchase</span></a></li>
-							<li><a href="{{ route('finance.expense.payroll') }}" class="stage-link"><span class="lbl">Payroll</span></a></li>
-							<li><a href="{{ route('finance.expense.all') }}" class="stage-link"><span class="lbl">All Expenses</span></a></li>
+							<li><a href="{{ route('finance.expense.marketing') }}" class="stage-link"><span class="lbl ">Marketing</span></a></li>
+							<li><a href="{{ route('finance.expense.assets') }}" class="stage-link"><span class="lbl ">Asset Purchase</span></a></li>
+							<li><a href="{{ route('finance.expense.payroll') }}" class="stage-link"><span class="lbl ">Payroll</span></a></li>
+							<li><a href="{{ route('finance.expense.all') }}" class="stage-link"><span class="lbl ">All Expenses</span></a></li>
 						</ul>
 					</li>
 					<li><a href="{{ route('finance.payees') }}" class="stage-link"><span class="lbl">Supplier &amp; Payee</span></a></li>
@@ -329,7 +330,7 @@
 				</ul>
 			</li>
 			<li class="blue with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/certificate.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Certificate Management</span></span>
@@ -349,7 +350,7 @@
 				</ul>
 			</li>
 			<li class="green with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/user.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">User Management</span></span>
@@ -361,7 +362,7 @@
 				</ul>
 			</li>
 			<li class="gold orange with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/event.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Event Management</span></span>
@@ -380,7 +381,7 @@
 				</ul>
 			</li>
 			<li class="magenta with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/marketing.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Marketing Management</span></span>
@@ -400,7 +401,7 @@
 				</ul>
 			</li>
 			<li class="brown with-sub">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Reports</span></span>
@@ -414,13 +415,13 @@
 				</ul>
 			</li>
 			<li class="brown">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/website.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Website</span></span>
 			</li>
 			<li class="brown">
-				<span style="padding-left:13px">
+				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/goto.webp" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Website Admin Panel</span></span>
@@ -671,3 +672,19 @@
 			</ul>
 		</section>
 	</nav><!--.side-menu-->
+
+
+	<style>
+		.label.label-pill.label-custom{
+			padding: 4px 4px !important ;
+			font-size:12px !important;
+			width:auto !important;
+			margin-right:5px;
+		}
+
+		
+
+.side-menu-list li.with-sub>span{
+	padding-right:8px;
+}
+	</style>

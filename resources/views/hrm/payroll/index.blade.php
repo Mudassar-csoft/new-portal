@@ -46,14 +46,14 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Salary Structure</h3>
+                        <h3 class="panel-title form-label">Salary Structure</h3>
                     </header>
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.payroll.structures.store') }}" class="mb-3 hrm-box">
                             @csrf
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label>Employee</label>
+                            <div class="form-row mb-0" style="gap:2px;">
+                                <div class="form-group col-md-3 mt-0">
+                                    <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
                                         @foreach($employees as $employee)
@@ -62,42 +62,48 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>From</label>
+                                    <label class="form-label required" >From</label>
                                     <input type="date" name="effective_from" class="form-control" value="{{ now()->toDateString() }}" required>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>To</label>
+                                    <label class="form-label required" >To</label>
                                     <input type="date" name="effective_to" class="form-control">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>Basic</label>
+                                    <label class="form-label required" >Basic</label>
                                     <input type="number" min="0" step="0.01" name="basic_salary" class="form-control" required>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>OT Rate</label>
+                                    <label class="form-label required" >OT Rate</label>
                                     <input type="number" min="0" step="0.01" name="overtime_rate" class="form-control" value="0">
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label>Allowances JSON</label>
+                            <div class="form-row mt-0" style="gap:5px;">
+                                <div class="form-group col-md-4">
+                                    <label class="form-label required" >Allowances JSON</label>
                                     <input type="text" name="allowances_json" class="form-control" placeholder='{"house_rent":5000,"transport":2000}'>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label>Deductions JSON</label>
+                                <div class="form-group col-md-4">
+                                    <label class="form-label required" >Deductions JSON</label>
                                     <input type="text" name="deductions_json" class="form-control" placeholder='{"tax":1000,"eobi":200}'>
                                 </div>
+                                <div class="form-group col-md-4 d-flex justify-center align-center" style="gap:5px;">
+                                    <input type="checkbox" class="mt-4" name="is_active" value="1" checked>
+                                    <label class="form-label required justify-center align-middle" style="margin-top:25px;" > Active Structure</label>
+                                </div>
                             </div>
-                            <label><input type="checkbox" name="is_active" value="1" checked> Active Structure</label>
-                            <button class="btn btn-inline btn-primary-outline" type="submit">Save Structure</button>
+                            <div class="text-right">
+
+                                <button class="btn btn-inline btn-primary-outline" type="submit">Save Structure</button>
+                            </div>
                         </form>
 
                         <form method="POST" action="{{ route('hrm.payroll.advances.store') }}" class="hrm-box">
                             @csrf
-                            <h5>Advance / Loan</h5>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label>Employee</label>
+                            <h5 class="form-label">Advance / Loan</h5>
+                            <div class="form-row" style="gap:3px;">
+                                <div class="form-group col-md-3">
+                                    <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
                                         @foreach($employees as $employee)
@@ -105,12 +111,15 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-2"><label>Amount</label><input type="number" min="1" step="0.01" name="amount" class="form-control" required></div>
-                                <div class="form-group col-md-2"><label>Installment</label><input type="number" min="0" step="0.01" name="installment_amount" class="form-control"></div>
-                                <div class="form-group col-md-2"><label>Issued Date</label><input type="date" name="issued_date" class="form-control" value="{{ now()->toDateString() }}"></div>
-                                <div class="form-group col-md-2"><label>Remarks</label><input type="text" name="remarks" class="form-control"></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >Amount</label><input type="number" min="1" step="0.01" name="amount" class="form-control" required></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >Installment</label><input type="number" min="0" step="0.01" name="installment_amount" class="form-control"></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >Issued Date</label><input type="date" name="issued_date" class="form-control" value="{{ now()->toDateString() }}"></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >Remarks</label><input type="text" name="remarks" class="form-control"></div>
                             </div>
-                            <button class="btn btn-inline btn-primary-outline" type="submit">Save Advance</button>
+                            <div class="text-right">
+
+                                <button class="btn btn-inline btn-primary-outline" type="submit">Save Advance</button>
+                            </div>
                         </form>
                     </div>
                 </section>
@@ -119,14 +128,14 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Payroll Month Closing</h3>
+                        <h3 class="panel-title form-label">Payroll Month Closing</h3>
                     </header>
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.payroll.runs.store') }}" class="mb-3 hrm-box">
                             @csrf
-                            <div class="form-row">
+                            <div class="form-row" style="gap:4px;">
                                 <div class="form-group col-md-3">
-                                    <label>Campus</label>
+                                    <label class="form-label required" >Campus</label>
                                     <select name="campus_id" class="form-control">
                                         <option value="">All</option>
                                         @foreach($campuses as $campus)
@@ -135,14 +144,16 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>Month</label>
+                                    <label class="form-label required" >Month</label>
                                     <input type="month" name="payroll_month" class="form-control" value="{{ now()->format('Y-m') }}" required>
                                 </div>
-                                <div class="form-group col-md-2"><label>From</label><input type="date" name="from_date" class="form-control" value="{{ now()->startOfMonth()->toDateString() }}" required></div>
-                                <div class="form-group col-md-2"><label>To</label><input type="date" name="to_date" class="form-control" value="{{ now()->endOfMonth()->toDateString() }}" required></div>
-                                <div class="form-group col-md-3"><label>Notes</label><input type="text" name="notes" class="form-control"></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >From</label><input type="date" name="from_date" class="form-control" value="{{ now()->startOfMonth()->toDateString() }}" required></div>
+                                <div class="form-group col-md-2"><label class="form-label required" >To</label><input type="date" name="to_date" class="form-control" value="{{ now()->endOfMonth()->toDateString() }}" required></div>
+                                <div class="form-group col-md-3"><label class="form-label required" >Notes</label><input type="text" name="notes" class="form-control"></div>
+                                <div class=" ml-md-4"style="        margin-left: 12.5rem !important;margin-top: 20px;">
+                                    <button class="btn btn-inline btn-primary-outline" type="submit">Generate Payroll Run</button>
+                                </div>
                             </div>
-                            <button class="btn btn-inline btn-primary-outline" type="submit">Generate Payroll Run</button>
                         </form>
 
                         <div class="table-responsive">
@@ -180,7 +191,7 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card mt-3">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Payslips / Payroll Items</h3>
+                <h3 class="panel-title form-label">Payslips / Payroll Items</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <div class="table-responsive">
@@ -241,6 +252,18 @@
 
 @push('styles')
     <style>
+        .col-md-4{
+             flex: 0 0 31.333333%;
+             max-width: 33.333333% ;
+        }
+        .col-md-2{
+            flex: 0 0 16.666667%;
+        max-width: 18.996667%;
+        }
+        .col-md-3 {
+    flex: 0 0 200px !important;
+    max-width: 114px !important;
+}
         .hrm-shell { padding: 8px 0 16px; }
         .payroll-stat {
             border-radius: 10px;

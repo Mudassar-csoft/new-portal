@@ -19,14 +19,14 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
             <header class="box-typical-header panel-heading">
-                <h3 class="panel-title">Announcements &amp; Notifications</h3>
+                <h3 class="panel-title form-label">Announcements &amp; Notifications</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('hrm.announcements.store') }}" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Campus</label>
+                    <div class="form-row" style="gap:8px;">
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All</option>
                                 @foreach($campuses as $campus)
@@ -34,8 +34,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Department</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Department</label>
                             <select name="department_id" class="form-control">
                                 <option value="">All</option>
                                 @foreach($departments as $department)
@@ -43,8 +43,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Audience Scope</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Audience Scope</label>
                             <select name="audience_scope" class="form-control">
                                 <option value="all">All</option>
                                 <option value="campus">Campus</option>
@@ -52,8 +52,8 @@
                                 <option value="role">Role</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Status</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Status</label>
                             <select name="status" class="form-control">
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
@@ -62,32 +62,44 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row" style="gap:8px;">
                         <div class="form-group col-md-4">
-                            <label>Title</label>
+                            <label class="form-label required" >Title</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Publish At</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Publish At</label>
                             <input type="datetime-local" name="publish_at" class="form-control">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Expire At</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Expire At</label>
                             <input type="datetime-local" name="expire_at" class="form-control">
                         </div>
-                        <div class="form-group col-md-2">
-                            <label>Channels</label>
-                            <div class="d-flex flex-column">
-                                <label><input type="checkbox" name="channel_in_app" value="1" checked> In-app</label>
-                                <label><input type="checkbox" name="channel_email" value="1"> Email</label>
-                                <label><input type="checkbox" name="channel_sms" value="1"> SMS</label>
-                                <label><input type="checkbox" name="channel_whatsapp" value="1"> WhatsApp</label>
+                        <div class="form-group col-md-5">
+                            <label class="form-label required" >Channels</label>
+                            <div class="d-flex mt-3" style="gap:5px;">
+                                <div class="d-flex">
+                                    <input type="checkbox" name="channel_in_app" value="1" checked>
+                                    <label class="ml-1" > In-app</label>
+                                </div>
+                                <div class="d-flex">
+                                    <input type="checkbox" name="channel_email" value="1">
+                                    <label class="ml-1" > Email</label>
+                                </div>
+                                <div class="d-flex">
+                                    <input type="checkbox" name="channel_sms" value="1">
+                                    <label class="ml-1" > SMS</label>
+                                </div>
+                                <div class="d-flex">
+                                    <input type="checkbox" name="channel_whatsapp" value="1">
+                                    <label class="ml-1" > WhatsApp</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Message / Policy Update</label>
+                        <label class="form-label required" >Message / Policy Update</label>
                         <textarea name="message" class="form-control" rows="3" required></textarea>
                     </div>
 
@@ -143,6 +155,10 @@
 
 @push('styles')
     <style>
+        .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 23.333333%;
+}
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }

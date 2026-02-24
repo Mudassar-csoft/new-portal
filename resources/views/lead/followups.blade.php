@@ -13,28 +13,28 @@
 			<p>Loading follow-ups...</p>
 		</div>
 
-		<div id="follow-content" class="follow-content">
+		<div id="follow-content" class="follow-content p-0 m-0 ">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
-				<div class="follow-tab-bar">
-					@foreach ($tabs as $key => $label)
-						<div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}">
-							<span class="label-text">{{ $label }}</span>
-							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-						</div>
-					@endforeach
-				</div>
+				<div class="follow-tab-bar m-0 pt-3 small" style = "gap:2px;">
+    @foreach ($tabs as $key => $label)
+        <div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
+            <span class="label-text">{{ $label }}</span>
+            <span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
+        </div>
+    @endforeach
+</div>
 
 				<div class="box-typical-body panel-body follow-body">
 					<div class="follow-controls">
-						<div class="form-inline">
-							<label class="mr-2 mb-0">Show</label>
-							<select class="form-control form-control-sm">
+						<div class="d-flex" style="gap:0.5rem;align-items: center;">
+							<label class="">Show</label>
+							<select class="form-select form-select-sm " >
 								<option>10</option>
 								<option>25</option>
 								<option>50</option>
 							</select>
-							<label class="ml-2 mb-0">entries</label>
-						</div>
+							<label class="">Entries</label>
+							</div>
 						<div class="follow-search">
 							<input type="text" id="follow-search" class="form-control form-control-sm" placeholder="Search...">
 							<i class="fa fa-search"></i>
@@ -113,6 +113,47 @@
 
 @push('styles')
 	<style>
+		* {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important; /* uniform font size */
+    margin: 0;
+    padding: 0;
+    
+}
+
+.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 32px;
+    background: #fff
+}
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    
+}
+
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
 		.follow-shell {
 			position: relative;
 			min-height: 100vh;
@@ -181,7 +222,12 @@
 		body.follow-ready #follow-loader {
 			display: none;
 		}
-
+		.follow-tab.active{
+			color: #0f3c6e;
+			background-color:white;	
+			border-radius: 5px;
+			border-bottom: 2px solid #008efb;
+		}
 		@keyframes bounce {
 			0%, 80%, 100% {
 				transform: translateY(0);
@@ -203,9 +249,8 @@
 		.follow-tab-bar {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 12px;
-			padding: 14px 18px 10px;
-			border-bottom: 3px solid #008efb;
+			    padding: 14px 18px 10px;
+    border-bottom: 3px solid #008efb;
 			background: #f6f8fb;
 			border-radius: 10px 10px 0 0;
 		}
@@ -213,9 +258,9 @@
 		.follow-tab {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
-			padding: 8px 14px;
-			font-weight: 700;
+			gap: 4px;
+			padding: 8px 6px;
+			font-weight: 600;
 			color: #5f6f7f;
 			cursor: pointer;
 			position: relative;
@@ -224,13 +269,14 @@
 
 		.follow-tab.active {
 			color: #0f3c6e;
-			border-bottom-color: #00a8ff;
+			background-color:white;	
+			border-radius: 5px;
+			background-color:white;
 		}
 
 		.follow-tab .badge {
-			padding: 6px 10px;
 			border-radius: 999px;
-			font-size: 12px;
+			font-size: 11px;
 			line-height: 1;
 		}
 
@@ -266,6 +312,8 @@
 		.follow-table {
 			margin-bottom: 12px;
 			border: 1px solid #dbe4ed;
+			text-align: center;
+
 		}
 
 		.follow-table thead th {
@@ -316,9 +364,33 @@
 			white-space: nowrap;
 		}
 
-		.follow-action-dropdown .dropdown-menu {
-			min-width: 220px;
-		}
+		.table a {
+    border-bottom: none !important;
+  
+}
+
+
+
+		.table-responsive {
+    overflow: visible !important;  
+}
+		.follow-card, .follow-body {
+    overflow: visible !important;
+}
+	
+		.follow-action-dropdown {
+    position: relative;
+
+}
+
+.follow-action-dropdown .dropdown-menu {
+	font-size:12px !important;
+	min-width: 180px;
+    position: absolute;  
+    top:240px !important;          
+    left: -73px !important;
+    z-index: 9999;       
+}
 	</style>
 @endpush
 

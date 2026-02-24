@@ -24,7 +24,7 @@
 
     <div class="finance-header">
         <div>
-            <h1 class="finance-title">{{ $pageTitle ?? 'Finance Dashboard' }}</h1>
+            <h1 class="finance-title form-label">{{ $pageTitle ?? 'Finance Dashboard' }}</h1>
             <p class="finance-subtitle">Live finance summary by campus/franchise.</p>
         </div>
         <div class="finance-filter-summary-wrap">
@@ -46,7 +46,7 @@
             </div>
             <form class="finance-filter-form" method="GET" action="{{ route('finance.dashboard') }}">
                 <div class="finance-filter-field">
-                    <label for="filter-campus-id">Campus</label>
+                     <label class="form-label required" for="filter-campus-id">Campus</label>
                     <select class="form-control" id="filter-campus-id" name="campus_id">
                         <option value="">All Campuses</option>
                         @foreach($campuses as $campus)
@@ -57,11 +57,11 @@
                     </select>
                 </div>
                 <div class="finance-filter-field">
-                    <label for="filter-from">From</label>
+                     <label class="form-label required" for="filter-from">From</label>
                     <input type="date" class="form-control" id="filter-from" name="from" value="{{ $filters['from'] ?? '' }}">
                 </div>
                 <div class="finance-filter-field">
-                    <label for="filter-to">To</label>
+                     <label class="form-label required" for="filter-to">To</label>
                     <input type="date" class="form-control" id="filter-to" name="to" value="{{ $filters['to'] ?? '' }}">
                 </div>
                 <div class="finance-filter-actions">
@@ -170,6 +170,34 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
     <style>
+         * {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important; 
+    margin: 0;
+    padding: 0;
+    
+}
+
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    
+}
+
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
         .finance-dashboard { padding: 6px 0 16px; }
         .finance-header {
             display: flex;

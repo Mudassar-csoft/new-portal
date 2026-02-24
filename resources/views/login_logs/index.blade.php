@@ -15,17 +15,17 @@
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
-							<table class="table table-hover table-striped" id="login-logs-table">
+							<table class="table table-hover table-striped text-center" id="login-logs-table">
 								<thead>
-									<tr>
-										<th>Sr#</th>
-										<th>User</th>
-										<th>Email</th>
-										<th>Action</th>
-										<th>IP</th>
-										<th>Location</th>
-										<th>User Agent</th>
-										<th>Logged At</th>
+									<tr >
+										<th class="text-center">Sr#</th>
+										<th class="text-center">User</th>
+										<th class="text-center">Email</th>
+										<th class="text-center">Action</th>
+										<th class="text-center">IP</th>
+										<th class="text-center">Location</th>
+										<th class="text-center">User Agent</th>
+										<th class="text-center">Logged At</th>
 									</tr>
 								</thead>
 							</table>
@@ -40,6 +40,7 @@
 @push('styles')
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
 	<style>
+		
 		.login-logs .box-typical-body {
 			padding: 16px;
 			overflow-x: hidden;

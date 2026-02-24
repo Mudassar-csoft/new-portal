@@ -17,7 +17,7 @@
 				<header class="box-typical-header panel-heading lead-header">
 					<div class="tbl w-100">
 						<div class="tbl-row">
-							<div class="tbl-cell tbl-cell-title">
+							<div class="tbl-cell tbl-cell-title p-0 m-0">
 								<h2 class="panel-title lead-title">Create New Lead <small class="text-muted ml-2">(All fields marked with * are required)</small></h2>
 							</div>
 							<div class="text-right" style="width: 300px; text-align: left !important;">
@@ -39,11 +39,11 @@
 						@include('lead.certification')
 						@include('lead.coworking')
 						@include('lead.study_abroad')
-						<div class="form-actions text-right mt-4">
+						<div class="form-actions text-right mt-2">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
 							<button type="submit" class="btn btn-inline btn-primary-outline">Create Lead</button>
 
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline">Cancel</a>
 						</div>
 					</form>
 				</div>
@@ -55,10 +55,13 @@
 @push('styles')
 	<style>
 		.lead-shell {
+			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
 			min-height: 100vh;
 			width: 100%;
 			overflow: hidden;
+			padding: 0;
+			margin: 0;
 		}
 
 		.lead-loader {
@@ -135,7 +138,7 @@
 		}
 
 		.lead-body {
-			padding: 20px 20px 10px;
+			padding: 10px 10px 5px;
 			overflow: visible !important;
 		}
 
@@ -145,7 +148,7 @@
 		}
 
 		.lead-create-card .panel-heading {
-			padding: 15px 20px;
+			padding: 10px 20px;
 		}
 
 		.lead-type-select {
@@ -155,8 +158,8 @@
 		}
 
 		.lead-title {
-			font-size: 22px;
-			font-weight: 700;
+			font-size: 18px;
+			font-weight: 500;
 		}
 
 		.lead-form {
@@ -171,7 +174,7 @@
 
 		.lead-form-title {
 			margin: 0 0 12px;
-			font-size: 16px;
+			font-size: 12px;
 			font-weight: 700;
 			color: #54667a;
 		}
@@ -184,8 +187,8 @@
 
 		.field-error {
 			color: #e53935;
-			font-size: 12px;
-			margin-top: 6px;
+			font-size: 14px;
+			margin-top: 4px;
 		}
 
 		.form-control.is-invalid,
@@ -334,7 +337,7 @@
 
     .tbl-cell.text-right {
         text-align: left;
-        margin-top: 8px;
+        margin-top: 0px;
     }
 
     .lead-type-select {

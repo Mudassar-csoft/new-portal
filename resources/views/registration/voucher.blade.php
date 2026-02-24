@@ -12,7 +12,7 @@
 	<meta charset="UTF-8">
 	<title>Fee Voucher - {{ $reg->receipt_number }}</title>
 	<style>
-		body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+		body { font-family: 'Proxima Nova', sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
 		.wrapper { max-width: 900px; margin: 12px auto; background: #fff; border: 1px solid #ddd; padding: 16px; }
 		.copy { border-bottom: 1px dashed #ccc; padding-bottom: 18px; margin-bottom: 18px; }
 		.header { display: flex; justify-content: space-between; align-items: center; }

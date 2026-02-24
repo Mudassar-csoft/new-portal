@@ -34,9 +34,9 @@
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('finance.expense.store') }}" enctype="multipart/form-data">
                     @csrf
-                    <div class="form-row">
+                    <div class="form-row mt-2 " style = "gap:18px;padding-left:15px">
                         <div class="form-group col-md-3">
-                            <label class="required">Campus / Franchise</label>
+                            <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($campuses as $campus)
@@ -47,7 +47,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Supplier / Payee / Employee</label>
+                            <label class="form-label required">Supplier / Payee / Employee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
                                 @foreach($payees as $payee)
@@ -58,7 +58,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="required">Expense Type</label>
+                            <label class="form-label required">Expense Type</label>
                             <select name="expense_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($expenseTypes as $type)
@@ -69,8 +69,8 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="required">Category</label>
-                            <select name="category" class="form-control" required>
+                            <label class="form-label required">Category</label>
+                            <select name="category" class="form-control form-label" required>
                                 @foreach(['general','rent','marketing','asset','payroll','utility'] as $cat)
                                     <option value="{{ $cat }}" @selected(old('category', $selectedCategory ?? 'general') === $cat)>
                                         {{ ucfirst($cat) }}
@@ -80,17 +80,17 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row" style = "gap:18px;padding-left:15px">
                         <div class="form-group col-md-3">
-                            <label class="required">Payment Date</label>
+                            <label class="form-label required">Payment Date</label>
                             <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="required">Amount (PKR)</label>
+                            <label class="form-label required">Amount (PKR)</label>
                             <input type="number" step="0.01" min="1" name="amount" class="form-control" value="{{ old('amount') }}" required>
                         </div>
                         <div class="form-group col-md-3">
-                            <label class="required">Payment Method</label>
+                            <label class="form-label required">Payment Method</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
                                 <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
@@ -98,38 +98,46 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Payment Ref No</label>
+                            <label class="form-label required">Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}" placeholder="Txn/Receipt reference">
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label>Bank Name</label>
+                    <div class="form-row" style = "gap:18px;padding-left:15px">
+                        <div class="form-group col-md-3">
+                            <label class="form-label required">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
-                        <div class="form-group col-md-4">
-                            <label>Cheque No</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required">Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
-                        <div class="form-group col-md-4">
-                            <label>Bank Receipt No</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required" >Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label class="required">Transaction Image</label>
+                        <div class="form-group col-md-3">
+                            <label class="form-label required">Transaction Image</label>
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Remarks</label>
-                            <textarea name="remarks" class="form-control" rows="3">{{ old('remarks') }}</textarea>
-                        </div>
                     </div>
 
-                    <div class="text-right">
+                    <div class="row " style = "gap:18px; padding-left:15px">
+    <div class="col-12">
+        <label class="form-label small fw-semibold text-dark required">
+            Remarks
+        </label>
+       <textarea name="details[remarks]"
+    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
+    rows="3"
+    placeholder="Remarks" style= "padding:10px; width:99%; margin-bottom:7px;" >{{ old('details.remarks', '') }}</textarea>
+        @error('details.remarks')
+            <div class="field-error">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+
+                    <div class="text-right" style = "gap:18px;padding-left:15px">
                         <button type="submit" class="btn btn-inline btn-primary-outline">Submit For Approval</button>
                     </div>
                 </form>
@@ -211,6 +219,69 @@
 
 @push('styles')
     <style>
+        * {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important;
+    margin: 0;
+    padding: 0;
+}
+.box-typical.box-typical-dashboard .box-typical-body {
+    overflow: hidden;
+}
+.box-typical.box-typical-dashboard{
+    margin:0px 0px 5px !important;
+    
+}
+.box-typical.box-typical-dashboard .box-typical-header{
+    display:flex;
+
+}
+    
+
+.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 32px;
+    background: #fff
+}
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    
+}
+
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+
+        .col-md-3 {
+    flex: 0 0 200px !important;
+    max-width: 200px !important;
+    height: 62px;
+    margin-bottom: 2px ;
+     /* margin-top: 2px;    */
+}
+.box-typical .panel-heading {
+    padding: 7px 20px;
+}
         .finance-shell { padding: 8px 0 16px; }
         .finance-header {
             display: flex;

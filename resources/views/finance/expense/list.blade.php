@@ -31,16 +31,16 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title">{{ $title ?? 'Expenses' }}</h3>
+                <h3 class="form-label panel-title">{{ $title ?? 'Expenses' }}</h3>
                 <div class="finance-actions">
                     <a href="{{ route('finance.expense.add', ['category' => $category ?? 'general']) }}" class="btn btn-primary btn-sm">Add Expense</a>
                 </div>
             </header>
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ url()->current() }}">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Campus</label>
+                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
+                        <div class="form-group col-md-3 ">
+                            <label class="form-label">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -51,7 +51,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>Status</label>
+                            <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
                                 @foreach(['pending','approved','paid','rejected','reversed'] as $status)
@@ -60,16 +60,19 @@
                             </select>
                         </div>
                         <div class="form-group col-md-3">
-                            <label>From</label>
+                            <label class="form-label">From</label>
                             <input type="date" class="form-control" name="from" value="{{ $filters['from'] ?? '' }}">
                         </div>
                         <div class="form-group col-md-3">
-                            <label>To</label>
+                            <label class="form-label">To</label>
                             <input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
-                    <a href="{{ url()->current() }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                    <div class="form-row justify-content-end mr-4">
+
+                        <button  type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
+                        <a href="{{ url()->current() }}" class="btn btn-inline btn-danger-outline">Reset</a>
+                    </div>
                 </form>
 
                 <div class="table-responsive">
@@ -145,6 +148,66 @@
 
 @push('styles')
     <style>
+        * {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important;
+    margin: 0;
+    padding: 0;
+}
+.box-typical.box-typical-dashboard .box-typical-body {
+    overflow: hidden;
+}
+.box-typical.box-typical-dashboard{
+    margin:0px 0px 5px !important;
+    
+}
+.box-typical.box-typical-dashboard .box-typical-header{
+    display:flex;
+
+}
+    
+
+.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 32px;
+    background: #fff
+}
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    
+}
+
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+        .col-md-3 {
+    flex: 0 0 221px !important;
+    max-width: 221px !important;
+    height: 62px;
+    margin-bottom: 2px ;
+     /* margin-top: 2px;    */
+}
+
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }

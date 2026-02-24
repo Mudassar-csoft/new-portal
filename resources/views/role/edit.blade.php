@@ -16,7 +16,7 @@
 				<form method="POST" action="{{ route('roles.update', $role) }}">
 					@csrf
 					@method('PUT')
-					<div class="form-row">
+					<div class="form-row text-center">
 						<div class="form-group col-md-6">
 							<label class="required">Name</label>
 							<input type="text" name="name" class="form-control" value="{{ old('name', $role->name) }}" placeholder="Admin">
@@ -51,7 +51,7 @@
 						</div>
 					</div>
 
-					<div class="text-right mt-3">
+					<div class="text-center mt-3">
 						<a href="{{ route('roles.index') }}" class="btn btn-default mr-2">Cancel</a>
 						<button type="submit" class="btn btn-primary">Save Changes</button>
 					</div>

@@ -142,12 +142,12 @@
 				ajax: "{{ route('permissions.index') }}",
 				order: [[1, 'asc']],
 				columns: [
-					{ data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-					{ data: 'resource', name: 'resource' },
-					{ data: 'action', name: 'action' },
-					{ data: 'slug', name: 'slug' },
-					{ data: 'date', name: 'date', orderable: false, searchable: false },
-					{ data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
+					{ data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },
+					{ data: 'resource', name: 'resource', className: 'text-center' },
+					{ data: 'action', name: 'action', className: 'text-center' },
+					{ data: 'slug', name: 'slug', className: 'text-center' },
+					{ data: 'date', name: 'date', orderable: false, searchable: false , className: 'text-center'},
+					{ data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center actions-cell' },
 				]
 			});
 

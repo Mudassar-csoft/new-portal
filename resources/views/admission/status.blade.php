@@ -43,8 +43,8 @@
 			</div>
 
 			<div class="box-typical-body panel-body follow-body">
-				<div class="follow-controls">
-					<div class="form-inline">
+				<div class="follow-controls ">
+					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>
 						<select class="form-control form-control-sm">
 							<option>10</option>
@@ -125,8 +125,9 @@
 			display: flex;
 			flex-wrap: wrap;
 			gap: 12px;
-			padding: 14px 18px 10px;
-			border-bottom: 3px solid #008efb;
+			    padding: 14px 18px 10px;
+    border-bottom: 3px solid #008efb;
+   
 			background: #f6f8fb;
 			border-radius: 10px 10px 0 0;
 		}
@@ -140,18 +141,22 @@
 			color: #5f6f7f;
 			cursor: pointer;
 			position: relative;
+			text-align: center;
+
 			border-bottom: 3px solid transparent;
 		}
 
 		.follow-tab.active {
 			color: #0f3c6e;
-			border-bottom-color: #00a8ff;
+			background-color:white;	
+			border-radius: 5px;
+		border-bottom: 2px solid #008efb;
 		}
 
 		.follow-tab .badge {
 			padding: 6px 10px;
 			border-radius: 999px;
-			font-size: 12px;
+			font-size: 11px;
 			line-height: 1;
 		}
 
@@ -161,7 +166,7 @@
 
 		.follow-controls {
 			display: flex;
-			align-items: center;
+			align-items: baseline;
 			justify-content: space-between;
 			gap: 12px;
 			margin-bottom: 12px;

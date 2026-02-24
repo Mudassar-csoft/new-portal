@@ -31,7 +31,7 @@
         @endif
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
-            <header class="box-typical-header panel-heading finance-header">
+            <header class="box-typical-header panel-heading finance-header d-flex">
                 <h3 class="panel-title">{{ (($filters['scope'] ?? '') === 'open') ? 'Open Payables' : 'Payables' }}</h3>
                 <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Add Expense</a>
             </header>
@@ -40,9 +40,9 @@
                     @if(($filters['scope'] ?? '') === 'open')
                         <input type="hidden" name="scope" value="open">
                     @endif
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label>Campus</label>
+                    <div class="form-row mt-3" style = "gap:18px; padding-left:15px">
+                        <div class="form-group col-md-5">
+                            <label class="form-label required">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -52,8 +52,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label>Status</label>
+                        <div class="form-group col-md-5">
+                            <label class="form-label required">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
                                 @foreach(['pending', 'approved', 'paid', 'rejected', 'reversed'] as $status)
@@ -63,11 +63,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Filter</button>
+                        <div class="form-group col-md-1 d-flex align-items-end justify-end">
+                            <button type="submit" class="btn btn-inline btn-primary-outline mt-4">Filter</button>
                             <a
                                 href="{{ route('finance.payables', (($filters['scope'] ?? '') === 'open') ? ['scope' => 'open'] : []) }}"
-                                class="btn btn-inline btn-secondary-outline"
+                                class="btn btn-inline btn-danger-outline p-2"
                             >
                                 Reset
                             </a>
@@ -149,6 +149,57 @@
 
 @push('styles')
     <style>
+          * {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important; 
+    margin: 0;
+    padding: 0;
+    
+    }
+    
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 32px;
+    background: #fff
+}
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }

@@ -44,7 +44,7 @@
 
 			<div class="box-typical-body panel-body follow-body">
 				<div class="follow-controls">
-					<div class="form-inline">
+					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>
 						<select class="form-control form-control-sm">
 							<option>10</option>
@@ -148,13 +148,14 @@
 
 		.follow-tab.active {
 			color: #0f3c6e;
-			border-bottom-color: #00a8ff;
-		}
+			background-color:white;	
+			border-radius: 5px;
+border-bottom: 2px solid #008efb;		}
 
 		.follow-tab .badge {
 			padding: 6px 10px;
 			border-radius: 999px;
-			font-size: 12px;
+			font-size: 11px;
 			line-height: 1;
 		}
 

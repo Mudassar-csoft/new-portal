@@ -29,9 +29,9 @@
                 <form method="GET" action="{{ route('finance.dashboard.payables') }}">
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label>Campus</label>
+                    <div class="form-row" style = "gap:18px; padding-left:15px">
+                        <div class="form-group col-md-4" >
+                            <label class="form-label required">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -111,6 +111,56 @@
 
 @push('styles')
     <style>
+         * {
+    font-family: 'Proxima Nova', sans-serif !important;
+    font-size: 12px !important; 
+    margin: 0;
+    padding: 0;
+    
+    }
+    
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--white .select2-selection--single .select2-selection__rendered {
+    border: solid 1px #d8e2e7;
+    -webkit-border-radius: .25rem;
+    border-radius: .25rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #343434;
+    padding: .375rem 25px .375rem 1rem;
+    min-height: 32px;
+    background: #fff
+}
+.form-label{
+    font-size: 11px;
+    font-weight: 600 ;
+    color: #343434;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+body, button, html, input, select, textarea {
+    color: #343434;
+    height: 32px;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
         .finance-shell { padding: 8px 0 16px; }
         .finance-header {
             display: flex;
