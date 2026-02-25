@@ -16,6 +16,13 @@
     <link rel="stylesheet" href="{{ asset('theme/lib/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('theme/main.css') }}">
     <style>
+         * {
+    font-family: 'Proxima Nova', sans-serif;
+    font-size: 12px !important;
+    margin: 0;
+    padding: 0;
+    
+}
         body {
             background: #f2f5f9;
         }
@@ -82,7 +89,7 @@
 
         .student-cover {
             height: 160px;
-            background: linear-gradient(135deg, #0e7ad1, #6fd0ff);
+            background: linear-gradient(135deg, #00a8ff, #6fd0ff);
         }
 
         .student-avatar {
@@ -205,7 +212,7 @@
 
         .tab-link {
             text-align: center;
-            padding: 10px 12px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-weight: 600;
             color: #41546a;
@@ -213,9 +220,17 @@
             cursor: pointer;
             border: 1px solid transparent;
         }
-
+        .bootstrap-table .table thead th, .fixed-table-body .table thead th, .table thead th {
+    border-bottom: none;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    
+}
+.table td {
+    padding-bottom: 5px;
+}
         .tab-link.is-active {
-            background: #0e7ad1;
+            background: #00a8ff;
             color: #fff;
             border-color: #0e7ad1;
         }
@@ -229,7 +244,7 @@
         }
 
         .table thead th {
-            background: #0e7ad1;
+            background: #00a8ff;
             color: #fff;
             border: 0;
             font-weight: 600;
@@ -238,7 +253,7 @@
         }
 
         .badge-status {
-            background: #19a974;
+            background: #00a8ff;
             color: #fff;
             padding: 4px 8px;
             border-radius: 6px;
@@ -256,7 +271,7 @@
         .info-row {
             display: grid;
             grid-template-columns: 220px 1fr;
-            padding: 12px 16px;
+            padding: 8px 16px;
             border-bottom: 1px solid #e6edf5;
             background: #fff;
         }

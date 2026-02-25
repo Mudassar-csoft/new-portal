@@ -116,7 +116,7 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
             <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title">Receivables</h3>
+                <h3 class="panel-title form-label">Receivables</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ route('finance.receivables') }}">
