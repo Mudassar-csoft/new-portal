@@ -37,7 +37,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-8 text-right mt-2 ml-4">
+                        <div class="form-group leave-button col-md-8 text-right mt-2 ml-4">
                             <button class="btn btn-inline btn-primary-outline mr-2  mt-4 mb-0 " type="submit">Filter</button>
                             <a href="{{ route('hrm.leaves.index') }}" class="btn btn-inline btn-danger-outline p-2 mb-0 mt-4">Reset</a>
                         </div>
@@ -46,7 +46,7 @@
 
                 <form method="POST" action="{{ route('hrm.leaves.requests.store') }}" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row justify-between" style="gap:8px;">
+                    <div class="form-row justify-between" style="gap:2px;">
                         <div class="form-group col-md-2">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
@@ -217,8 +217,8 @@
     <style>
 
         .col-md-2{
-            flex: 0 0 12.996667%;
-        max-width: 12.996997%;
+            flex: 0 0 13.66667%;
+        max-width: 15.666997% ;
         }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }

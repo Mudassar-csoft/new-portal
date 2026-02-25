@@ -29,7 +29,7 @@
                 <form method="GET" action="{{ route('hrm.documents.index') }}" class="mb-3">
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label>Employee</label>
+                            <label class="form-label required" >Employee</label>
                             <select class="form-control" name="employee_id">
                                 <option value="">All Employees</option>
                                 @foreach($employees as $employee)
@@ -39,26 +39,26 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Status</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
                                 <option value="active" @selected(($filters['status'] ?? '') === 'active')>Active</option>
                                 <option value="expired" @selected(($filters['status'] ?? '') === 'expired')>Expired</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-5 d-flex align-items-end">
+                        <div class="form-group col-md-1 d-flex align-items-end justify-end mt-2" style="margin-left:273px;">
                             <button class="btn btn-inline btn-primary-outline mr-2" type="submit">Filter</button>
-                            <a href="{{ route('hrm.documents.index') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                            <a href="{{ route('hrm.documents.index') }}" class="btn btn-inline btn-danger-outline p-2">Reset</a>
                         </div>
                     </div>
                 </form>
 
                 <form method="POST" action="{{ route('hrm.documents.store') }}" enctype="multipart/form-data" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Employee</label>
+                    <div class="form-row" style="gap:6px;">
+                        <div class="form-group col-md-2">
+                            <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($employees as $employee)
@@ -67,7 +67,7 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Document Type</label>
+                            <label class="form-label required" >Document Type</label>
                             <select name="document_type" class="form-control" required>
                                 @foreach(['offer_letter','cnic_copy','degree','contract','nda','experience_letter','warning_letter','other'] as $type)
                                     <option value="{{ $type }}">{{ ucwords(str_replace('_', ' ', $type)) }}</option>
@@ -75,40 +75,44 @@
                             </select>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Title</label>
+                            <label class="form-label required" >Title</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Issue Date</label>
+                            <label class="form-label required" >Issue Date</label>
                             <input type="date" name="issue_date" class="form-control">
                         </div>
                         <div class="form-group col-md-2">
-                            <label>Expiry Date</label>
+                            <label class="form-label required" >Expiry Date</label>
                             <input type="date" name="expiry_date" class="form-control">
                         </div>
-                        <div class="form-group col-md-1">
-                            <label>Reminder</label>
+                        <div class="form-group col-md-2">
+                            <label class="form-label required" >Reminder</label>
                             <input type="number" min="0" max="365" name="reminder_days_before" class="form-control" value="30">
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label>File</label>
-                            <input type="file" name="file" class="form-control-file" required>
-                        </div>
                         <div class="form-group col-md-2">
-                            <label>Status</label>
+                            <label class="form-label required" >Status</label>
                             <select name="status" class="form-control">
                                 <option value="active">Active</option>
                                 <option value="expired">Expired</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Notes</label>
-                            <input type="text" name="notes" class="form-control">
+                    </div>
+                    <div class="form-row" style="gap:8px;">
+                        <div class="form-group col-md-2">
+                            <label class="form-label required" >File</label>
+                            <input type="file" name="file" class="form-control-file" required>
+                        </div>
+                        
+                        <div class="form-group col-md-10">
+                            <label class="form-label required" >Notes</label>
+                            <input type="text" name="notes" class="form-control" style="
+    width: 97%;">
                         </div>
                     </div>
+                    <div class="text-right mr-5">
                     <button class="btn btn-inline btn-primary-outline" type="submit">Upload Document</button>
+                </div>
                 </form>
 
                 <div class="table-responsive">
@@ -153,9 +157,21 @@
 
 @push('styles')
     <style>
+        .col-md-2 {
+        flex: 0 0 13.666667%;
+        max-width: 12.996667% ;
+    }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }
+        @media (max-width: 780px) {
+            .col-md-1{
+                margin-left:0px;
+            }
+            .form-control{
+                width:100%;
+            }
+         }
     </style>
 @endpush
 

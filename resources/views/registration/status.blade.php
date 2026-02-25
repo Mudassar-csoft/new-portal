@@ -51,7 +51,7 @@
 							<option>25</option>
 							<option>50</option>
 						</select>
-						<label class="ml-2 mb-0">entries</label>
+						<label class="ml-2 mb-0">Entries</label>
 					</div>
 					<div class="follow-search">
 						<input type="text" id="reg-search" class="form-control form-control-sm" placeholder="Search...">
@@ -219,10 +219,16 @@ border-bottom: 2px solid #008efb;		}
 		.action-cell {
 			min-width: 110px;
 			white-space: nowrap;
+			position: relative;
 		}
 
 		.registration-action-dropdown .dropdown-menu {
-			min-width: 160px;
+	min-width: 180px;
+    position: absolute;  
+    top:-40px !important;          
+    left: -73px !important;
+    z-index: 9999;  
+			
 		}
 
 		.follow-footer {

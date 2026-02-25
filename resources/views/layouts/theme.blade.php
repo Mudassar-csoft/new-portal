@@ -54,7 +54,7 @@
     padding: 6px 5px 6px 46px;
 }
  * {
-    font-family: 'Proxima Nova', sans-serif !important;
+    font-family: 'Proxima Nova', sans-serif;
     font-size: 12px !important;
     margin: 0;
     padding: 0;
@@ -81,11 +81,33 @@
     padding-right: 3px;
     padding-left: 5px;
 }
-    .form-row{
-		gap:18px;
-		padding-left:15px;
-	}
+   .follow-action-dropdown {
+    position: relative;
 
+}
+
+.follow-action-dropdown .dropdown-menu {
+	font-size:12px !important;
+	min-width: 180px;
+    position: absolute;  
+    top:-33px !important;          
+    left: -73px !important;
+    z-index: 9999;       
+} 
+	.action-cell {
+			min-width: 110px;
+			white-space: nowrap;
+			position: relative;
+		}
+
+		.registration-action-dropdown .dropdown-menu {
+	min-width: 180px;
+    position: absolute;  
+    top:-40px !important;          
+    left: -73px !important;
+    z-index: 9999;  
+			
+		}
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--white .select2-selection--single .select2-selection__rendered {
@@ -120,33 +142,84 @@ body, button, html, input, select, textarea {
     -o-font-smoothing: antialiased;
 }
 
-        .col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 144px !important;
+      @media (min-width: 781px) {
+
+  .col-md-3 {
+    flex: 0 0 200px ;
+    max-width: 144px ;
     height: 62px;
-    margin-bottom: 2px ;
-     /* margin-top: 2px;    */
-}
-.col-md-2 {
+    margin-bottom: 2px;
+  }
+      .col-md-8 {
         -webkit-box-flex: 0;
-        -ms-flex: 0 0 14.666667%;
-        flex: 0 0 14.666667%;
-        max-width: 14.996667%;
-        gap:7px;
+        -ms-flex: 0 0 66.666667%;
+        flex: 0 0 66.666667%;
+        max-width: 44.666667%;
     }
-.col-md-5{
-    flex: 0 0 250px !important;
-    max-width: 250px !important;
+
+  .col-md-2 {
+    flex: 0 0 14.666667% ;
+    max-width: 14.996667% ;
+  }
+
+  .col-md-5 {
+    flex: 0 0 250px ;
+    max-width: 250px ;
     height: 62px;
-    margin-bottom: 2px ;
+    margin-bottom: 2px;
+  }
+
+  .col-md-4 {
+    flex: 0 0 33.333333% ;
+    max-width: 25.333333%;
+    margin-top: 10px;
+  }
+  .form-row{
+	display: flex;        /* ensure flex active ho */
+    flex-wrap: wrap; 
+		gap:18px;
+		padding-left:15px;
+		
+	}
+
 }
-    .col-md-4 {
-        -webkit-box-flex: 0;
-        -ms-flex: 0 0 33.333333%;
-        flex: 0 0 33.333333%;
-        max-width: 25.333333%;
-        margin-top:10px;
-    }
+@media (max-width: 780px) {
+	.col-md-1,
+  .col-md-2,
+  .col-md-3,
+  .col-md-4,
+  .col-md-5,
+  .col-md-8 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .form-row{
+    display:block;   
+    padding-left:15px;
+	margin-right:2px;
+  }
+  .teaching-method{
+	  /* margin-left:50px !important; */
+	}
+	.form-radio{
+	  flex-direction:column;
+	  align-items: flex-start !important; 
+
+  }
+  .gender{
+	margin-right:0px !important;
+  }
+  .leave-button
+  {
+	margin:0 !important;
+	
+  } 
+	..payrol-button{
+		
+	}
+ 
+}
 .box-typical .panel-heading {
     padding: 7px 20px;
 }
@@ -306,7 +379,7 @@ input[type="checkbox"] {
   appearance: none;
   width: 13px;       /* normal size */
   height: 13px;      /* normal size */
-  border: 2px solid #6b6a6a;
+  border: 2px solid grey;
   border-radius: 3px;
   background-color: white;
   cursor: pointer;

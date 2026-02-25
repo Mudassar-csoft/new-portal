@@ -26,14 +26,14 @@
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title">Manual Invoice (Fine / Certificate / Other)</h3>
+                <h3 class="panel-title form-label">Manual Invoice (Fine / Certificate / Other)</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('finance.receivables.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label class="required">Campus / Franchise</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($campuses as $campus)
@@ -43,8 +43,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label class="required">Charge Type</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Charge Type</label>
                             <select name="charge_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($chargeTypes as $type)
@@ -54,23 +54,23 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Student Name / Source</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Student Name / Source</label>
                             <input type="text" name="student_name" class="form-control" value="{{ old('student_name') }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label class="required">Amount (PKR)</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Amount (PKR)</label>
                             <input type="number" step="0.01" min="1" name="amount" class="form-control" value="{{ old('amount') }}" required>
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Discount</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Discount</label>
                             <input type="number" step="0.01" min="0" name="discount_amount" class="form-control" value="{{ old('discount_amount', 0) }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Payment Method (optional)</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Payment Method (optional)</label>
                             <select name="payment_method" class="form-control">
                                 <option value="">Pending Invoice</option>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -78,37 +78,37 @@
                                 <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Payment Ref No</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Bank Name</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Cheque No</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Bank Receipt No</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Transaction Image</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Transaction Image</label>
                             <input type="file" name="attachment" class="form-control-file">
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Remarks</label>
+                        <div class="form-group col-md-4">
+                            <label class="form-label required" >Remarks</label>
                             <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}">
                         </div>
                     </div>
 
                     <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save Manual Invoice</button>
+                        <button type="submit" class="btn btn-inline btn-primary-outline" style="    margin-right: 45px;">Save Manual Invoice</button>
                     </div>
                 </form>
             </div>
@@ -122,7 +122,7 @@
                 <form class="mb-3" method="GET" action="{{ route('finance.receivables') }}">
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label>Campus</label>
+                            <label class="form-label required" >Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -133,16 +133,16 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4">
-                            <label>Status</label>
+                            <label class="form-label required" >Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
                                 <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Pending</option>
                                 <option value="paid" @selected(($filters['status'] ?? '') === 'paid')>Paid</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Filter</button>
-                            <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                         <div class="form-group leave-button col-md-8 text-right mt-5 ml-4">
+                            <button type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
+                            <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-danger-outline p-2">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -200,7 +200,7 @@
                                                 @csrf
                                                 <div class="form-row">
                                                     <div class="form-group col-md-2">
-                                                        <label class="required">Payment Method</label>
+                                                        <label class="form-label required" >Payment Method</label>
                                                         <select name="payment_method" class="form-control" required>
                                                             <option value="cash">Cash</option>
                                                             <option value="bank">Bank</option>
@@ -208,23 +208,23 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group col-md-2">
-                                                        <label>Payment Ref No</label>
+                                                        <label class="form-label required" >Payment Ref No</label>
                                                         <input type="text" name="payment_ref_no" class="form-control" placeholder="Auto if blank">
                                                     </div>
                                                     <div class="form-group col-md-2">
-                                                        <label>Bank Name</label>
+                                                        <label class="form-label required" >Bank Name</label>
                                                         <input type="text" name="bank_name" class="form-control">
                                                     </div>
                                                     <div class="form-group col-md-2">
-                                                        <label>Cheque No</label>
+                                                        <label class="form-label required" >Cheque No</label>
                                                         <input type="text" name="cheque_no" class="form-control">
                                                     </div>
                                                     <div class="form-group col-md-2">
-                                                        <label>Bank Receipt No</label>
+                                                        <label class="form-label required" >Bank Receipt No</label>
                                                         <input type="text" name="bank_receipt_no" class="form-control">
                                                     </div>
                                                     <div class="form-group col-md-2">
-                                                        <label>Transaction Image</label>
+                                                        <label class="form-label required" >Transaction Image</label>
                                                         <input type="file" name="attachment" class="form-control-file">
                                                     </div>
                                                 </div>
@@ -250,6 +250,11 @@
 
 @push('styles')
     <style>
+        .col-md-4 {
+    flex: 0 0 33.333333% ;
+    max-width: 22.333333%;
+    margin-top: 10px;
+}
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }

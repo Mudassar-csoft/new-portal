@@ -65,13 +65,13 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="form-label required" >Flags</label>
-                                    <div class="d-flex gap-3">
+                                    <div class="d-flex gap-3 mt-3">
                                     <div class="d-flex align-items-center justify-center">    
                                     <input type="checkbox" name="is_night_shift" value="1">
-                                        <label > Night</label>
+                                        <label class="ml-1"> Night</label>
                                         </div>
                                         <div class="d-flex align-items-center justify-center">  <input type="checkbox" name="is_active" value="1" checked>
-                                        <label > Active</label>
+                                        <label class="ml-1"> Active</label>
                                         </div>
                                     </div>
                                 </div>
@@ -152,9 +152,9 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="d-flex" style="gap:2px;">
+                                <div class="d-flex" style="gap:2px;margin-top: 8px;">
                                 <input type="checkbox" class="mt-5" name="is_rotational" value="1">
-                                <label class="form-label required ml-0" style="margin-top:43px;" > Rotational Shift</label>
+                                <label class="form-label required ml-0" style="margin-top:35px;" > Rotational Shift</label>
                                 </div>
                             </div>
                             <div class="text-right">

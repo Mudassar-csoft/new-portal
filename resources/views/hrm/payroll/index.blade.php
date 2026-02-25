@@ -87,9 +87,9 @@
                                     <label class="form-label required" >Deductions JSON</label>
                                     <input type="text" name="deductions_json" class="form-control" placeholder='{"tax":1000,"eobi":200}'>
                                 </div>
-                                <div class="form-group col-md-4 d-flex justify-center align-center" style="gap:5px;">
+                                <div class="form-group col-md-4 d-flex justify-center align-center" style="gap:5px;margin-top: 21px;">
                                     <input type="checkbox" class="mt-4" name="is_active" value="1" checked>
-                                    <label class="form-label required justify-center align-middle" style="margin-top:25px;" > Active Structure</label>
+                                    <label class="form-label required justify-center align-middle" style="margin-top:18px;" > Active Structure</label>
                                 </div>
                             </div>
                             <div class="text-right">
@@ -133,7 +133,7 @@
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.payroll.runs.store') }}" class="mb-3 hrm-box">
                             @csrf
-                            <div class="form-row" style="gap:4px;">
+                            <div class="form-row" style="gap:14px;">
                                 <div class="form-group col-md-3">
                                     <label class="form-label required" >Campus</label>
                                     <select name="campus_id" class="form-control">
@@ -149,11 +149,12 @@
                                 </div>
                                 <div class="form-group col-md-2"><label class="form-label required" >From</label><input type="date" name="from_date" class="form-control" value="{{ now()->startOfMonth()->toDateString() }}" required></div>
                                 <div class="form-group col-md-2"><label class="form-label required" >To</label><input type="date" name="to_date" class="form-control" value="{{ now()->endOfMonth()->toDateString() }}" required></div>
-                                <div class="form-group col-md-3"><label class="form-label required" >Notes</label><input type="text" name="notes" class="form-control"></div>
-                                <div class=" ml-md-4"style="        margin-left: 12.5rem !important;margin-top: 20px;">
+                                <div class="form-group col-md-11"><label class="form-label required" >Notes</label><input type="text" name="notes" class="form-control"></div>
+                                
+                            </div>
+                            <div class="  payrol-button text-right" style="margin-right:27px;">
                                     <button class="btn btn-inline btn-primary-outline" type="submit">Generate Payroll Run</button>
                                 </div>
-                            </div>
                         </form>
 
                         <div class="table-responsive">
@@ -261,8 +262,8 @@
         max-width: 18.996667%;
         }
         .col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 114px !important;
+    flex: 0 0 200px ;
+    max-width: 114px ;
 }
         .hrm-shell { padding: 8px 0 16px; }
         .payroll-stat {

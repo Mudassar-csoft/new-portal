@@ -50,7 +50,7 @@
                             </div>
                         </form>
 
-                        <div class="table-responsive" style = "gap:18px;padding-left:15px">
+                        <div class="table-responsive" style = "gap:18px;padding-left:15px; ">
                             <table class="table table-bordered hrm-table">
                                 <thead><tr><th>Name</th><th>Campus</th><th>Status</th></tr></thead>
                                 <tbody>
@@ -79,7 +79,7 @@
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.masters.designations.store') }}" class="mb-3">
                             @csrf
-                            <div class="form-row" style = "gap:18px;padding-left:15px" >
+                            <div class="form-row" style = "gap:18px;padding-left:15px; padding-top:11px;" >
                                 <div class="form-group col-md-3">
                                     <select class="form-control" name="department_id">
                                         <option value="">No Department</option>
@@ -92,7 +92,7 @@
                                     <input type="text" class="form-control" name="name" placeholder="Designation Name" required>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <button class="btn btn-inline btn-primary-outline w-100" style="margin-top:10px;" type="submit">Save</button>
+                                    <button class="btn btn-inline btn-primary-outline w-100" type="submit">Save</button>
                                 </div>
                             </div>
                         </form>

@@ -77,7 +77,7 @@
                         </div>
                         <div class="form-group col-md-5">
                             <label class="form-label required" >Channels</label>
-                            <div class="d-flex mt-3" style="gap:5px;">
+                            <div class="d-flex" style="gap:5px;margin-top: 22px;">
                                 <div class="d-flex">
                                     <input type="checkbox" name="channel_in_app" value="1" checked>
                                     <label class="ml-1" > In-app</label>
