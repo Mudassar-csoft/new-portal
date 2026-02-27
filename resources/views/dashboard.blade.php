@@ -43,6 +43,7 @@
 							<input type="radio" name="income-range" id="range-today" value="today" checked>
 							<label for="range-today">Today</label>
 						</div>
+						<br> 
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-week" value="week">
 							<label for="range-week">Weekly</label>
@@ -109,9 +110,9 @@
 					<article class="statistic-box red">
 						<div class="stat-inner">
 							<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
+							<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
 							<div class="caption">
-								<div>Total Leads</div>
+								<div class="fs-2xl">Total Leads</div>
 							</div>
 						</div>
 					</article>
@@ -288,7 +289,8 @@
         .chart-range .radio input {
             margin-top: 2px;
         }
-
+		
+		
         /* Hide static axes; Google Chart handles axes dynamically */
         .chart-container-x,
         .chart-container-y {

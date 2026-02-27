@@ -9,7 +9,7 @@
 				<div class="box-typical box-typical-dashboard panel panel-default permission-directory">
 					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 						<div>
-							<h3 class="panel-title mb-0">Permissions</h3>
+							<h3 class="panel-title form-label mb-0">Permissions</h3>
 							<small class="text-muted">Manage permission definitions.</small>
 						</div>
 						<div class="d-flex gap-2">
@@ -59,7 +59,7 @@
 		#permissions-table th,
 		#permissions-table td {
 			border-color: #d9e2ef;
-			padding: 6px 10px;
+			padding: 3px 10px;
 			vertical-align: middle;
 			border-right: 1px solid #d9e2ef;
 			border-bottom: 1px solid #d9e2ef;
@@ -72,12 +72,12 @@
 			background-color: #f5f6ff;
 		}
 		.permission-directory .box-typical-body {
-			padding: 16px;
+			padding: 10px;
 			overflow: visible;
 		}
 		.permission-directory .dataTables_wrapper {
 			border-top: 1px solid #d9e2ef;
-			padding-top: 12px;
+			padding-top: 6px;
 		}
 		.permission-directory .dataTables_wrapper .dataTables_length,
 		.permission-directory .dataTables_wrapper .dataTables_filter {
@@ -96,11 +96,11 @@
 		}
 		.dataTables_wrapper .dataTables_length {
 			float: left;
-			margin-bottom: 12px;
+			margin-bottom: 6px;
 		}
 		.dataTables_wrapper .dataTables_filter {
 			float: right;
-			margin-bottom: 12px;
+			margin-bottom: 6px;
 		}
 		.dataTables_wrapper .dataTables_filter label {
 			margin: 0;
@@ -111,16 +111,16 @@
 		.dataTables_wrapper .dataTables_filter input {
 			border: 1px solid #d9e2ef;
 			border-radius: 22px;
-			padding: 7px 14px;
+			padding: 4px 14px;
 			height: 40px;
 			width: 240px;
 			box-shadow: none;
 		}
 		.dataTables_wrapper .dataTables_info {
-			padding-top: 8px;
+			padding-top: 4px;
 		}
 		.dataTables_wrapper .dataTables_paginate {
-			padding-top: 8px;
+			padding-top: 4px;
 		}
 		.dataTables_wrapper:after {
 			content: "";

@@ -365,15 +365,16 @@
 	
 		.follow-action-dropdown {
     position: relative;
+		
 
 }
 
 .follow-action-dropdown .dropdown-menu {
-	font-size:12px !important;
 	min-width: 180px;
-    position: absolute;  
-    top:-33px !important;          
-    left: -73px !important;
+	position: absolute !important;
+	top:0px !important;
+	left:-73px !important;
+	    transform: translate3d(-90px, -200px, 0px) !important ;
     z-index: 9999;       
 }
 		.table td{

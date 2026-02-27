@@ -25,7 +25,7 @@
 								<i class="font-icon-alarm"></i>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
-     style="min-width: 900px; font-size:12px;"
+     style="min-width: 792px; font-size:12px;"
 								aria-labelledby="dd-notification">
 								<div class="dropdown-menu-notif-header w-ful">
 									<div class="lead-tabs-wrapper w-100">
@@ -476,7 +476,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 10px 5px;
   border-right: 1px solid #e5e5e5;
   border-radius: 0;
   background: #f8f9fa;

@@ -89,7 +89,7 @@
 
         .student-cover {
             height: 160px;
-            background: linear-gradient(135deg, #00a8ff, #6fd0ff);
+            background-color: #00a8ff;
         }
 
         .student-avatar {
@@ -232,7 +232,7 @@
         .tab-link.is-active {
             background: #00a8ff;
             color: #fff;
-            border-color: #0e7ad1;
+            border-color: #00a8ff;
         }
 
         .tab-panel {

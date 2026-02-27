@@ -9,7 +9,7 @@
 				<div class="box-typical box-typical-dashboard panel panel-default role-directory">
 					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 						<div>
-							<h3 class="panel-title mb-0">Roles</h3>
+							<h3 class="panel-title mb-0 form-label">Roles</h3>
 							<small class="text-muted">Manage role definitions and attached permissions.</small>
 						</div>
 						<div class="d-flex gap-2">
@@ -19,6 +19,7 @@
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
 							<table class="table table-hover table-striped text-center" id="roles-table">
+								<div class="table-layout">
 								<thead>
 									<tr>
 										<th>Sr#</th>
@@ -29,6 +30,7 @@
 										<th class="text-center">Actions</th>
 									</tr>
 								</thead>
+								</div>
 							</table>
 						</div>
 					</div>
@@ -42,9 +44,7 @@
 	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
 	<style>
-		*{
-			text-align:center !important;
-		}
+		
 		.fw-600 { font-weight: 600; }
 		.gap-2 { gap: 8px; }
 		.btn-danger-outline {
@@ -52,6 +52,10 @@
 			color: #e74c3c;
 			background: transparent;
 		}
+		
+		.table td {
+    height: 30px !important;
+}
 		#roles-table thead th {
 			background: #1fb2ff;
 			color: #fff;
@@ -68,7 +72,7 @@
 		#roles-table th,
 		#roles-table td {
 			border-color: #d9e2ef;
-			padding: 6px 10px;
+			padding: 4px 10px;
 			vertical-align: middle;
 			border-right: 1px solid #d9e2ef;
 			border-bottom: 1px solid #d9e2ef;

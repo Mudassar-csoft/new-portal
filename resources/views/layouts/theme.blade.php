@@ -60,12 +60,38 @@
     padding: 0;
     
 }
+.fa-classic,
+.fa-regular,
+.fa-solid,
+.far,
+.fas {
+    font-family: "Font Awesome 6 Free" !important;
+}
+.btn.btn-default {
+    background-color: #00a8ff ;
+    border-color: #00a8ff ;
+}
+.follow-table thead th {
+    background: #00a8ff !important;
+}
 .table {
     width: 98%;
     max-width: 198%;
    
     margin-left: 8px;
 }
+.dataTables_wrapper .dataTables_filter input,.login-logs .dataTables_filter input {
+    border: 1px solid #d9e2ef;
+    border-radius: 10px !important;
+    padding: 6px 12px !important;
+    height: 19px !important;
+    width: 240px;
+    box-shadow: none;
+}.login-logs .box-typical-body {
+    padding: 10px 16px !important;
+    
+}
+
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
 }

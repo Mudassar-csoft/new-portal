@@ -7,7 +7,7 @@
 		<div class="box-typical box-typical-dashboard panel panel-default user-card">
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
-					<h3 class="panel-title mb-0">Create User</h3>
+					<h3 class="panel-title form-label mb-0">Create User</h3>
 					<small class="text-muted">Assign campus, roles, and access.</small>
 				</div>
 				<a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a>
@@ -16,10 +16,10 @@
 				<form method="POST" action="{{ route('users.store') }}">
 					@csrf
 					<div class="form-section">
-						<div class="section-title">Access &amp; Roles</div>
-						<div class="form-row">
+						<div class="section-title form-label">Access &amp; Roles</div>
+						<div class="form-row" style="gap:5px;">
 						<div class="form-group col-md-6">
-							<label class="required">Campus</label>
+							<label class="form-label required">Campus</label>
 								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
 									<option value="">Select campus</option>
 								@foreach($campuses as $campus)
@@ -31,7 +31,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-6">
-							<label class="required">Roles</label>
+							<label class="form-label required">Roles</label>
 								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
 								@foreach($roles as $role)
 									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
@@ -45,17 +45,17 @@
 					</div>
 					</div>
 					<div class="form-section">
-						<div class="section-title">User Details</div>
-						<div class="form-row">
+						<div class="section-title form-label">User Details</div>
+						<div class="form-row" style="gap:5px;">
 						<div class="form-group col-md-6">
-							<label class="required">Full Name</label>
+							<label class="form-label required">Full Name</label>
 							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}">
 							@error('name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-6">
-							<label class="required">Email</label>
+							<label class="form-label required">Email</label>
 							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}">
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
@@ -65,14 +65,14 @@
 					</div>
 					<div class="form-section">
 						<div class="section-title d-flex align-items-center justify-content-between">
-							<span>Security</span>
+							<span class="form-label">Security</span>
 							<button id="generate-password" type="button" class="btn btn-sm btn-primary" aria-label="Generate strong password" title="Generate strong password">
 								<i class="fa fa-random"></i>
 							</button>
 						</div>
-						<div class="form-row align-items-end">
+						<div class="form-row align-items-end" style="gap:5px;">
 						<div class="form-group col-md-6">
-							<label class="required">
+							<label class="form-label required">
 								<span>Password</span>
 							</label>
 							<div class="input-group">
@@ -88,7 +88,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-6">
-							<label class="required">Confirm Password</label>
+							<label class="form-label required">Confirm Password</label>
 							<div class="input-group">
 								<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
 								<span class="input-group-btn">
@@ -107,7 +107,7 @@
 
 					<div class="text-right mt-3">
 							<button type="submit" class="btn btn-inline btn-primary-outline">Create User</button>
-						<a href="{{ route('users.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
+						<a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline p-2">Cancel</a>
 					</div>
 				</form>
 			</div>
@@ -129,20 +129,20 @@
 			box-shadow: 0 18px 40px rgba(25, 45, 85, 0.12);
 		}
 		.user-body {
-			padding: 24px 24px 10px;
+			padding: 8px 24px 8px;
 		}
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
 		.form-section {
 			background: #fff;
 			border: 1px solid #e6edf5;
 			border-radius: 12px;
-			padding: 18px 18px 6px;
-			margin-bottom: 18px;
+			padding: 12px 18px 6px;
+    margin-bottom: 10px;
 		}
 		.section-title {
 			font-weight: 600;
 			color: #1f2d3d;
-			margin-bottom: 12px;
+			margin-bottom: 5px;
 		}
 		.section-title .btn {
 			height: 32px;
@@ -294,6 +294,12 @@
 		.select2-container--white.select2-container--focus .select2-selection--multiple {
 			border-color: #2b78ff;
 			box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.12);
+		}
+		.col-md-6{
+			        max-width: 49%;
+		}
+		.form-group {
+			margin-bottom:10px;
 		}
 	</style>
 @endpush

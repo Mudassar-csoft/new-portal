@@ -386,9 +386,6 @@ body, button, html, input, select, textarea {
 .follow-action-dropdown .dropdown-menu {
 	font-size:12px !important;
 	min-width: 180px;
-    position: absolute;  
-    top:240px !important;          
-    left: -73px !important;
     z-index: 9999;       
 }
 	</style>

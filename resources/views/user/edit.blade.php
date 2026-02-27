@@ -7,7 +7,7 @@
 		<div class="box-typical box-typical-dashboard panel panel-default user-card">
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
-					<h3 class="panel-title mb-0">Edit User</h3>
+					<h3 class="panel-title mb-0 form-label">Edit User</h3>
 					<small class="text-muted">Update campus, roles, and access.</small>
 				</div>
 				<a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a>
@@ -20,7 +20,7 @@
 						<div class="section-title">Access &amp; Roles</div>
 						<div class="form-row">
 							<div class="form-group col-md-6">
-								<label class="required">Campus</label>
+								<label class="form-label required">Campus</label>
 								<select name="campus_id" class="form-control select2 select2-white select2-user" style="width: 100%;" data-placeholder="Select campus">
 									<option value="">Select campus</option>
 									@foreach($campuses as $campus)
@@ -29,7 +29,7 @@
 								</select>
 							</div>
 							<div class="form-group col-md-6">
-								<label class="required">Roles</label>
+								<label class="form-label required">Roles</label>
 								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles" multiple style="width: 100%;" data-placeholder="Select roles">
 									@foreach($roles as $role)
 										<option value="{{ $role->id }}" @selected(collect(old('roles', $user->roles->pluck('id')->all()))->contains($role->id))>{{ $role->name }}</option>
@@ -43,11 +43,11 @@
 						<div class="section-title">User Details</div>
 						<div class="form-row">
 							<div class="form-group col-md-6">
-								<label class="required">Full Name</label>
+								<label class="form-label required">Full Name</label>
 								<input type="text" name="name" class="form-control" placeholder="Alex Morgan" value="{{ old('name', $user->name) }}">
 							</div>
 							<div class="form-group col-md-6">
-								<label class="required">Email</label>
+								<label class="form-label required">Email</label>
 								<input type="email" name="email" class="form-control" placeholder="alex@example.com" value="{{ old('email', $user->email) }}">
 							</div>
 						</div>
