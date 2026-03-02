@@ -222,13 +222,32 @@
 			white-space: nowrap;
 			position: relative;
 		}
+		.table-responsive {
+			overflow: visible !important;
+		}
+		.follow-card, .follow-body {
+    overflow: visible !important;
+}
+		.admission-action-dropdown{
+			position: relative;
+		}
 
 		.admission-action-dropdown .dropdown-menu {
 			min-width: 180px;
-    position: absolute;  
-    top:-40px !important;          
-    left: -73px !important;
-    z-index: 9999; 
+			position: absolute !important;
+			top: calc(100% + -30px) !important;
+			right: 0 !important;
+			margin-right: 82px !important;
+			left: auto !important;
+			transform: none !important;
+			z-index: 9999;
+		}
+
+		.admission-action-dropdown .dropdown-menu.dropdown-menu-upward {
+			top: 0 !important;
+			left: -73px !important;
+			right: auto !important;
+			transform: translate3d(-90px, -150px, 0px) !important;
 		}
 
 		.follow-footer {
@@ -294,6 +313,24 @@
 					var activeTab = document.querySelector('.follow-tab.active');
 					var status = activeTab ? activeTab.getAttribute('data-status') : 'all';
 					filterByStatus(status);
+				});
+
+				var dropdownButtons = document.querySelectorAll('.admission-action-dropdown .dropdown-toggle');
+				dropdownButtons.forEach(function (button) {
+					button.addEventListener('click', function () {
+						var wrapper = this.closest('.admission-action-dropdown');
+						if (!wrapper) return;
+						var menu = wrapper.querySelector('.dropdown-menu');
+						if (!menu) return;
+
+						menu.classList.remove('dropdown-menu-upward');
+						var rect = wrapper.getBoundingClientRect();
+						var approxMenuHeight = 160;
+						var needsUpward = (window.innerHeight - rect.bottom) < approxMenuHeight;
+						if (needsUpward) {
+							menu.classList.add('dropdown-menu-upward');
+						}
+					});
 				});
 
 				filterByStatus('all');

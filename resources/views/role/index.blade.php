@@ -53,9 +53,6 @@
 			background: transparent;
 		}
 		
-		.table td {
-    height: 30px !important;
-}
 		#roles-table thead th {
 			background: #1fb2ff;
 			color: #fff;

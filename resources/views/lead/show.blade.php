@@ -487,8 +487,11 @@
 
 
 	.dropdown-menu.dropdown-menu-right {
-		top: -33px !important;
-		left: -70px !important;
+		top: calc(100% + -30px) !important;
+		margin-right: 74px !important;
+	}
+	.dropdown-item{
+		padding: 2px 12px !important;
 	}
 
 	.stage .label {

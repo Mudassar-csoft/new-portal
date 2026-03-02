@@ -6,7 +6,7 @@
 	<button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		Actions
 	</button>
-	<div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
+	<div class="dropdown-menu dropdown-menu-right action-key" aria-labelledby="{{ $actionId }}">
 		<a class="dropdown-item" href="{{ route('roles.edit', $role) }}">
 			<i class="fa fa-pencil mr-2 text-info"></i>Edit
 		</a>

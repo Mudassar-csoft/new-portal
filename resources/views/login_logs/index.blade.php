@@ -9,7 +9,7 @@
 				<div class="box-typical box-typical-dashboard panel panel-default login-logs">
 					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 						<div>
-							<h3 class="panel-title mb-0">User Login Logs</h3>
+							<h3 class="panel-title mb-0 form-label">User Login Logs</h3>
 							<small class="text-muted">Track user sign-ins and sign-outs.</small>
 						</div>
 					</header>
@@ -91,7 +91,9 @@
 		#login-logs-table th,
 		#login-logs-table td {
 			border-color: #d9e2ef;
-			padding: 6px 10px;
+			padding: 3px 8px;
+			line-height: 1.2;
+			height: 26px;
 			vertical-align: middle;
 			border-right: 1px solid #d9e2ef;
 			border-bottom: 1px solid #d9e2ef;

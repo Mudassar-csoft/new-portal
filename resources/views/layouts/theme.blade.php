@@ -118,13 +118,29 @@
     position: absolute;  
     top:-33px !important;          
     left: -73px !important;
-    z-index: 9999;       
-} 
+	z-index: 9999;
+	 }
+.table a{
+	border-bottom: 1px solid #e9ecef;
+}
 	.action-cell {
 			min-width: 110px;
 			white-space: nowrap;
 			position: relative;
 		}
+	.table .action-cell .dropdown-toggle,
+	.table td.actions-cell .dropdown-toggle,
+	.table .follow-action-dropdown .dropdown-toggle,
+	.table .registration-action-dropdown .dropdown-toggle,
+	.table .admission-action-dropdown .dropdown-toggle,
+	.table .permission-action-dropdown .dropdown-toggle,
+	.table .user-action-dropdown .dropdown-toggle,
+	.table .role-action-dropdown .dropdown-toggle {
+		height: 22px !important;
+		padding: 1px 8px !important;
+		font-size: 11px !important;
+		line-height: 1.2 !important;
+	}
 
 		.registration-action-dropdown .dropdown-menu {
 	min-width: 180px;
@@ -166,6 +182,13 @@ body, button, html, input, select, textarea {
     -webkit-font-smoothing: antialiased;
     -moz-font-smoothing: antialiased;
     -o-font-smoothing: antialiased;
+}
+.table th,
+.table td,
+.odd,
+.even{
+    height: 25px !important;
+    font-size: 12px !important;
 }
 
       @media (min-width: 781px) {
@@ -250,7 +273,10 @@ body, button, html, input, select, textarea {
     padding: 7px 20px;
 }
 .bootstrap-table .table td, .fixed-table-body .table td, .table td {
-    height: 36px;
+    height: 25px !important;
+	padding:3px 10px 10px !important;
+	padding-bottom:3px !important
+
 }
 .mb-3, .my-3 {
     margin-bottom: 0rem !important;
@@ -459,6 +485,22 @@ input[type="checkbox"]:checked::after {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
 	<script src="js/app.js"></script>
+	<script>
+		$(function () {
+			$(document).on('show.bs.dropdown', '.dropdown', function () {
+				var $menu = $(this).children('.dropdown-menu.action-key').first();
+				if (!$menu.length) return;
+
+				$menu.removeClass('dropdown-menu-upward');
+				var rect = this.getBoundingClientRect();
+				var menuHeight = $menu.outerHeight() || 180;
+				var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
+				if (needsUpward) {
+					$menu.addClass('dropdown-menu-upward');
+				}
+			});
+		});
+	</script>
 	@if(session('welcome'))
 		<script>
 			(function () {
