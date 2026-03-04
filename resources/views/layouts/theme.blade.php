@@ -37,7 +37,7 @@
 	.side-menu-list {
 		margin:-18px 0 20px;
 	}
-.side-menu-list .lbl{
+	.side-menu-list .lbl{
 			font-size:13px !important;
 			font-weight:600 !important;
 		}
@@ -50,84 +50,117 @@
 		border-color: #6c757d;
 	}
 	.side-menu-list a,
-.side-menu-list li>span {
+	.side-menu-list li>span {
     padding: 6px 5px 6px 46px;
-}
- * {
+	}
+ 	* {
     font-family: 'Proxima Nova', sans-serif;
     font-size: 12px !important;
     margin: 0;
     padding: 0;
-    
-}
-.fa-classic,
-.fa-regular,
-.fa-solid,
-.far,
-.fas {
-    font-family: "Font Awesome 6 Free" !important;
-}
-.btn.btn-default {
-    background-color: #00a8ff ;
-    border-color: #00a8ff ;
-}
-.follow-table thead th {
-    background: #00a8ff !important;
-}
-.table {
-    width: 98%;
-    max-width: 198%;
-   
-    margin-left: 8px;
-}
-.dataTables_wrapper .dataTables_filter input,.login-logs .dataTables_filter input {
-    border: 1px solid #d9e2ef;
-    border-radius: 10px !important;
-    padding: 6px 12px !important;
-    height: 19px !important;
-    width: 240px;
-    box-shadow: none;
-}.login-logs .box-typical-body {
-    padding: 10px 16px !important;
-    
-}
+		
+	}
+	.fa-classic,
+	.fa-regular,
+	.fa-solid,
+	.far,
+	.fas {
+		font-family: "Font Awesome 6 Free" !important;
+	}
+	.btn.btn-default {
+		background-color: #00a8ff ;
+		border-color: #00a8ff ;
+	}
+	.follow-table thead th {
+		background: #00a8ff !important;
+	}
+	.table {
+		width: 98%;
+		max-width: 198%;
+	
+		margin-left: 8px;
+	}
+	.dataTables_wrapper .dataTables_filter input,.login-logs .dataTables_filter input {
+		border: 1px solid #d9e2ef;
+		border-radius: 10px !important;
+		padding: 6px 12px !important;
+		height: 19px !important;
+		width: 240px;
+		box-shadow: none;
+	}.login-logs .box-typical-body {
+		padding: 10px 16px !important;
+		
+	}
 
-.box-typical.box-typical-dashboard .box-typical-body {
-    overflow: hidden;
-}
-.box-typical.box-typical-dashboard{
-    margin:0px 0px 5px !important;
-    
-}
-.box-typical.box-typical-dashboard .box-typical-header{
-    display:flex;
+	.box-typical.box-typical-dashboard .box-typical-body {
+		overflow: hidden;
+	}
+	.box-typical.box-typical-dashboard{
+		margin:0px 0px 5px !important;
+		
+	}
+	.box-typical.box-typical-dashboard .box-typical-header{
+		display:flex;
 
-}
-.form-row>.col, .form-row>[class*=col-] {
-    padding-right: 3px;
-    padding-left: 5px;
-}
-   .follow-action-dropdown {
-    position: relative;
+	}
+	.form-row>.col, .form-row>[class*=col-] {
+		padding-right: 3px;
+		padding-left: 5px;
+	}
+	.follow-action-dropdown {
+		position: relative;
 
-}
+	}
 
-.follow-action-dropdown .dropdown-menu {
+	.follow-action-dropdown .dropdown-menu {
 	font-size:12px !important;
 	min-width: 180px;
-    position: absolute;  
-    top:-33px !important;          
-    left: -73px !important;
+	position: absolute;  
+	top:-33px !important;          
+	left: -73px !important;
 	z-index: 9999;
-	 }
-.table a{
-	border-bottom: 1px solid #e9ecef;
-}
+	}
+
+	.dropdown-menu.action-key {
+		font-size: 12px !important;
+		min-width: 180px;
+	}
+	.table a{
+		border-bottom: 1px solid #e9ecef;
+	}
 	.action-cell {
 			min-width: 110px;
 			white-space: nowrap;
 			position: relative;
 		}
+	.table .action-cell > .dropdown,
+	.table td.actions-cell > .dropdown,
+	.table .permission-action-dropdown,
+	.table .user-action-dropdown,
+	.table .role-action-dropdown {
+		display: flex;
+		justify-content: center;
+	}
+
+	.table .permission-action-dropdown .dropdown-menu.action-key,
+	.table .user-action-dropdown .dropdown-menu.action-key,
+	.table .role-action-dropdown .dropdown-menu.action-key {
+		position: absolute;
+		top: calc(100% + -33px) !important;
+		left: -94px !important;
+		right: auto !important;
+		transform: translate3d(-50%, 0, 0) !important;
+		z-index: 9999;
+	}
+
+	.table .permission-action-dropdown .dropdown-menu.action-key.dropdown-menu-upward,
+	.table .user-action-dropdown .dropdown-menu.action-key.dropdown-menu-upward,
+	.table .role-action-dropdown .dropdown-menu.action-key.dropdown-menu-upward {
+		top: 0 !important;
+		left: 50% !important;
+		right: auto !important;
+		transform: translate3d(-50%, -100%, 0) !important;
+	}
 	.table .action-cell .dropdown-toggle,
 	.table td.actions-cell .dropdown-toggle,
 	.table .follow-action-dropdown .dropdown-toggle,
@@ -187,7 +220,7 @@ body, button, html, input, select, textarea {
 .table td,
 .odd,
 .even{
-    height: 25px !important;
+    height: 27px !important;
     font-size: 12px !important;
 }
 
@@ -272,9 +305,9 @@ body, button, html, input, select, textarea {
 .box-typical .panel-heading {
     padding: 7px 20px;
 }
-.bootstrap-table .table td, .fixed-table-body .table td, .table td {
-    height: 25px !important;
-	padding:3px 10px 10px !important;
+.bootstrap-table .table td, .fixed-table-body .table td, .table td, th, tr {
+    height: 27px !important;
+	padding:3px 10px 3px !important;
 	padding-bottom:3px !important
 
 }
@@ -317,20 +350,22 @@ body, button, html, input, select, textarea {
 		}
 	}
 
-	/* Page content spacing */
 	.with-side-menu .page-content {
 		padding: 100px 32px 32px;
+		height: auto;
+		overflow: hidden !important;
 	}
 
-	/* 🔥 UPDATED: container spacing fix */
 	.with-side-menu .page-content > .container-fluid {
 		max-width: 1440px;
 		margin: 0 auto;
 		padding-left: 7px;
 		padding-right: 28px;
+		height: 100%;
+		overflow: hidden !important;
 	}
 
-	/* 🔥 UPDATED: proper gap between cards */
+	
 	.row {
 		margin-left: -8px;
 		margin-right: -8px;
@@ -341,7 +376,7 @@ body, button, html, input, select, textarea {
 		padding-right: 8px;
 	}
 
-	/* Sidebar hidden */
+
 	.menu-left-hidden .page-content {
 		margin-left: 0 !important;
 		padding-left: 32px;
@@ -425,12 +460,12 @@ body, button, html, input, select, textarea {
 		text-align:center;
 	}
 input[type="checkbox"] {
-  /* Remove default style */
+
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  width: 13px;       /* normal size */
-  height: 13px;      /* normal size */
+  width: 13px;      
+  height: 13px;      
   border: 2px solid grey;
   border-radius: 3px;
   background-color: white;
@@ -438,13 +473,12 @@ input[type="checkbox"] {
   position: relative;
 }
 
-/* Checked state */
 input[type="checkbox"]:checked {
   background-color: #00a8ff;
   border-color: #00a8ff;
 }
 
-/* Tick */
+
 input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
@@ -455,6 +489,9 @@ input[type="checkbox"]:checked::after {
   border: solid white ;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+.dropdown-item{
+	padding: 1px 6px;
 }
 
 

@@ -31,42 +31,42 @@
 									<div class="lead-tabs-wrapper w-100">
   <ul class="nav lead-tabs p-0 m-0 gap-0">
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link" href="#" data-target="#notif-coworking">
         Coworking FollowUp
         <span class="count">0</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link">
+      <a class="nav-link" href="#" data-target="#notif-followup">
         Follow Up
         <span class="count">0</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link active">
+      <a class="nav-link active" href="#" data-target="#notif-quick-leads">
         Quick Leads
         <span class="count">4</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link">
+      <a class="nav-link" href="#" data-target="#notif-enrollments">
         Website Enrollments
         <span class="count">0</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link">
+      <a class="nav-link" href="#" data-target="#notif-admissions">
         Website Admissions
         <span class="count">0</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link">
+      <a class="nav-link" href="#" data-target="#notif-brochures">
         Brochure Downloads
         <span class="count">4</span>
       </a>
@@ -76,43 +76,80 @@
 									
 								</div>
 								<div class="dropdown-menu-notif-list">
-									
-  <!-- Table Section -->
-  <div class="table-responsive">
-    <table class="table table-sm mb-0 notification-table">
-      <thead>
-        <tr>
-          <th>Full Name</th>
-          <th>Date</th>
-          <th>Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Ateeqa Mubarik</td>
-          <td>12-Feb-26</td>
-          <td>10:27 AM</td>
-        </tr>
-        <tr>
-          <td>Ali Raza</td>
-          <td>12-Feb-26</td>
-          <td>09:15 AM</td>
-        </tr>
-		<tr>
-          <td>Ali Raza</td>
-          <td>12-Feb-26</td>
-          <td>09:15 AM</td>
-        </tr>
-		
-        <tr>
-          <td>Sara Khan</td>
-          <td>11-Feb-26</td>
-          <td>04:42 PM</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
+                  <div class="tab-content notif-tab-content">
+                    <div class="tab-pane" id="notif-coworking">
+                      <div class="text-center p-3 text-muted">No coworking follow-up notifications.</div>
+                    </div>
+                    <div class="tab-pane" id="notif-followup">
+                      <div class="text-center p-3 text-muted">No follow-up notifications.</div>
+                    </div>
+                    <div class="tab-pane active show" id="notif-quick-leads">
+                      <div class="table-responsive">
+                        <table class="table table-sm mb-0 notification-table">
+                          <thead>
+                            <tr>
+                              <th>Full Name</th>
+                              <th>Date</th>
+                              <th>Time</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Ateeqa Mubarik</td>
+                              <td>12-Feb-26</td>
+                              <td>10:27 AM</td>
+                            </tr>
+                            <tr>
+                              <td>Ali Raza</td>
+                              <td>12-Feb-26</td>
+                              <td>09:15 AM</td>
+                            </tr>
+                            <tr>
+                              <td>Ali Raza</td>
+                              <td>12-Feb-26</td>
+                              <td>09:15 AM</td>
+                            </tr>
+                            <tr>
+                              <td>Sara Khan</td>
+                              <td>11-Feb-26</td>
+                              <td>04:42 PM</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="notif-enrollments">
+                      <div class="text-center p-3 text-muted">No website enrollments notifications.</div>
+                    </div>
+                    <div class="tab-pane" id="notif-admissions">
+                      <div class="text-center p-3 text-muted">No website admissions notifications.</div>
+                    </div>
+                    <div class="tab-pane" id="notif-brochures">
+                      <div class="table-responsive">
+                        <table class="table table-sm mb-0 notification-table">
+                          <thead>
+                            <tr>
+                              <th>Full Name</th>
+                              <th>Date</th>
+                              <th>Time</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Rabia Amin</td>
+                              <td>12-Feb-26</td>
+                              <td>01:10 PM</td>
+                            </tr>
+                            <tr>
+                              <td>Hassan Ali</td>
+                              <td>11-Feb-26</td>
+                              <td>06:20 PM</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
 								</div>
 								<div class="dropdown-menu-notif-more">
 									<a href="#">See more</a>
@@ -560,7 +597,10 @@ img.icon{
 
 <script>
   document.querySelectorAll('.lead-tabs .nav-link').forEach(function(tab) {
-    tab.addEventListener('click', function() {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var targetId = this.getAttribute('data-target');
 
       // remove active from all
       document.querySelectorAll('.lead-tabs .nav-link')
@@ -569,7 +609,20 @@ img.icon{
       // add active to clicked
       this.classList.add('active');
 
+      document.querySelectorAll('.notif-tab-content .tab-pane').forEach(function(pane) {
+        pane.classList.remove('active');
+        pane.classList.remove('show');
+      });
+
+      if (targetId) {
+        var targetPane = document.querySelector(targetId);
+        if (targetPane) {
+          targetPane.classList.add('active');
+          targetPane.classList.add('show');
+        }
+      }
+
     });
   });
+
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

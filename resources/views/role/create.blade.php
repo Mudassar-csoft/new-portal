@@ -7,7 +7,7 @@
 		<div class="box-typical box-typical-dashboard panel panel-default user-card">
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
-					<h3 class="panel-title mb-0">Create Role</h3>
+					<h3 class="panel-title mb-0 form-label">Create Role</h3>
 					<small class="text-muted">Define a role and attach permissions.</small>
 				</div>
 				<a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
@@ -16,17 +16,17 @@
 				<form method="POST" action="{{ route('roles.store') }}">
 					@csrf
 					<div class="form-section">
-						<div class="section-title">Role Details</div>
+						<div class="section-title form-label">Role Details</div>
 						<div class="form-row">
 							<div class="form-group col-md-6">
-								<label class="required">Name</label>
+								<label class="required form-label">Name</label>
 								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin">
 								@error('name')
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
-							<div class="form-group col-md-6 text-center">
-								<label>Slug</label>
+							<div class="form-group col-md-6 ">
+								<label class="form-label" >Slug</label>
 								<input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
 								<small class="text-muted">Auto from name if left blank.</small>
 								@error('slug')
@@ -35,7 +35,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label>Description</label>
+							<label class="form-label">Description</label>
 							<textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
 							@error('description')
 								<div class="field-error">{{ $message }}</div>
@@ -44,14 +44,15 @@
 					</div>
 
 					<div class="form-section">
-						<div class="section-title">Permissions</div>
+						<div class="section-title form-label">Permissions</div>
 						<div class="permission-wrapper">
 							<div class="permission-grid">
 								@foreach($permissions as $resource => $perms)
 									<div class="perm-column">
 										<h6 class="text-muted text-uppercase perm-heading">{{ $resource }}</h6>
 										@foreach($perms as $perm)
-											<label class="perm-item">
+										
+											<label class="perm-item form-label">
 												<input type="checkbox" name="permissions[]" value="{{ $perm->id }}" @checked(collect(old('permissions', []))->contains($perm->id))>
 												<span>{{ $perm->action }}</span>
 											</label>
@@ -98,8 +99,8 @@
 			box-shadow: 0 18px 40px rgba(25, 45, 85, 0.12);
 		}
 		.user-body {
-			padding: 24px 24px 10px;
-		}
+    padding: 8px 24px 5px;
+}
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
 		.form-section {
 			background: #fff;
@@ -108,10 +109,13 @@
 			padding: 18px 18px 6px;
 			margin-bottom: 18px;
 		}
+		.form-group {
+    margin-bottom: 4px;
+}
 		.section-title {
 			font-weight: 600;
 			color: #1f2d3d;
-			margin-bottom: 12px;
+			margin-bottom: 6px;
 		}
 		.permission-grid {
 			display: grid;
@@ -132,6 +136,7 @@
 		}
 		.perm-item {
 			display: flex;
+			flex-direction:row;
 			align-items: center;
 			gap: 8px;
 			padding: 6px 0;
@@ -152,6 +157,12 @@
 			border-radius: 6px;
 			background: #fff;
 			padding: 12px;
+		}
+		.col-md-6{
+			        -webkit-box-flex: 0;
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 48%;
 		}
 		/* Tablet */
         @media (max-width: 992px) {
