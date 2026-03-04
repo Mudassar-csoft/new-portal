@@ -91,7 +91,34 @@
 		padding: 10px 16px !important;
 		
 	}
+	.follow-controls {
+    
+    padding:0px 10px 0px 10px;
+}
 
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 1.85em;
+}
+.dataTables_length{
+	padding-left: 10px !important;
+}
+.follow-footer{
+    padding:0px 12px 0px 12px !important;
+
+}
+.row{
+	align-items: center !important;
+}
+.site-header .site-header-collapsed .site-header-collapsed-in {
+    margin-right: 175px !important;
+}
+.site-header .dropdown .btn.dropdown-toggle {
+    height: 28px;
+}
+	@media (max-width: 1367px) {
+    .chart-statistic-box .chart-container {
+        margin-left: -176px;
+    }
 	.box-typical.box-typical-dashboard .box-typical-body {
 		overflow: hidden;
 	}
@@ -307,9 +334,12 @@ body, button, html, input, select, textarea {
 }
 .bootstrap-table .table td, .fixed-table-body .table td, .table td, th, tr {
     height: 27px !important;
-	padding:3px 10px 3px !important;
-	padding-bottom:3px !important
+	padding:1px 10px 3px !important;
+	padding-bottom:1px !important
 
+}
+.statistic-box {
+    height: 27vh !important;
 }
 .mb-3, .my-3 {
     margin-bottom: 0rem !important;

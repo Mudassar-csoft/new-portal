@@ -114,7 +114,7 @@
 @push('styles')
 	<style>
 		* {
-    font-family: 'Proxima Nova', sans-serif !important;
+    font-family: 'Proxima Nova', sans-serif ;
     font-size: 12px !important; /* uniform font size */
     margin: 0;
     padding: 0;

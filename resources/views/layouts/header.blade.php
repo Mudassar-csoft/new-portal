@@ -541,8 +541,20 @@
     position: relative;
 }
 .site-header .user-menu.dropdown{
-    margin: 0px 0px 0px 0px!important;
+    margin: 0px 0px 0px 10px!important;
+	    height: 25px;
 }
+img.icon {
+    width: 29px !important;
+    height: 27px !important;
+    margin-left: -10px;
+}
+    .col-sm-6 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 50%;
+        flex: 0 0 49%;
+        max-width: 50%;
+    }
 .user-profile-dropdown{
     /* margin-left: 20px; */
     margin-right: 15px;
