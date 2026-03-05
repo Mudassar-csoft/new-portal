@@ -42,6 +42,7 @@ padding: 0;
 body,
 p,
 span,
+div,
 label,
 input,
 textarea,

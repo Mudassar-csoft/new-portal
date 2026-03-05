@@ -60,14 +60,14 @@
             @enderror
         </div>
        
-         <div class="custom-col-3 ml-2" style = "margin-top:-18px;">
+         <div class="custom-col-3 ml-2" style = "margin-top:-3px;">
     <label class="form-label text-dark fw-semibold small ">
         Teaching Method <span class="text-danger">*</span>
     </label>
 
-   <div class="form-radio  mt-2 " >
+   <div class="form-radio  mt-2 g-0" >
 
-    <div class="teaching-method form-check d-flex align-items-center">
+    <div class="teaching-method form-check d-flex align-items-center ">
        
             <input class="form-check-input mt-0 mr-1"
                    type="radio"
@@ -335,7 +335,7 @@
     <!-- Remarks -->
   
 </div>
-<div class="row mt-3 mr-1" style = "padding-left:15px">
+<div class="row mt-0 mr-1" style = "padding-left:15px">
     <div class="col-12">
         <label class="form-label small fw-semibold text-dark required">
             Remarks
@@ -343,6 +343,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
+    style = "width:98.8%;height:5rem; margin-right:10px;"
     placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
@@ -411,7 +412,7 @@
     max-width: 25%;
   }
   .form-radio{
-    gap:3% ;
+    gap:2% ;
 }
   .custom-col-2 { flex: 0 0 14%; max-width: 14%; }
 
