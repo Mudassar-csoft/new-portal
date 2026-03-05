@@ -7,12 +7,14 @@ use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
 use App\Models\Program;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
+use Yajra\DataTables\Facades\DataTables;
 
 class LeadController extends Controller
 {
@@ -220,7 +222,7 @@ class LeadController extends Controller
             'status' => 'pending',
         ]);
 
-        return Redirect::route('leads.show', $lead)->with('status', 'Transfer request submitted for approval.');
+        return Redirect::route('leads.transfer')->with('status', 'Transfer request submitted for approval.');
     }
 
     public function approveTransfer(Request $request, LeadTransfer $transfer): RedirectResponse
@@ -249,6 +251,86 @@ class LeadController extends Controller
         ]);
 
         return Redirect::back()->with('status', 'Transfer approved and campus updated.');
+    }
+
+    public function transfers(Request $request): View|JsonResponse
+    {
+        if ($request->ajax()) {
+            $query = LeadTransfer::query()
+                ->with([
+                    'lead:id,name,phone,program_id',
+                    'lead.program:id,title,name',
+                    'fromCampus:id,name,code',
+                    'toCampus:id,name,code',
+                    'requester:id,name',
+                    'approver:id,name',
+                ])
+                ->select('lead_transfers.*');
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('lead_name', function (LeadTransfer $transfer) {
+                    if (!$transfer->lead) {
+                        return 'N/A';
+                    }
+
+                    $url = route('leads.show', $transfer->lead->id);
+                    $name = e($transfer->lead->name ?? 'N/A');
+
+                    return '<a href="' . e($url) . '" class="lead-link">' . $name . '</a>';
+                })
+                ->addColumn('lead_phone', fn (LeadTransfer $transfer) => e(optional($transfer->lead)->phone ?? 'N/A'))
+                ->addColumn(
+                    'program',
+                    fn (LeadTransfer $transfer) => e(optional(optional($transfer->lead)->program)->title
+                        ?? optional(optional($transfer->lead)->program)->name
+                        ?? 'N/A')
+                )
+                ->addColumn('from_campus', fn (LeadTransfer $transfer) => e(optional($transfer->fromCampus)->code ?? optional($transfer->fromCampus)->name ?? 'N/A'))
+                ->addColumn('to_campus', fn (LeadTransfer $transfer) => e(optional($transfer->toCampus)->code ?? optional($transfer->toCampus)->name ?? 'N/A'))
+                ->addColumn('status_badge', function (LeadTransfer $transfer) {
+                    $status = strtolower((string) ($transfer->status ?? 'pending'));
+                    $class = match ($status) {
+                        'approved' => 'label-success',
+                        'rejected' => 'label-danger',
+                        default => 'label-warning',
+                    };
+
+                    return '<span class="label ' . $class . '">' . e(ucfirst($status)) . '</span>';
+                })
+                ->addColumn('requested_by', fn (LeadTransfer $transfer) => e(optional($transfer->requester)->name ?? 'N/A'))
+                ->editColumn('created_at', fn (LeadTransfer $transfer) => optional($transfer->created_at)->format('d-M-Y H:i') ?? 'N/A')
+                ->addColumn('approved_by', fn (LeadTransfer $transfer) => e(optional($transfer->approver)->name ?? 'N/A'))
+                ->addColumn('approved_at', fn (LeadTransfer $transfer) => optional($transfer->approved_at)->format('d-M-Y H:i') ?? 'N/A')
+                ->editColumn('reason', fn (LeadTransfer $transfer) => e($transfer->reason ?? 'N/A'))
+                ->addColumn('actions', fn (LeadTransfer $transfer) => view('lead.partials.transfer-grid-action', ['transfer' => $transfer])->render())
+                ->filterColumn('lead_name', function ($query, $keyword) {
+                    $query->whereHas('lead', function ($leadQuery) use ($keyword) {
+                        $leadQuery->where('name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('lead_phone', function ($query, $keyword) {
+                    $query->whereHas('lead', function ($leadQuery) use ($keyword) {
+                        $leadQuery->where('phone', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('from_campus', function ($query, $keyword) {
+                    $query->whereHas('fromCampus', function ($campusQuery) use ($keyword) {
+                        $campusQuery->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('code', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('to_campus', function ($query, $keyword) {
+                    $query->whereHas('toCampus', function ($campusQuery) use ($keyword) {
+                        $campusQuery->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('code', 'like', "%{$keyword}%");
+                    });
+                })
+                ->rawColumns(['lead_name', 'status_badge', 'actions'])
+                ->make(true);
+        }
+
+        return view('lead.transfers');
     }
 
     public function followups(): View

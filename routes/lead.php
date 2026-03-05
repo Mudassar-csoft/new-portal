@@ -17,8 +17,6 @@ Route::get('/leads', function () {
     return view('lead.all');
 })->name('leads.index');
 
-Route::get('/leads/transfers', function () {
-    return view('lead.transfer');
-})->name('leads.transfer');
+Route::get('/leads/transfers', [LeadController::class, 'transfers'])->name('leads.transfer');
 
 Route::get('/leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
