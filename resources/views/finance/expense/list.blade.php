@@ -39,7 +39,7 @@
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ url()->current() }}">
                     <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3 ">
+                        <div class="form-group custom-col-3 ">
                             <label class="form-label">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -50,7 +50,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -59,11 +59,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label">From</label>
                             <input type="date" class="form-control" name="from" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label">To</label>
                             <input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}">
                         </div>
@@ -148,12 +148,7 @@
 
 @push('styles')
     <style>
-        * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important;
-    margin: 0;
-    padding: 0;
-}
+       
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
 }
@@ -189,24 +184,7 @@
     
 }
 
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-        .col-md-3 {
-    flex: 0 0 221px !important;
-    max-width: 221px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-     /* margin-top: 2px;    */
-}
+
 
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }

@@ -29,3 +29,9 @@
 		<a class="dropdown-item" href="#"><i class="fa fa-pencil-square-o mr-2 text-muted"></i>Edit</a>
 	</div>
 </div>
+<style>
+ /* .follow-action-dropdown .dropdown-menu{
+	left: 2px !important;
+	top: -40px !important;
+ } */
+</style>

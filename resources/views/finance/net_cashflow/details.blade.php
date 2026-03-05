@@ -30,7 +30,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.netcashflow') }}">
                     <div class="form-row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group custom-col-4">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,15 +41,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-2 d-flex align-items-end">
+                        <div class="form-group custom-col-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.netcashflow') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
                         </div>
@@ -59,19 +59,19 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="cash-card tone-income">
                     <div class="cash-label">Total Income</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['total_income'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="cash-card tone-expense">
                     <div class="cash-label">Total Expense</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['total_expense'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="cash-card tone-net {{ ((float) ($summary['net_cashflow'] ?? 0)) < 0 ? 'is-negative' : '' }}">
                     <div class="cash-label">Net Cashflow</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['net_cashflow'] ?? 0), 0) }}</div>

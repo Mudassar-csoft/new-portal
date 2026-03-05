@@ -30,7 +30,7 @@
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
                     <div class="form-row" style = "gap:18px; padding-left:15px">
-                        <div class="form-group col-md-4" >
+                        <div class="form-group custom-col-4" >
                             <label class="form-label required">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,7 +41,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-8 d-flex align-items-end">
+                        <div class="form-group custom-col-8 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.payables') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
                         </div>
@@ -51,19 +51,19 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="payable-card tone-pending">
                     <div class="payable-label">Pending</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['pending'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="payable-card tone-approved">
                     <div class="payable-label">Approved Unpaid</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['approved'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="payable-card tone-total">
                     <div class="payable-label">Total Payables</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['total'] ?? 0), 0) }}</div>
@@ -111,57 +111,7 @@
 
 @push('styles')
     <style>
-         * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-    
-    }
-    
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
-.form-label{
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #343434;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-}
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-        .finance-shell { padding: 8px 0 16px; }
+           .finance-shell { padding: 8px 0 16px; }
         .finance-header {
             display: flex;
             justify-content: space-between;

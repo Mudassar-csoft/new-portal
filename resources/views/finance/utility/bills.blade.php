@@ -34,7 +34,7 @@
                 <form method="POST" action="{{ route('finance.utility.bills.store') }}">
                     @csrf
                     <div class="form-row mt-3" style = "gap:18px; padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -45,7 +45,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Bill Type</label>
                             <select name="bill_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -56,30 +56,30 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Reference Number</label>
                             <input type="text" name="reference_number" class="form-control" value="{{ old('reference_number') }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Bill Month</label>
                             <input type="date" name="bill_month" class="form-control" value="{{ old('bill_month', now()->startOfMonth()->toDateString()) }}" required>
                         </div>
                     </div>
 
                     <div class="form-row" style = "gap:18px; padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Issue Date</label>
                             <input type="date" name="issue_date" class="form-control" value="{{ old('issue_date') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Due Date</label>
                             <input type="date" name="due_date" class="form-control" value="{{ old('due_date') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Amount Within Due Date</label>
                             <input type="number" step="0.01" min="0" name="amount_within_due_date" class="form-control" value="{{ old('amount_within_due_date') }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Fine</label>
                             <input type="number" step="0.01" min="0" name="fine" class="form-control" value="{{ old('fine', 0) }}">
                         </div>
@@ -152,15 +152,7 @@
 
 @push('styles')
     <style>
-         * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important;
-    margin: 0;
-    padding: 0;
-}
-.box-typical.box-typical-dashboard .box-typical-body {
-    overflow: hidden;
-}
+        
 .box-typical.box-typical-dashboard{
     margin:0px 0px 5px !important;
     
@@ -171,47 +163,6 @@
 }
     
 
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
-.form-label{
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #343434;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    
-}
-
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-
-        .col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 200px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-     /* margin-top: 2px;    */
-}
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }

@@ -28,11 +28,11 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.attendance.index') }}" class="mb-3">
                     <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-5">
+                        <div class="form-group custom-col-5">
                             <label class="form-label required" >Date</label>
                             <input type="date" class="form-control" name="date" value="{{ $filters['date'] ?? now()->toDateString() }}">
                         </div>
-                        <div class="form-group col-md-5">
+                        <div class="form-group custom-col-5">
                             <label class="form-label required" >Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -43,7 +43,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-5">
+                        <div class="form-group custom-col-5">
                             <label class="form-label required" >Request Status</label>
                             <select class="form-control" name="request_status">
                                 <option value="">All</option>
@@ -52,7 +52,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-1 d-flex align-items-end justify-end">
+                        <div class="form-group custom-col-1 d-flex align-items-end justify-end">
                             <button class="btn btn-inline btn-primary-outline mr-2 p-2  mt-4" type="submit">Filter</button>
                             <a href="{{ route('hrm.attendance.index') }}" class="btn btn-inline btn-danger-outline p-2 mt-4">Reset</a>
                         </div>
@@ -65,7 +65,7 @@
                             @csrf
                             <h5 class="form-label required" >Check-in</h5>
                             <div class="form-row" style = "gap:0px;padding-left:5px">
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -74,11 +74,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Check-in At</label>
                                     <input type="datetime-local" name="check_in_at" class="form-control">
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Shift</label>
                                     <select name="shift_id" class="form-control">
                                         <option value="">Auto/None</option>
@@ -87,8 +87,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <button class="btn btn-inline btn-primary-outline p-2  ml-2" style="margin-top:30px;" type="submit">Save Check-in</button>
                             </div>
+                            <div class = "text-right"> 
+                            <button class="btn btn-inline btn-primary-outline p-2" type="submit">Save Check-in</button>
+                        </div>
                         </form>
                     </div>
 
@@ -97,21 +99,22 @@
                             @csrf
                             <h5 class="form-label required" >Biometric / Device Import (Optional)</h5>
                             <div class="form-row" style = "gap:0px;padding-left:5px">
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Source Name</label>
                                     <input type="text" name="source_name" class="form-control" placeholder="ZKTeco Device A">
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Remarks</label>
                                     <input type="text" name="remarks" class="form-control">
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group custom-col-4">
                                     <label class="form-label required" >Import File (CSV)</label>
                                     <input type="file" name="import_file" class="form-control-file">
                                 </div>
-                                
-                                <button class="btn btn-inline btn-primary-outline p-2  mt-3 ml-4" type="submit">Log Import</button>
                             </div>
+                            <div class = "text-right"> 
+                            <button class="btn btn-inline btn-primary-outline p-2 type="submit">Log Import</button>
+                        </div>
                         </form>
                     </div>
                 </div>
@@ -176,7 +179,7 @@
                 <form method="POST" action="{{ route('hrm.attendance.requests.store') }}" class="mb-3">
                     @csrf
                     <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -185,7 +188,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Type</label>
                             <select name="request_type" class="form-control">
                                 <option value="checkin_correction">Check-in</option>
@@ -193,19 +196,22 @@
                                 <option value="full_day_correction">Full Day</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Requested In</label>
                             <input type="datetime-local" name="requested_check_in_at" class="form-control">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Requested Out</label>
                             <input type="datetime-local" name="requested_check_out_at" class="form-control">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Reason</label>
                             <input type="text" name="reason" class="form-control">
                         </div>
-                        <button class="btn btn-inline btn-primary-outline text-right p-2  mt-4"" type="submit">Submit Request</button>
+                        
+                    </div>
+                    <div class = "text-right">
+                        <button class="btn btn-inline btn-primary-outline  p-2 mr-4" type="submit">Submit Request</button>
                     </div>
                 </form>
 
@@ -261,7 +267,9 @@
 
 @push('styles')
     <style>
-       
+       .custom-col-3{
+         flex: 0 0 18% !important  ;
+          max-width: 18% !important; }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box {

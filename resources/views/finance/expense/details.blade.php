@@ -26,7 +26,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.expense') }}">
                     <div class="form-row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group custom-col-4">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -37,15 +37,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-2 d-flex align-items-end">
+                        <div class="form-group custom-col-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.expense') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
                         </div>
@@ -55,14 +55,14 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="expense-card tone-total">
                     <div class="expense-label">Total Expense</div>
                     <div class="expense-value">Rs. {{ number_format((float) ($summary['total_expense'] ?? 0), 0) }}</div>
                 </div>
             </div>
             @foreach($components as $component)
-                <div class="col-md-4">
+                <div class="custom-col-4">
                     <div class="expense-card tone-item">
                         <div class="expense-label">{{ $component['label'] ?? 'Component' }}</div>
                         <div class="expense-value">Rs. {{ number_format((float) ($component['amount'] ?? 0), 0) }}</div>

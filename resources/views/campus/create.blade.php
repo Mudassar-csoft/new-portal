@@ -6,23 +6,23 @@
     <div class="campus-shell">
         <div class="campus-card box-typical box-typical-dashboard panel panel-default">
             <div class="card-body">
-                <h3 class="campus-title" style="font-size:14px !important; color:black;">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
+                <h3 class="campus-title form-label" style="font-size:14px !important; color:black;">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
                 <form method="POST" action="{{ route('campus.store') }}">
                     @csrf
                     <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus Title</label>
                             <input type="text" name="name" class="form-control" placeholder="Enter campus title" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus Code</label>
                             <input type="text" id="campus-code" class="form-control" placeholder="Auto generated on save" disabled>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Country</label>
                             <select class="form-control" id="country-select" name="country" required></select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">City</label>
                             <select class="form-control" id="city-select" name="city" required>
                                 <option>Loading...</option>
@@ -32,26 +32,26 @@
 
                     <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
                         
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">City Abbreviation</label>
                             <input type="text" name="city_abbr" class="form-control" placeholder="Enter three letter abbreviation" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus Email Address</label>
                             <input type="email" name="campus_email" class="form-control" placeholder="Enter campus email address" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus Landline Number</label>
                             <input type="text" name="landline" class="form-control" placeholder="##-#######" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus Mobile Number</label>
                             <input type="text" name="mobile" class="form-control" placeholder="0300-#######" required>
                         </div>
                     </div>
                     
                     <div class="form-row mt-2" style = "gap:18px;padding-left:15px !important">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required d-block">Campus Type</label>
                             <div class="campus-type-options d-flex" style= "gap:8px; padding-left:15px !important;" >
                                 <div class="d-flex align-items-center justify-content-center mt-2">
@@ -64,15 +64,15 @@
                                 </div>
                             </div>
                         </div>
-                          <div class="form-group col-md-3">
+                          <div class="form-group custom-col-3">
                             <label class="form-label required">Number of Labs in Campus</label>
                             <input type="number" name="labs_count" class="form-control" placeholder="Enter number of labs" min="0">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Royalty Rate</label>
                             <input type="number" step="0.01" name="royalty_rate" id="royalty-rate" class="form-control" placeholder="Enter royalty rate">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Status</label>
                             <select class="form-control" name="status" required>
                                 <option value="">- Select -</option>
@@ -84,7 +84,7 @@
 
                     <div class="form-group mt-2" style = "gap:18px;padding-left:15px">
                         <label class="form-label required">Campus Address</label>
-                        <textarea class="form-control" name="address" rows="2" placeholder="Enter campus address here..." required></textarea>
+                        <textarea class="form-control"style= "width:99%;" name="address" rows="2" placeholder="Enter campus address here..." required></textarea>
                     </div>
 
                     <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
@@ -93,14 +93,14 @@
 
 
                     <div class="row mt-2" style = "gap:18px;padding-left:15px">
-    <div class="col-12">
+    <div class="col-12 ">
         <label class="form-label small fw-semibold text-dark required">
             Remarks
         </label>
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    style="height:8rem !important;padding:10px;"
+    style="height:7.5rem !important;padding:10px; width:99%;"
     placeholder="Enter Your Remarks Here" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
@@ -191,20 +191,6 @@ select.form-select-sm, option textarea.form-control-sm {
 .form-control {
     height:38px !important;
 }
-.col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 200px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-
-     margin-top: 2px;
-   
-}
-textarea.form-control-sm {
-    height: 85px;
-    resize: vertical;
-}
-
 /* ---------- Radio Buttons ---------- */
 .form-check-input {
     -webkit-appearance: none;

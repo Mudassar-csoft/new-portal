@@ -1,11 +1,12 @@
+
 <div class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
 
     <!-- ROW 1 -->
-    <div class="row g-0" style = "gap:18px;padding-left:15px">
+    <div class="row g-0" style = "gap:18px;">
 
         <!-- Full Name -->
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small text-dark required">
                 Full Name (As per CNIC)
             </label>
@@ -20,7 +21,7 @@
         </div>
 
         <!-- Phone -->
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">
                 Primary Contact Number
             </label>
@@ -33,7 +34,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-     <div class="col-md-3">
+     <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">
                 Course Interested
             </label>
@@ -59,16 +60,16 @@
             @enderror
         </div>
        
-         <div class="col-3">
+         <div class="custom-col-3 ml-2" style = "margin-top:-18px;">
     <label class="form-label text-dark fw-semibold small ">
         Teaching Method <span class="text-danger">*</span>
     </label>
 
-   <div class="form-radio d-flex align-items-center mt-3 " style="gap:10px;">
+   <div class="form-radio  mt-2 " >
 
-    <div class="teaching-method">
-        <div class="form-check d-flex align-items-center m-0 p-0">
-            <input class="form-check-input mt-0 me-2 mr-1"
+    <div class="teaching-method form-check d-flex align-items-center">
+       
+            <input class="form-check-input mt-0 mr-1"
                    type="radio"
                    id="teaching-method-online"
                    name="details[teaching_method]"
@@ -79,18 +80,18 @@
                    for="teaching-method-online">
                 Online
             </label>
-        </div>
+       
     </div>
 
     <div class="d-flex justify-content-center teaching-method">
-        <div class="form-check d-flex align-items-center  m-0 p-0">
-            <input class="form-check-input mt-0 me-1 mr-1"
+        <div class="form-check d-flex align-items-center ">
+            <input class="form-check-input mt-0 "
                    type="radio"
                    id="teaching-method-campus"
                    name="details[teaching_method]"
                    value="on-campus"
                    @checked(old('details.teaching_method')==='on-campus')>
-            <label class="form-check-label small mb-0"
+            <label class="form-check-label small "
                    for="teaching-method-campus">
                 On-Campus
             </label>
@@ -98,8 +99,8 @@
     </div>
 
     <div class=" d-flex justify-content-center teaching-method">
-        <div class="form-check d-flex align-items-center m-0">
-            <input class="form-check-input mt-0 me-2 mr-1"
+        <div class="form-check d-flex align-items-center ">
+            <input class="form-check-input mt-0  "
                    type="radio"
                    id="teaching-method-hybrid"
                    name="details[teaching_method]"
@@ -112,7 +113,7 @@
         </div>
     </div>
 
-</div>
+    </div>
 
     @error('details.teaching_method')
         <div class="field-error">{{ $message }}</div>
@@ -127,10 +128,10 @@
     </div>
 
     <!-- ROW 2 -->
-    <div class="row g-0 mt-1" style = "gap:18px;padding-left:15px">
+    <div class="row g-0 " style = "gap:18px;padding-left:15px">
 
         <!-- Email -->
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark">
                 Email Address
             </label>
@@ -147,7 +148,7 @@
 
 
 
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">Country</label>
             <select id="lead-country-select"
                     name="details[country]"
@@ -158,7 +159,7 @@
             @enderror
         </div>
 
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">City</label>
             <select id="lead-city-select"
                     name="city"
@@ -170,13 +171,13 @@
             @enderror
         </div>
 
-         <div class="col-md-3 ">
+         <div class="custom-col-3 ">
             <label class="form-label small fw-semibold text-dark required">Area</label>
             <input type="text"
                    name="details[area]"
                    class="form-control form-control-sm @error('details.area') is-invalid @enderror"
                    value="{{ old('details.area') }}"
-                   style = "width:220px">
+                   >
             @error('details.area')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -190,7 +191,7 @@
     <div class="row g-0 mt-1" style = "gap:18px;padding-left:15px">
 
 
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
             <select name="marketing_source"
                     class="form-select form-select-sm @error('marketing_source') is-invalid @enderror">
@@ -207,7 +208,7 @@
             @enderror
         </div>
 
-         <div class="col-md-3">
+         <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">Origin</label>
             <select name="origin"
                     class="form-select form-select-sm @error('origin') is-invalid @enderror">
@@ -226,7 +227,7 @@
 
        
 
-        <div class="col-md-3">
+        <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">Preferred Campus</label>
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
@@ -246,13 +247,13 @@
         </div>
 
 
-    <div class="col-md-3">
+    <div class="custom-col-3">
     <label class="form-label text-dark fw-semibold small mb-3">
         Gender <span class="text-danger">*</span>
     </label>
 
   
-    <div class=" form-radio d-flex align-items-center mt-1 " style="gap:10px;">
+    <div class=" form-radio d-flex align-items-center mt-1 " >
 
         <div class="form-check d-flex align-items-center gender" style="margin-right: 20px;">
             <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
@@ -288,7 +289,7 @@
     padding-left:15px">
 
    
-     <div class="col-md-3">
+     <div class="custom-col-3">
             <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
             <input type="datetime-local"
                    name="details[next_followup_at]"
@@ -299,9 +300,9 @@
             @enderror
         </div>
 
- <div class="col-md-3">
+ <div class="custom-col-3">
     <label class="form-label small fw-semibold text-dark required">
-        Probabilty
+        Probability
     </label>
 
     <input type="range"
@@ -334,7 +335,7 @@
     <!-- Remarks -->
   
 </div>
-<div class="row mt-3" style = "gap:18px;padding-left:15px">
+<div class="row mt-3 mr-1" style = "padding-left:15px">
     <div class="col-12">
         <label class="form-label small fw-semibold text-dark required">
             Remarks
@@ -351,16 +352,100 @@
 </div>
 
 <style>
-/* ---------- General Form Font & Spacing ---------- */
-.lead-form * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-    
-}
-.range-numbers{
 
+/* Default Mobile ( <768px ) */
+.custom-col-1 
+.custom-col-2,
+.custom-col-3,
+.custom-col-4,
+.custom-col-5,
+.custom-col-8 {
+  flex: 0 0 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+.form-radio{
+    flex-direction: column;
+}
+
+/* Medium Devices ( ≥768px ) */
+@media (min-width: 768px) {
+.custom-col-1 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .custom-col-2 {
+    flex: 0 0 16%;
+    max-width: 16%;
+  }
+
+  .custom-col-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+
+  .custom-col-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
+
+  .custom-col-5 {
+    flex: 0 0 41.666%;
+    max-width: 41.666%;
+  }
+
+  .custom-col-8 {
+    flex: 0 0 66.666%;
+    max-width: 66.666%;
+  }
+  .form-radio{
+    gap:2% ;
+}
+
+}
+
+/* Large Devices ( ≥992px ) */
+@media (min-width: 992px) {
+	.custom-col-1 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  .form-radio{
+    gap:3% ;
+}
+  .custom-col-2 { flex: 0 0 14%; max-width: 14%; }
+
+  .custom-col-3 { flex: 0 0 22%; max-width: 22%; }
+
+  .custom-col-4 { flex: 0 0 30%; max-width: 30%; }
+
+  .custom-col-5 { flex: 0 0 38%; max-width: 38%; }
+
+  .custom-col-8 { flex: 0 0 60%; max-width: 60%; }
+
+}
+
+/* Extra Large ( ≥1200px ) */
+@media (min-width: 1200px) {
+.form-radio{
+    gap:3% ;
+}
+.custom-col-1 { flex: 0 0 10.666%; max-width: 12.666%; }
+  .custom-col-2 { flex: 0 0 15.666%; max-width: 18.666%; }
+
+  .custom-col-3 { flex: 0 0 25%; max-width: 23%; }
+
+  .custom-col-4 { flex: 0 0 33.333%; max-width: 33.333%; }
+
+  .custom-col-5 { flex: 0 0 20%; max-width: 20%; }
+
+  .custom-col-8 { flex: 0 0 66.666%; max-width: 66.666%; }
+
+}
+.form-radio{
+    display: flex !important;
+    flex-direction: row;
+    
 }
 .lead-form {
   line-height: 1.2;
@@ -392,31 +477,31 @@
     background: #fff;
 }
 /* ---------- Input, Select, Textarea ---------- */
-input.form-control-sm, span#select2-lead-city-select-container .elect2-selection__rendered span
-select.form-select-sm, option textarea.form-control-sm {
+input.form-control-sm,
+select.form-select-sm,
+textarea.form-control-sm {
     font-size: 12px !important;
     padding: 6px 10px;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
     height: 37px;
-    color:#ccc;
+    color: #343434;
 }
 
-.col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 200px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-    margin-top: 2px;
-}
 textarea.form-control-sm {
     height: 85px;
     resize: vertical;
 }
 
 /* ---------- Radio Buttons ---------- */
-.form-check-input {
+
+.lead-form input[type="range"] {
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+.form-check-input[type="radio"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -431,11 +516,11 @@ textarea.form-control-sm {
     transition: background 0.2s, box-shadow 0.2s;
 }
 
-.form-check-input:checked {
+.form-check-input[type="radio"]:checked {
     border-color: #00a8ff;
 }
 
-.form-check-input:checked::before {
+.form-check-input[type="radio"]:checked::before {
     content: '';
     position: absolute;
     top: 2px;
@@ -454,6 +539,7 @@ textarea.form-control-sm {
 .custom-range {
     -webkit-appearance: none;
     width: 100%;
+    min-height: 0 !important;
     height: 6px;
     border-radius: 4px;
     background: #ddd;
@@ -506,7 +592,6 @@ textarea.form-control-sm {
     padding: 0;
 }
 
-*/
 .col-3.d-flex.justify-content-center,
 .col-6.d-flex.justify-content-center {
     justify-content: start; 
@@ -520,42 +605,6 @@ input[name="details[probability]"] + .small {
 .range-numbers span{
     font-size:10px;
     margin-bottom: 3px ;
-}
-
-@media (min-width: 1295px) {
-    .col-md-3 {
-        flex: 0 0 40% !important;
-        max-width: 40% !important;
-    }
-}
-
-@media (max-width: 992px) {
-    .col-md-3 {
-        flex: 0 0 45% !important;
-        max-width: 45% !important;
-        height: auto;
-    }
-}
-
-/* Small Tablets & Large Mobile (≤ 768px) */
-@media (max-width: 768px) {
-    .col-md-3  {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        height: auto;
-    }
-    .form-check-label{
-        width:80px !important;
-    }
-}
-
-/* Mobile Small (≤ 576px) */
-@media (max-width: 576px) {
-    .col-md-3 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        margin-bottom: 8px;
-    }
 }
 
 /* Textarea Responsive */
@@ -577,19 +626,13 @@ textarea.form-control-sm {
 </style>
 
 <script>
-const slider = document.querySelector('input[name="details[probability]"]');
-slider.addEventListener('input', () => {
-    const value = slider.value;
-    slider.style.setProperty('--value', value + '%');
-    slider.nextElementSibling.querySelector('span').textContent = value + '%';
-});
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const slider = document.getElementById("probabilitySlider");
     const output = document.getElementById("probabilityValue");
+    if (!slider || !output) {
+        return;
+    }
 
     function updateSlider() {
         const value = slider.value;
