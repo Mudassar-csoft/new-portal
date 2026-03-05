@@ -237,7 +237,10 @@ width: 100%;
 }
 
 .table-responsive {
-text-align: center;
+text-align: left !important;
+}
+.followup-table-wrapper {
+height: 26vh !important;
 }
 
 .follow-controls {

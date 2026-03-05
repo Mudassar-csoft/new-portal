@@ -21,7 +21,7 @@
         </div>
 
         <!-- Phone -->
-        <div class="custom-col-3">
+        <div class="custom-col-3 ml-1">
             <label class="form-label small fw-semibold text-dark required">
                 Primary Contact Number
             </label>
