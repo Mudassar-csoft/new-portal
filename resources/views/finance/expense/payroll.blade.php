@@ -35,7 +35,7 @@
                 <form method="POST" action="{{ route('finance.expense.payroll.generate') }}">
                     @csrf
                     <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -46,11 +46,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payroll Month</label>
                             <input type="month" name="month" class="form-control" value="{{ old('month', now()->format('Y-m')) }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Method</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -58,7 +58,7 @@
                                 <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Remarks</label>
                             <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}">
                         </div>
@@ -157,12 +157,7 @@
 
 @push('styles')
     <style>
-        * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important;
-    margin: 0;
-    padding: 0;
-}
+      
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
 }
@@ -198,24 +193,7 @@
     
 }
 
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-        .col-md-3 {
-    flex: 0 0 221px !important;
-    max-width: 221px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-     /* margin-top: 2px;    */
-}
+
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }

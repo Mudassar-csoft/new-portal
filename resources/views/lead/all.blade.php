@@ -372,9 +372,9 @@
 .follow-action-dropdown .dropdown-menu {
 	min-width: 180px;
 	position: absolute !important;
-	top: calc(100% + -30px) !important;
-	right: 0 !important;
-	margin-right: 82px !important;
+	top: 0 !important;
+	right: calc(100% + 2px) !important;
+	margin-right: 0 !important;
 	left: auto !important;
 	transform: none !important;
 	z-index: 9999;
@@ -382,9 +382,9 @@
 
 .follow-action-dropdown .dropdown-menu.dropdown-menu-upward {
 	top: 0 !important;
-	left: -82px !important;
-	right: 0px !important;
-	transform: translate3d(-90px, -200px, 0px) !important;
+	left: auto !important;
+	right: calc(100% + 2px) !important;
+	transform: none !important;
 }
 		.table td{
 			padding:2px 2px;

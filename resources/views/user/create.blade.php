@@ -117,6 +117,9 @@
 
 @push('styles')
 	<style>
+		.form-group {
+    margin-bottom: 1px !important;
+}
 		.user-shell {
 			min-height: 100vh;
 			padding: 20px;

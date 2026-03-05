@@ -12,7 +12,7 @@
 	<div class="lead-show-shell">
 		<div class="lead-header">
 			<div>
-				<h2 class="lead-name " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
+				<h2 class="lead-name form-label " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
 				<div class="lead-sub">
 					<span>{{ $lead->program->title ?? $lead->program->name ?? 'N/A' }}</span>
 					@if($lead->campus)
@@ -71,7 +71,7 @@
 						@csrf
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
 							<div class="form-row" style = "gap:18px;padding-left:15px">
-								<div class="form-group col-md-3 followup-toggle">
+								<div class="form-group custom-col-3 followup-toggle">
 									<label>Follow-Up Method</label>
 									<select class="form-control" name="method">
 										<option value="">- Select -</option>
@@ -80,7 +80,7 @@
 										@endforeach
 									</select>
 								</div>
-								<div class="form-group col-md-3">
+								<div class="form-group custom-col-3">
 									<label>Stage *</label>
 									@php
 										$hideRegistered = $lead->status === 'not_interesting';
@@ -97,11 +97,11 @@
 										@endforeach
 									</select>
 								</div>
-								<div class="form-group col-md-3 followup-toggle followup-hide-on-close" id="next-followup-wrap">
+								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="next-followup-wrap">
 									<label>Next Follow Up</label>
 									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date">
 								</div>
-								<div class="form-group col-md-3 followup-toggle followup-hide-on-close" id="campus-wrap">
+								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="campus-wrap">
 									<label>Preferred Campus</label>
 									<select class="form-control" name="campus_id" id="campus_id">
 										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
@@ -116,7 +116,7 @@
 							<div class="form-row align-items-center" style = "gap:18px;padding-left:15px">
 
     <!-- Probability -->
-    <div class="form-group col-md-3  followup-toggle followup-hide-on-close" id="probability-wrap">
+    <div class="form-group custom-col-3  followup-toggle followup-hide-on-close" id="probability-wrap">
         <label class="form-label small fw-semibold text-dark required">Probability</label>
 
         <input type="range"

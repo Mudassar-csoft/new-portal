@@ -41,7 +41,7 @@
                         <input type="hidden" name="scope" value="open">
                     @endif
                     <div class="form-row mt-3" style = "gap:18px; padding-left:15px">
-                        <div class="form-group col-md-5">
+                        <div class="form-group custom-col-5">
                             <label class="form-label required">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -52,7 +52,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-5">
+                        <div class="form-group custom-col-5">
                             <label class="form-label required">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -63,7 +63,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-1 d-flex align-items-end justify-end">
+                        <div class="form-group custom-col-1 d-flex align-items-end justify-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mt-4">Filter</button>
                             <a
                                 href="{{ route('finance.payables', (($filters['scope'] ?? '') === 'open') ? ['scope' => 'open'] : []) }}"
@@ -149,56 +149,7 @@
 
 @push('styles')
     <style>
-          * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-    
-    }
-    
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
-.form-label{
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #343434;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-}
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
+         
 
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }

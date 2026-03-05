@@ -31,7 +31,7 @@
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
                     <div class="form-row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group custom-col-4">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -42,7 +42,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-8 d-flex align-items-end">
+                        <div class="form-group custom-col-8 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.receivables') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
                         </div>
@@ -52,19 +52,19 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="receivable-card tone-other">
                     <div class="receivable-label">Pending Other Charges</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['pending_other'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="receivable-card tone-royalty">
                     <div class="receivable-label">Pending Royalties</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['pending_royalty'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="custom-col-4">
                 <div class="receivable-card tone-total">
                     <div class="receivable-label">Total Receivables</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['total'] ?? 0), 0) }}</div>

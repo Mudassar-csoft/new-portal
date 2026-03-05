@@ -112,7 +112,7 @@
                         @csrf
 
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-sm-5">
                                 <label>
                                     Resource <span class="text-danger">*</span>
                                 </label>
@@ -145,7 +145,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group pl-3">
                             <label>Description</label>
                             <textarea
                                 class="form-control @error('description') is-invalid @enderror"

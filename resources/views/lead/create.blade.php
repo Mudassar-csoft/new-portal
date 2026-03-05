@@ -39,9 +39,9 @@
 						@include('lead.certification')
 						@include('lead.coworking')
 						@include('lead.study_abroad')
-						<div class="form-actions text-right mt-2">
+						<div class="form-actions text-right mt-2 mr-3">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline">Create Lead</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline ">Create Lead</button>
 
 							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline">Cancel</a>
 						</div>

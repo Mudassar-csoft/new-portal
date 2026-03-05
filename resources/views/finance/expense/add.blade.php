@@ -35,7 +35,7 @@
                 <form method="POST" action="{{ route('finance.expense.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-row mt-2 " style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -46,7 +46,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Supplier / Payee / Employee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -57,7 +57,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Expense Type</label>
                             <select name="expense_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -68,7 +68,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Category</label>
                             <select name="category" class="form-control form-label" required>
                                 @foreach(['general','rent','marketing','asset','payroll','utility'] as $cat)
@@ -81,15 +81,15 @@
                     </div>
 
                     <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Date</label>
                             <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Amount (PKR)</label>
                             <input type="number" step="0.01" min="1" name="amount" class="form-control" value="{{ old('amount') }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Method</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -97,26 +97,26 @@
                                 <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}" placeholder="Txn/Receipt reference">
                         </div>
                     </div>
 
                     <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required" >Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Transaction Image</label>
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>
@@ -219,12 +219,7 @@
 
 @push('styles')
     <style>
-        * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important;
-    margin: 0;
-    padding: 0;
-}
+     
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
 }
@@ -272,13 +267,7 @@ body, button, html, input, select, textarea {
     -o-font-smoothing: antialiased;
 }
 
-        .col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 200px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-     /* margin-top: 2px;    */
-}
+      
 .box-typical .panel-heading {
     padding: 7px 20px;
 }

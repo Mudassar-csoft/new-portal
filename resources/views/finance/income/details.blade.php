@@ -30,7 +30,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.income') }}">
                     <div class="form-row">
-                        <div class="form-group col-md-4">
+                        <div class="form-group custom-col-4">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,15 +41,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group col-md-2 d-flex align-items-end">
+                        <div class="form-group custom-col-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.income') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
                         </div>
@@ -59,31 +59,31 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-lg-2 col-md-4 col-6">
+            <div class="col-lg-2 custom-col-4 col-6">
                 <div class="income-summary-card tone-admission">
                     <div class="summary-label">Admission Fee</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['admission_fee'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
+            <div class="col-lg-2 custom-col-4 col-6">
                 <div class="income-summary-card tone-coworking">
                     <div class="summary-label">Coworking Fee</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['coworking_fee'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
+            <div class="col-lg-2 custom-col-4 col-6">
                 <div class="income-summary-card tone-royalty">
                     <div class="summary-label">Royalty</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['franchise_royalty'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4 col-6">
+            <div class="col-lg-2 custom-col-4 col-6">
                 <div class="income-summary-card tone-other">
                     <div class="summary-label">Other Income</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['other_income'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-8 col-12">
+            <div class="col-lg-4 custom-col-8 col-12">
                 <div class="income-summary-card tone-total">
                     <div class="summary-label">Total Income</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['total_income'] ?? 0), 0) }}</div>

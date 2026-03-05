@@ -25,7 +25,7 @@
                 <form method="POST" action="{{ route('finance.utility.pay.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Select Bill</label class="form-label required">
                             <select name="bill_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -39,15 +39,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Date</label class="form-label required">
                             <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Paid Amount</label class="form-label required">
                             <input type="number" step="0.01" min="1" name="paid_amount" class="form-control" value="{{ old('paid_amount') }}" required>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Method</label class="form-label required">
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -57,26 +57,26 @@
                         </div>
 </div>
                         <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Payment Ref No</label class="form-label required">
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
                         </div>
                         
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Bank Name</label class="form-label required">
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Cheque No</label class="form-label required">
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Bank Receipt No</label class="form-label required">
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
                     </div>
                     <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3">
+                        <div class="form-group custom-col-3">
                             <label class="form-label required">Transaction Image</label class="form-label required">
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>
@@ -158,60 +158,7 @@
 
 @push('styles')
     <style>
-        * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-    
-    }
-    
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
-.table thead th {
-    border-bottom: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background: #f6f8fa;
-}
-.form-label{
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #343434;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    
-}
-
-.col-md-3 {
-    flex: 0 0 200px !important;
-    max-width: 200px !important;
-    height: 62px;
-    margin-bottom: 2px ;
-    /* margin-top: 2px; */
-}
+       
 .box-typical .panel-heading {
     padding: 7px 20px;
 }

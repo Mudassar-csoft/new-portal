@@ -25,11 +25,11 @@
                 <form class="mb-3" method="POST" action="{{ route('finance.expense.types.store') }}">
                     @csrf
                     <div class="form-row mt-2" style = "padding-left:15px">
-                        <div class="form-group col-md-6">
+                        <div class="form-group custom-col-6">
                             <label class=" form-label required">Expense Type</label>
                             <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Enter Expense Type" required>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group custom-col-4">
                             <label class="form-label required">Category</label>
                             <select name="category" class="form-control">
                                 <option value="">General</option>
@@ -38,7 +38,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-2 d-flex align-items-end mt-2 pt-3">
+                        <div class="form-group custom-col-2 d-flex align-items-end mt-2 pt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                         </div>
                     </div>
@@ -84,46 +84,7 @@
 
 @push('styles')
     <style>
-        * {
-    font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-    
-    }
-    
-body, button, html, input, select, textarea {
-    color: #343434;
-    height: 32px;
-    font-family: 'Proxima Nova', sans-serif;
-    line-height: 1.4;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
-    -o-font-smoothing: antialiased;
-}
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
-.form-label{
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #343434;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    
-}
+        
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }
