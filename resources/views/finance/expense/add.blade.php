@@ -147,7 +147,7 @@
         <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
             <header class="box-typical-header panel-heading finance-header">
                 <h3 class="panel-title">Recent Expense Requests</h3>
-                <a href="{{ route('finance.expense.all') }}" class="btn btn-secondary btn-sm">View All</a>
+                <a href="{{ route('finance.expense.all') }}" class="btn btn-danger btn-sm">View All</a>
             </header>
             <div class="box-typical-body panel-body">
                 <div class="table-responsive">

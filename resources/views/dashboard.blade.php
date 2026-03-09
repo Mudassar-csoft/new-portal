@@ -112,7 +112,7 @@
 							<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
 							<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
 							<div class="caption">
-								<div class="fs-2xl">Total Leads</div>
+								<div class="text">Total Leads</div>
 							</div>
 						</div>
 					</article>
@@ -123,7 +123,7 @@
 							<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
 							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
 							<div class="caption">
-								<div>Current Students</div>
+								<div class="text">Current Students</div>
 							</div>
 						</div>
 					</article>
@@ -134,7 +134,7 @@
 							<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
 							<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3">***</div>
 							<div class="caption">
-								<div>Current Month Collection</div>
+								<div class="text">Current Month Collection</div>
 							</div>
 						</div>
 					</article>
@@ -145,7 +145,7 @@
 							<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
 							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
 							<div class="caption">
-								<div>Current Month Pending</div>
+								<div class="text">Current Month Pending</div>
 							</div>
 						</div>
 					</article>
@@ -308,7 +308,13 @@
         .statistic-box .stat-inner {
             position: relative;
         }
+.statistic-box .number  {
+    font-size: 1.625rem !important;
 
+}
+.text{
+	font-size:14px;
+}
         .statistic-box .stat-eye {
             position: absolute;
             right: 10px;

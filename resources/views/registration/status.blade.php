@@ -233,19 +233,12 @@ border-bottom: 2px solid #008efb;		}
 		.registration-action-dropdown .dropdown-menu {
 			min-width: 180px;
 			position: absolute !important;
-			top: calc(100% + -36px) !important;
-			right: 0 !important;
-			margin-right: 82px !important;
+			top: 0 !important;
+			right: calc(100% + 2px) !important;
+			margin-right: 0 !important;
 			left: auto !important;
 			transform: none !important;
 			z-index: 9999;
-		}
-
-		.registration-action-dropdown .dropdown-menu.dropdown-menu-upward {
-			top: 0 !important;
-			left: -83px !important;
-			right: auto !important;
-			transform: translate3d(-90px, -76px, 0px) !important;
 		}
 
 		.follow-footer {
@@ -311,24 +304,6 @@ border-bottom: 2px solid #008efb;		}
 					var activeTab = document.querySelector('.follow-tab.active');
 					var status = activeTab ? activeTab.getAttribute('data-status') : 'all';
 					filterByStatus(status);
-				});
-
-				var dropdownButtons = document.querySelectorAll('.registration-action-dropdown .dropdown-toggle');
-				dropdownButtons.forEach(function (button) {
-					button.addEventListener('click', function () {
-						var wrapper = this.closest('.registration-action-dropdown');
-						if (!wrapper) return;
-						var menu = wrapper.querySelector('.dropdown-menu');
-						if (!menu) return;
-
-						menu.classList.remove('dropdown-menu-upward');
-						var rect = wrapper.getBoundingClientRect();
-						var approxMenuHeight = 180;
-						var needsUpward = (window.innerHeight - rect.bottom) < approxMenuHeight;
-						if (needsUpward) {
-							menu.classList.add('dropdown-menu-upward');
-						}
-					});
 				});
 
 				filterByStatus('all');

@@ -20,7 +20,7 @@
             <header class="box-typical-header panel-heading finance-header">
                 <h3 class="panel-title">Receivables Detail</h3>
                 <a
-                    class="btn btn-inline btn-secondary-outline"
+                    class="btn btn-inline btn-danger-outline"
                     href="{{ route('finance.dashboard', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
                 >
                     Back to Dashboard
@@ -44,7 +44,7 @@
                         </div>
                         <div class="form-group custom-col-8 d-flex align-items-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
-                            <a href="{{ route('finance.dashboard.receivables') }}" class="btn btn-inline btn-secondary-outline">Reset</a>
+                            <a href="{{ route('finance.dashboard.receivables') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
                     </div>
                 </form>

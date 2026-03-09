@@ -22,23 +22,23 @@
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped text-center" id="transfer-grid">
+                    <div class="table-responsive overflow-hidden">
+                        <table class="table table-hover table-striped text-left" id="transfer-grid">
                             <thead>
                                 <tr>
-                                    <th class="text-center">Sr#</th>
-                                    <th class="text-center">Lead</th>
-                                    <th class="text-center">Phone</th>
-                                    <th class="text-center">Program</th>
-                                    <th class="text-center">From Campus</th>
-                                    <th class="text-center">To Campus</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Requested By</th>
-                                    <th class="text-center">Requested At</th>
-                                    <th class="text-center">Approved By</th>
-                                    <th class="text-center">Approved At</th>
-                                    <th class="text-center">Reason</th>
-                                    <th class="text-center">Action</th>
+                                    <th class="text-left w-auto p-1">Sr#</th>
+                                    <th class="text-left w-auto p-1">Lead</th>
+                                    <th class="text-left w-auto p-1">Phone</th>
+                                    <th class="text-left w-auto p-1">Program</th>
+                                    <th class="text-left w-auto p-1">From Campus</th>
+                                    <th class="text-left w-auto p-1">To Campus</th>
+                                    <th class="text-left w-auto p-1">Status</th>
+                                    <th class="text-left w-auto p-1">Requested By</th>
+                                    <th class="text-left w-auto p-1">Requested At</th>
+                                    <th class="text-left w-auto p-1">Approved By</th>
+                                    <th class="text-left w-auto p-1">Approved At</th>
+                                    <th class="text-left w-auto p-1">Reason</th>
+                                    <th class="text-left w-auto p-1">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -170,13 +170,72 @@
             color: #007dcc;
             text-decoration: none !important;
         }
-
+table#transfer-grid{
+    width: auto !important;
+}
+ th {
+    border: 1px solid #dee2e6 ;
+}
         .dataTables_wrapper .dataTables_filter input {
             border: 1px solid #d9e2ef;
             border-radius: 10px;
             padding: 6px 12px;
-            height: 34px;
+            height: 24px !important;
             width: 220px;
+            box-shadow: none;
+        }
+
+        .dataTables_wrapper .follow-controls,
+        .dataTables_wrapper .follow-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .dataTables_wrapper .follow-footer {
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: #54667a;
+            font-size: 13px;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            margin: 0;
+            padding: 0;
+            float: none !important;
+            text-align: inherit !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter label {
+            position: relative;
+            margin: 0;
+            font-size: 0;
+        }
+
+        .dataTables_wrapper .dataTables_filter label::after {
+            content: "\f002";
+            font-family: FontAwesome;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa8b6;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 0 !important;
+            border: 1px solid #d9e2ef;
+            border-radius: .25rem;
+            padding: .375rem 32px .375rem .75rem;
+            height: 32px;
+            width: 240px;
             box-shadow: none;
         }
     </style>
@@ -194,6 +253,7 @@
             $('#transfer-grid').DataTable({
                 processing: true,
                 serverSide: true,
+                dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('leads.transfer') }}",
                 order: [[8, 'desc']],
                 columns: [

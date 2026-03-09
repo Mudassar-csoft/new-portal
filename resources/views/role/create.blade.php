@@ -50,13 +50,14 @@
 								@foreach($permissions as $resource => $perms)
 									<div class="perm-column">
 										<h6 class="text-muted text-uppercase perm-heading">{{ $resource }}</h6>
+										<div class="perm-items d-flex flex-wrap" style=" gap:3%;">
 										@foreach($perms as $perm)
-										
-											<label class="perm-item form-label">
+											<label class="perm-item form-label" style="flex: 1 1 40%;gap:3%; ">
 												<input type="checkbox" name="permissions[]" value="{{ $perm->id }}" @checked(collect(old('permissions', []))->contains($perm->id))>
 												<span>{{ $perm->action }}</span>
 											</label>
-										@endforeach
+											@endforeach
+										</div>
 									</div>
 								@endforeach
 							</div>
@@ -75,7 +76,7 @@
 						</div>
 					</div> -->
 
-					<div class="text-right mt-3">
+					<div class="text-right mt-1">
 						<button type="submit" class="btn btn-inline btn-primary-outline">Create Role</button>
 						<a href="{{ route('roles.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 					</div>
@@ -106,8 +107,8 @@
 			background: #fff;
 			border: 1px solid #e6edf5;
 			border-radius: 12px;
-			padding: 18px 18px 6px;
-			margin-bottom: 18px;
+			padding: 3px 18px 2px;
+    margin-bottom: 6px;
 		}
 		.form-group {
     margin-bottom: 4px;
@@ -127,7 +128,7 @@
 			border: 1px solid #e6e9ed;
 			border-radius: 6px;
 			background: #fafbfc;
-			min-height: 200px;
+			min-height: 100px;
 		}
 		.perm-heading {
 			margin-bottom: 8px;
@@ -149,7 +150,7 @@
 			height: 16px;
 		}
 		.permission-wrapper {
-			max-height: 500px;
+			max-height: 180px;
 			overflow-y: auto;
 			overflow-x: hidden;
 			padding-right: 8px;

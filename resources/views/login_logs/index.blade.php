@@ -48,31 +48,52 @@
 		.login-logs .table-responsive {
 			overflow-x: visible;
 		}
-		.login-logs .dataTables_wrapper:after {
-			content: "";
-			display: block;
-			clear: both;
-		}
-		.login-logs .dataTables_length {
-			float: left;
+		.login-logs .dataTables_wrapper .follow-controls,
+		.login-logs .dataTables_wrapper .follow-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
 			margin-bottom: 12px;
 		}
-		.login-logs .dataTables_filter {
-			float: right;
-			margin-bottom: 12px;
+		.login-logs .dataTables_wrapper .follow-footer {
+			margin-top: 10px;
+			margin-bottom: 0;
+			color: #54667a;
+			font-size: 13px;
+		}
+		.login-logs .dataTables_wrapper .dataTables_length,
+		.login-logs .dataTables_wrapper .dataTables_filter,
+		.login-logs .dataTables_wrapper .dataTables_info,
+		.login-logs .dataTables_wrapper .dataTables_paginate {
+			margin: 0;
+			padding: 0;
+			float: none !important;
+			text-align: inherit !important;
 		}
 		.login-logs .dataTables_filter label {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
+			position: relative;
 			margin: 0;
+			font-size: 0;
+		}
+		.login-logs .dataTables_filter label::after {
+			content: "\f002";
+			font-family: FontAwesome;
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #9aa8b6;
+			font-size: 12px;
+			pointer-events: none;
 		}
 		.login-logs .dataTables_filter input {
+			margin-left: 0 !important;
 			border: 1px solid #d9e2ef;
-			border-radius: 18px;
-			padding: 6px 12px;
-			height: 36px;
-			width: 220px;
+			border-radius: .25rem;
+			padding: .375rem 32px .375rem .75rem;
+			height: 32px;
+			width: 240px;
 			box-shadow: none;
 		}
 		#login-logs-table thead th {
@@ -116,6 +137,7 @@
 			$('#login-logs-table').DataTable({
 				processing: true,
 				serverSide: true,
+				dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
 				ajax: "{{ route('login-logs.index') }}",
 				order: [[7, 'desc']],
 				columns: [

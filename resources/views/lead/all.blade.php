@@ -67,14 +67,14 @@
 
 				<div class="box-typical-body panel-body follow-body">
 					<div class="follow-controls">
-						<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
-							<label class="mr-2 mb-0">Show</label>
-							<select class="form-control form-control-sm">
+						<div class="d-flex" style="gap:0.5rem;align-items: center;">
+							<label class="">Show</label>
+							<select class="form-select form-select-sm">
 								<option>10</option>
 								<option>25</option>
 								<option>50</option>
 							</select>
-							<label class="ml-2 mb-0">Entries</label>
+							<label class="">Entries</label>
 						</div>
 						<div class="follow-search">
 							<input type="text" id="lead-status-search" class="form-control form-control-sm" placeholder="Search...">
@@ -128,7 +128,7 @@
 
 					<div class="follow-footer">
 						<div id="lead-status-count">Showing 1 to {{ count($leads) }} of {{ count($leads) }} entries</div>
-						<ul class="pagination pagination-sm mb-0 m-0">
+						<ul class="pagination pagination-sm mb-0">
 							<li class="page-item disabled"><span class="page-link">Previous</span></li>
 							<li class="page-item active"><span class="page-link">1</span></li>
 							<li class="page-item disabled"><span class="page-link">Next</span></li>
@@ -285,16 +285,16 @@
 		}
 
 		.follow-body {
-			padding: 8px;
+			padding: 16px;
 		}
 
 		.follow-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 6px;
-}
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 12px;
+		}
 
 		.follow-search {
 			position: relative;
@@ -349,7 +349,7 @@
 			justify-content: space-between;
 			font-size: 13px;
 			color: #54667a;
-			padding: 0px 4px 0;
+			padding: 4px 4px 0;
 		}
 
 		.follow-table .action-cell {

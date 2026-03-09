@@ -65,7 +65,7 @@
         Teaching Method <span class="text-danger">*</span>
     </label>
 
-   <div class="form-radio  mt-2 g-0" >
+   <div class="form-radio  mt-2 g-5" >
 
     <div class="teaching-method form-check d-flex align-items-center ">
        
@@ -85,7 +85,7 @@
 
     <div class="d-flex justify-content-center teaching-method">
         <div class="form-check d-flex align-items-center ">
-            <input class="form-check-input mt-0 "
+            <input class="form-check-input mt-0 mr-1"
                    type="radio"
                    id="teaching-method-campus"
                    name="details[teaching_method]"
@@ -99,8 +99,8 @@
     </div>
 
     <div class=" d-flex justify-content-center teaching-method">
-        <div class="form-check d-flex align-items-center ">
-            <input class="form-check-input mt-0  "
+        <div class="form-check d-flex align-items-center">
+            <input class="form-check-input mt-0  mr-1"
                    type="radio"
                    id="teaching-method-hybrid"
                    name="details[teaching_method]"
@@ -253,14 +253,14 @@
     </label>
 
   
-    <div class=" form-radio d-flex align-items-center mt-1 " >
+    <div class=" form-radio d-flex align-items-center mt-1  " style="gap:11%;" >
 
-        <div class="form-check d-flex align-items-center gender" style="margin-right: 20px;">
+        <div class="form-check d-flex align-items-center gender" >
             <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
             <label class="form-check-label small mb-0" for="details-gender-male">Male</label>
         </div>
 
-        <div class="form-check d-flex align-items-center gender" style="margin-right: 20px;">
+        <div class="form-check d-flex align-items-center gender">
             <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
             <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
         </div>
@@ -429,7 +429,7 @@
 /* Extra Large ( ≥1200px ) */
 @media (min-width: 1200px) {
 .form-radio{
-    gap:3% ;
+    gap:2% ;
 }
 .custom-col-1 { flex: 0 0 10.666%; max-width: 12.666%; }
   .custom-col-2 { flex: 0 0 15.666%; max-width: 18.666%; }

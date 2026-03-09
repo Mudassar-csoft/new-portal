@@ -107,38 +107,53 @@
 		.role-action-dropdown .btn {
 			margin: 0;
 		}
-		.dataTables_wrapper .dataTables_length {
-			float: left;
+		.dataTables_wrapper .follow-controls,
+		.dataTables_wrapper .follow-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
 			margin-bottom: 12px;
 		}
-		.dataTables_wrapper .dataTables_filter {
-			float: right;
-			margin-bottom: 12px;
+		.dataTables_wrapper .follow-footer {
+			margin-top: 10px;
+			margin-bottom: 0;
+			color: #54667a;
+			font-size: 13px;
+		}
+		.dataTables_wrapper .dataTables_length,
+		.dataTables_wrapper .dataTables_filter,
+		.dataTables_wrapper .dataTables_info,
+		.dataTables_wrapper .dataTables_paginate {
+			margin: 0;
+			padding: 0;
+			float: none !important;
+			text-align: inherit !important;
 		}
 		.dataTables_wrapper .dataTables_filter label {
+			position: relative;
 			margin: 0;
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
+			font-size: 0;
+		}
+		.dataTables_wrapper .dataTables_filter label::after {
+			content: "\f002";
+			font-family: FontAwesome;
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #9aa8b6;
+			font-size: 12px;
+			pointer-events: none;
 		}
 		.dataTables_wrapper .dataTables_filter input {
+			margin-left: 0 !important;
 			border: 1px solid #d9e2ef;
-			border-radius: 22px;
-			padding: 7px 14px;
-			height: 40px;
+			border-radius: .25rem;
+			padding: .375rem 32px .375rem .75rem;
+			height: 32px;
 			width: 240px;
 			box-shadow: none;
-		}
-		.dataTables_wrapper .dataTables_info {
-			padding-top: 8px;
-		}
-		.dataTables_wrapper .dataTables_paginate {
-			padding-top: 8px;
-		}
-		.dataTables_wrapper:after {
-			content: "";
-			display: block;
-			clear: both;
 		}
 	</style>
 @endpush
@@ -152,6 +167,7 @@
 			$('#roles-table').DataTable({
 				processing: true,
 				serverSide: true,
+				dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
 				ajax: "{{ route('roles.index') }}",
 				order: [[1, 'asc']],
 				columns: [

@@ -33,7 +33,7 @@
 
         .login-media {
             position: relative;
-            width: 100%;
+            width: 64%;
             min-height: 100vh;
             overflow: hidden;
             background: #0b1622;
@@ -124,41 +124,33 @@
             inset: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 24px;
+            justify-content: end !important;
+            padding: 0px;;
             pointer-events: none;
+            border-radius:none !important;
         }
 
         .sign-box {
-            position: relative;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(215, 225, 238, 0.7);
-            box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 420px;
-            padding: 24px 24px 30px;
-            backdrop-filter: blur(10px);
-            pointer-events: auto;
-        }
-
+    position: relative;
+    height: 99vh;
+    background: rgba(255, 255, 255, 0.78);
+    border: 0px;
+    box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
+    border-radius: 16px;
+    width: 100%;
+    margin: 0 !important;
+    max-width: 33%;
+    padding: 24px 24px 30px;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+}
         .sign-box::before {
-            content: "";
-            position: absolute;
-            inset: -2px;
-            border-radius: 18px;
-            padding: 2px;
-            background: linear-gradient(120deg, rgba(23, 140, 255, 0.5), rgba(0, 214, 155, 0.4), rgba(255, 178, 89, 0.4));
-            background-size: 300% 300%;
-            animation: borderGlow 6s linear infinite;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
+           display:none;
         }
 
         .sign-box .sign-avatar {
             margin-bottom: 8px;
+            margin-top: 15%;
         }
 
         .sign-box .form-control {
@@ -166,6 +158,7 @@
             border-radius: 10px;
             border: 1px solid #dbe5f1;
             padding-left: 14px;
+            margin-top:3%;
         }
 
         .sign-box .form-control:focus {
@@ -278,10 +271,169 @@
                 font-size: 22px;
             }
         }
+        /* Large Screens (1400px+) */
+@media (min-width: 1400px) {
+    .login-shell {
+        display: flex;
+        
+    }
+    .login-media {
+        width: 65%;
+    }
+
+    .sign-box {
+        max-width: 480px;
+        padding: 30px;
+    }
+
+    .slider-caption h2 {
+        font-size: 32px;
+    }
+}
+
+
+/* Laptop Screens (1200px - 1399px) */
+@media (max-width: 1399px) {
+    .login-media {
+        width: 67%;
+    }
+    .login-form{
+        width:33%
+    }
+   
+
+    .sign-box {
+        max-width: 420px;
+        padding: 22px;
+    }
+
+    .slider-caption h2 {
+        font-size: 26px;
+    }
+}
+
+
+/* Small Laptop (992px - 1199px) */
+@media (max-width: 1199px) {
+
+    .login-media {
+        width: 62%;
+    }
+
+    .sign-box {
+        max-width: 380px;
+        padding: 20px;
+    }
+
+    .slider-caption {
+        left: 30px;
+        bottom: 30px;
+    }
+
+    .slider-caption h2 {
+        font-size: 24px;
+    }
+}
+
+
+/* Tablet (768px - 991px) */
+@media (max-width: 991px) {
+
+    .login-shell {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-media {
+        width: 100%;
+        height: 45vh;
+        min-height: 45vh;
+    }
+
+    .login-form-panel {
+        position: relative;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .sign-box {
+        height: auto;
+        max-width: 500px;
+        margin-top: -80px !important;
+    }
+
+    .slider-caption {
+        left: 20px;
+        bottom: 20px;
+    }
+
+    .slider-caption h2 {
+        font-size: 22px;
+    }
+}
+
+
+/* Mobile Large (576px - 767px) */
+@media (max-width: 767px) {
+
+    .login-media {
+        height: 35vh;
+        min-height: 35vh;
+    }
+
+    .sign-box {
+        max-width: 100%;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .slider-caption h2 {
+        font-size: 20px;
+    }
+
+    .slider-caption p {
+        font-size: 13px;
+    }
+
+}
+
+
+/* Mobile Small (max 575px) */
+@media (max-width: 575px) {
+
+    .login-media {
+        height: 30vh;
+        min-height: 30vh;
+    }
+
+    .slider-caption {
+        display: none;
+    }
+
+    .slider-dots {
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .sign-box {
+        padding: 18px;
+        box-shadow: none;
+    }
+
+    .sign-title {
+        font-size: 18px;
+    }
+
+    .form-control {
+        height: 40px;
+        font-size: 14px;
+    }
+
+}
     </style>
 </head>
 <body>
-    <div class="login-shell">
+    <div class="login-shell ">
         <div class="login-media">
             <div class="login-slider" id="loginSlider">
                 <div class="slide is-active">
@@ -306,7 +458,9 @@
                 </div>
             </div>
             <div class="media-glow" aria-hidden="true"></div>
-            <div class="login-form-panel">
+           
+        </div>
+         <div class="login-form-panel">
                 <form class="sign-box" method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <div class="sign-avatar">
@@ -319,25 +473,25 @@
                     <div class="form-group">
                         <input type="password" name="password" class="form-control" placeholder="Password" required>
                     </div>
-                <div class="form-group">
-                    <div class="checkbox float-left">
+                <div class="form-group ">
+                    <div class="checkbox float-left mt-3">
                         <input type="checkbox" id="signed-in" name="remember">
                         <label for="signed-in">
                             <span class="custom-check" aria-hidden="true"></span>
                             Keep me signed in
                         </label>
                     </div>
-                    <div class="float-right reset">
+                    <div class="float-right reset mt-3">
                         <a href="#">Reset Password</a>
                     </div>
                 </div>
-                    <button type="submit" class="btn btn-rounded">Sign in</button>
+                    <button type="submit" class="btn btn-rounded mt-3">Sign in</button>
                     @if($errors->any())
                         <div class="sign-note secondary">
                             {{ $errors->first() }}
                         </div>
                     @endif
-                    <div class="trust-row">
+                    <div class="trust-row mt-2">
                         <span>Flexible timings</span>
                         <span>Industry mentors</span>
                         <span>Career support</span>
@@ -346,7 +500,6 @@
             </div>
         </div>
     </div>
-
     <script src="{{ asset('theme/js/lib/jquery/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ asset('theme/js/lib/popper/popper.min.js') }}"></script>
     <script src="{{ asset('theme/js/lib/tether/tether.min.js') }}"></script>

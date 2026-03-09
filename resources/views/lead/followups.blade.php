@@ -51,14 +51,14 @@
 									<th>Status</th>
 									<th>Interested Course</th>
 									<th>Campus</th>
-									<th class="text-center" style="width: 110px;">Action</th>
+									<th class="text-left" style="width: 110px;">Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach ($followups as $idx => $row)
 									@php $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration; @endphp
 									<tr data-status="{{ $row->stage_label }}">
-										<td class="text-center">{{ $idx + 1 }}</td>
+										<td class="text-start">{{ $idx + 1 }}</td>
 										<td>
 											@if(!empty($row->lead?->id))
 												<a href="{{ route('leads.show', $row->lead->id) }}" class="lead-link">

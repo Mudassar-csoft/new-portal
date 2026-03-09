@@ -42,7 +42,6 @@ padding: 0;
 body,
 p,
 span,
-div,
 label,
 input,
 textarea,
@@ -67,6 +66,9 @@ input[type="submit"] {
 .fas {
 font-family: "Font Awesome 6 Free" !important;
 }
+.user-shell{
+	padding:0px !important;
+}
 .box-typical .panel-title, .form-label{
 	font-size:12px !important;
 }
@@ -77,6 +79,11 @@ border-color: #00a8ff;
 
 .follow-table thead th {
 background: #00a8ff !important;
+text-align: left !important;
+}
+.table td,{
+text-align: left !important;
+	padding-left:2px !important;
 }
 
 body,
@@ -102,13 +109,16 @@ width: 100%;
 max-width: 100%;
 margin-left: 3px !important;
 }
-
+.table th {
+    
+    padding: 11px 5px 10px !important;
+}
 .table th,
 .table td,
 .odd,
 .even {
 height: 30px !important;
-font-size: 12px !important;
+font-size: 13px !important;
 }
 
 .table a {
@@ -121,8 +131,9 @@ border-bottom: 1px solid #e9ecef;
 th,
 tr {
 height: 29px !important;
-padding: 3px 10px 3px !important;
+padding: 3px 5px 3px ; !important;
 padding-bottom: 3px !important;
+text-align: left !important;
 }
 
 .box-typical .panel-heading {
@@ -191,7 +202,7 @@ margin-right: 175px !important;
 height: 28px;
 }
 .site-header .dropdown-menu-notif .dropdown-menu-notif-list {
-    height: 140px;
+    height: 150px;
     overflow: auto;
 }
 .site-header .user-greeting {
@@ -212,22 +223,39 @@ padding: 10px 16px !important;
 .dataTables_wrapper .dataTables_filter input,
 .login-logs .dataTables_filter input {
 border: 1px solid #d9e2ef;
-border-radius: 10px !important;
-padding: 6px 12px !important;
-height: 32px !important;
-width: 100%;
-max-width: 240px;
+border-radius: 5px !important;
+padding: 1px 12px !important;
+height: 24px !important;
+width: 200px;
+max-width: 200px;
 box-shadow: none;
+margin-left: 4 !important;
+margin-top:5px;
 }
-
+		#users-table_filter input {
+			height: 24px !important;
+			padding: 2px !important;
+			width:200px;
+		}
 div.dataTables_wrapper div.dataTables_info {
-padding-top: 1.85em;
+padding-top: 1em;
 }
-
+div.dataTables_wrapper div.dataTables_filter input{
+	width:200px;
+}div.dataTables_wrapper div.dataTables_filter label {
+    font-weight: 0px !important;
+    white-space: nowrap;
+    text-align: left;}
 .dataTables_length {
 padding-left: 10px !important;
 }
-
+.dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center !important;
+    gap: 488px !important;
+    margin-bottom: 4px !important;
+}
 .dataTables_wrapper .table-responsive {
 overflow-x: auto;
 }
@@ -366,9 +394,15 @@ margin: 0 !important;
 transform: none !important;
 }
 
-.registration-action-dropdown .dropdown-menu {
-top: -40px !important;
+.registration-action-dropdown .dropdown-menu,
+.admission-action-dropdown .dropdown-menu{
+top: 0 !important;
+left: auto !important;
+right: calc(90% + 2px) !important;
+margin: 0 !important;
+transform: none !important;
 }
+
 
 .table .permission-action-dropdown .dropdown-menu.action-key,
 .table .user-action-dropdown .dropdown-menu.action-key,
@@ -387,7 +421,7 @@ z-index: 9999;
 top: 0 !important;
 left: 50% !important;
 right: auto !important;
-transform: translate3d(-50%, -100%, 0) !important;
+transform: translate3d(-50%, -100%, 20px) !important;
 }
 
 .table .action-cell .dropdown-toggle,
@@ -400,8 +434,10 @@ transform: translate3d(-50%, -100%, 0) !important;
 .table .role-action-dropdown .dropdown-toggle {
 height: 22px !important;
 padding: 1px 8px !important;
-font-size: 11px !important;
+min-width: 68px !important;
+font-size: 13px !important;
 line-height: 1.2 !important;
+text-align: center !important;
 }
 
 /* =========================================================
@@ -413,7 +449,7 @@ width: 240px;
 
 .with-side-menu .page-content {
 margin-left: 0;
-margin-top: -25px;
+margin-top: -2px;
 padding: 110px 16px 24px;
 height: auto;
 overflow: hidden !important;
@@ -432,7 +468,7 @@ overflow: hidden !important;
 body.sidebar-hidden .page-content {
 margin-left: 0 !important;
 padding-left: 16px;
-padding-right: 16px;
+padding-right: 47px;
 }
 
 .menu-left-hidden .page-content > .container-fluid,
@@ -512,6 +548,7 @@ transform: rotate(45deg);
 .dropdown-item {
 padding: 3px 6px;
 border-bottom: none !important;
+font-size: 13px !important;
 }
 
 /* =========================================================
@@ -698,6 +735,11 @@ width: 244px;
 .chart-statistic-box .chart-container {
 margin-left: 0;
 }
+}@media (min-width: 992px) {
+    .with-side-menu .page-content {
+        
+        padding: 65px 32px 32px ;
+    }
 }
 
 
