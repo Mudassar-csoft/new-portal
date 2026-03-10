@@ -59,6 +59,9 @@ input[type="submit"] {
 	height:32px;
 	line-height:1rem;
 }
+hr {
+    margin: 1em 0 !important;
+}
 .fa-classic,
 .fa-regular,
 .fa-solid,
@@ -70,7 +73,7 @@ font-family: "Font Awesome 6 Free" !important;
 	padding:0px !important;
 }
 .box-typical .panel-title, .form-label{
-	font-size:12px !important;
+	font-size:12px;
 }
 .btn.btn-default {
 background-color: #00a8ff;
@@ -113,12 +116,16 @@ margin-left: 3px !important;
     
     padding: 11px 5px 10px !important;
 }
-.table th,
+.table th{
+height: 16px !important;
+
+}
 .table td,
 .odd,
 .even {
-height: 30px !important;
+height: 28px !important;
 font-size: 13px !important;
+width: auto;
 }
 
 .table a {
@@ -252,8 +259,8 @@ padding-left: 10px !important;
 .dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer {
     display: flex;
     align-items: center;
-    justify-content: center !important;
-    gap: 488px !important;
+    justify-content: space-between !important;
+    /* gap: 488px !important; */
     margin-bottom: 4px !important;
 }
 .dataTables_wrapper .table-responsive {
@@ -421,7 +428,7 @@ z-index: 9999;
 top: 0 !important;
 left: 50% !important;
 right: auto !important;
-transform: translate3d(-50%, -100%, 20px) !important;
+transform: translate3d(-50%, -10%, 20px) !important;
 }
 
 .table .action-cell .dropdown-toggle,
@@ -546,18 +553,25 @@ transform: rotate(45deg);
 }
 
 .dropdown-item {
-padding: 3px 6px;
+padding: 6px 6px !important;
 border-bottom: none !important;
 font-size: 13px !important;
 }
+
 
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
 .chart-statistic-box .chart-container {
-margin-left: -176px;
-}
 
+margin-left: -195px;
+}
+.chart-txt {
+    width: 182px !important;
+}
+.chart-statistic-box .chart-container .chart-container-in{
+	margin-left: 179px;
+}
 .box-typical.box-typical-dashboard .box-typical-body {
 overflow: hidden;
 }
@@ -712,9 +726,8 @@ padding-right: 5px;
    ========================================================= */
 .table {
 width: 98%;
-max-width: 198%;
+max-width: 98%;
 margin-left: 8px;
-}
 }
 
 /* >= 1200px */
@@ -770,17 +783,30 @@ margin-left: 0;
 	<script src="js/app.js"></script>
 	<script>
 		$(function () {
-			$(document).on('show.bs.dropdown', '.dropdown', function () {
-				var $menu = $(this).children('.dropdown-menu.action-key').first();
+			$(document).on('shown.bs.dropdown', '.dropdown', function () {
+				var $dropdown = $(this);
+				var $menu = $dropdown.find('.dropdown-menu').first();
 				if (!$menu.length) return;
 
 				$menu.removeClass('dropdown-menu-upward');
+				$dropdown.removeClass('dropup');
+
 				var rect = this.getBoundingClientRect();
-				var menuHeight = $menu.outerHeight() || 180;
+				var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
 				var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
+
 				if (needsUpward) {
-					$menu.addClass('dropdown-menu-upward');
+					if ($menu.hasClass('action-key')) {
+						$menu.addClass('dropdown-menu-upward');
+					} else {
+						$dropdown.addClass('dropup');
+					}
 				}
+			});
+
+			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
+				$(this).removeClass('dropup');
+				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
 			});
 		});
 	</script>

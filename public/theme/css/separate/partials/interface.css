@@ -1959,7 +1959,7 @@ hr.margin-4 {
 }
 .dropdown-header,
 .dropdown-item {
-  padding: 4px 12px;
+  padding: 12px 12px;
 }
 .dropdown-header {
   text-transform: uppercase;

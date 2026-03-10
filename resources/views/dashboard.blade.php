@@ -29,7 +29,7 @@
 	<div class="row ">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="row">
+		<div class="row" style = "font-size:14px;	">
 
 		<div class="col-xl-6">
 			<div class="chart-statistic-box">
@@ -52,6 +52,7 @@
 							<input type="radio" name="income-range" id="range-month" value="month">
 							<label for="range-month">Monthly</label>
 						</div>
+						<br>
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-year" value="year">
 							<label for="range-year">Yearly</label>
@@ -59,16 +60,16 @@
 					</div>
 					<table class="tbl-data">
 						<tr>
-							<td class="price color-purple">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
-							<td>Today Collection</td>
+							<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+							<td style = "font-size:14px;	">Today Collection</td>
 						</tr>
 						<tr>
-							<td class="price color-yellow">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
-							<td>Weekly Collection</td>
+							<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+							<td style = "font-size:14px;	">Weekly Collection</td>
 						</tr>
 						<tr>
-							<td class="price color-lime">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
-							<td>Monthly Collection</td>
+							<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+							<td style = "font-size:14px;	">Monthly Collection</td>
 						</tr>
 					</table>
 				</div>
@@ -290,7 +291,9 @@
             margin-top: 2px;
         }
 		
-		
+		.box-typical .panel-title{
+			font-size:14px !important;
+		}
         /* Hide static axes; Google Chart handles axes dynamically */
         .chart-container-x,
         .chart-container-y {
@@ -311,6 +314,9 @@
 .statistic-box .number  {
     font-size: 1.625rem !important;
 
+}
+*{
+	font-size:14px;	
 }
 .text{
 	font-size:14px;

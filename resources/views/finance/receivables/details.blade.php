@@ -42,7 +42,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-8 d-flex align-items-end">
+                        <div class="form-group custom-col-7 d-flex align-items-end mt-3 pt-1">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.receivables') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>

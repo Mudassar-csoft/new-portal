@@ -30,7 +30,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.income') }}">
                     <div class="form-row">
-                        <div class="form-group custom-col-4">
+                        <div class="form-group custom-col-3">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -49,7 +49,7 @@
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group custom-col-2 d-flex align-items-end">
+                        <div class="form-group custom-col-2 d-flex align-items-end mt-3 pt-1">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.income') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>

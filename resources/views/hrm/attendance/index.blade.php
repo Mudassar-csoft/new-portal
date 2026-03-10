@@ -119,7 +119,7 @@
                     </div>
                 </div>
 
-                <div class="table-responsive mb-4">
+                <div class="table-responsive mb-3">
                     <table class="table table-bordered hrm-table">
                         <thead>
                             <tr>

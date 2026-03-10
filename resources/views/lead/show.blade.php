@@ -491,7 +491,7 @@
 		margin-right: 74px !important;
 	}
 	.dropdown-item{
-		padding: 2px 12px !important;
+		padding: 6px 12px !important;
 	}
 
 	.stage .label {
