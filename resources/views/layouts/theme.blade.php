@@ -562,9 +562,18 @@ font-size: 13px !important;
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
-.chart-statistic-box .chart-container .chart-container-in{
-	margin-left: 179px;
+.chart-statistic-box .chart-container {
+    margin-left: -39%; 
 }
+
+.chart-txt {
+    width: 39% !important;
+}
+
+.chart-statistic-box .chart-container .chart-container-in {
+    margin-left: 39%; 
+}
+
 .box-typical.box-typical-dashboard .box-typical-body {
 overflow: hidden;
 }
