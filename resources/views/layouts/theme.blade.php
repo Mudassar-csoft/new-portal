@@ -562,13 +562,6 @@ font-size: 13px !important;
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
-.chart-statistic-box .chart-container {
-
-margin-left: -195px;
-}
-.chart-txt {
-    width: 182px !important;
-}
 .chart-statistic-box .chart-container .chart-container-in{
 	margin-left: 179px;
 }

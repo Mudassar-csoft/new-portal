@@ -29,7 +29,7 @@
 	<div class="row ">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="row" style = "font-size:14px;	">
+		<div class="row" style = "font-size:14px;">
 
 		<div class="col-xl-6">
 			<div class="chart-statistic-box">
