@@ -33,32 +33,35 @@
 
 		<div class="col-xl-6">
 			<div class="chart-statistic-box">
-				<div class="chart-txt">
+				
+				<div class="chart-container row ">
+					<div class="chart-txt col-5 p-0 m-0 ">
 					<div class="chart-txt-top">
-						<p><span class="unit">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+						<p><span class="unit pt-1">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
 						<p class="caption">Income</p>
 					</div>
-					<div class="chart-range">
+					<div class="chart-range d-flex flex-column ml-lg-2 ">
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-today" value="today" checked>
 							<label for="range-today">Today</label>
 						</div>
-						<br> 
+						
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-week" value="week">
 							<label for="range-week">Weekly</label>
 						</div>
+						
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-month" value="month">
 							<label for="range-month">Monthly</label>
 						</div>
-						<br>
+					
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-year" value="year">
 							<label for="range-year">Yearly</label>
 						</div>
 					</div>
-					<table class="tbl-data">
+					<table class="tbl-data ml-lg-2">
 						<tr>
 							<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 							<td style = "font-size:14px;	">Today Collection</td>
@@ -73,9 +76,7 @@
 						</tr>
 					</table>
 				</div>
-				<div class="chart-container">
-					
-					<div class="chart-container-in">
+					<div class="chart-container-in col-7 pt-1 m-0 p-0">
 						<div id="chart_div"></div>
 						<div id="chart_fallback" style="display:none; height:314px;">
 							<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
@@ -321,6 +322,9 @@
 .text{
 	font-size:14px;
 }
+.statistic-box {
+	padding:10px;
+}
         .statistic-box .stat-eye {
             position: absolute;
             right: 10px;
@@ -420,14 +424,16 @@
         }
 
         .dashboard-content {
-			padding: 0;
+			padding-top: 1rem;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease;
             position: relative;
             min-height: 400px;
         }
-		
+		.chart-txt{
+			top:-14px;
+		}
         body.dashboard-ready .dashboard-content {
 			opacity: 1;
             visibility: visible;

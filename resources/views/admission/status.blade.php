@@ -156,7 +156,7 @@
 		.follow-tab .badge {
 			padding: 6px 10px;
 			border-radius: 999px;
-			font-size: 11px;
+			font-size: 1rem;
 			line-height: 1;
 		}
 
@@ -247,7 +247,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			font-size: 13px;
+			font-size: 1rem;
 			color: #54667a;
 			padding: 4px 4px 0;
 		}

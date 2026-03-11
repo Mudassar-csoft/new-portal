@@ -18,13 +18,13 @@
 		.wrapper { max-width: 900px; margin: 12px auto; background: #fff; border: 1px solid #ddd; padding: 16px; }
 		.copy { border-bottom: 1px dashed #ccc; padding-bottom: 18px; margin-bottom: 18px; }
 		.header { display: flex; justify-content: space-between; align-items: center; }
-		.title { font-size: 14px; font-weight: 700; }
+		.title { font-size: 1rem; font-weight: 700; }
 		.table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 		.table th, .table td { border: 1px solid #999; padding: 6px 8px; font-size: 13px; }
-		.meta { text-align: right; font-size: 13px; line-height: 1.4; }
+		.meta { text-align: right; font-size: 1rem; line-height: 1.4; }
 		.label { font-weight: 700; }
 		.totals td { font-weight: 700; }
-		.notes { font-size: 12px; color: #555; margin-top: 8px; }
+		.notes { font-size: 1rem; color: #555; margin-top: 8px; }
 	</style>
 </head>
 <body>

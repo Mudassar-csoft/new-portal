@@ -30,14 +30,14 @@
         .login-shell {
             min-height: 100vh;
         }
-
+/* 
         .login-media {
             position: relative;
             width: 64%;
             min-height: 100vh;
             overflow: hidden;
             background: #0b1622;
-        }
+        } */
 
         .media-glow {
             position: absolute;
@@ -120,7 +120,7 @@
         }
 
         .login-form-panel {
-            position: absolute;
+            
             inset: 0;
             display: flex;
             align-items: center;
@@ -128,10 +128,10 @@
             padding: 0px;;
             pointer-events: none;
             border-radius:none !important;
-        }
+        } 
 
         .sign-box {
-    position: relative;
+    
     height: 99vh;
     background: rgba(255, 255, 255, 0.78);
     border: 0px;
@@ -139,7 +139,7 @@
     border-radius: 16px;
     width: 100%;
     margin: 0 !important;
-    max-width: 33%;
+    max-width: 100%;
     padding: 24px 24px 30px;
     backdrop-filter: blur(10px);
     pointer-events: auto;
@@ -260,181 +260,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        @media (max-width: 768px) {
-            .slider-caption {
-                left: 20px;
-                right: 20px;
-                bottom: 24px;
-            }
-
-            .slider-caption h2 {
-                font-size: 22px;
-            }
-        }
-        /* Large Screens (1400px+) */
-@media (min-width: 1400px) {
-    .login-shell {
-        display: flex;
-        
-    }
-    .login-media {
-        width: 65%;
-    }
-
-    .sign-box {
-        max-width: 480px;
-        padding: 30px;
-    }
-
-    .slider-caption h2 {
-        font-size: 32px;
-    }
-}
+       
 
 
-/* Laptop Screens (1200px - 1399px) */
-@media (max-width: 1399px) {
-    .login-media {
-        width: 67%;
-    }
-    .login-form{
-        width:33%
-    }
-   
-
-    .sign-box {
-        max-width: 420px;
-        padding: 22px;
-    }
-
-    .slider-caption h2 {
-        font-size: 26px;
-    }
-}
-
-
-/* Small Laptop (992px - 1199px) */
-@media (max-width: 1199px) {
-
-    .login-media {
-        width: 62%;
-    }
-
-    .sign-box {
-        max-width: 380px;
-        padding: 20px;
-    }
-
-    .slider-caption {
-        left: 30px;
-        bottom: 30px;
-    }
-
-    .slider-caption h2 {
-        font-size: 24px;
-    }
-}
-
-
-/* Tablet (768px - 991px) */
-@media (max-width: 991px) {
-
-    .login-shell {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .login-media {
-        width: 100%;
-        height: 45vh;
-        min-height: 45vh;
-    }
-
-    .login-form-panel {
-        position: relative;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .sign-box {
-        height: auto;
-        max-width: 500px;
-        margin-top: -80px !important;
-    }
-
-    .slider-caption {
-        left: 20px;
-        bottom: 20px;
-    }
-
-    .slider-caption h2 {
-        font-size: 22px;
-    }
-}
-
-
-/* Mobile Large (576px - 767px) */
-@media (max-width: 767px) {
-
-    .login-media {
-        height: 35vh;
-        min-height: 35vh;
-    }
-
-    .sign-box {
-        max-width: 100%;
-        padding: 20px;
-        border-radius: 12px;
-    }
-
-    .slider-caption h2 {
-        font-size: 20px;
-    }
-
-    .slider-caption p {
-        font-size: 13px;
-    }
-
-}
-
-
-/* Mobile Small (max 575px) */
-@media (max-width: 575px) {
-
-    .login-media {
-        height: 30vh;
-        min-height: 30vh;
-    }
-
-    .slider-caption {
-        display: none;
-    }
-
-    .slider-dots {
-        bottom: 15px;
-        right: 15px;
-    }
-
-    .sign-box {
-        padding: 18px;
-        box-shadow: none;
-    }
-
-    .sign-title {
-        font-size: 18px;
-    }
-
-    .form-control {
-        height: 40px;
-        font-size: 14px;
-    }
-
-}
     </style>
 </head>
 <body>
-    <div class="login-shell ">
-        <div class="login-media">
+    <div class="login-shell row">
+        <div class="login-media col-md-8">
             <div class="login-slider" id="loginSlider">
                 <div class="slide is-active">
                     <img src="{{ asset('media/3.jpg') }}" alt="Career Institute">
@@ -460,7 +293,7 @@
             <div class="media-glow" aria-hidden="true"></div>
            
         </div>
-         <div class="login-form-panel">
+         <div class="login-form-panel col-md-4">
                 <form class="sign-box" method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <div class="sign-avatar">

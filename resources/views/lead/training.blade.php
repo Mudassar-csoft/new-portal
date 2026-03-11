@@ -65,7 +65,7 @@
         Teaching Method <span class="text-danger">*</span>
     </label>
 
-   <div class="form-radio  mt-2 g-5" >
+   <div class="form-radio  mt-2" >
 
     <div class="teaching-method form-check d-flex align-items-center ">
        
@@ -253,7 +253,7 @@
     </label>
 
   
-    <div class=" form-radio d-flex align-items-center mt-1  " style="gap:11%;" >
+    <div class=" form-radio d-flex align-items-center mt-1  ">
 
         <div class="form-check d-flex align-items-center gender" >
             <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
@@ -363,11 +363,9 @@
 .custom-col-8 {
   flex: 0 0 100%;
   max-width: 100%;
-  margin-bottom: 10px;
+   margin-bottom: 0.625rem;
 }
-.form-radio{
-    flex-direction: column;
-}
+
 
 /* Medium Devices ( ≥768px ) */
 @media (min-width: 768px) {
@@ -399,8 +397,10 @@
     flex: 0 0 66.666%;
     max-width: 66.666%;
   }
-  .form-radio{
-    gap:2% ;
+ .form-radio{
+flex-direction:row;
+gap:0.212rem;
+
 }
 
 }
@@ -411,8 +411,8 @@
     flex: 0 0 25%;
     max-width: 25%;
   }
-  .form-radio{
-    gap:2% ;
+ .form-radio{
+gap:1.5rem;
 }
   .custom-col-2 { flex: 0 0 14%; max-width: 14%; }
 
@@ -427,20 +427,41 @@
 }
 
 /* Extra Large ( ≥1200px ) */
-@media (min-width: 1200px) {
-.form-radio{
-    gap:2% ;
+@media (min-width:1200px){
+
+.custom-col-1{
+flex:0 0 12%;
+max-width:12%;
 }
-.custom-col-1 { flex: 0 0 10.666%; max-width: 12.666%; }
-  .custom-col-2 { flex: 0 0 15.666%; max-width: 18.666%; }
 
-  .custom-col-3 { flex: 0 0 25%; max-width: 23%; }
+.custom-col-2{
+flex:0 0 18%;
+max-width:18%;
+}
 
-  .custom-col-4 { flex: 0 0 33.333%; max-width: 33.333%; }
+.custom-col-3{
+flex:0 0 23%;
+max-width:23%;
+}
 
-  .custom-col-5 { flex: 0 0 20%; max-width: 20%; }
+.custom-col-4{
+flex:0 0 33%;
+max-width:33%;
+}
 
-  .custom-col-8 { flex: 0 0 66.666%; max-width: 66.666%; }
+.custom-col-5{
+flex:0 0 20%;
+max-width:20%;
+}
+
+.custom-col-8{
+flex:0 0 66%;
+max-width:66%;
+}
+
+.form-radio{
+gap:1rem;
+}
 
 }
 .form-radio{
@@ -455,14 +476,18 @@
 .lead-form .form-control {
   padding: 4px 8px;
 }
+.radio-group{
+display:flex;
+flex-direction:column;
+gap:.5rem;
+}
 
-.form-label {
-    font-size: 11px;
-    font-weight: 600 ;
-    color: #566a7f;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    
+.form-label{
+font-size:0.6875rem;
+font-weight:600;
+text-transform:uppercase;
+margin-bottom:0.1875rem;
+color:#566a7f;
 }
 .select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered
 
@@ -481,17 +506,16 @@
 input.form-control-sm,
 select.form-select-sm,
 textarea.form-control-sm {
-    font-size: 12px !important;
-    padding: 6px 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: 37px;
+    font-size:0.75rem;
+padding:0.375rem 0.625rem;
+border:1px solid #ccc;
+border-radius:0.25rem;
+height:2.25rem;
     color: #343434;
 }
 
 textarea.form-control-sm {
-    height: 85px;
+    height:5rem;
     resize: vertical;
 }
 
@@ -533,15 +557,15 @@ textarea.form-control-sm {
 }
 
 .form-check-label {
-    font-size: 12px;
+   font-size:.75rem;
     margin-bottom: 0;
     cursor: pointer;
 }
 .custom-range {
     -webkit-appearance: none;
     width: 100%;
-    min-height: 0 !important;
-    height: 6px;
+    
+   height:0.375rem;
     border-radius: 4px;
     background: #ddd;
     outline: none;
@@ -580,9 +604,10 @@ textarea.form-control-sm {
 .range-numbers {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
+    font-size:0.625rem;
+margin-top:0.5rem;
     color: #666;
-    margin-top: 8px;
+    
 }
 
 
@@ -618,10 +643,21 @@ textarea.form-control-sm {
     textarea.form-control-sm {
         min-height: 60px;
     }
+    
+    .radio-group{
+        flex-direction:row;
+        flex-wrap:wrap;
+        gap:1rem;
+    }
 }
 
+@media (min-width:1200px){
 
+.radio-group{
+gap:1.5rem;
+}
 
+}
 
 
 </style>

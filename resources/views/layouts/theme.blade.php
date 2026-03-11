@@ -34,11 +34,12 @@
    Base (Mobile First)
    ========================================================= */
 * {
-font-family: 'Proxima Nova', sans-serif;
-font-size: 12px;
-margin: 0;
-padding: 0;
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 0.75rem; /* 12px */
+  margin: 0;
+  padding: 0;
 }
+
 body,
 p,
 span,
@@ -47,20 +48,22 @@ input,
 textarea,
 select,
 button {
-    font-size: 13px !important;
-    line-height: 1.5;
+  font-size: 13px !important; 
+  line-height: 1.5;
 }
+
 button,
 .btn,
 a.btn,
 input[type="button"],
 input[type="submit"] {
-    padding:6px 12px;
-	height:32px;
-	line-height:1rem;
+  padding: 0.375rem 0.75rem; /* 6px 12px */
+  height: 32px; /* keep px */
+  line-height: 1rem;
 }
+
 hr {
-    margin: 1em 0 !important;
+  margin: 1rem 0 !important;
 }
 .fa-classic,
 .fa-regular,
@@ -76,8 +79,8 @@ font-family: "Font Awesome 6 Free" !important;
 	font-size:12px;
 }
 .btn.btn-default {
-background-color: #00a8ff;
-border-color: #00a8ff;
+  background-color: #00a8ff;
+  border-color: #00a8ff;
 }
 
 .follow-table thead th {
@@ -108,13 +111,13 @@ text-rendering: optimizeLegibility;
    Tables
    ========================================================= */
 .table {
-width: 100%;
-max-width: 100%;
-margin-left: 3px !important;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0.1875rem !important; 
 }
+
 .table th {
-    
-    padding: 11px 5px 10px !important;
+  padding: 0.6875rem 0.3125rem 0.625rem !important;
 }
 .table th{
 height: 16px !important;
@@ -123,9 +126,8 @@ height: 16px !important;
 .table td,
 .odd,
 .even {
-height: 28px !important;
-font-size: 13px !important;
-width: auto;
+  height: 28px !important;
+  font-size: 13px !important; 
 }
 
 .table a {
@@ -135,27 +137,20 @@ border-bottom: 1px solid #e9ecef;
 .bootstrap-table .table td,
 .fixed-table-body .table td,
 .table td,
-th,
 tr {
-height: 29px !important;
-padding: 3px 5px 3px ; !important;
-padding-bottom: 3px !important;
-text-align: left !important;
+  height: 29px !important;
+  padding: 0.1875rem 0.3125rem !important; /* 3px 5px */
+  text-align: left !important;
 }
 
 .box-typical .panel-heading {
-padding: 7px 20px;
+padding: 0.4375rem 1.25rem;
 }
 
 .mb-3,
 .my-3 {
 margin-bottom: 0 !important;
 }
-
-.statistic-box {
-height: 27vh !important;
-}
-
 .side-menu-list {
 margin: -18px 0 20px;
 }
@@ -229,15 +224,13 @@ padding: 10px 16px !important;
    ========================================================= */
 .dataTables_wrapper .dataTables_filter input,
 .login-logs .dataTables_filter input {
-border: 1px solid #d9e2ef;
-border-radius: 5px !important;
-padding: 1px 12px !important;
-height: 24px !important;
-width: 200px;
-max-width: 200px;
-box-shadow: none;
-margin-left: 4 !important;
-margin-top:5px;
+  border: 1px solid #d9e2ef;
+  border-radius: 0.3125rem !important; 
+  padding: 0.0625rem 0.75rem !important; 
+  height: 24px !important;
+  width: 12.5rem;
+  max-width: 12.5rem;
+  box-shadow: none;
 }
 		#users-table_filter input {
 			height: 24px !important;
@@ -287,14 +280,14 @@ padding: 0 12px !important;
 }
 
 .row {
-align-items: center !important;
-margin-left: -8px;
-margin-right: -8px;
+  align-items: center !important;
+  margin-left: -0.5rem;  /* -8px */
+  margin-right: -0.5rem; /* -8px */
 }
 
 .row > [class*="col-"] {
-padding-left: 8px;
-padding-right: 8px;
+padding-left: 0.5rem;
+padding-right: 0.5rem;
 }
 
 .form-row {
@@ -336,11 +329,11 @@ margin: 0 !important;
    Forms
    ========================================================= */
 .form-label {
-font-size: 11px;
+font-size:0.6875rem !important;
 font-weight: 600;
 color: #343434;
 text-transform: uppercase;
-margin-bottom: 3px;
+margin-bottom:0.1875rem;
 }
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
@@ -456,8 +449,8 @@ width: 240px;
 
 .with-side-menu .page-content {
 margin-left: 0;
-margin-top: -2px;
-padding: 110px 16px 24px;
+margin-top: -0.125rem; /* -2px */
+  padding: 6.875rem 1rem 1.5rem; 
 height: auto;
 overflow: hidden !important;
 }
@@ -553,26 +546,27 @@ transform: rotate(45deg);
 }
 
 .dropdown-item {
-padding: 6px 6px !important;
+
+padding: 0.375rem 0.375rem !important;
+font-size: 0.8125rem;
 border-bottom: none !important;
-font-size: 13px !important;
 }
 
 
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
-.chart-statistic-box .chart-container {
+/* .chart-statistic-box .chart-container {
     margin-left: -39%; 
-}
+} */
 
-.chart-txt {
+/* .chart-txt {
     width: 39% !important;
 }
 
 .chart-statistic-box .chart-container .chart-container-in {
-    margin-left: 39%; 
-}
+    margin-left: 39% !important; 
+} */
 
 .box-typical.box-typical-dashboard .box-typical-body {
 overflow: hidden;
@@ -747,9 +741,9 @@ width: 244px;
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
-.chart-statistic-box .chart-container {
+/* .chart-statistic-box .chart-container {
 margin-left: 0;
-}
+} */
 }@media (min-width: 992px) {
     .with-side-menu .page-content {
         
