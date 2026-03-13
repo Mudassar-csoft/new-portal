@@ -19,7 +19,7 @@
 			<div class="site-header-content">
 				<div class="site-header-content-in" style="margin-top:-35px">
 					<div class="site-header-shown">
-						<div class="dropdown dropdown-notification notif">
+						<div class="dropdown dropdown-notification notif ">
 							<a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
 								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="font-icon-alarm"></i>
@@ -157,7 +157,7 @@
 							</div>
 						</div>
 
-						<div class="dropdown dropdown-notification messages">
+						<!-- <div class="dropdown dropdown-notification messages">
 							<a href="#" class="header-alarm dropdown-toggle active" id="dd-messages"
 								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="font-icon-mail"></i>
@@ -181,7 +181,7 @@
 									<!--<button type="button" class="create">
 	                                    <i class="font-icon font-icon-pen-square"></i>
 	                                </button>-->
-								</div>
+								<!-- </div>
 								<div class="tab-content">
 									<div class="tab-pane active" id="tab-incoming" role="tabpanel">
 										<div class="dropdown-menu-messages-list">
@@ -248,7 +248,7 @@
 									<a href="#">See more</a>
 								</div>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="dropdown dropdown-lang">
 							<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
@@ -269,7 +269,7 @@
 						</div>
 
 
-
+					
 						<div class=" dropdown user-menu user-profile-dropdown m-0">
             <a href="#" class="nav-link p-0 pt-1 user dropdown-toggle" id="notify" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
               <img src="data:image/jpeg;base64,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" alt="" class="icon"  />
@@ -442,7 +442,7 @@
 									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									Add
 								</button>
-								<div class="dropdown-menu" aria-labelledby="dd-header-add">
+								<div class="dropdown-menu p-1" aria-labelledby="dd-header-add">
 									<a class="dropdown-item" href="{{ route('leads.create') }}">Create New Lead</a>
 									<a class="dropdown-item" href="#">Create New Admission</a>
 									<a class="dropdown-item" href="#">Create New Registration</a>
@@ -468,7 +468,23 @@
 
 
 	<style>
-
+.site-header .dropdown.dropdown-lang .dropdown-toggle{
+	width: 32px !important;
+	margin-left: 10px;
+}
+.site-header-search button{
+	    line-height: 22px !important;
+}
+.font-icon-alarm{
+	font-size:19px !important;
+}
+.site-header .header-alarm.active:after{
+	    left: 46% !important;
+    top: 4px !important;
+}
+.flag-icon{
+	font-size:19px !important;
+}
 		.fa-classic,
 .fa-regular,
 .fa-solid,
@@ -500,10 +516,13 @@
   flex-wrap: nowrap;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
+
 
 .lead-tabs .nav-item {
   flex: 0 0 auto;
+  overflow: hidden !important;
 }
 .lead-tabs .nav-link.active {
   background: #0d6efd;
@@ -568,13 +587,32 @@ img.icon {
 	padding:1px 4px!important;
 }
 
+.user-profile-dropdown a{
+    height: 32px !important;
+    width: 32px !important;
+border-radius:50%;
+box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+text-align:center;
+border:1px solid  !important;
+
+}
+
 .user-profile-dropdown .dropdown-toggle::after,
 .user-profile-dropdown .nav-link.user::after {
     display: none !important;
     content: none !important;
 }
 
-
+.user-menu .nav-link{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	border:1px solid black;
+}
 .dropdown-menu{
     
     max-width: 15rem;

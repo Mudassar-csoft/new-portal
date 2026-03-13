@@ -62,7 +62,7 @@
                 Teaching Method <span class="text-danger">*</span>
             </label>
             <div class="row  mt-2 ml-3" >
-                <div class="col-sm-4 d-flex align-items-center ">
+                <div class="col-sm-4 d-flex align-items-center mb-1">
                 
                         <input class="form-check-input  "
                             type="radio"
@@ -114,7 +114,7 @@
     </div>
         <!-- Program -->
     <!-- ROW 2 -->
-    <div class="row" >
+    <div class="row mt-1" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark">
@@ -164,7 +164,7 @@
         </div>
     </div>
     <!-- ROW 3 -->
-    <div class="row">
+    <div class="row mt-1">
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
             <select name="marketing_source"
@@ -241,7 +241,7 @@
     </div>
 
     <!-- Radio Section -->
-    <div class="row">
+    <div class="row ">
         <div class="col-md-6 col-lg-3">
                 <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
                 <input type="datetime-local"
@@ -274,7 +274,7 @@
                 <span>80</span>
                 <span>100</span>
             </div>
-            <div class="small semibold">
+            <div class=" semibold">
                 Selected: <span id="probabilityValue">
                     {{ old('details.probability', 10) }}%
                 </span>
@@ -318,7 +318,7 @@ font-size:12px !important;
 font-weight:600;
 text-transform:uppercase;
 margin-bottom:0.1875rem;
-color:#566a7f;
+color:#535558 !important;
 }
 .select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered
 

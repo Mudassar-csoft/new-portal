@@ -34,7 +34,7 @@
    Base (Mobile First)
    ========================================================= */
 * {
-  font-family: 'Proxima Nova', sans-serif;
+  font-family: "Montserrat", sans-serif !important;
   font-size: 0.75rem; /* 12px */
   margin: 0;
   padding: 0;
@@ -197,7 +197,7 @@ padding: 6px 12px 6px 46px;
 .side-menu .gold .stage-count { background-color: #d4a017; border-color: #d4a017; }
 
 .site-header .site-header-collapsed .site-header-collapsed-in {
-margin-right: 175px !important;
+margin-right: 122px !important;
 }
 
 .site-header .dropdown .btn.dropdown-toggle {
@@ -320,12 +320,12 @@ margin: 0 !important;
 /* =========================================================
    Forms
    ========================================================= */
-.form-label {
+.form-label{
 font-size:12px !important;
-font-weight: 600;
-color: #343434;
-text-transform: uppercase;
+font-weight:600;
+text-transform:uppercase;
 margin-bottom:0.1875rem;
+color:#535558 !important;
 }
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
