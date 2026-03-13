@@ -61,23 +61,23 @@
             <label class="form-label text-dark fw-semibold small ">
                 Teaching Method <span class="text-danger">*</span>
             </label>
-            <div class="form-radio  mt-2" >
-                <div class="teaching-method form-check d-flex align-items-center ">
+            <div class="row  mt-2 ml-3" >
+                <div class="col-md-4 d-flex align-items-center ">
                 
-                        <input class="form-check-input mt-0 mr-1"
+                        <input class="form-check-input  "
                             type="radio"
                             id="teaching-method-online"
                             name="details[teaching_method]"
                             value="online"
                             
                             @checked(old('details.teaching_method','online')==='online')>
-                        <label class="form-check-label small mb-0 "
+                        <label class="form-check-label small mt-2 ml-1"
                             for="teaching-method-online">
                             Online
                         </label>
                 
                 </div>
-                <div class="d-flex justify-content-center teaching-method">
+                <div class="d-flex justify-content-center col-md-4">
                     <div class="form-check d-flex align-items-center ">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -91,7 +91,7 @@
                         </label>
                     </div>
                 </div>
-                <div class=" d-flex justify-content-center teaching-method">
+                <div class=" d-flex justify-content-center col-md-4">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0  mr-1"
                             type="radio"
@@ -219,16 +219,16 @@
             <label class="form-label text-dark fw-semibold small mb-3">
                 Gender <span class="text-danger">*</span>
             </label>
-             <div class=" form-radio d-flex align-items-center mt-1  ">
-                <div class="form-check d-flex align-items-center gender" >
-                    <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
-                    <label class="form-check-label small mb-0" for="details-gender-male">Male</label>
+             <div class=" row d-flex align-items-center mt-1 ml-3 ">
+                <div class="form-check d-flex align-items-center col-md-4 " >
+                    <input class="form-check-input mt-0  " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
+                    <label class="form-check-label small mb-0 ml-1" for="details-gender-male">Male</label>
                 </div>
-                <div class="form-check d-flex align-items-center gender">
+                <div class="form-check d-flex align-items-center col-md-4">
                     <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
                     <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
                 </div>
-                <div class="form-check d-flex align-items-center gender">
+                <div class="form-check d-flex align-items-center col-md-4">
                     <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender')==='other')>
                     <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
                 </div>
