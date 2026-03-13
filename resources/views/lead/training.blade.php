@@ -62,7 +62,7 @@
                 Teaching Method <span class="text-danger">*</span>
             </label>
             <div class="row  mt-2 ml-3" >
-                <div class="col-md-4 d-flex align-items-center ">
+                <div class="col-sm-4 d-flex align-items-center ">
                 
                         <input class="form-check-input  "
                             type="radio"
@@ -77,7 +77,7 @@
                         </label>
                 
                 </div>
-                <div class="d-flex justify-content-center col-md-4">
+                <div class="d-flex justify-content-center col-sm-4">
                     <div class="form-check d-flex align-items-center ">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -91,7 +91,7 @@
                         </label>
                     </div>
                 </div>
-                <div class=" d-flex justify-content-center col-md-4">
+                <div class=" d-flex justify-content-center col-sm-4">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0  mr-1"
                             type="radio"
@@ -216,19 +216,19 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label text-dark fw-semibold small mb-3">
+            <label class="form-label text-dark fw-semibold small mt-0">
                 Gender <span class="text-danger">*</span>
             </label>
              <div class=" row d-flex align-items-center mt-1 ml-3 ">
-                <div class="form-check d-flex align-items-center col-md-4 " >
+                <div class="form-check d-flex align-items-center col-sm-4 " >
                     <input class="form-check-input mt-0  " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
                     <label class="form-check-label small mb-0 ml-1" for="details-gender-male">Male</label>
                 </div>
-                <div class="form-check d-flex align-items-center col-md-4">
+                <div class="form-check d-flex align-items-center col-sm-4">
                     <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
                     <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
                 </div>
-                <div class="form-check d-flex align-items-center col-md-4">
+                <div class="form-check d-flex align-items-center col-sm-4">
                     <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender')==='other')>
                     <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
                 </div>
@@ -252,7 +252,7 @@
                     <div class="field-error">{{ $message }}</div>
                 @enderror
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3 mt-4">
             <label class="form-label small fw-semibold text-dark required">
                 Probability
             </label>

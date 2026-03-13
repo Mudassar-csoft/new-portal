@@ -29,18 +29,18 @@
 	<div class="row ">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="row" style = "font-size:14px;">
+		<div class="row" >
 
-		<div class="col-xl-6">
+		<div class="col-xl-6 pl-0 ">
 			<div class="chart-statistic-box">
 				
 				<div class="chart-container row ">
 					<div class="chart-txt col-5 p-0 m-0">
-					<div class="chart-txt-top">
-						<p><span class="unit pt-1">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+					<div class="chart-txt-top pt-2">
+						<p><span class="unit ">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
 						<p class="caption">Income</p>
 					</div>
-					<div class="chart-range d-flex flex-column ml-lg-2 ml-3">
+					<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-today" value="today" checked>
 							<label for="range-today">Today</label>
@@ -61,7 +61,7 @@
 							<label for="range-year">Yearly</label>
 						</div>
 					</div>
-					<table class="tbl-data ml-lg-2 ml-3">
+					<table class="tbl-data ml-lg-3 ml-2">
 						<tr>
 							<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 							<td style = "font-size:14px;	">Today Collection</td>
@@ -106,7 +106,7 @@
 				
 			</div><!--.chart-statistic-box-->
 		</div>
-		<div class="col-xl-6">
+		<div class="col-xl-6 pr-0">
 			<div class="row">
 				<div class="col-sm-6">
 					<article class="statistic-box red">
@@ -424,7 +424,7 @@
         }
 
         .dashboard-content {
-			padding-top: 1rem;
+			padding: 10px;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease;
