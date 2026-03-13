@@ -205,7 +205,7 @@ height: 28px;
 }
 .site-header .dropdown-menu-notif .dropdown-menu-notif-list {
     height: 150px;
-    overflow: auto;
+    overflow: hidden;
 }
 .site-header .user-greeting {
 margin-right: 10px;
