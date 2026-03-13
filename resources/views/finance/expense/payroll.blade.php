@@ -34,8 +34,8 @@
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('finance.expense.payroll.generate') }}">
                     @csrf
-                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row mt-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -46,11 +46,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Payroll Month</label>
                             <input type="month" name="month" class="form-control" value="{{ old('month', now()->format('Y-m')) }}" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Payment Method</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -58,13 +58,13 @@
                                 <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Remarks</label>
                             <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}">
                         </div>
                     </div>
 
-                    <div class="form-group" style = "padding-left:15px;width:97%;">
+                    <div class="form-group" style = "padding-left:15px;width:99.5%;">
                         <label class="form-label required">Employees</label>
                         <select name="employee_ids[]" class="form-control" multiple required size="8">
                             @foreach($employees as $employee)
@@ -76,7 +76,7 @@
                         <small class="text-muted">Hold Ctrl (Windows) to select multiple employees.</small>
                     </div>
 
-                    <div class="text-right mr-4">
+                    <div class="text-right">
                         <button type="submit" class="btn btn-inline btn-primary-outline">Generate Payroll Request</button>
                     </div>
                 </form>

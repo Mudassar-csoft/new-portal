@@ -29,8 +29,8 @@
                 <form method="GET" action="{{ route('finance.dashboard.payables') }}">
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
-                    <div class="form-row" style = "gap:18px; padding-left:15px">
-                        <div class="form-group custom-col-4" >
+                    <div class="form-row" >
+                        <div class="form-group col-lg-4 col-md-6" >
                             <label class="form-label required">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,7 +41,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-7  d-flex align-items-end mt-3 pt-2">
+                        <div class="form-group col-lg-4 col-md-2  d-flex align-items-end mt-3 pt-2">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.payables') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
@@ -51,19 +51,19 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-pending">
                     <div class="payable-label">Pending</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['pending'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-approved">
                     <div class="payable-label">Approved Unpaid</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['approved'] ?? 0), 0) }}</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-total">
                     <div class="payable-label">Total Payables</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['total'] ?? 0), 0) }}</div>

@@ -24,12 +24,12 @@
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="POST" action="{{ route('finance.utility.types.store') }}">
                     @csrf
-                    <div class="form-row" style= "padding:15px;">
-                        <div class="form-group custom-col-5">
+                    <div class="form-row">
+                        <div class="form-group col-lg-5 col-md-5">
                             <label class="required">Bill Type</label>
                             <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
                         </div>
-                        <div class="form-group custom-col-5">
+                        <div class="form-group col-lg-5 col-md-5">
                             <label>Default Payee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -40,7 +40,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2 d-flex align-items-end mt-2 pt-3">
+                        <div class="form-group col-lg-2 col-md-2 d-flex align-items-end mt-1 pt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                     <table class="table table-bordered finance-table">
                         <thead>
                         <tr>
-                            <th style="width: 60px;">Sr#</th>
+                            <th>Sr#</th>
                             <th>Bill Type</th>
                             <th>Default Payee</th>
                             <th>Status</th>

@@ -28,7 +28,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.documents.index') }}" class="mb-3">
                     <div class="form-row">
-                        <div class="form-group custom-col-4">
+                        <div class="form-group col-md-6 col-lg-4">
                             <label class="form-label required" >Employee</label>
                             <select class="form-control" name="employee_id">
                                 <option value="">All Employees</option>
@@ -39,7 +39,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-4">
+                        <div class="form-group col-md-6 col-lg-4">
                             <label class="form-label required" >Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -47,7 +47,7 @@
                                 <option value="expired" @selected(($filters['status'] ?? '') === 'expired')>Expired</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-1 d-flex align-items-end justify-end mt-4">
+                        <div class="form-group custom-col-1 d-flex text-right mt-4">
                             <button class="btn btn-inline btn-primary-outline mr-2" type="submit">Filter</button>
                             <a href="{{ route('hrm.documents.index') }}" class="btn btn-inline btn-danger-outline p-2">Reset</a>
                         </div>
@@ -56,8 +56,8 @@
 
                 <form method="POST" action="{{ route('hrm.documents.store') }}" enctype="multipart/form-data" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row" style="gap:18px;">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -66,7 +66,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Document Type</label>
                             <select name="document_type" class="form-control" required>
                                 @foreach(['offer_letter','cnic_copy','degree','contract','nda','experience_letter','warning_letter','other'] as $type)
@@ -74,44 +74,43 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Title</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Issue Date</label>
                             <input type="date" name="issue_date" class="form-control">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Expiry Date</label>
                             <input type="date" name="expiry_date" class="form-control">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Reminder</label>
                             <input type="number" min="0" max="365" name="reminder_days_before" class="form-control" value="30">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Status</label>
                             <select name="status" class="form-control">
                                 <option value="active">Active</option>
                                 <option value="expired">Expired</option>
                             </select>
                         </div>
-                         <div class="form-group custom-col-3">
+                         <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >File</label>
                             <input type="file" name="file" class="form-control-file" required>
                         </div>
                     </div>
-                    <div class="form-row" style="gap:8px;">
+                    <div class="form-row">
                        
                         
                         <div class="form-group custom col-12">
                             <label class="form-label required" >Notes</label>
-                            <input type="text" name="notes" class="form-control" style="
-    width: 97%;">
+                            <input type="text" name="notes" class="form-control">
                         </div>
                     </div>
-                    <div class="text-right mr-4">
+                    <div class="text-right">
                     <button class="btn btn-inline btn-primary-outline" type="submit">Upload Document</button>
                 </div>
                 </form>

@@ -179,7 +179,7 @@
                 <form method="POST" action="{{ route('hrm.attendance.requests.store') }}" class="mb-3">
                     @csrf
                     <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3 col-lg-2">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -188,7 +188,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3 col-lg-2">
                             <label class="form-label required" >Type</label>
                             <select name="request_type" class="form-control">
                                 <option value="checkin_correction">Check-in</option>
@@ -196,15 +196,15 @@
                                 <option value="full_day_correction">Full Day</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3 col-lg-2">
                             <label class="form-label required" >Requested In</label>
                             <input type="datetime-local" name="requested_check_in_at" class="form-control">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3 col-lg-2">
                             <label class="form-label required" >Requested Out</label>
                             <input type="datetime-local" name="requested_check_out_at" class="form-control">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3 col-lg-2">
                             <label class="form-label required" >Reason</label>
                             <input type="text" name="reason" class="form-control">
                         </div>
@@ -267,9 +267,7 @@
 
 @push('styles')
     <style>
-       .custom-col-3{
-         flex: 0 0 18% !important  ;
-          max-width: 18% !important; }
+      
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box {

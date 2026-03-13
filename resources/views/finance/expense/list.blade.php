@@ -38,8 +38,8 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ url()->current() }}">
-                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3 ">
+                    <div class="form-row mt-3" >
+                        <div class="form-group col-lg-3 col-md-6 ">
                             <label class="form-label">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -50,7 +50,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -59,11 +59,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">From</label>
                             <input type="date" class="form-control" name="from" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">To</label>
                             <input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}">
                         </div>

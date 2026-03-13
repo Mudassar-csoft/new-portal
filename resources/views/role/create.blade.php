@@ -159,12 +159,7 @@
 			background: #fff;
 			padding: 12px;
 		}
-		.col-md-6{
-			        -webkit-box-flex: 0;
-        -ms-flex: 0 0 50%;
-        flex: 0 0 50%;
-        max-width: 48%;
-		}
+		
 		/* Tablet */
         @media (max-width: 992px) {
     .role-card {

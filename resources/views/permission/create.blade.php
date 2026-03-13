@@ -103,7 +103,7 @@
                             Define a permission for a resource and action.
                         </small>
                     </div>
-                    <a href="{{ route('permissions.index') }}" class="btn btn-secondary btn-sm">Back</a>
+                    <a href="{{ route('permissions.index') }}" class="btn btn-primary btn-sm">Back</a>
                 </div>
 
                 <!-- Body -->
@@ -112,7 +112,7 @@
                         @csrf
 
                         <div class="form-row">
-                            <div class="form-group col-sm-5">
+                            <div class="form-group col-md-6">
                                 <label>
                                     Resource <span class="text-danger">*</span>
                                 </label>
@@ -163,7 +163,7 @@
                             <button type="submit" class="btn btn-inline btn-primary-outline">
                                 Create Permission
                             </button>
-                            <button type="button" class="btn btn-inline btn-secondary-outline">
+                            <button type="button" class="btn btn-inline btn-danger-outline">
                                 Cancel
                             </button>
                         </div>

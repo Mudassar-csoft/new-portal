@@ -24,12 +24,12 @@
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="POST" action="{{ route('finance.expense.types.store') }}">
                     @csrf
-                    <div class="form-row mt-2" style = "padding-left:15px">
-                        <div class="form-group custom-col-6">
+                    <div class="form-row mt-2" >
+                        <div class="form-group col-lg-5 col-md-5">
                             <label class=" form-label required">Expense Type</label>
                             <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Enter Expense Type" required>
                         </div>
-                        <div class="form-group custom-col-4">
+                        <div class="form-group col-lg-5 col-md-5">
                             <label class="form-label required">Category</label>
                             <select name="category" class="form-control">
                                 <option value="">General</option>
@@ -38,7 +38,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2 d-flex align-items-end mt-2 pt-3">
+                        <div class="form-group col-lg-2 col-md-2 d-flex align-items-end mt-2 pt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                         </div>
                     </div>

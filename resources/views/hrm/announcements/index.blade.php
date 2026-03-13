@@ -24,8 +24,8 @@
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('hrm.announcements.store') }}" class="mb-3 hrm-box">
                     @csrf
-                    <div class="form-row" style="gap:8px;">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All</option>
@@ -34,7 +34,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Department</label>
                             <select name="department_id" class="form-control">
                                 <option value="">All</option>
@@ -43,7 +43,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Audience Scope</label>
                             <select name="audience_scope" class="form-control">
                                 <option value="all">All</option>
@@ -52,7 +52,7 @@
                                 <option value="role">Role</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Status</label>
                             <select name="status" class="form-control">
                                 <option value="draft">Draft</option>
@@ -62,20 +62,20 @@
                         </div>
                     </div>
 
-                    <div class="form-row" style="gap:8px; ">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row" >
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Title</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Publish At</label>
                             <input type="datetime-local" name="publish_at" class="form-control">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Expire At</label>
                             <input type="datetime-local" name="expire_at" class="form-control">
                         </div>
-                        <div class="form-group custom-col-5">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Channels</label>
                             <div class="d-flex" style="gap:2%;margin-top: 8px;">
                                 <div class="d-flex " style = "align-items: center;">
@@ -156,7 +156,7 @@
 
 @push('styles')
     <style>
-     .custom-col-5 { flex: 0 0 26% !important; max-width: 28% !important; }
+     .col-md-6 col-lg-3 { flex: 0 0 26% !important; max-width: 28% !important; }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }

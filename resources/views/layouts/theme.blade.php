@@ -302,15 +302,7 @@ padding-right: 3px;
 padding-left: 5px;
 }
 
-.col-md-1,
-.col-md-2,
-.col-md-3,
-.col-md-4,
-.col-md-5,
-.col-md-8 {
-flex: 0 0 100% !important;
-max-width: 100% !important;
-}
+
 
 .form-radio {
 flex-direction: column;
@@ -329,7 +321,7 @@ margin: 0 !important;
    Forms
    ========================================================= */
 .form-label {
-font-size:0.6875rem !important;
+font-size:12px !important;
 font-weight: 600;
 color: #343434;
 text-transform: uppercase;
@@ -599,12 +591,13 @@ padding-right: 12px;
 @media (min-width: 768px) {
 .form-row {
 display: flex;
-flex-wrap: wrap;
-gap: 18px;
-padding-left: 15px;
-margin-right: 0;
+
 }
 }
+/* <div class="form-group col-md-6 col-lg-3 d-flex mt-4">
+                        <button type="submit" class="btn btn-inline btn-primary-outline p-2" >Filter</button>
+                        <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-danger-outline p-2" >Reset</a>
+                        </div> */
 /* =====================================
    CUSTOM GRID SYSTEM (SAFE VERSION)
    ===================================== */

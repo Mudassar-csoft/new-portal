@@ -24,20 +24,21 @@
 
         body {
             background: #f5f7fb;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .login-shell {
+            position: relative;
             min-height: 100vh;
         }
-/* 
+
         .login-media {
-            position: relative;
-            width: 64%;
+            
+            
             min-height: 100vh;
             overflow: hidden;
-            background: #0b1622;
-        } */
+            
+}
 
         .media-glow {
             position: absolute;
@@ -132,7 +133,7 @@
 
         .sign-box {
     
-    height: 99vh;
+    height: 100vh;
     background: rgba(255, 255, 255, 0.78);
     border: 0px;
     box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
@@ -254,14 +255,29 @@
             transform: scale(1.07);
         }
 
-        @keyframes borderGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        
+    @media (max-width: 760px) {
+        .login-media,
+        .login-slider{
+            height:50vh;
         }
-
-       
-
+         .login-form-panel {
+            width:60%;
+            height:80vh;
+            position: absolute;
+            top: 50%;
+            left: 23%;
+            
+            
+         }
+         .sign-avatar{
+            margin-top: 5px !important;
+         }
+         .keep-me{
+            margin-top:1rem;
+            margin-left: 0px;
+         }
+    }
 
     </style>
 </head>
@@ -293,20 +309,23 @@
             <div class="media-glow" aria-hidden="true"></div>
            
         </div>
-         <div class="login-form-panel col-md-4">
+         <div class="login-form-panel col-md-4 ">
                 <form class="sign-box" method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <div class="sign-avatar">
                         <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
                     </div>
                     <header class="sign-title">Welcome back</header>
-                    <div class="form-group">
-                        <input type="email" name="email" class="form-control" placeholder="E-Mail" value="{{ old('email') }}" required>
+                    <div class="row">
+
+                        <div class=" col-12">
+                            <input type="email" name="email" class="form-control" style="width: 100% !important;" placeholder="E-Mail" value="{{ old('email') }}" required>
+                        </div>
+                        <div class=" col-12">
+                            <input type="password" name="password" class="form-control" style="width: 100% !important;" placeholder="Password" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                    </div>
-                <div class="form-group ">
+                <div class="form-group keep-me">
                     <div class="checkbox float-left mt-3">
                         <input type="checkbox" id="signed-in" name="remember">
                         <label for="signed-in">

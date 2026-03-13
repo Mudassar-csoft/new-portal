@@ -35,12 +35,12 @@
 			<div class="chart-statistic-box">
 				
 				<div class="chart-container row ">
-					<div class="chart-txt col-5 p-0 m-0 ">
+					<div class="chart-txt col-5 p-0 m-0">
 					<div class="chart-txt-top">
 						<p><span class="unit pt-1">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
 						<p class="caption">Income</p>
 					</div>
-					<div class="chart-range d-flex flex-column ml-lg-2 ">
+					<div class="chart-range d-flex flex-column ml-lg-2 ml-3">
 						<div class="radio">
 							<input type="radio" name="income-range" id="range-today" value="today" checked>
 							<label for="range-today">Today</label>
@@ -61,7 +61,7 @@
 							<label for="range-year">Yearly</label>
 						</div>
 					</div>
-					<table class="tbl-data ml-lg-2">
+					<table class="tbl-data ml-lg-2 ml-3">
 						<tr>
 							<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 							<td style = "font-size:14px;	">Today Collection</td>
@@ -281,7 +281,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			gap: 8px 12px;
-			margin: 8px 0 12px;
+			margin: 8px 0 20px;
 		}
 
 		.chart-range .radio {
@@ -434,6 +434,9 @@
 		.chart-txt{
 			top:-14px;
 		}
+		
+			
+		
         body.dashboard-ready .dashboard-content {
 			opacity: 1;
             visibility: visible;

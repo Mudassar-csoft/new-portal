@@ -40,8 +40,8 @@
                     @if(($filters['scope'] ?? '') === 'open')
                         <input type="hidden" name="scope" value="open">
                     @endif
-                    <div class="form-row mt-3" style = "gap:18px; padding-left:15px">
-                        <div class="form-group custom-col-5">
+                    <div class="form-row mt-3">
+                        <div class="form-group col-md-6 col-lg-5">
                             <label class="form-label required">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -52,7 +52,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-5">
+                        <div class="form-group col-md-6 col-lg-5">
                             <label class="form-label required">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -63,7 +63,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-1 d-flex align-items-end justify-end">
+                        <div class="form-group col-lg-2 d-flex align-items-end justify-end">
                             <button type="submit" class="btn btn-inline btn-primary-outline mt-4">Filter</button>
                             <a
                                 href="{{ route('finance.payables', (($filters['scope'] ?? '') === 'open') ? ['scope' => 'open'] : []) }}"

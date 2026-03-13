@@ -27,8 +27,8 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.employees.index') }}" class="mb-1">
-                    <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row mt-2" >
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -39,7 +39,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Department</label>
                             <select name="department_id" class="form-control">
                                 <option value="">All Departments</option>
@@ -50,7 +50,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Status</label>
                             <select name="status" class="form-control">
                                 <option value="">All</option>
@@ -59,8 +59,10 @@
                             </select>
                         </div>
                         <div>
-                        <button type="submit" class="btn btn-inline btn-primary-outline p-2" style=" margin-top: 20px;">Filter</button>
-                        <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-danger-outline p-2" style="margin-bottom: 9px; margin-top: 20px;">Reset</a>
+                        <div class="form-group col-md-6 col-lg-3 d-flex mt-4">
+                        <button type="submit" class="btn btn-inline btn-primary-outline p-2" >Filter</button>
+                        <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-danger-outline p-2" >Reset</a>
+                        </div>
                     </div>
                     </div>
                 </form>
@@ -69,51 +71,51 @@
 
                 <form method="POST" action="{{ route('hrm.employees.store') }}" class="mb-2">
                     @csrf
-                    <div class="form-row" style = "gap:7px;padding-left:15px">
-                        <div class="form-group custom-col-2">
+                    <div class="form-row" >
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Employee Code</label>
                             <input type="text" name="employee_code" class="form-control" placeholder="Auto if blank">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">First Name</label>
                             <input type="text" name="first_name" class="form-control" required>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Last Name</label>
                             <input type="text" name="last_name" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">CNIC</label>
                             <input type="text" name="cnic" class="form-control" placeholder="xxxxx-xxxxxxx-x">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Contact</label>
                             <input type="text" name="contact_no" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Email</label>
                             <input type="email" name="email" class="form-control">
                         </div>
                     </div>
 
-                    <div class="form-row" style = "gap:7px;padding-left:15px">
-                        <div class="form-group custom-col-2">
+                    <div class="form-row" >
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Address</label>
                             <input type="text" name="address" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Emergency Name</label>
                             <input type="text" name="emergency_contact_name" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Emergency Phone</label>
                             <input type="text" name="emergency_contact_phone" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Relation</label>
                             <input type="text" name="emergency_contact_relation" class="form-control">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -122,7 +124,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Department</label>
                             <select name="department_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -133,8 +135,8 @@
                         </div>
                     </div>
 
-                    <div class="form-row" style = "gap:7px;padding-left:15px">
-                        <div class="form-group custom-col-2">
+                    <div class="form-row" >
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Designation</label>
                             <select name="designation_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -143,7 +145,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Reporting Manager</label>
                             <select name="reporting_manager_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -152,7 +154,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">System User</label>
                             <select name="user_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -161,11 +163,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Joining Date</label>
                             <input type="date" name="joining_date" class="form-control" value="{{ now()->toDateString() }}">
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Employment Type</label>
                             <select name="employment_type" class="form-control">
                                 <option value="full_time">Full Time</option>
@@ -174,7 +176,7 @@
                                 <option value="intern">Intern</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-2">
+                        <div class="form-group col-md-4 col-lg-2">
                             <label class="form-label required">Status</label>
                             <select name="status" class="form-control">
                                 <option value="active">Active</option>
@@ -183,9 +185,9 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style = "gap:7px;padding-left:15px">
+                    <div class="form-group ml-3" >
                         <label class="form-label required">Notes</label>
-                        <input type="text" name="notes" class="form-control " style="width:98%">
+                        <input type="text" name="notes" class="form-control " style="width:99%">
                     </div>
                     <div class="text-right mr-3">
                     <button class="btn btn-inline btn-primary text-end" type="submit">Save Employee</button>

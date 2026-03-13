@@ -24,8 +24,8 @@
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('finance.utility.pay.store') }}" enctype="multipart/form-data">
                     @csrf
-                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row mt-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Select Bill</label class="form-label required">
                             <select name="bill_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -39,15 +39,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Payment Date</label class="form-label required">
                             <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Paid Amount</label class="form-label required">
                             <input type="number" step="0.01" min="1" name="paid_amount" class="form-control" value="{{ old('paid_amount') }}" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Payment Method</label class="form-label required">
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
@@ -56,27 +56,27 @@
                             </select>
                         </div>
 </div>
-                        <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                        <div class="form-row" >
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Payment Ref No</label class="form-label required">
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
                         </div>
                         
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Bank Name</label class="form-label required">
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Cheque No</label class="form-label required">
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Bank Receipt No</label class="form-label required">
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
                     </div>
-                    <div class="form-row" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row" >
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Transaction Image</label class="form-label required">
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>

@@ -1,12 +1,10 @@
 
 <div class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
-
     <!-- ROW 1 -->
-    <div class="row g-0" style = "gap:18px;">
-
+    <div class="row" >
         <!-- Full Name -->
-        <div class="custom-col-3">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small text-dark required">
                 Full Name (As per CNIC)
             </label>
@@ -19,9 +17,8 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
         <!-- Phone -->
-        <div class="custom-col-3 ml-1">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">
                 Primary Contact Number
             </label>
@@ -34,104 +31,92 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-     <div class="custom-col-3">
-            <label class="form-label small fw-semibold text-dark required">
-                Course Interested
+        <div class="col-md-6 col-lg-3">
+                <label class="form-label small fw-semibold text-dark required">
+                    Course Interested
+                </label>
+                <select name="program_id"
+                        class="form-select form-select-sm @error('program_id') is-invalid @enderror" 
+                        
+                        required>
+                    <option value="">-Select-</option>
+                    @foreach ($programs as $program)
+                        <option value="{{ $program->id }}"
+                            data-title="{{ $program->title ?? $program->name }}"
+                            data-fee="{{ number_format($program->fee) }}"
+                            data-duration="{{ $program->duration_weeks / 4 }}"
+                            @selected(old('program_id') == $program->id)>
+                            {{ $program->title ?? $program->name }}
+                            - Fee: {{ number_format($program->fee) }}
+                            ({{ $program->duration_weeks / 4 }} months)
+                        </option>
+                    @endforeach
+                </select>
+                @error('program_id')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
+            </div>
+        
+        <div class="col-md-6 col-lg-3 ">
+            <label class="form-label text-dark fw-semibold small ">
+                Teaching Method <span class="text-danger">*</span>
             </label>
-            <select name="program_id"
-                    class="form-select form-select-sm @error('program_id') is-invalid @enderror" 
-                    
-                    required>
-                <option value="">-Select-</option>
-                @foreach ($programs as $program)
-                    <option value="{{ $program->id }}"
-                        data-title="{{ $program->title ?? $program->name }}"
-                        data-fee="{{ number_format($program->fee) }}"
-                        data-duration="{{ $program->duration_weeks / 4 }}"
-                        @selected(old('program_id') == $program->id)>
-                        {{ $program->title ?? $program->name }}
-                        - Fee: {{ number_format($program->fee) }}
-                        ({{ $program->duration_weeks / 4 }} months)
-                    </option>
-                @endforeach
-            </select>
-            @error('program_id')
-                <div class="field-error">{{ $message }}</div>
+            <div class="form-radio  mt-2" >
+                <div class="teaching-method form-check d-flex align-items-center ">
+                
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="teaching-method-online"
+                            name="details[teaching_method]"
+                            value="online"
+                            
+                            @checked(old('details.teaching_method','online')==='online')>
+                        <label class="form-check-label small mb-0 "
+                            for="teaching-method-online">
+                            Online
+                        </label>
+                
+                </div>
+                <div class="d-flex justify-content-center teaching-method">
+                    <div class="form-check d-flex align-items-center ">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="teaching-method-campus"
+                            name="details[teaching_method]"
+                            value="campus"
+                            @checked(old('details.teaching_method')==='on-campus')>
+                        <label class="form-check-label small "
+                            for="teaching-method-campus">
+                            Campus
+                        </label>
+                    </div>
+                </div>
+                <div class=" d-flex justify-content-center teaching-method">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0  mr-1"
+                            type="radio"
+                            id="teaching-method-hybrid"
+                            name="details[teaching_method]"
+                            value="hybrid"
+                            @checked(old('details.teaching_method')==='hybrid')>
+                        <label class="form-check-label small mb-0"
+                            for="teaching-method-hybrid">
+                            Hybrid
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            @error('details.teaching_method')
+            <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-       
-         <div class="custom-col-3 ml-2" style = "margin-top:-3px;">
-    <label class="form-label text-dark fw-semibold small ">
-        Teaching Method <span class="text-danger">*</span>
-    </label>
-
-   <div class="form-radio  mt-2" >
-
-    <div class="teaching-method form-check d-flex align-items-center ">
-       
-            <input class="form-check-input mt-0 mr-1"
-                   type="radio"
-                   id="teaching-method-online"
-                   name="details[teaching_method]"
-                   value="online"
-                   
-                   @checked(old('details.teaching_method','online')==='online')>
-            <label class="form-check-label small mb-0 "
-                   for="teaching-method-online">
-                Online
-            </label>
-       
     </div>
-
-    <div class="d-flex justify-content-center teaching-method">
-        <div class="form-check d-flex align-items-center ">
-            <input class="form-check-input mt-0 mr-1"
-                   type="radio"
-                   id="teaching-method-campus"
-                   name="details[teaching_method]"
-                   value="on-campus"
-                   @checked(old('details.teaching_method')==='on-campus')>
-            <label class="form-check-label small "
-                   for="teaching-method-campus">
-                On-Campus
-            </label>
-        </div>
-    </div>
-
-    <div class=" d-flex justify-content-center teaching-method">
-        <div class="form-check d-flex align-items-center">
-            <input class="form-check-input mt-0  mr-1"
-                   type="radio"
-                   id="teaching-method-hybrid"
-                   name="details[teaching_method]"
-                   value="hybrid"
-                   @checked(old('details.teaching_method')==='hybrid')>
-            <label class="form-check-label small mb-0"
-                   for="teaching-method-hybrid">
-                Hybrid
-            </label>
-        </div>
-    </div>
-
-    </div>
-
-    @error('details.teaching_method')
-        <div class="field-error">{{ $message }}</div>
-    @enderror
-</div>
-</div>
-
-
         <!-- Program -->
-       
-
-    </div>
-
     <!-- ROW 2 -->
-    <div class="row g-0 " style = "gap:18px;padding-left:15px">
-
+    <div class="row" >
         <!-- Email -->
-        <div class="custom-col-3">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark">
                 Email Address
             </label>
@@ -143,12 +128,9 @@
             @error('email')
                 <div class="field-error">{{ $message }}</div>
             @enderror
-</div>
-
-
-
-
-        <div class="custom-col-3">
+        
+        </div>
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">Country</label>
             <select id="lead-country-select"
                     name="details[country]"
@@ -158,8 +140,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-        <div class="custom-col-3">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">City</label>
             <select id="lead-city-select"
                     name="city"
@@ -170,8 +151,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-         <div class="custom-col-3 ">
+         <div class="col-md-6 col-lg-3 ">
             <label class="form-label small fw-semibold text-dark required">Area</label>
             <input type="text"
                    name="details[area]"
@@ -182,16 +162,10 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-       
-
     </div>
- 
     <!-- ROW 3 -->
-    <div class="row g-0 mt-1" style = "gap:18px;padding-left:15px">
-
-
-        <div class="custom-col-3">
+    <div class="row">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
             <select name="marketing_source"
                     class="form-select form-select-sm @error('marketing_source') is-invalid @enderror">
@@ -207,8 +181,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-         <div class="custom-col-3">
+         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">Origin</label>
             <select name="origin"
                     class="form-select form-select-sm @error('origin') is-invalid @enderror">
@@ -224,10 +197,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-       
-
-        <div class="custom-col-3">
+        <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">Preferred Campus</label>
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
@@ -245,225 +215,86 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
-
-    <div class="custom-col-3">
-    <label class="form-label text-dark fw-semibold small mb-3">
-        Gender <span class="text-danger">*</span>
-    </label>
-
-  
-    <div class=" form-radio d-flex align-items-center mt-1  ">
-
-        <div class="form-check d-flex align-items-center gender" >
-            <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
-            <label class="form-check-label small mb-0" for="details-gender-male">Male</label>
+        <div class="col-md-6 col-lg-3">
+            <label class="form-label text-dark fw-semibold small mb-3">
+                Gender <span class="text-danger">*</span>
+            </label>
+             <div class=" form-radio d-flex align-items-center mt-1  ">
+                <div class="form-check d-flex align-items-center gender" >
+                    <input class="form-check-input mt-0 me-2 mr-1 " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
+                    <label class="form-check-label small mb-0" for="details-gender-male">Male</label>
+                </div>
+                <div class="form-check d-flex align-items-center gender">
+                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
+                    <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
+                </div>
+                <div class="form-check d-flex align-items-center gender">
+                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender')==='other')>
+                    <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
+                </div>
+            </div>
         </div>
-
-        <div class="form-check d-flex align-items-center gender">
-            <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
-            <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
-        </div>
-
-        <div class="form-check d-flex align-items-center gender">
-            <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender')==='other')>
-            <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
-        </div>
-
-    </div>
-
     <!-- Validation error -->
     @error('details.gender')
         <div class="field-error mt-1">{{ $message }}</div>
     @enderror
-</div>
-
-
-
-       
-
     </div>
 
     <!-- Radio Section -->
-    <div class="row g-0 mt-1" style = "gap:18px;
-    padding-left:15px">
+    <div class="row">
+        <div class="col-md-6 col-lg-3">
+                <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
+                <input type="datetime-local"
+                    name="details[next_followup_at]"
+                    class="form-control form-control-sm @error('details.next_followup_at') is-invalid @enderror"
+                    value="{{ old('details.next_followup_at') }}">
+                @error('details.next_followup_at')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <label class="form-label small fw-semibold text-dark required">
+                Probability
+            </label>
+            <input type="range"
+                min="0"
+                max="100"
+                step="5"
+                id="probabilitySlider"
+                name="details[probability]"
+                value="{{ old('details.probability', 10) }}"
+                class="custom-range">
 
-   
-     <div class="custom-col-3">
-            <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
-            <input type="datetime-local"
-                   name="details[next_followup_at]"
-                   class="form-control form-control-sm @error('details.next_followup_at') is-invalid @enderror"
-                   value="{{ old('details.next_followup_at') }}">
-            @error('details.next_followup_at')
+            <div class="range-numbers pt-0 mt-1.5">
+                <span>0</span>
+                <span>10</span>
+                <span>20</span>
+                <span>40</span>
+                <span>60</span>
+                <span>80</span>
+                <span>100</span>
+            </div>
+            <div class="small semibold">
+                Selected: <span id="probabilityValue">
+                    {{ old('details.probability', 10) }}%
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Remarks -->
+    <div class="row">
+        <div class="col-12">
+            <label class="form-label small fw-semibold text-dark required">
+                Remarks
+            </label>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3"  style = "width:98.8%;height:5rem; margin-right:10px;"placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
+            @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-
- <div class="custom-col-3">
-    <label class="form-label small fw-semibold text-dark required">
-        Probability
-    </label>
-
-    <input type="range"
-           min="0"
-           max="100"
-           step="5"
-           id="probabilitySlider"
-           name="details[probability]"
-           value="{{ old('details.probability', 10) }}"
-           class="custom-range">
-
-    <div class="range-numbers pt-0 mt-1.5">
-        <span>0</span>
-        <span>10</span>
-        <span>20</span>
-        <span>40</span>
-        <span>60</span>
-        <span>80</span>
-        <span>100</span>
-    </div>
-
-    <div class="small semibold">
-        Selected: <span id="probabilityValue">
-            {{ old('details.probability', 10) }}%
-        </span>
     </div>
 </div>
-
-
-    <!-- Remarks -->
-  
-</div>
-<div class="row mt-0 mr-1" style = "padding-left:15px">
-    <div class="col-12">
-        <label class="form-label small fw-semibold text-dark required">
-            Remarks
-        </label>
-       <textarea name="details[remarks]"
-    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
-    rows="3"
-    style = "width:98.8%;height:5rem; margin-right:10px;"
-    placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
-        @error('details.remarks')
-            <div class="field-error">{{ $message }}</div>
-        @enderror
-    </div>
-</div>
-</div>
-
 <style>
-
-/* Default Mobile ( <768px ) */
-.custom-col-1 
-.custom-col-2,
-.custom-col-3,
-.custom-col-4,
-.custom-col-5,
-.custom-col-8 {
-  flex: 0 0 100%;
-  max-width: 100%;
-   margin-bottom: 0.625rem;
-}
-
-
-/* Medium Devices ( ≥768px ) */
-@media (min-width: 768px) {
-.custom-col-1 {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-  .custom-col-2 {
-    flex: 0 0 16%;
-    max-width: 16%;
-  }
-
-  .custom-col-3 {
-    flex: 0 0 25%;
-    max-width: 25%;
-  }
-
-  .custom-col-4 {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
-  }
-
-  .custom-col-5 {
-    flex: 0 0 41.666%;
-    max-width: 41.666%;
-  }
-
-  .custom-col-8 {
-    flex: 0 0 66.666%;
-    max-width: 66.666%;
-  }
- .form-radio{
-flex-direction:row;
-gap:0.212rem;
-
-}
-
-}
-
-/* Large Devices ( ≥992px ) */
-@media (min-width: 992px) {
-	.custom-col-1 {
-    flex: 0 0 25%;
-    max-width: 25%;
-  }
- .form-radio{
-gap:1.5rem;
-}
-  .custom-col-2 { flex: 0 0 14%; max-width: 14%; }
-
-  .custom-col-3 { flex: 0 0 22%; max-width: 22%; }
-
-  .custom-col-4 { flex: 0 0 30%; max-width: 30%; }
-
-  .custom-col-5 { flex: 0 0 38%; max-width: 38%; }
-
-  .custom-col-8 { flex: 0 0 60%; max-width: 60%; }
-
-}
-
-/* Extra Large ( ≥1200px ) */
-@media (min-width:1200px){
-
-.custom-col-1{
-flex:0 0 12%;
-max-width:12%;
-}
-
-.custom-col-2{
-flex:0 0 18%;
-max-width:18%;
-}
-
-.custom-col-3{
-flex:0 0 23%;
-max-width:23%;
-}
-
-.custom-col-4{
-flex:0 0 33%;
-max-width:33%;
-}
-
-.custom-col-5{
-flex:0 0 20%;
-max-width:20%;
-}
-
-.custom-col-8{
-flex:0 0 66%;
-max-width:66%;
-}
-
-.form-radio{
-gap:1rem;
-}
-
-}
 .form-radio{
     display: flex !important;
     flex-direction: row;
@@ -483,7 +314,7 @@ gap:.5rem;
 }
 
 .form-label{
-font-size:0.6875rem;
+font-size:12px !important;
 font-weight:600;
 text-transform:uppercase;
 margin-bottom:0.1875rem;

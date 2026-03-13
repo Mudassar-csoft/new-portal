@@ -6,23 +6,23 @@
     <div class="campus-shell">
         <div class="campus-card box-typical box-typical-dashboard panel panel-default">
             <div class="card-body">
-                <h3 class="campus-title form-label" style="font-size:14px !important; color:black;">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
+                <h3 class="campus-title form-label" style="font-size:12px !important; color:black;">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
                 <form method="POST" action="{{ route('campus.store') }}">
                     @csrf
-                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row mt-2" >
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus Title</label>
                             <input type="text" name="name" class="form-control" placeholder="Enter campus title" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus Code</label>
                             <input type="text" id="campus-code" class="form-control" placeholder="Auto generated on save" disabled>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Country</label>
                             <select class="form-control" id="country-select" name="country" required></select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">City</label>
                             <select class="form-control" id="city-select" name="city" required>
                                 <option>Loading...</option>
@@ -30,32 +30,32 @@
                         </div>
                     </div>
 
-                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
+                    <div class="form-row mt-2" >
                         
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">City Abbreviation</label>
                             <input type="text" name="city_abbr" class="form-control" placeholder="Enter three letter abbreviation" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus Email Address</label>
                             <input type="email" name="campus_email" class="form-control" placeholder="Enter campus email address" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus Landline Number</label>
                             <input type="text" name="landline" class="form-control" placeholder="##-#######" required>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Campus Mobile Number</label>
                             <input type="text" name="mobile" class="form-control" placeholder="0300-#######" required>
                         </div>
                     </div>
                     
-                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px !important">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row mt-2" >
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required d-block">Campus Type</label>
                             <div class="campus-type-options d-flex" style= "gap:8px; padding-left:15px !important;" >
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                <input class="form-check-input " type="radio" name="campus_type" value="company" checked>
+                                <input class="form-check-input mt-0 me-2 mr-1 ml-1" type="radio" name="campus_type" value="company" checked>
                                 <label class="mt-1"> Company Owned</label>
                                 </div>
                                 <div class=" d-flex align-items-center mt-2">
@@ -64,15 +64,15 @@
                                 </div>
                             </div>
                         </div>
-                          <div class="form-group custom-col-3">
+                          <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Number of Labs in Campus</label>
                             <input type="number" name="labs_count" class="form-control" placeholder="Enter number of labs" min="0">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Royalty Rate</label>
                             <input type="number" step="0.01" name="royalty_rate" id="royalty-rate" class="form-control" placeholder="Enter royalty rate">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required">Status</label>
                             <select class="form-control" name="status" required>
                                 <option value="">- Select -</option>
@@ -82,17 +82,17 @@
                         </div>
                     </div>
 
-                    <div class="form-group mt-2" style = "gap:18px;padding-left:15px">
+                    <div class="form-group mt-2 ml-4" >
                         <label class="form-label required">Campus Address</label>
-                        <textarea class="form-control"style= "width:99%;" name="address" rows="2" placeholder="Enter campus address here..." required></textarea>
+                        <textarea class="form-control"style= "width:99.5%;" name="address" rows="2" placeholder="Enter campus address here..." required></textarea>
                     </div>
 
-                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
+                    <div class="form-row mt-2 ">
                       
                     </div>
 
 
-                    <div class="row mt-2" style = "gap:18px;padding-left:15px">
+                    <div class="row mt-2 ml-3" >
     <div class="col-12 ">
         <label class="form-label small fw-semibold text-dark required">
             Remarks
@@ -100,7 +100,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    style="height:7.5rem !important;padding:10px; width:99%;"
+    style="height:7.5rem !important;padding:10px; width:99.5%;"
     placeholder="Enter Your Remarks Here" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
@@ -109,8 +109,8 @@
 </div>
 
                     <div class="form-actions text-right mt-2">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>
-                        <a href="{{ route('campus.index') }}" class="btn btn-inline btn-danger-outline">Cancel</a>
+                        <button type="submit" class="btn btn-inline btn-primary-outline" pt-2>Save</button>
+                        <a href="{{ route('campus.index') }}" class="btn btn-inline btn-danger-outline pt-2">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -154,9 +154,8 @@
             margin-right: 3px;
         }
         .form-label {
-    font-size: 11px;
+    font-size: 12px !important;
     font-weight: 600 ;
-    
     text-transform: uppercase;
     margin-bottom: 3px;
     
@@ -183,13 +182,13 @@ select.form-select-sm, option textarea.form-control-sm {
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
-    height: 37px;
+    height: 32px;
     
     color:#ccc;
 }
 
 .form-control {
-    height:38px !important;
+    height:32px !important;
 }
 /* ---------- Radio Buttons ---------- */
 .form-check-input {

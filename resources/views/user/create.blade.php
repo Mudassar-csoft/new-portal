@@ -17,7 +17,7 @@
 					@csrf
 					<div class="form-section">
 						<div class="section-title form-label">Access &amp; Roles</div>
-						<div class="form-row" style="gap:5px;">
+						<div class="form-row" >
 						<div class="form-group col-md-6">
 							<label class="form-label required">Campus</label>
 								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
@@ -46,7 +46,7 @@
 					</div>
 					<div class="form-section">
 						<div class="section-title form-label">User Details</div>
-						<div class="form-row" style="gap:5px;">
+						<div class="form-row">
 						<div class="form-group col-md-6">
 							<label class="form-label required">Full Name</label>
 							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}">
@@ -70,7 +70,7 @@
 								<i class="fa fa-random"></i>
 							</button>
 						</div>
-						<div class="form-row align-items-end" style="gap:5px;">
+						<div class="form-row align-items-end" >
 						<div class="form-group col-md-6">
 							<label class="form-label required">
 								<span>Password</span>
@@ -187,7 +187,7 @@
 			min-width: 0;
 		}
 		.select2-container--white .select2-selection--multiple {
-			height: 44px;
+			height: 36px;
 			display: flex;
 			align-items: center;
 			padding: 6px 10px;
@@ -298,12 +298,7 @@
 			border-color: #2b78ff;
 			box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.12);
 		}
-		.col-md-6{
-			        max-width: 49%;
-		}
-		.form-group {
-			margin-bottom:10px;
-		}
+	
 	</style>
 @endpush
 
