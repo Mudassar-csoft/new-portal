@@ -25,7 +25,7 @@
 								<i class="font-icon-alarm"></i>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
-     style="min-width: 795px; font-size:12px;"
+     style="min-width: 800px; font-size:12px;"
 								aria-labelledby="dd-notification">
 								<div class="dropdown-menu-notif-header w-ful">
 									<div class="lead-tabs-wrapper w-100">
@@ -76,7 +76,7 @@
 									
 								</div>
 								<div class="dropdown-menu-notif-list">
-                  <div class="tab-content notif-tab-content">
+                  <div class="tab-content notif-tab-content text-center">
                     <div class="tab-pane" id="notif-coworking">
                       <div class="text-center p-3 text-muted">No coworking follow-up notifications.</div>
                     </div>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="tab-pane active show" id="notif-quick-leads">
                       <div class="table-responsive">
-                        <table class="table table-sm mb-0 notification-table">
+                        <table class="table table-sm mb-0 notification-table ">
                           <thead>
                             <tr>
                               <th>Full Name</th>
@@ -255,9 +255,17 @@
 								aria-expanded="false">
 								<span class="flag-icon flag-icon-us"></span>
 							</button>
-							<div class="dropdown-menu">
-								<a class="dropdown-item" href="#"><span
-										class="flag-icon flag-icon-us"></span>CIFSD04-Satiyana Road</a>
+							<div class="dropdown-menu p-1" >
+								 <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Select Campus">
+
+
+
+
+
+
+
+
+
 								<a class="dropdown-item" href="#"><span
 										class="flag-icon flag-icon-us"></span>CIFSD02-Jinnah Colony</a>
 								<a class="dropdown-item" href="#"><span
@@ -274,16 +282,18 @@
             <a href="#" class="nav-link  profile-log p-0 pt-1 user dropdown-toggle" id="notify" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
               <img src="data:image/jpeg;base64,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" alt="" class="icon"  />
             </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notify">
-              <div class="user-profile-section">
+            <div class="dropdown-menu profile-dropdown dropdown-menu-right" aria-labelledby="notify">
+              <div class="user-profile-section login-drop">
                 <div class="media mx-auto">
                   <img src="data:image/jpeg;base64,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" alt="" class="img">
                   <div class="media-body">
+					<h4>
                     @if(auth()->check())
 								{{ auth()->user()->name }}
 							@else
 								Guest 
 							@endif
+					</h4>
                   </div>
                 </div>
               </div>
@@ -291,17 +301,17 @@
                <div class="dp-main-menu "style = "line-height: 20px;">
                
 
-  <a href="#" class="dropdown-item ">
-    <i class="fas fa-user me-2"></i> Profile
+  <a href="#" class="dropdown-item p-1  ml-2 m-1 ">
+    <i class="fas fa-user me-2 "></i> Profile
   </a>
 
  
 
-  <a href="#" class="dropdown-item">
+  <a href="#" class="dropdown-item  ml-2 m-1  p-1">
     <i class="fas fa-key me-2"></i> Change Password
   </a>
 
-  <a href="#" class="dropdown-item text-danger">
+  <a href="#" class="dropdown-item  ml-2 m-1 text-danger">
     <i class="
 	 fa-solid fa-right-from-bracket me-2"></i> Log Out
   </a>
@@ -444,6 +454,7 @@
 									Add
 								</button>
 								<div class="dropdown-menu p-1" aria-labelledby="dd-header-add">
+									 <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Select Lead">
 									<a class="dropdown-item" href="{{ route('leads.create') }}">Create New Lead</a>
 									<a class="dropdown-item" href="#">Create New Admission</a>
 									<a class="dropdown-item" href="#">Create New Registration</a>
@@ -503,6 +514,9 @@
 .fas {
     font-family: "Font Awesome 6 Free" !important;
 }
+.select2-dropdown .select2-dropdown--below{
+	top: -21px;
+}
 		.nav.nav-pills .nav-link.active{
 			color: black;
 		}
@@ -550,7 +564,9 @@
 .site-logo img:hover{
     transform:scale(1.05);
 }
-
+.notification-table td{
+	text-align:center !important;
+}
 .lead-tabs {
   display: flex;
   flex-wrap: nowrap;
@@ -595,6 +611,9 @@
   line-height: 18px;
   text-align: center;
   border-radius: 50%;
+}
+.dropdown-menu.show {
+    /* left: -62px !important; */
 }
 .dropdown{
     position: relative;
@@ -645,7 +664,12 @@ border:1px solid gray ;
     display: none !important;
     content: none !important;
 }
+.login-drop{
 
+    /* left: -104px !important; */
+    
+    width: 253px !important;
+}
 .user-menu .nav-link{
     width: 42px;
     height: 42px;
@@ -655,6 +679,10 @@ border:1px solid gray ;
     align-items: center;
     justify-content: center;
 	border:1px solid black;
+}
+.dropdown-menu.p-1.show {
+    width: 210px !important;
+    left: -73px  !important;
 }
 .dropdown-menu{
     
@@ -676,16 +704,16 @@ border:1px solid gray ;
     align-items: center;
     border-radius: 5px;
 }
-img.img{
-    width: 70px;
-    height: 70px;
+img.img {
+    width: 92px !important;
+    height: 92px !important;
     border-radius: 50%;
-
 }
 .media-body{
     color: white ;
     padding: 15px;
 }
+
 
 .media-body h5{
     font-weight: 600;

@@ -76,8 +76,8 @@ font-family: "Font Awesome 6 Free" !important;
 .user-shell{
 	padding:0px !important;
 }
-.box-typical .panel-title, .form-label{
-	font-size:12px;
+.box-typical .panel-title{
+	font-size: 0.821rem !important;
 }
 .btn.btn-default {
   background-color: #00a8ff;
@@ -145,7 +145,7 @@ tr {
 }
 
 .box-typical .panel-heading {
-padding: 0.4375rem 1.25rem;
+padding: 0.8375rem 1.25rem;
 }
 
 .mb-3,
@@ -198,7 +198,7 @@ padding: 6px 12px 6px 46px;
 .side-menu .gold .stage-count { background-color: #d4a017; border-color: #d4a017; }
 
 .site-header .site-header-collapsed .site-header-collapsed-in {
-margin-right: 122px !important;
+margin-right: 132px !important;
 }
 
 .site-header .dropdown .btn.dropdown-toggle {
@@ -566,7 +566,7 @@ overflow: hidden;
 }
 
 .box-typical.box-typical-dashboard {
-margin: 0 0 5px !important;
+margin: 1% 5px !important;
 }
 
 .box-typical.box-typical-dashboard .box-typical-header {

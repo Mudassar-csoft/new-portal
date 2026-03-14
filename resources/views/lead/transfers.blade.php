@@ -191,7 +191,7 @@ table#transfer-grid{
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-bottom: 12px;
+            margin: 8px;
         }
 
         .dataTables_wrapper .follow-footer {
