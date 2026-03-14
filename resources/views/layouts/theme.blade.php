@@ -69,6 +69,7 @@ hr {
 .fa-regular,
 .fa-solid,
 .far,
+.fa,
 .fas {
 font-family: "Font Awesome 6 Free" !important;
 }
@@ -539,8 +540,8 @@ transform: rotate(45deg);
 
 .dropdown-item {
 
-padding: 0.375rem 0.375rem !important;
-font-size: 0.8125rem;
+padding: 2px 6px  !important;
+font-size: 13px !important;
 border-bottom: none !important;
 }
 

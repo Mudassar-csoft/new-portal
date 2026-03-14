@@ -25,7 +25,7 @@
 								<i class="font-icon-alarm"></i>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
-     style="min-width: 792px; font-size:12px;"
+     style="min-width: 795px; font-size:12px;"
 								aria-labelledby="dd-notification">
 								<div class="dropdown-menu-notif-header w-ful">
 									<div class="lead-tabs-wrapper w-100">
@@ -288,9 +288,10 @@
                 </div>
               </div>
               <div class="dp-main-menu ">
-               <div class="dp-main-menu">
+               <div class="dp-main-menu "style = "line-height: 20px;">
+               
 
-  <a href="#" class="dropdown-item">
+  <a href="#" class="dropdown-item ">
     <i class="fas fa-user me-2"></i> Profile
   </a>
 
@@ -438,7 +439,7 @@
 	                            </div>
 	                        </div> -->
 							<div class="dropdown">
-								<button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button"
+								<button class="btn btn-rounded  dropdown-toggle" id="dd-header-add" type="button"
 									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									Add
 								</button>
@@ -476,14 +477,24 @@
 	    line-height: 22px !important;
 }
 .font-icon-alarm{
+	
 	font-size:19px !important;
+}
+.site-header .dropdown a.dropdown-toggle {
+  
+    line-height: 36px !important;
 }
 .site-header .header-alarm.active:after{
-	    left: 46% !important;
-    top: 4px !important;
+	    left: 52% !important;
+    top: 6px !important;
 }
 .flag-icon{
-	font-size:19px !important;
+	    font-size: 20px !important;
+    top: -2px !important;
+}
+.font-icon-search{
+	    font-size: 18px !important;
+
 }
 		.fa-classic,
 .fa-regular,
@@ -506,11 +517,40 @@
 }
 .site-header{
 	height:70px;
-	padding: 13px 15px 0 0 !important;
+	background:#ffffff;
+	border-bottom:1px solid #e5e5e5;
+	box-shadow:0 2px 8px rgba(0,0,0,0.05);
+	padding:10px 15px 0 0 !important;
+}
+.site-header .header-alarm,
+.site-header .dropdown-lang .dropdown-toggle,
+.user-menu .nav-link{
+	width:38px;
+	height:38px;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	border-radius:50%;
+	background:#f7f7f7;
+	transition:0.2s;
+}
+.site-header .header-alarm:hover,
+.site-header .dropdown-lang .dropdown-toggle:hover,
+.user-menu .nav-link:hover{
+	background:#eaf2ff;
+	transform:translateY(-2px);
 }
 .site-header .dropdown-menu-notif-item{
 	width: 600px !important;
 }
+.site-logo img{
+    transition:0.3s;
+}
+
+.site-logo img:hover{
+    transform:scale(1.05);
+}
+
 .lead-tabs {
   display: flex;
   flex-wrap: nowrap;
@@ -568,6 +608,12 @@ img.icon {
     height: 27px !important;
     margin-left: -10px;
 }
+/* img.icon{
+    width:32px !important;
+    height:32px !important;
+    border-radius:50%;
+} */
+	
     .col-sm-6 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 50%;
@@ -583,17 +629,14 @@ img.icon {
 
 }
 
-.dropdown-item{
-	padding:1px 4px!important;
-}
-
 .profile-log{
     height: 32px !important;
     width: 32px !important;
 border-radius:50%;
 box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 text-align:center;
-border:1px solid  !important;
+border:1px solid gray ;
+
 
 }
 
@@ -615,10 +658,11 @@ border:1px solid  !important;
 }
 .dropdown-menu{
     
-    max-width: 15rem;
+    /* max-width: 18rem; */
     right:0px;
     left: auto;
-    min-width: 11rem;
+	width:fit-content;
+    /* min-width: 11rem; */
     padding: 0;
     border-radius: 5px;
 }
@@ -652,6 +696,7 @@ img.icon{
     margin-left: -10px;
 
 }
+
 	</style>
 
 

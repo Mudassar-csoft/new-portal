@@ -71,7 +71,7 @@
                             value="online"
                             
                             @checked(old('details.teaching_method','online')==='online')>
-                        <label class="form-check-label small mt-2 ml-1"
+                        <label class="form-check-label small mt-1 ml-1"
                             for="teaching-method-online">
                             Online
                         </label>
