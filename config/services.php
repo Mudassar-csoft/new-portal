@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'web_leads' => [
+        'token' => env('WEB_LEAD_TOKEN'),
+        'source_site' => env('WEB_LEAD_SOURCE_SITE', 'career.edu.pk'),
+    ],
+
 ];

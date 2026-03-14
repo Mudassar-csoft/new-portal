@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <header class="site-header">
 		<div class="container-fluid">
 			<a href="{{ url('/') }}" class="site-logo">
@@ -23,6 +22,7 @@
 							<a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
 								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="font-icon-alarm"></i>
+								<span class="notification-total-badge">{{ (int) ($webLeadNotificationTotal ?? 0) }}</span>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
      style="min-width: 795px; font-size:12px;"
@@ -47,28 +47,28 @@
     <li class="nav-item">
       <a class="nav-link active" href="#" data-target="#notif-quick-leads">
         Quick Leads
-        <span class="count">4</span>
+        <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
       </a>
     </li>
 
     <li class="nav-item">
       <a class="nav-link" href="#" data-target="#notif-enrollments">
         Website Enrollments
-        <span class="count">0</span>
+        <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
       </a>
     </li>
 
     <li class="nav-item">
       <a class="nav-link" href="#" data-target="#notif-admissions">
         Website Admissions
-        <span class="count">0</span>
+        <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
       </a>
     </li>
 
     <li class="nav-item">
       <a class="nav-link" href="#" data-target="#notif-brochures">
         Brochure Downloads
-        <span class="count">2</span>
+        <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
       </a>
     </li>
   </ul>
@@ -84,75 +84,117 @@
                       <div class="text-center p-3 text-muted">No follow-up notifications.</div>
                     </div>
                     <div class="tab-pane active show" id="notif-quick-leads">
-                      <div class="table-responsive">
-                        <table class="table table-sm mb-0 notification-table">
-                          <thead>
-                            <tr>
-                              <th>Full Name</th>
-                              <th>Date</th>
-                              <th>Time</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>Ateeqa Mubarik</td>
-                              <td>12-Feb-26</td>
-                              <td>10:27 AM</td>
-                            </tr>
-                            <tr>
-                              <td>Ali Raza</td>
-                              <td>12-Feb-26</td>
-                              <td>09:15 AM</td>
-                            </tr>
-                            <tr>
-                              <td>Ali Raza</td>
-                              <td>12-Feb-26</td>
-                              <td>09:15 AM</td>
-                            </tr>
-                            <tr>
-                              <td>Sara Khan</td>
-                              <td>11-Feb-26</td>
-                              <td>04:42 PM</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                      @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
+                      @if ($quickLeads->isEmpty())
+                        <div class="text-center p-3 text-muted">No quick leads notifications.</div>
+                      @else
+                        <div class="table-responsive">
+                          <table class="table table-sm mb-0 notification-table">
+                            <thead>
+                              <tr>
+                                <th>Full Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($quickLeads as $webLead)
+                                <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                  <td>{{ $webLead->full_name }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      @endif
                     </div>
                     <div class="tab-pane" id="notif-enrollments">
-                      <div class="text-center p-3 text-muted">No website enrollments notifications.</div>
+                      @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
+                      @if ($websiteEnrollments->isEmpty())
+                        <div class="text-center p-3 text-muted">No website enrollments notifications.</div>
+                      @else
+                        <div class="table-responsive">
+                          <table class="table table-sm mb-0 notification-table">
+                            <thead>
+                              <tr>
+                                <th>Full Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($websiteEnrollments as $webLead)
+                                <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                  <td>{{ $webLead->full_name }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      @endif
                     </div>
                     <div class="tab-pane" id="notif-admissions">
-                      <div class="text-center p-3 text-muted">No website admissions notifications.</div>
+                      @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
+                      @if ($websiteAdmissions->isEmpty())
+                        <div class="text-center p-3 text-muted">No website admissions notifications.</div>
+                      @else
+                        <div class="table-responsive">
+                          <table class="table table-sm mb-0 notification-table">
+                            <thead>
+                              <tr>
+                                <th>Full Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($websiteAdmissions as $webLead)
+                                <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                  <td>{{ $webLead->full_name }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      @endif
                     </div>
                     <div class="tab-pane" id="notif-brochures">
-                      <div class="table-responsive">
-                        <table class="table table-sm mb-0 notification-table">
-                          <thead>
-                            <tr>
-                              <th>Full Name</th>
-                              <th>Date</th>
-                              <th>Time</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>Rabia Amin</td>
-                              <td>12-Feb-26</td>
-                              <td>01:10 PM</td>
-                            </tr>
-                            <tr>
-                              <td>Hassan Ali</td>
-                              <td>11-Feb-26</td>
-                              <td>06:20 PM</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+                      @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
+                      @if ($brochureDownloads->isEmpty())
+                        <div class="text-center p-3 text-muted">No brochure download notifications.</div>
+                      @else
+                        <div class="table-responsive">
+                          <table class="table table-sm mb-0 notification-table">
+                            <thead>
+                              <tr>
+                                <th>Full Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($brochureDownloads as $webLead)
+                                <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                  <td>{{ $webLead->full_name }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      @endif
                     </div>
                   </div>
 								</div>
 								<div class="dropdown-menu-notif-more">
-									<a href="#">See more</a>
+									<a href="{{ route('web-leads.index') }}">See more</a>
 								</div>
 							</div>
 						</div>
@@ -485,8 +527,7 @@
     line-height: 36px !important;
 }
 .site-header .header-alarm.active:after{
-	    left: 52% !important;
-    top: 6px !important;
+	display: none !important;
 }
 .flag-icon{
 	    font-size: 20px !important;
@@ -533,6 +574,23 @@
 	border-radius:50%;
 	background:#f7f7f7;
 	transition:0.2s;
+	position: relative;
+}
+.notification-total-badge{
+	position:absolute;
+	top:-5px;
+	right:-6px;
+	min-width:18px;
+	height:18px;
+	padding:0 4px;
+	border-radius:999px;
+	background:#dc3545;
+	color:#fff;
+	font-size:10px !important;
+	font-weight:700;
+	line-height:18px;
+	text-align:center;
+	border:2px solid #fff;
 }
 .site-header .header-alarm:hover,
 .site-header .dropdown-lang .dropdown-toggle:hover,
@@ -599,6 +657,14 @@
 .dropdown{
     position: relative;
 }
+.notification-clickable {
+	cursor: pointer;
+}
+
+.notification-clickable:hover td {
+	background: #eef5ff;
+}
+
 .site-header .user-menu.dropdown{
     margin: 0px 0px 0px 10px!important;
 	    height: 25px;
@@ -730,8 +796,14 @@ img.icon{
     });
   });
 
+  document.querySelectorAll('.notification-clickable').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var href = this.getAttribute('data-href');
+      if (href) {
+        window.location.href = href;
+      }
+    });
+  });
+
 </script>
-
-
-
 

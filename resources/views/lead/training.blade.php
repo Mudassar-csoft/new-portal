@@ -12,7 +12,7 @@
                    name="name"
                    class="form-control form-control-sm @error('name') is-invalid @enderror"
                    placeholder="Enter Full Name"
-                   value="{{ old('name') }}">
+                   value="{{ old('name', $leadPrefill['name'] ?? '') }}">
             @error('name')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -26,7 +26,7 @@
                    name="phone"
                    class="form-control form-control-sm @error('phone') is-invalid @enderror"
                    placeholder="0300-0000000"
-                   value="{{ old('phone') }}">
+                   value="{{ old('phone', $leadPrefill['phone'] ?? '') }}">
             @error('phone')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -45,7 +45,7 @@
                             data-title="{{ $program->title ?? $program->name }}"
                             data-fee="{{ number_format($program->fee) }}"
                             data-duration="{{ $program->duration_weeks / 4 }}"
-                            @selected(old('program_id') == $program->id)>
+                            @selected(old('program_id', $leadPrefill['program_id'] ?? null) == $program->id)>
                             {{ $program->title ?? $program->name }}
                             - Fee: {{ number_format($program->fee) }}
                             ({{ $program->duration_weeks / 4 }} months)
@@ -70,7 +70,7 @@
                             name="details[teaching_method]"
                             value="online"
                             
-                            @checked(old('details.teaching_method','online')==='online')>
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'online'))==='online')>
                         <label class="form-check-label small mt-1 ml-1"
                             for="teaching-method-online">
                             Online
@@ -84,7 +84,7 @@
                             id="teaching-method-campus"
                             name="details[teaching_method]"
                             value="campus"
-                            @checked(old('details.teaching_method')==='on-campus')>
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method'))==='campus')>
                         <label class="form-check-label small "
                             for="teaching-method-campus">
                             Campus
@@ -98,7 +98,7 @@
                             id="teaching-method-hybrid"
                             name="details[teaching_method]"
                             value="hybrid"
-                            @checked(old('details.teaching_method')==='hybrid')>
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method'))==='hybrid')>
                         <label class="form-check-label small mb-0"
                             for="teaching-method-hybrid">
                             Hybrid
@@ -124,7 +124,7 @@
                    name="email"
                    class="form-control form-control-sm @error('email') is-invalid @enderror"
                    placeholder="Enter Email"
-                   value="{{ old('email') }}">
+                   value="{{ old('email', $leadPrefill['email'] ?? '') }}">
             @error('email')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -156,7 +156,7 @@
             <input type="text"
                    name="details[area]"
                    class="form-control form-control-sm @error('details.area') is-invalid @enderror"
-                   value="{{ old('details.area') }}"
+                   value="{{ old('details.area', data_get($leadPrefill, 'details.area')) }}"
                    >
             @error('details.area')
                 <div class="field-error">{{ $message }}</div>
@@ -172,7 +172,7 @@
                 <option value="">- Select -</option>
                 @foreach($marketingSources as $source)
                     <option value="{{ $source }}"
-                        @selected(old('marketing_source') == $source)>
+                        @selected(old('marketing_source', $leadPrefill['marketing_source'] ?? null) == $source)>
                         {{ $source }}
                     </option>
                 @endforeach
@@ -188,7 +188,7 @@
                 <option value="">- Select -</option>
                 @foreach($origins as $origin)
                     <option value="{{ $origin }}"
-                        @selected(old('origin') == $origin)>
+                        @selected(old('origin', $leadPrefill['origin'] ?? null) == $origin)>
                         {{ $origin }}
                     </option>
                 @endforeach
@@ -206,7 +206,7 @@
 
                 @foreach($campuses as $campus)
                      <option value="{{ $campus->id }}"
-                        @selected(old('campus_id') == $campus->id)>
+                        @selected(old('campus_id', $leadPrefill['campus_id'] ?? null) == $campus->id)>
                         {{ $campus->name }} ({{ $campus->city }})
                     </option>
                 @endforeach
@@ -221,15 +221,15 @@
             </label>
              <div class=" row d-flex align-items-center mt-1 ml-3 ">
                 <div class="form-check d-flex align-items-center col-sm-4 " >
-                    <input class="form-check-input mt-0  " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender','male')==='male')>
+                    <input class="form-check-input mt-0  " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))==='male')>
                     <label class="form-check-label small mb-0 ml-1" for="details-gender-male">Male</label>
                 </div>
                 <div class="form-check d-flex align-items-center col-sm-4">
-                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender')==='female')>
+                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender', data_get($leadPrefill, 'details.gender'))==='female')>
                     <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
                 </div>
                 <div class="form-check d-flex align-items-center col-sm-4">
-                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender')==='other')>
+                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender', data_get($leadPrefill, 'details.gender'))==='other')>
                     <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
                 </div>
             </div>
@@ -247,7 +247,7 @@
                 <input type="datetime-local"
                     name="details[next_followup_at]"
                     class="form-control form-control-sm @error('details.next_followup_at') is-invalid @enderror"
-                    value="{{ old('details.next_followup_at') }}">
+                    value="{{ old('details.next_followup_at', data_get($leadPrefill, 'details.next_followup_at')) }}">
                 @error('details.next_followup_at')
                     <div class="field-error">{{ $message }}</div>
                 @enderror
@@ -262,7 +262,7 @@
                 step="5"
                 id="probabilitySlider"
                 name="details[probability]"
-                value="{{ old('details.probability', 10) }}"
+                value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
                 class="custom-range">
 
             <div class="range-numbers pt-0 mt-1.5">
@@ -276,7 +276,7 @@
             </div>
             <div class=" semibold">
                 Selected: <span id="probabilityValue">
-                    {{ old('details.probability', 10) }}%
+                    {{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%
                 </span>
             </div>
         </div>
@@ -287,7 +287,7 @@
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3"  style = "width:98.8%;height:5rem; margin-right:10px;"placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3"  style = "width:98.8%;height:5rem; margin-right:10px;"placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror

@@ -13,9 +13,7 @@ Route::get('/leads/{lead}/transfer', [LeadController::class, 'transferForm'])->n
 Route::post('/leads/{lead}/transfer', [LeadController::class, 'transferStore'])->name('leads.transfer.store');
 Route::post('/lead-transfers/{transfer}/approve', [LeadController::class, 'approveTransfer'])->name('lead_transfers.approve');
 
-Route::get('/leads', function () {
-    return view('lead.all');
-})->name('leads.index');
+Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
 
 Route::get('/leads/transfers', [LeadController::class, 'transfers'])->name('leads.transfer');
 

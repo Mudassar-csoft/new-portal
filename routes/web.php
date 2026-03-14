@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function () {
 
     // Leads routes
     require __DIR__ . '/lead.php';
+    require __DIR__ . '/web_lead.php';
 
     // Users routes
     require __DIR__ . '/user.php';
