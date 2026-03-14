@@ -3,8 +3,7 @@
 	<nav class="side-menu">
 		<ul class="side-menu-list">
 			<li>
-				<span style="padding-left:10px">
-				<!-- <a href="{{ url('/') }}" style="padding-left:10px"> -->
+				<a href="{{ route('dashboard') }}" style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/dashboard.png" alt="Dashboard"
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Dashboard</span>
@@ -21,17 +20,20 @@
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/classroom.webp" alt="Dashboard"
 								style="height: 20px; width: 20px; margin-right: 8px;">
-							<span class="lbl">Traning Leads</span>
+							<span class="lbl">Training Leads</span>
 						</span>
 						<ul>
 							<li><a href="{{ route('leads.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span
-										class="label label-custom label-pill label-danger stage-count">35</span></a>
+										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_followups'] ?? 0)) }}</span></a>
 							</li>
 							<li><a href="{{ route('leads.transfer') }}" class="stage-link"><span class="lbl">Transferred Leads</span><span
-										class="label label-custom label-pill label-danger stage-count">1111</span></a>
+										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_transfers'] ?? 0)) }}</span></a>
 							</li>
 							<li><a href="{{ route('leads.index') }}" class="stage-link"><span class="lbl">All Leads</span><span
-										class="label label-custom label-pill label-danger stage-count">1253455</span></a>
+										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_all_leads'] ?? 0)) }}</span></a>
+							</li>
+							<li><a href="{{ route('web-leads.index') }}" class="stage-link"><span class="lbl">Web Leads</span><span
+										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_web_leads'] ?? 0)) }}</span></a>
 							</li>
 
 						</ul>

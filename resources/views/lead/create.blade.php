@@ -3,6 +3,11 @@
 @section('title', 'New Lead')
 
 @section('content')
+	@php
+		$leadPrefill = $leadPrefill ?? [];
+		$prefillCountry = old('details.country', data_get($leadPrefill, 'details.country', 'Pakistan'));
+		$prefillCity = old('city', $leadPrefill['city'] ?? 'Faisalabad');
+	@endphp
 	<div class="lead-shell">
 		<div id="lead-loader" class="lead-loader">
 			<div class="lead-spinner">
@@ -32,8 +37,18 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body lead-body">
+					@if (!empty($webLead))
+						<div class="alert alert-info web-lead-alert">
+							<strong>Website Lead:</strong> {{ $webLead->source_label }} from {{ $webLead->source_site }}
+							@if ($webLead->submitted_at)
+								<span class="text-muted ml-2">{{ $webLead->submitted_at->format('d-M-Y h:i A') }}</span>
+							@endif
+							<a href="{{ route('web-leads.show', $webLead) }}" class="btn btn-xs btn-primary-outline ml-2">View Source Lead</a>
+						</div>
+					@endif
 					<form method="POST" action="{{ route('leads.store') }}">
 						@csrf
+						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
 						<input type="hidden" name="type" id="lead-type-field" value="training">
 						@include('lead.training')
 						@include('lead.certification')
@@ -149,6 +164,11 @@
 
 		.lead-create-card .panel-heading {
 			padding: 10px 20px;
+		}
+
+		.web-lead-alert {
+			margin: 8px 12px 12px;
+			padding: 10px 12px;
 		}
 
 		.lead-type-select {
@@ -401,8 +421,8 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			CountryCityLoader.init('lead-country-select', 'lead-city-select', {
-				country: @json(old('details.country', 'Pakistan')),
-				city: @json(old('city', 'Faisalabad'))
+				country: @json($prefillCountry),
+				city: @json($prefillCity)
 			});
 		});
 	</script>

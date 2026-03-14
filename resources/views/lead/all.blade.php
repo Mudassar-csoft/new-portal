@@ -6,42 +6,12 @@
 
 @section('content')
 	@php
-		$leads = [
-			['name' => 'Ayesha Khan', 'contact' => '9876543210', 'status' => 'Website', 'course' => 'Full Stack Developer'],
-			['name' => 'Ravi Sharma', 'contact' => '9811122233', 'status' => 'Today', 'course' => 'Data Science'],
-			['name' => 'Meera Patel', 'contact' => '9898989898', 'status' => 'Registered', 'course' => 'AWS Solutions Architect'],
-			['name' => 'Adil Hussain', 'contact' => '9123456780', 'status' => 'Enrolled', 'course' => 'DevOps'],
-			['name' => 'Simran Bedi', 'contact' => '9000011122', 'status' => 'Today', 'course' => 'UI/UX Design'],
-			['name' => 'Vivek Gupta', 'contact' => '9777712345', 'status' => 'Website', 'course' => 'Python for Finance'],
-			['name' => 'Tanvi Joshi', 'contact' => '9333344455', 'status' => 'Registered', 'course' => 'Machine Learning'],
-			['name' => 'Harsh Verma', 'contact' => '9666612345', 'status' => 'Enrolled', 'course' => 'Cyber Security'],
-			['name' => 'Rehan Ali', 'contact' => '9001122334', 'status' => 'Not Interested', 'course' => 'Digital Marketing'],
+		$statusLabels = [
+			'pending' => 'Pending',
+			'registered' => 'Registered',
+			'enrolled' => 'Enrolled',
+			'not_interesting' => 'Not Interested',
 		];
-
-		$tabs = [
-			'all' => 'All Leads',
-			'Website' => 'Website',
-			'Today' => 'Today',
-			'Registered' => 'Registered',
-			'Enrolled' => 'Enrolled',
-			'Not Interested' => 'Not Interested',
-		];
-
-		$badgeColors = [
-			'all' => 'badge-secondary',
-			'Website' => 'badge-primary',
-			'Today' => 'badge-success',
-			'Registered' => 'badge-info',
-			'Enrolled' => 'badge-warning',
-			'Not Interested' => 'badge-danger',
-		];
-
-		$tabCounts = [];
-		foreach ($tabs as $key => $label) {
-			$tabCounts[$key] = $key === 'all'
-				? count($leads)
-				: count(array_filter($leads, fn($f) => $f['status'] === $key));
-		}
 	@endphp
 
 	<div class="lead-status-shell">
@@ -95,39 +65,46 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach ($leads as $idx => $row)
-									@php $actionId = 'action-' . Str::slug($row['name']) . '-' . $loop->iteration; @endphp
-									<tr data-status="{{ $row['status'] }}">
+								@forelse ($leads as $idx => $row)
+									@php
+										$actionId = 'action-' . Str::slug($row->name ?? 'lead') . '-' . $loop->iteration;
+										$statusKey = $row->status ?? 'pending';
+										$statusLabel = $statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
+									@endphp
+									<tr data-status="{{ $statusKey }}">
 										<td class="text-center">{{ $idx + 1 }}</td>
-										<td>{{ $row['name'] }}</td>
-										<td>{{ $row['contact'] }}</td>
+										<td>{{ $row->name ?? 'N/A' }}</td>
+										<td>{{ $row->phone ?? 'N/A' }}</td>
 										<td>
 											@php
-												$labelClass = match ($row['status']) {
-													'Website' => 'label-primary',
-													'Today' => 'label-success',
-													'Registered' => 'label-info',
-													'Enrolled' => 'label-warning',
-													'Not Interested' => 'label-danger',
+												$labelClass = match ($statusKey) {
+													'pending' => 'label-primary',
+													'registered' => 'label-info',
+													'enrolled' => 'label-warning',
+													'not_interesting' => 'label-danger',
 													default => 'label-default',
 												};
 											@endphp
 											<span class="label {{ $labelClass }}">
-												{{ $row['status'] }}
+												{{ $statusLabel }}
 											</span>
 										</td>
-										<td>{{ $row['course'] }}</td>
+										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
 										<td class="text-center action-cell">
-											@include('lead.partials.action', ['actionId' => $actionId])
+											@include('lead.partials.action', ['actionId' => $actionId, 'leadId' => $row->id])
 										</td>
 									</tr>
-								@endforeach
+								@empty
+									<tr>
+										<td colspan="6" class="text-center text-muted">No training leads found.</td>
+									</tr>
+								@endforelse
 							</tbody>
 						</table>
 					</div>
 
 					<div class="follow-footer">
-						<div id="lead-status-count">Showing 1 to {{ count($leads) }} of {{ count($leads) }} entries</div>
+						<div id="lead-status-count">Showing {{ $leads->isNotEmpty() ? 1 : 0 }} to {{ $leads->count() }} of {{ $leads->count() }} entries</div>
 						<ul class="pagination pagination-sm mb-0">
 							<li class="page-item disabled"><span class="page-link">Previous</span></li>
 							<li class="page-item active"><span class="page-link">1</span></li>

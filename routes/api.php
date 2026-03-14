@@ -1,11 +1,6 @@
 <?php
 
-use App\Models\Campus;
-use Illuminate\Http\Request;
+use App\Http\Controllers\WebLeadController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/campus/count/{abbr}', function (string $abbr) {
-    $abbr = strtoupper(preg_replace('/[^A-Z]/i', '', $abbr));
-    $count = Campus::where('city_abbr', $abbr)->count();
-    return response()->json(['count' => $count]);
-});
+Route::post('/web-leads', [WebLeadController::class, 'storePublic'])->name('api.web-leads.store');

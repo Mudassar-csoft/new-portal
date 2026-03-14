@@ -7,10 +7,14 @@ use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
 use App\Models\Program;
+use App\Models\WebLead;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
@@ -18,21 +22,90 @@ use Yajra\DataTables\Facades\DataTables;
 
 class LeadController extends Controller
 {
-    public function create(): View
+    public function index(): View
     {
+        $leads = $this->trainingLeadQuery()
+            ->with(['program'])
+            ->latest()
+            ->get();
+
+        $tabs = [
+            'all' => 'All Leads',
+            'pending' => 'Pending',
+            'registered' => 'Registered',
+            'enrolled' => 'Enrolled',
+            'not_interesting' => 'Not Interested',
+        ];
+
+        $badgeColors = [
+            'all' => 'badge-secondary',
+            'pending' => 'badge-primary',
+            'registered' => 'badge-info',
+            'enrolled' => 'badge-warning',
+            'not_interesting' => 'badge-danger',
+        ];
+
+        $tabCounts = [];
+        foreach ($tabs as $key => $label) {
+            $tabCounts[$key] = $key === 'all'
+                ? $leads->count()
+                : $leads->where('status', $key)->count();
+        }
+
+        return view('lead.all', compact('leads', 'tabs', 'badgeColors', 'tabCounts'));
+    }
+
+    public function create(Request $request): View|RedirectResponse
+    {
+        $webLead = null;
+        $leadPrefill = [];
+
+        if ($request->filled('web_lead')) {
+            $webLead = WebLead::query()->with('convertedLead')->findOrFail($request->integer('web_lead'));
+
+            if ($webLead->status === WebLead::STATUS_NOT_INTERESTED) {
+                return Redirect::route('web-leads.show', $webLead)
+                    ->with('error', 'This web lead is already marked as not interested.');
+            }
+
+            if ($webLead->status === WebLead::STATUS_LEAD_CREATED && $webLead->converted_to_lead_id) {
+                return Redirect::route('leads.show', $webLead->converted_to_lead_id)
+                    ->with('status', 'A CRM lead has already been created from this web lead.');
+            }
+
+            $leadPrefill = $this->buildWebLeadPrefill($webLead);
+        }
+
         $campuses = Campus::orderBy('name')->get();
         $programs = Program::orderBy('title')->get();
         $origins = ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
-        $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
+        $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'];
 
-        return view('lead.create', compact('campuses', 'programs', 'origins', 'marketingSources'));
+        return view('lead.create', compact('campuses', 'programs', 'origins', 'marketingSources', 'webLead', 'leadPrefill'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $webLead = null;
+
+        if ($request->filled('web_lead_id')) {
+            $webLead = WebLead::query()->find($request->integer('web_lead_id'));
+
+            if ($webLead?->status === WebLead::STATUS_NOT_INTERESTED) {
+                return Redirect::route('web-leads.show', $webLead)
+                    ->with('error', 'This web lead is marked as not interested and cannot be converted.');
+            }
+
+            if ($webLead?->status === WebLead::STATUS_LEAD_CREATED && $webLead->converted_to_lead_id) {
+                return Redirect::route('leads.show', $webLead->converted_to_lead_id)
+                    ->with('status', 'A CRM lead has already been created from this web lead.');
+            }
+        }
+
         $isTraining = $request->input('type') === 'training';
 
         $validated = $request->validate([
+            'web_lead_id' => ['nullable', 'exists:web_leads,id'],
             'program_id' => ['nullable', Rule::requiredIf($isTraining), 'exists:programs,id'],
             'assigned_user_id' => ['nullable', 'exists:users,id'],
             'type' => ['nullable', 'string', 'max:50'],
@@ -84,6 +157,15 @@ class LeadController extends Controller
                 'stage' => 'new',
                 'lead_status' => 'pending',
             ]);
+
+            if ($webLead) {
+                $webLead->update([
+                    'status' => WebLead::STATUS_LEAD_CREATED,
+                    'converted_to_lead_id' => $lead->id,
+                    'handled_by' => $request->user()?->id,
+                    'handled_at' => now(),
+                ]);
+            }
 
             return Redirect::route('leads.followups')->with('status', 'Lead created with initial follow-up.');
         } catch (Throwable $e) {
@@ -257,6 +339,7 @@ class LeadController extends Controller
     {
         if ($request->ajax()) {
             $query = LeadTransfer::query()
+                ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
                 ->with([
                     'lead:id,name,phone,program_id',
                     'lead.program:id,title,name',
@@ -335,25 +418,7 @@ class LeadController extends Controller
 
     public function followups(): View
     {
-        $followups = LeadFollowup::with(['lead.program', 'lead.campus'])
-            ->latest()
-            ->get()
-            ->unique('lead_id') // only keep the latest follow-up per lead
-            ->values()
-            ->map(function ($f) {
-                $stageMap = [
-                    'new' => 'New',
-                    'contacted' => 'Contacted',
-                    'need_analysis' => 'Need Analysis',
-                    'branch_visited' => 'Branch Visited',
-                    'proposal_negotiation' => 'Proposal or Negotiation',
-                    'not_interesting' => 'Not Interesting',
-                    'registered' => 'Registered',
-                    'enroll' => 'Enrolled',
-                ];
-                $f->stage_label = $stageMap[$f->stage] ?? ucfirst(str_replace('_', ' ', $f->stage));
-                return $f;
-            });
+        $followups = $this->latestTrainingFollowups();
 
         $tabs = [
             'all' => 'All',
@@ -387,5 +452,125 @@ class LeadController extends Controller
         }
 
         return view('lead.followups', compact('followups', 'tabs', 'badgeColors', 'tabCounts'));
+    }
+
+    private function trainingLeadQuery(): Builder
+    {
+        return Lead::query()->training();
+    }
+
+    private function latestTrainingFollowups(): Collection
+    {
+        $stageMap = [
+            'new' => 'New',
+            'contacted' => 'Contacted',
+            'need_analysis' => 'Need Analysis',
+            'branch_visited' => 'Branch Visited',
+            'proposal_negotiation' => 'Proposal or Negotiation',
+            'not_interesting' => 'Not Interesting',
+            'registered' => 'Registered',
+            'enroll' => 'Enrolled',
+        ];
+
+        return LeadFollowup::with(['lead.program', 'lead.campus'])
+            ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+            ->latest()
+            ->get()
+            ->unique('lead_id')
+            ->values()
+            ->map(function (LeadFollowup $followup) use ($stageMap) {
+                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+
+                return $followup;
+            });
+    }
+
+    private function buildWebLeadPrefill(WebLead $webLead): array
+    {
+        $remarks = array_filter([
+            'Imported from ' . ($webLead->source_site ?: 'career.edu.pk') . ' (' . $webLead->source_label . ').',
+            $webLead->interested_program ? 'Interested Program: ' . $webLead->interested_program : null,
+            $webLead->preferred_campus ? 'Preferred Campus: ' . $webLead->preferred_campus : null,
+            $webLead->message ? 'Website Message: ' . $webLead->message : null,
+        ]);
+
+        return [
+            'name' => $webLead->full_name,
+            'email' => $webLead->email,
+            'phone' => $webLead->phone,
+            'city' => $webLead->city,
+            'program_id' => $this->resolveProgramIdFromWebLead($webLead),
+            'campus_id' => $this->resolveCampusIdFromWebLead($webLead),
+            'origin' => 'Website',
+            'marketing_source' => 'Website',
+            'details' => [
+                'country' => $webLead->country ?: 'Pakistan',
+                'area' => $webLead->area,
+                'teaching_method' => $this->normalizeWebLeadTeachingMethod($webLead->teaching_method) ?: 'online',
+                'gender' => $webLead->gender ?: 'male',
+                'remarks' => implode(PHP_EOL, $remarks),
+            ],
+        ];
+    }
+
+    private function resolveProgramIdFromWebLead(WebLead $webLead): ?int
+    {
+        $payload = $webLead->payload ?? [];
+        $programId = $payload['program_id'] ?? null;
+
+        if (is_numeric($programId) && Program::query()->whereKey((int) $programId)->exists()) {
+            return (int) $programId;
+        }
+
+        $candidate = trim((string) ($webLead->interested_program ?? ''));
+        if ($candidate === '') {
+            return null;
+        }
+
+        $needle = Str::lower($candidate);
+
+        return Program::query()
+            ->where(function (Builder $query) use ($needle) {
+                $query->whereRaw('LOWER(code) = ?', [$needle])
+                    ->orWhereRaw('LOWER(title) = ?', [$needle])
+                    ->orWhereRaw('LOWER(name) = ?', [$needle]);
+            })
+            ->value('id');
+    }
+
+    private function resolveCampusIdFromWebLead(WebLead $webLead): ?int
+    {
+        $payload = $webLead->payload ?? [];
+        $campusId = $payload['campus_id'] ?? null;
+
+        if (is_numeric($campusId) && Campus::query()->whereKey((int) $campusId)->exists()) {
+            return (int) $campusId;
+        }
+
+        $candidate = trim((string) ($webLead->preferred_campus ?? ''));
+        if ($candidate === '') {
+            return null;
+        }
+
+        $needle = Str::lower($candidate);
+
+        return Campus::query()
+            ->where(function (Builder $query) use ($needle) {
+                $query->whereRaw('LOWER(code) = ?', [$needle])
+                    ->orWhereRaw('LOWER(name) = ?', [$needle]);
+            })
+            ->value('id');
+    }
+
+    private function normalizeWebLeadTeachingMethod(?string $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        return match (Str::lower(trim($value))) {
+            'on-campus', 'on campus', 'physical' => 'campus',
+            default => Str::lower(trim($value)),
+        };
     }
 }
