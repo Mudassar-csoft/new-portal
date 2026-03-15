@@ -611,6 +611,9 @@
   overflow-x: auto;
   white-space: nowrap;
 }
+.site-header .user-menu.dropdown .dropdown-toggle img{
+	margin: -3px -9px -5px 0 !important;
+}
 .site-header{
 	height:70px;
 	background:#ffffff;
@@ -651,7 +654,7 @@
 .site-header .dropdown-lang .dropdown-toggle:hover,
 .user-menu .nav-link:hover{
 	background:#eaf2ff;
-	transform:translateY(-2px);
+	transform:translateY(-1px);
 }
 .site-header .dropdown-menu-notif-item{
 	width: 600px !important;
@@ -789,7 +792,7 @@ border:2px solid #ddd;
 	border:1px solid black;
 }
 .dropdown-menu.p-1.show {
-    width: 235px !important;
+    width: 244px !important;
     left: -73px  !important;
 }
 .dropdown-menu{

@@ -328,10 +328,10 @@ margin: 0 !important;
    ========================================================= */
 .form-label{
 font-size:12px !important;
-/* font-weight:600; */
+font-weight:500 !important;
 text-transform:uppercase;
 margin-bottom:0.1875rem;
-color: black !important;
+color: inherit !important;
 }
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
@@ -832,15 +832,21 @@ transform: rotate(45deg);
   background-color: #00a8ff !important;
   border-color:#00a8ff !important;
 } */
-button[id^="action-"],
-button[id^="action-"]:hover,
-button[id^="action-"]:focus,
-button[id^="action-"]:active,
-button[id^="action-"].active {
+button[id^="action-"].btn,
+button[id^="action-"].btn:hover,
+button[id^="action-"].btn:focus,
+button[id^="action-"].btn:active,
+button[id^="action-"].btn.show,
+button[id^="action-"].btn[aria-expanded="true"] {
     background-color: #00a8ff !important;
     border-color: #00a8ff !important;
     color: #fff !important;
-    box-shadow: none !important;
+}
+.dropdown .btn-primary.show,
+.dropdown .btn-primary:focus,
+.dropdown .btn-primary:active {
+    background-color:#00a8ff !important;
+    border-color:#00a8ff !important;
 }
 /* =========================================================
    Dashboard Cards/Charts
@@ -1122,6 +1128,7 @@ margin-left: 0;
 					type: 'error'
 				});
 			})();
+			
 		</script>
 		<script>
 $(document).ready(function () {
@@ -1133,6 +1140,7 @@ $(document).ready(function () {
     });
 
 });
+
 </script>
 		
 	@endif
