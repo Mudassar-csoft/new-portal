@@ -17,8 +17,7 @@
             <div class="box-typical box-typical-dashboard panel panel-default follow-card">
                 <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="panel-title mb-0 form-label">Lead Transfer Grid</h3>
-                        <small class="text-muted">Track campus-to-campus lead transfers.</small>
+                        <h3 class="panel-title">Lead Management | <span class="text-muted ">Transferred Leads</span></h3>
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
@@ -198,7 +197,7 @@ table#transfer-grid{
             margin-top: 10px;
             margin-bottom: 0;
             color: #54667a;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .dataTables_wrapper .dataTables_length,
@@ -211,11 +210,7 @@ table#transfer-grid{
             text-align: inherit !important;
         }
 
-        .dataTables_wrapper .dataTables_filter label {
-            position: relative;
-            margin: 0;
-            font-size: 0;
-        }
+        
 
         .dataTables_wrapper .dataTables_filter label::after {
             content: "\f002";
@@ -225,7 +220,7 @@ table#transfer-grid{
             top: 50%;
             transform: translateY(-50%);
             color: #9aa8b6;
-            font-size: 12px;
+            font-size: 14px;
             pointer-events: none;
         }
 

@@ -114,7 +114,7 @@
     </div>
         <!-- Program -->
     <!-- ROW 2 -->
-    <div class="row mt-1" >
+    <div class="row mt-2" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark">
@@ -165,7 +165,7 @@
     </div>
     <!-- ROW 3 -->
     <div class="row mt-1">
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3 mt-lg-1">
             <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
             <select name="marketing_source"
                     class="form-select form-select-sm @error('marketing_source') is-invalid @enderror">
@@ -181,7 +181,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-         <div class="col-md-6 col-lg-3">
+         <div class="col-md-6 col-lg-3 mt-lg-1">
             <label class="form-label small fw-semibold text-dark required">Origin</label>
             <select name="origin"
                     class="form-select form-select-sm @error('origin') is-invalid @enderror">
@@ -197,7 +197,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3 mt-lg-1">
             <label class="form-label small fw-semibold text-dark required">Preferred Campus</label>
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
@@ -215,7 +215,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3 mb-lg-1">
             <label class="form-label text-dark fw-semibold small mt-0">
                 Gender <span class="text-danger">*</span>
             </label>
@@ -274,7 +274,7 @@
                 <span>80</span>
                 <span>100</span>
             </div>
-            <div class=" semibold">
+            <div class="">
                 Selected: <span id="probabilityValue">
                     {{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%
                 </span>
@@ -282,7 +282,7 @@
         </div>
     </div>
     <!-- Remarks -->
-    <div class="row">
+    <div class="row mt-lg-1">
         <div class="col-12">
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
@@ -313,13 +313,7 @@ flex-direction:column;
 gap:.5rem;
 }
 
-.form-label{
-font-size:12px !important;
-font-weight:600;
-text-transform:uppercase;
-margin-bottom:0.1875rem;
-color:#535558 !important;
-}
+
 .select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered
 
  {

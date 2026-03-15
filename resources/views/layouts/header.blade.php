@@ -25,7 +25,7 @@
 								<span class="notification-total-badge">{{ (int) ($webLeadNotificationTotal ?? 0) }}</span>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
-     style="min-width: 800px; font-size:12px;"
+     style="min-width: 900px; font-size:12px;"
 								aria-labelledby="dd-notification">
 								<div class="dropdown-menu-notif-header w-ful">
 									<div class="lead-tabs-wrapper w-100">
@@ -85,7 +85,7 @@
                     </div>
                     <div class="tab-pane active show" id="notif-quick-leads">
                       <div class="table-responsive">
-                        <table class="table table-sm mb-0 notification-table">
+                        <table class="table table-sm mb-0 notification-table ">
                           <thead>
                             <tr>
                               <th>Full Name</th>
@@ -117,6 +117,31 @@
                           </tbody>
                         </table>
                       </div>
+                      @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
+                      @if ($quickLeads->isEmpty())
+                        <div class="text-center p-3 text-muted">No quick leads notifications.</div>
+                      @else
+                        <div class="table-responsive">
+                          <table class="table table-sm mb-0 notification-table">
+                            <thead>
+                              <tr>
+                                <th>Full Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach ($quickLeads as $webLead)
+                                <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                  <td>{{ $webLead->full_name }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                  <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      @endif
                     </div>
                     <div class="tab-pane" id="notif-enrollments">
                       @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
@@ -498,18 +523,22 @@
 	                                <a class="dropdown-item" href="#"><span class="font-icon font-icon-comments"></span>Third Party Test</a>
 	                            </div>
 	                        </div> -->
-							<div class="dropdown">
-								<button class="btn btn-rounded  dropdown-toggle" id="dd-header-add" type="button"
-									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Add
-								</button>
-								<div class="dropdown-menu p-1" aria-labelledby="dd-header-add">
-									 <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Select Lead">
-									<a class="dropdown-item" href="{{ route('leads.create') }}">Create New Lead</a>
-									<a class="dropdown-item" href="#">Create New Admission</a>
-									<a class="dropdown-item" href="#">Create New Registration</a>
-								</div>
-							</div>
+							<div class="dropdown add-lead">
+    <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Add
+    </button>
+
+    <div class="dropdown-menu p-1" aria-labelledby="dd-header-add">
+
+        <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead">
+
+        <a class="dropdown-item" href="{{ route('leads.create') }}">Create New Lead</a>
+        <a class="dropdown-item" href="#">Create New Admission</a>
+        <a class="dropdown-item" href="#">Create New Registration</a>
+
+    </div>
+</div>
 
 							<div class="site-header-search-container">
 								<form class="site-header-search closed">
@@ -554,8 +583,12 @@
 }
 .font-icon-search{
 	    font-size: 18px !important;
+		line-height:1 !important;
 
 }
+.site-header-search input[type=text] {
+    padding: 0px 0 0 14px !important;
+								}
 		.fa-classic,
 .fa-regular,
 .fa-solid,
@@ -600,8 +633,8 @@
 }
 .notification-total-badge{
 	position:absolute;
-	top:-5px;
-	right:-6px;
+	top: -3px;
+    right: 0px;
 	min-width:18px;
 	height:18px;
 	padding:0 4px;
@@ -610,7 +643,7 @@
 	color:#fff;
 	font-size:10px !important;
 	font-weight:700;
-	line-height:18px;
+	    line-height: 15px;
 	text-align:center;
 	border:2px solid #fff;
 }
@@ -630,7 +663,8 @@
 .site-logo img:hover{
     transform:scale(1.05);
 }
-.notification-table td{
+.notification-table td,
+.notification-table th{
 	text-align:center !important;
 }
 .lead-tabs {
@@ -697,7 +731,7 @@
 	    height: 25px;
 }
 img.icon {
-    width: 29px !important;
+    width: 27px !important;
     height: 27px !important;
     margin-left: -10px;
 }
@@ -726,9 +760,9 @@ img.icon {
     height: 32px !important;
     width: 32px !important;
 border-radius:50%;
-box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+/* box-shadow: 0 2px 4px rgba(0,0,0,0.10); */
 text-align:center;
-border:1px solid gray ;
+border:2px solid #ddd;
 
 
 }
@@ -755,7 +789,7 @@ border:1px solid gray ;
 	border:1px solid black;
 }
 .dropdown-menu.p-1.show {
-    width: 210px !important;
+    width: 235px !important;
     left: -73px  !important;
 }
 .dropdown-menu{
@@ -831,15 +865,27 @@ img.icon{
 
     });
   });
+document.addEventListener("DOMContentLoaded", function () {
 
-  document.querySelectorAll('.notification-clickable').forEach(function(row) {
-    row.addEventListener('click', function() {
-      var href = this.getAttribute('data-href');
-      if (href) {
-        window.location.href = href;
-      }
+  function setupSearch(inputId){
+    const input = document.getElementById(inputId);
+    if(!input) return;
+
+    const items = input.parentElement.querySelectorAll(".dropdown-item");
+
+    input.addEventListener("keyup", function(){
+      const filter = this.value.toLowerCase();
+
+      items.forEach(function(item){
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(filter) ? "" : "none";
+      });
     });
-  });
+  }
 
+  setupSearch("locationSearch"); // location dropdown
+  setupSearch("leadSearch");     // lead dropdown
+
+});
 </script>
 

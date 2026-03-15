@@ -293,7 +293,8 @@
         }
 		
 		.box-typical .panel-title{
-			font-size:14px !important;
+			font-size:16px !important;
+			font-wieght:600;
 		}
         /* Hide static axes; Google Chart handles axes dynamically */
         .chart-container-x,

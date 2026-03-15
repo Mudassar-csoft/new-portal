@@ -119,13 +119,7 @@
 
 @push('styles')
 	<style>
-		* {
-    font-family: 'Proxima Nova', sans-serif;
-    font-size: 12px !important;
-    margin: 0;
-    padding: 0;
-    
-}
+		
 .bootstrap-table .table a, .fixed-table-body .table a, .table a {
     border-bottom: none;
     position: relative;
@@ -324,7 +318,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			font-size: 13px;
+			font-size: 13px !;
 			color: #54667a;
 			padding: 4px 4px 0;
 		}
