@@ -331,6 +331,16 @@
 					<li><a href="{{ route('finance.receivables') }}" class="stage-link"><span class="lbl">Receivables</span></a></li>
 				</ul>
 			</li>
+			<li class="teal with-sub">
+				<span style="padding-left:10px">
+					<img class="font-icon-dashboard" src="img/navbarIcons/courses.webp" alt="Inventory"
+						style="height: 20px; width: 20px; margin-right: 8px;">
+					<span class="lbl">Inventory Management</span></span>
+				<ul>
+					<li><a href="{{ route('inventory.create') }}" class="stage-link"><span class="lbl">Feed Campus Inventory</span></a></li>
+					<li><a href="{{ route('inventory.index') }}" class="stage-link"><span class="lbl">Campus Stock Register</span></a></li>
+				</ul>
+			</li>
 			<li class="blue with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/certificate.webp" alt="Dashboard"
