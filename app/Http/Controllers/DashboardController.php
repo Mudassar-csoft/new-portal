@@ -10,16 +10,25 @@ use App\Models\Registration;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $selectedCampusId = $this->resolveCampusId($request);
+        $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
+            ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'campus_type'])
+            : null;
+
         if (!$this->requiredTablesExist()) {
-            return view('dashboard', ['dashboard' => $this->emptyPayload()]);
+            return view('dashboard', [
+                'dashboard' => $this->emptyPayload(),
+                'selectedCampus' => $selectedCampus,
+            ]);
         }
 
         $today = now()->startOfDay();
@@ -28,10 +37,10 @@ class DashboardController extends Controller
         $yearStart = now()->startOfYear();
         $yearEnd = now()->endOfYear();
 
-        $stats = $this->buildStats($today, $monthStart, $monthEnd);
-        $dailyActivity = $this->buildDailyActivity($today);
-        $incomeRanges = $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd);
-        $charts = $this->buildCharts($monthStart, $monthEnd);
+        $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId);
+        $dailyActivity = $this->buildDailyActivity($today, $selectedCampusId);
+        $incomeRanges = $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId);
+        $charts = $this->buildCharts($monthStart, $monthEnd, $selectedCampusId);
 
         return view('dashboard', [
             'dashboard' => [
@@ -45,6 +54,7 @@ class DashboardController extends Controller
                 'incomeRanges' => $incomeRanges,
                 'charts' => $charts,
             ],
+            'selectedCampus' => $selectedCampus,
         ]);
     }
 
@@ -104,35 +114,47 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildStats(Carbon $today, Carbon $monthStart, Carbon $monthEnd): array
+    private function buildStats(Carbon $today, Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null): array
     {
         $todayCollection = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $today,
             $today->copy()->endOfDay()
         )->sum('net_payable');
 
         $weekStart = now()->startOfDay()->subDays(6);
         $weekCollection = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $weekStart,
             now()->endOfDay()
         )->sum('net_payable');
 
         $monthCollection = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $monthStart,
             $monthEnd
         )->sum('net_payable');
 
-        $currentStudents = (int) DB::table('admissions')->count();
+        $currentStudents = (int) DB::table('admissions')
+            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+            ->count();
 
         return [
-            'totalLeads' => Lead::query()->count(),
+            'totalLeads' => Lead::query()
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ->count(),
             'currentStudents' => $currentStudents,
             'currentMonthCollection' => number_format((float) $monthCollection, 0),
             'currentMonthCollectionRaw' => (float) $monthCollection,
             'currentMonthPending' => Lead::query()
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->where('status', 'pending')
                 ->whereBetween('created_at', [$monthStart, $monthEnd])
                 ->count(),
@@ -144,20 +166,23 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildDailyActivity(Carbon $today): array
+    private function buildDailyActivity(Carbon $today, ?int $campusId = null): array
     {
         $campuses = Campus::query()
+            ->when($campusId, fn ($q, $id) => $q->whereKey($id))
             ->orderBy('name')
             ->get(['id', 'code', 'name']);
 
         $leadByCampus = Lead::query()
             ->selectRaw('campus_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->whereDate('created_at', $today->toDateString())
             ->groupBy('campus_id')
             ->pluck('aggregate', 'campus_id');
 
         $followupByCampus = LeadFollowup::query()
             ->selectRaw('campus_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->whereDate('created_at', $today->toDateString())
             ->groupBy('campus_id')
             ->pluck('aggregate', 'campus_id');
@@ -165,6 +190,7 @@ class DashboardController extends Controller
         $admissionByCampus = DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->selectRaw('registrations.campus_id as campus_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->whereDate('admissions.admission_date', $today->toDateString())
             ->groupBy('registrations.campus_id')
             ->pluck('aggregate', 'campus_id');
@@ -172,6 +198,7 @@ class DashboardController extends Controller
         $collectionByCampus = $this->registrationDateRange(
             Registration::query()
                 ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->selectRaw('campus_id, SUM(COALESCE(net_payable, 0)) as aggregate')
                 ->groupBy('campus_id'),
             $today->copy()->startOfDay(),
@@ -207,10 +234,13 @@ class DashboardController extends Controller
         Carbon $monthStart,
         Carbon $monthEnd,
         Carbon $yearStart,
-        Carbon $yearEnd
+        Carbon $yearEnd,
+        ?int $campusId = null
     ): array {
         $todayRows = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $today,
             $today->copy()->endOfDay()
         )->get(['registered_at', 'created_at', 'net_payable']);
@@ -244,7 +274,9 @@ class DashboardController extends Controller
 
         $weekStart = now()->startOfDay()->subDays(6);
         $weekRows = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $weekStart,
             now()->endOfDay()
         )->get(['registered_at', 'created_at', 'net_payable']);
@@ -264,7 +296,9 @@ class DashboardController extends Controller
         }
 
         $monthRows = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $monthStart,
             $monthEnd
         )->get(['registered_at', 'created_at', 'net_payable']);
@@ -284,7 +318,9 @@ class DashboardController extends Controller
         }
 
         $yearRows = $this->registrationDateRange(
-            Registration::query()->where('status', 'registered'),
+            Registration::query()
+                ->where('status', 'registered')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
             $yearStart,
             $yearEnd
         )->get(['registered_at', 'created_at', 'net_payable']);
@@ -319,10 +355,11 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildCharts(Carbon $monthStart, Carbon $monthEnd): array
+    private function buildCharts(Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null): array
     {
         $leadCountsByProgram = Lead::query()
             ->selectRaw('program_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->whereBetween('created_at', [$monthStart, $monthEnd])
             ->groupBy('program_id')
             ->pluck('aggregate', 'program_id');
@@ -330,6 +367,7 @@ class DashboardController extends Controller
         $admissionCountsByProgram = DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->selectRaw('registrations.program_id as program_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->groupBy('registrations.program_id')
             ->pluck('aggregate', 'program_id');
@@ -337,6 +375,7 @@ class DashboardController extends Controller
         $admissionsByCampus = DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->selectRaw('registrations.campus_id as campus_id, COUNT(*) as aggregate')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->groupBy('registrations.campus_id')
             ->pluck('aggregate', 'campus_id');
@@ -451,5 +490,44 @@ class DashboardController extends Controller
                         ->whereBetween('created_at', [$start, $end]);
                 });
         });
+    }
+
+    private function resolveCampusId(Request $request): ?int
+    {
+        if (!Schema::hasTable('campuses')) {
+            session()->forget('dashboard_campus_id');
+
+            return null;
+        }
+
+        if ($request->has('campus_id')) {
+            $value = strtolower(trim((string) $request->input('campus_id')));
+
+            if ($value === '' || $value === '0' || $value === 'all') {
+                session()->forget('dashboard_campus_id');
+
+                return null;
+            }
+
+            $campusId = (int) $value;
+
+            if ($campusId > 0 && Campus::query()->whereKey($campusId)->exists()) {
+                session(['dashboard_campus_id' => $campusId]);
+
+                return $campusId;
+            }
+
+            session()->forget('dashboard_campus_id');
+
+            return null;
+        }
+
+        $sessionCampusId = (int) session('dashboard_campus_id', 0);
+
+        if ($sessionCampusId > 0 && Campus::query()->whereKey($sessionCampusId)->exists()) {
+            return $sessionCampusId;
+        }
+
+        return null;
     }
 }

@@ -325,29 +325,25 @@
 							</div>
 						</div> -->
 
-						<div class="dropdown dropdown-lang">
+						<div class="dropdown dropdown-campus">
 							<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
-								aria-expanded="false">
-								<span class="flag-icon flag-icon-us"></span>
+								aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
+								<i class="fa-solid fa-building"></i>
 							</button>
-							<div class="dropdown-menu p-1" >
-								 <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Select Campus">
-
-
-
-
-
-
-
-
-
-								<a class="dropdown-item" href="#"><span
-										class="flag-icon flag-icon-us"></span>CIFSD02-Jinnah Colony</a>
-								<a class="dropdown-item" href="#"><span
-										class="flag-icon flag-icon-us"></span>CIFSD03-Millat Chowk</a>
-								<a class="dropdown-item" href="#"><span
-										class="flag-icon flag-icon-us"></span>CIFSD06-Kohinoor</a>
-
+							<div class="dropdown-menu p-1">
+								 <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
+								<div class="campus-dropdown-caption px-2 pb-2">
+									<span class="text-muted">Current:</span>
+									<strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}</strong>
+								</div>
+								<a class="dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
+									<i class="fa-solid fa-building campus-item-icon"></i>All Campuses
+								</a>
+								@foreach(($dashboardCampuses ?? collect()) as $campus)
+									<a class="dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
+										<i class="fa-solid fa-building campus-item-icon"></i>{{ $campus->code }}-{{ $campus->name }}
+									</a>
+								@endforeach
 							</div>
 						</div>
 
@@ -559,7 +555,7 @@
 
 
 	<style>
-.site-header .dropdown.dropdown-lang .dropdown-toggle{
+.site-header .dropdown.dropdown-campus .dropdown-toggle{
 	width: 32px !important;
 	margin-left: 10px;
 }
@@ -577,9 +573,8 @@
 .site-header .header-alarm.active:after{
 	display: none !important;
 }
-.flag-icon{
-	    font-size: 20px !important;
-    top: -2px !important;
+.site-header .dropdown-campus .dropdown-toggle i{
+	font-size: 18px !important;
 }
 .font-icon-search{
 	    font-size: 18px !important;
@@ -622,7 +617,7 @@
 	padding:10px 15px 0 0 !important;
 }
 .site-header .header-alarm,
-.site-header .dropdown-lang .dropdown-toggle,
+.site-header .dropdown-campus .dropdown-toggle,
 .user-menu .nav-link{
 	width:38px;
 	height:38px;
@@ -651,7 +646,7 @@
 	border:2px solid #fff;
 }
 .site-header .header-alarm:hover,
-.site-header .dropdown-lang .dropdown-toggle:hover,
+.site-header .dropdown-campus .dropdown-toggle:hover,
 .user-menu .nav-link:hover{
 	background:#eaf2ff;
 	transform:translateY(-1px);
@@ -795,6 +790,22 @@ border:2px solid #ddd;
     width: 244px !important;
     left: -73px  !important;
 }
+.campus-dropdown-caption{
+	border-bottom: 1px solid #eef2f5;
+	font-size: 12px !important;
+	margin-bottom: 4px;
+}
+.campus-item-icon{
+	width: 16px;
+	margin-right: 8px;
+	color: #00a8ff;
+	text-align: center;
+}
+.dropdown-campus .dropdown-item.active,
+.dropdown-campus .dropdown-item:active{
+	background: #eaf4ff;
+	color: #0a6fd1;
+}
 .dropdown-menu{
     
     /* max-width: 18rem; */
@@ -891,4 +902,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
-

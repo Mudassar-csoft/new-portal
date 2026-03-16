@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Campus;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
@@ -71,12 +72,25 @@ class AppServiceProvider extends ServiceProvider
             $webLeadSourceLabels = WebLead::sourceLabels();
             $webLeadNotificationCounts = array_fill_keys(array_keys($webLeadSourceLabels), 0);
             $webLeadNotifications = [];
+            $dashboardCampuses = collect();
+            $activeDashboardCampus = null;
+            $activeDashboardCampusId = (int) session('dashboard_campus_id', 0);
 
             foreach (array_keys($webLeadSourceLabels) as $sourceType) {
                 $webLeadNotifications[$sourceType] = collect();
             }
 
             try {
+                if (Schema::hasTable('campuses')) {
+                    $dashboardCampuses = Campus::query()
+                        ->orderBy('name')
+                        ->get(['id', 'code', 'name', 'campus_type']);
+
+                    if ($activeDashboardCampusId > 0) {
+                        $activeDashboardCampus = $dashboardCampuses->firstWhere('id', $activeDashboardCampusId);
+                    }
+                }
+
                 if (Schema::hasTable('web_leads')) {
                     $webLeadNotificationCounts = WebLead::query()
                         ->pending()
@@ -106,6 +120,8 @@ class AppServiceProvider extends ServiceProvider
                 'webLeadNotificationCounts' => $webLeadNotificationCounts,
                 'webLeadNotifications' => $webLeadNotifications,
                 'webLeadNotificationTotal' => array_sum($webLeadNotificationCounts),
+                'dashboardCampuses' => $dashboardCampuses,
+                'activeDashboardCampus' => $activeDashboardCampus,
             ]);
         });
     }

@@ -7,6 +7,9 @@
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
+		$selectedCampusLabel = isset($selectedCampus) && $selectedCampus
+			? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name)
+			: 'All Campuses';
 		$dailyRows = $dailyActivity['rows'] ?? [];
 		$dailyTotals = $dailyActivity['totals'] ?? [
 			'leads' => 0,
@@ -29,6 +32,15 @@
 	<div class="row ">
 
 		<div id="dashboard-content" class="dashboard-content">
+		<div class="dashboard-campus-banner">
+			<div>
+				<span class="dashboard-campus-label">Dashboard Scope</span>
+				<strong>{{ $selectedCampusLabel }}</strong>
+			</div>
+			@if(isset($selectedCampus) && $selectedCampus)
+				<a href="{{ route('dashboard', ['campus_id' => 0]) }}" class="btn btn-inline btn-primary-outline">Show All Campuses</a>
+			@endif
+		</div>
 		<div class="row" >
 
 		<div class="col-xl-6 pl-0 ">
@@ -200,7 +212,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard">Daily Activity <span class="color-blue-grey">|</span> Each Campus</h3>
+								<h3 class="form-label-dashboard">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? $selectedCampusLabel : 'Each Campus' }}</h3>
 							</div>
 						</div>
 					</div>
@@ -255,7 +267,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard">Campus Admissions Comparison</h3>
+								<h3 class="form-label-dashboard">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</h3>
 							</div>
 						</div>
 					</div>
@@ -285,6 +297,25 @@
 			flex-wrap: wrap;
 			gap: 8px 12px;
 			margin: 8px 0 20px;
+		}
+		.dashboard-campus-banner {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 10px 14px;
+			margin-bottom: 12px;
+			border: 1px solid #d8e2e7;
+			border-radius: 8px;
+			background: linear-gradient(135deg, #f5fbff 0%, #eaf4ff 100%);
+		}
+		.dashboard-campus-label {
+			display: block;
+			font-size: 11px !important;
+			font-weight: 700;
+			text-transform: uppercase;
+			color: #6c7a89;
+			margin-bottom: 2px;
 		}
 
 		.chart-range .radio {
