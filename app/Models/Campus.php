@@ -33,4 +33,9 @@ class Campus extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function inventoryItems(): HasMany
+    {
+        return $this->hasMany(InventoryItem::class);
+    }
 }

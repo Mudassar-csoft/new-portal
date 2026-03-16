@@ -42,6 +42,9 @@ Route::middleware('auth')->group(function () {
     // Campus routes
     require __DIR__ . '/campus.php';
 
+    // Inventory routes
+    require __DIR__ . '/inventory.php';
+
     // Finance routes
     require __DIR__ . '/finance.php';
 
