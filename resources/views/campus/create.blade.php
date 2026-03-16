@@ -6,7 +6,7 @@
     <div class="campus-shell">
         <div class="campus-card box-typical box-typical-dashboard panel panel-default">
             <div class="card-body">
-                <h3 class="campus-title form-label" style="font-size:12px !important; color:black;">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
+                <h3 class="campus-title ">Create New Campus <small class="text-muted">(All fields are required)</small></h3>
                 <form method="POST" action="{{ route('campus.store') }}">
                     @csrf
                     <div class="form-row mt-2" >
@@ -53,12 +53,12 @@
                     <div class="form-row mt-2" >
                         <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required d-block">Campus Type</label>
-                            <div class="campus-type-options d-flex" style= "gap:8px; padding-left:15px !important;" >
-                                <div class="d-flex align-items-center justify-content-center mt-2">
-                                <input class="form-check-input mt-0 me-2 mr-1 ml-1" type="radio" name="campus_type" value="company" checked>
+                            <div class="campus-type-options d-flex" style= "gap:8px; padding-left:20px !important;" >
+                                <div class="d-flex align-items-center justify-content-center">
+                                <input class="form-check-input mt-0 me-2" type="radio" name="campus_type" value="company" checked>
                                 <label class="mt-1"> Company Owned</label>
                                 </div>
-                                <div class=" d-flex align-items-center mt-2">
+                                <div class=" d-flex align-items-center ">
                                 <input class="form-check-input mt-0 me-2 mr-1 ml-1" type="radio" name="campus_type" value="franchise">
                                 <label class=" mt-1"> Franchise</label>
                                 </div>
@@ -82,17 +82,17 @@
                         </div>
                     </div>
 
-                    <div class="form-group mt-2 ml-4" >
+                    <div class="form-group  ml-3" >
                         <label class="form-label required">Campus Address</label>
                         <textarea class="form-control"style= "width:99.5%;" name="address" rows="2" placeholder="Enter campus address here..." required></textarea>
                     </div>
 
-                    <div class="form-row mt-2 ">
+                    <div class="form-row  ">
                       
                     </div>
 
 
-                    <div class="row mt-2 ml-3" >
+                    <div class="row  ml-2" >
     <div class="col-12 ">
         <label class="form-label small fw-semibold text-dark required">
             Remarks
@@ -100,7 +100,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    style="height:7.5rem !important;padding:10px; width:99.5%;"
+    style="height:5rem !important;padding:10px; width:99.5%;"
     placeholder="Enter Your Remarks Here" style= "padding:10px">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
@@ -120,12 +120,7 @@
 
 @push('styles')
     <style>
-        *{
-             font-family: 'Proxima Nova', sans-serif !important;
-    font-size: 12px !important; 
-    margin: 0;
-    padding: 0;
-        }
+       
         #campus-code {
             font-size:12px !important;
         }
@@ -140,9 +135,9 @@
         }
 
         .campus-title {
-            margin-bottom: 16px;
-            font-weight: 700;
-            color: #2f3b52;
+            margin-bottom: 22px !important;
+            font-weight: 500;
+           
         }
 
         .required::after {

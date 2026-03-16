@@ -18,7 +18,7 @@
         @endif
 
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-6 pr-0">
                 <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
                     <header class="box-typical-header panel-heading">
                         <h3 class="panel-title form-label">Create Work Shift</h3>
@@ -26,8 +26,8 @@
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.shifts.store') }}">
                             @csrf
-                            <div class="form-row" style="gap:0px;">
-                                <div class="form-group custom-col-3">
+                            <div class="form-row mt-1" >
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Campus</label>
                                     <select name="campus_id" class="form-control">
                                         <option value="">All Campuses</option>
@@ -36,36 +36,36 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Name</label>
                                     <input type="text" name="name" class="form-control" placeholder="Morning Shift" required>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Start</label>
                                     <input type="time" name="start_time" class="form-control" required>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >End</label>
                                     <input type="time" name="end_time" class="form-control" required>
                                 </div>
                             </div>
 
-                            <div class="form-row" style="gap:0px;">
-                                <div class="form-group custom-col-3">
+                            <div class="form-row" >
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Grace In (min)</label>
                                     <input type="number" min="0" name="grace_check_in_minutes" class="form-control" value="10">
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Grace Out (min)</label>
                                     <input type="number" min="0" name="grace_check_out_minutes" class="form-control" value="10">
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Break (min)</label>
                                     <input type="number" min="0" name="break_minutes" class="form-control" value="60">
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Flags</label>
-                                    <div class="d-flex gap-3 mt-3">
+                                    <div class="d-flex gap-3  mt-3">
                                     <div class="d-flex align-items-center justify-center">    
                                     <input type="checkbox" name="is_night_shift" value="1">
                                         <label class="ml-1"> Night</label>
@@ -115,7 +115,7 @@
                         <form method="POST" action="{{ route('hrm.shifts.assignments.store') }}" class="mb-3">
                             @csrf
                             <div class="form-row mt-1" style="gap:0px;">
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -124,7 +124,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Shift</label>
                                     <select name="shift_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -133,11 +133,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3">
                                     <label class="form-label required" >Effective From</label>
                                     <input type="date" class="form-control" name="effective_from" value="{{ now()->toDateString() }}" required>
                                 </div>
-                                <div class="form-group custom-col-3 ">
+                                <div class="form-group col-md-3 ">
                                     <label class="form-label required" >Effective To</label>
                                     <input type="date" class="form-control" name="effective_to">
                                 </div>
