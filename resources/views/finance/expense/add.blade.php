@@ -122,7 +122,7 @@
                         </div>
                     </div>
 
-                    <div class="row ">
+                    <div class="row " style="padding-left:15px;">
     <div class="col-12">
         <label class="form-label small fw-semibold text-dark required">
             Remarks

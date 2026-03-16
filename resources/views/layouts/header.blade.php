@@ -25,7 +25,7 @@
 								<span class="notification-total-badge">{{ (int) ($webLeadNotificationTotal ?? 0) }}</span>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0"
-     style="min-width: 900px; font-size:12px;"
+     style="min-width: 935px; font-size:12px;"
 								aria-labelledby="dd-notification">
 								<div class="dropdown-menu-notif-header w-ful">
 									<div class="lead-tabs-wrapper w-100">
