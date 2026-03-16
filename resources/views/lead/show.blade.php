@@ -117,7 +117,7 @@
 
     <!-- Probability -->
     <div class="form-group custom-col-3  followup-toggle followup-hide-on-close" id="probability-wrap">
-        <label class="form-label small fw-semibold text-dark required">Probability</label>
+        <label class="  required">Probability</label>
 
         <input type="range"
                min="0"
@@ -138,7 +138,7 @@
             <span>100</span>
         </div>
 
-        <div class="small semibold">
+        <div class="">
             Selected: <span id="probabilityValue">
                 {{ old('details.probability', 10) }}%
             </span>
@@ -365,14 +365,14 @@
 			min-height: 32px;
 			background: #fff
 		}
-		.form-label{
+		/* .form-label{
 			font-size: 11px;
 			font-weight: 600 ;
 			color: #343434;
 			text-transform: uppercase;
 			margin-bottom: 3px;
 			
-		}
+		} */
 
 		body, button, html, input, select, textarea {
 			color: #343434;

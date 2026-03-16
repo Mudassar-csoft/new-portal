@@ -165,7 +165,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title">Current Month Leads</h3>
+								<h3 class="form-label-dashboard">Current Month Leads</h3>
 							</div>
 						</div>
 					</div>
@@ -181,7 +181,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title p-2 ">Current Month Admissions</h3>
+								<h3 class="form-label-dashboard p-2 ">Current Month Admissions</h3>
 							</div>
 						</div>
 					</div>
@@ -200,7 +200,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title">Daily Activity <span class="color-blue-grey">|</span> Each Campus</h3>
+								<h3 class="form-label-dashboard">Daily Activity <span class="color-blue-grey">|</span> Each Campus</h3>
 							</div>
 						</div>
 					</div>
@@ -255,7 +255,7 @@
 					<div class="tbl">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title">
-								<h3 class="panel-title">Campus Admissions Comparison</h3>
+								<h3 class="form-label-dashboard">Campus Admissions Comparison</h3>
 							</div>
 						</div>
 					</div>
@@ -277,6 +277,9 @@
 	<link rel="stylesheet" href="css/separate/pages/widgets.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
 	<style>
+		*{
+			font-size: 15px !important;	
+		}
 		.chart-range {
 			display: flex;
 			flex-wrap: wrap;
@@ -292,8 +295,9 @@
             margin-top: 2px;
         }
 		
-		.box-typical .panel-title{
-			font-size:14px !important;
+		.box-typical .form-label-dashboard{
+			font-size:15px !important;
+			font-weight:500 !important;
 		}
         /* Hide static axes; Google Chart handles axes dynamically */
         .chart-container-x,
