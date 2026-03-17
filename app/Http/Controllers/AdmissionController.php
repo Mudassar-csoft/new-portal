@@ -228,6 +228,7 @@ class AdmissionController extends Controller
             $receiptNumber = $validated['receipt_number'] ?? $this->generateAdmissionReceiptNumber($campus->code);
 
             $admission = Admission::create([
+                'registration_id' => $registration->id,
                 'campus_id' => $validated['campus_id'],
                 'program_id' => $validated['program_id'],
                 'batch_id' => $validated['batch_id'],
@@ -253,6 +254,8 @@ class AdmissionController extends Controller
                 'discount_percent' => $discountPercent,
                 'discounted_fee' => $discountedFee,
                 'fee_type' => $validated['fee_type'],
+                'student_status' => 'enrolled',
+                'status_updated_at' => now(),
                 'remarks' => $validated['remarks'],
                 'receipt_number' => $receiptNumber,
             ]);

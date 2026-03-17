@@ -8,7 +8,7 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Dashboard</span>
 				</a>
-			</li>                                   
+			</li>
 			<li class="brown with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/enquiry.JPG" alt="Leads"
@@ -179,7 +179,7 @@
 					<span class="lbl">Registration Management</span></span>
 				<ul>
 					<li><a href="{{ route('registration.status') }}" class="stage-link"><span class="lbl">All Registration</span><span
-								class="label label-custom label-pill label-danger stage-count">3,105</span></a></li>
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_registrations'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="gold orange with-sub">
@@ -189,7 +189,7 @@
 					<span class="lbl">Admission Management</span></span>
 				<ul>
 					<li><a href="{{ route('admission.status') }}" class="stage-link"><span class="lbl">All Admissions</span><span
-								class="label label-custom label-pill label-danger stage-count">1,638</span></a></li>
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_admissions'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="magenta with-sub">
@@ -198,26 +198,26 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Student Management</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Attendance</span><span
-								class="label label-custom label-pill label-danger stage-count">85</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Active</span><span
-								class="label label-custom label-pill label-danger stage-count">620</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Frozen</span><span
-								class="label label-custom label-pill label-danger stage-count">24</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Concluded</span><span
-								class="label label-custom label-pill label-danger stage-count">140</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Incomplete</span><span
-								class="label label-custom label-pill label-danger stage-count">30</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Suspended</span><span
-								class="label label-custom label-pill label-danger stage-count">12</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Admission Cancelled</span><span
-								class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Dropped</span><span
-								class="label label-custom label-pill label-danger stage-count">18</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Students</span><span
-								class="label label-custom label-pill label-danger stage-count">938</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Alumni</span><span
-								class="label label-custom label-pill label-danger stage-count">410</span></a></li>
+					<li><a href="{{ route('student.attendance.index') }}" class="stage-link"><span class="lbl">Attendance</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_attendance'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'active']) }}" class="stage-link"><span class="lbl">Active</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_active'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'frozen']) }}" class="stage-link"><span class="lbl">Frozen</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_frozen'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'concluded']) }}" class="stage-link"><span class="lbl">Concluded</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_concluded'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'incomplete']) }}" class="stage-link"><span class="lbl">Incomplete</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_incomplete'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'suspended']) }}" class="stage-link"><span class="lbl">Suspended</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_suspended'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'admission_cancelled']) }}" class="stage-link"><span class="lbl">Admission Cancelled</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_admission_cancelled'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'dropped']) }}" class="stage-link"><span class="lbl">Dropped</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_dropped'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'all_students']) }}" class="stage-link"><span class="lbl">All Students</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_all'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('student.records.index', ['scope' => 'alumni']) }}" class="stage-link"><span class="lbl">Alumni</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_alumni'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="blue with-sub">
@@ -226,22 +226,22 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Batches &amp; Time Table</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Create Batch</span><span
-								class="label label-custom label-pill label-danger stage-count">12</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Upcoming</span><span
-								class="label label-custom label-pill label-danger stage-count">24</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Recently Started</span><span
-								class="label label-custom label-pill label-danger stage-count">8</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">In Progress</span><span
-								class="label label-custom label-pill label-danger stage-count">34</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Recently Ended</span><span
-								class="label label-custom label-pill label-danger stage-count">6</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Completed</span><span
-								class="label label-custom label-pill label-danger stage-count">52</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Batches</span><span
-								class="label label-custom label-pill label-danger stage-count">136</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Manage Time Table</span><span
-								class="label label-custom label-pill label-danger stage-count">18</span></a></li>
+					<li><a href="{{ route('batch.create') }}" class="stage-link"><span class="lbl">Create Batch</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_create'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index', ['scope' => 'upcoming']) }}" class="stage-link"><span class="lbl">Upcoming</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_upcoming'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index', ['scope' => 'recently_started']) }}" class="stage-link"><span class="lbl">Recently Started</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_recently_started'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index', ['scope' => 'in_progress']) }}" class="stage-link"><span class="lbl">In Progress</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_in_progress'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index', ['scope' => 'recently_ended']) }}" class="stage-link"><span class="lbl">Recently Ended</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_recently_ended'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index', ['scope' => 'completed']) }}" class="stage-link"><span class="lbl">Completed</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_completed'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.index') }}" class="stage-link"><span class="lbl">All Batches</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_all'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('batch.timetable.index') }}" class="stage-link"><span class="lbl">Manage Time Table</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_timetable'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="green with-sub">
@@ -250,14 +250,14 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Programmes</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Create Program</span><span
-								class="label label-custom label-pill label-danger stage-count">14</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Ongoing</span><span
-								class="label label-custom label-pill label-danger stage-count">58</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Suspended</span><span
-								class="label label-custom label-pill label-danger stage-count">7</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Programmes</span><span
-								class="label label-custom label-pill label-danger stage-count">96</span></a></li>
+					<li><a href="{{ route('program.create') }}" class="stage-link"><span class="lbl">Create Program</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_create'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('program.index', ['scope' => 'ongoing']) }}" class="stage-link"><span class="lbl">Ongoing</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_ongoing'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('program.index', ['scope' => 'suspended']) }}" class="stage-link"><span class="lbl">Suspended</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_suspended'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('program.index') }}" class="stage-link"><span class="lbl">All Programmes</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_all'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="orange-red with-sub">
@@ -266,16 +266,16 @@
 						style="height: 20px; width: 20px; margin-right: 8px;">
 					<span class="lbl">Campuses / Franchise</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span
-								class="label label-custom label-pill label-danger stage-count">5</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Campuses</span><span
-								class="label label-custom label-pill label-danger stage-count">42</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Franchise</span><span
-								class="label label-custom label-pill label-danger stage-count">18</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Suspended Campuses</span><span
-								class="label label-custom label-pill label-danger stage-count">3</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Suspended Franchise</span><span
-								class="label label-custom label-pill label-danger stage-count">2</span></a></li>
+					<li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_create'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'campuses']) }}" class="stage-link"><span class="lbl">All Campuses</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_company'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'franchise']) }}" class="stage-link"><span class="lbl">All Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_franchise'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'suspended_campuses']) }}" class="stage-link"><span class="lbl">Suspended Campuses</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_company'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'suspended_franchise']) }}" class="stage-link"><span class="lbl">Suspended Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_franchise'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="grey with-sub">
@@ -450,7 +450,7 @@
 			margin-right:5px;
 		}
 
-		
+
 
 .side-menu-list li.with-sub>span{
 	padding-right:8px;

@@ -1,27 +1,28 @@
 @extends('layouts.theme')
 
-@section('title', 'Create Batch')
+@section('title', 'Edit Batch')
 
 @section('content')
     <div class="batch-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default batch-form-card">
             <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0">Create Batch</h3>
-                    <small class="text-muted">Create a new batch and keep the code, timing, and instructor aligned with your layout.</small>
+                    <h3 class="panel-title mb-0">Edit Batch</h3>
+                    <small class="text-muted">Update batch timing, instructor, status, and session details.</small>
                 </div>
                 <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
-                    <a href="{{ route('batch.timetable.index') }}" class="btn btn-primary">Manage Time Table</a>
+                    <a href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}" class="btn btn-primary">Batch Time Table</a>
                 </div>
             </header>
             <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('batch.store') }}">
+                <form method="POST" action="{{ route('batch.update', $batch) }}">
                     @csrf
+                    @method('PUT')
                     @include('batch.partials.form')
 
                     <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary">Create Batch</button>
+                        <button type="submit" class="btn btn-primary">Update Batch</button>
                     </div>
                 </form>
             </div>
@@ -86,13 +87,11 @@
                 var dateValue = startDate.value;
 
                 if (!programCode || !dateValue) {
-                    previewField.value = '';
                     return;
                 }
 
                 var date = new Date(dateValue);
                 if (Number.isNaN(date.getTime())) {
-                    previewField.value = '';
                     return;
                 }
 
