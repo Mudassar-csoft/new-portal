@@ -302,13 +302,30 @@
     </style>
 </head>
 <body>
+    @php
+        $shortcutLabels = [
+            'attendance' => 'Attendance',
+            'active' => 'Active Students',
+            'frozen' => 'Frozen Students',
+            'concluded' => 'Concluded Students',
+            'incomplete' => 'Incomplete Students',
+            'suspended' => 'Suspended Students',
+            'admission_cancelled' => 'Admission Cancelled',
+            'dropped' => 'Dropped Students',
+            'all_students' => 'All Students',
+            'alumni' => 'Alumni',
+        ];
+        $selectedShortcut = $shortcutLabels[request('section')] ?? null;
+    @endphp
     <div class="portal-wrap">
         <div class="portal-header">
             <div class="portal-brand">
                 <img src="{{ asset('theme/img/career-institute-logo.webp') }}" alt="Career Institute">
                 <div>
                     <div class="portal-title">Career Institute</div>
-                    <div class="portal-subtitle">Student Portal</div>
+                    <div class="portal-subtitle">
+                        Student Portal{{ $selectedShortcut ? ' | ' . $selectedShortcut : '' }}
+                    </div>
                 </div>
             </div>
             <div class="portal-header-actions">

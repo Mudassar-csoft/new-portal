@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Program extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'description',
         'name',
         'title',
         'code',
@@ -29,6 +29,11 @@ class Program extends Model
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class);
+    }
+
+    public function admissions(): HasMany
+    {
+        return $this->hasMany(Admission::class);
     }
 
     public function campusDiscounts(): HasMany

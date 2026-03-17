@@ -38,4 +38,19 @@ class Campus extends Model
     {
         return $this->hasMany(InventoryItem::class);
     }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(Batch::class);
+    }
+
+    public function admissions(): HasMany
+    {
+        return $this->hasMany(Admission::class);
+    }
+
+    public function programDiscounts(): HasMany
+    {
+        return $this->hasMany(ProgramCampusDiscount::class);
+    }
 }

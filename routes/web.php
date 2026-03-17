@@ -12,7 +12,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::view('/student', 'student.portal')->name('student.portal');
+    // Student routes
+    require __DIR__ . '/student.php';
 
     // Leads routes
     require __DIR__ . '/lead.php';

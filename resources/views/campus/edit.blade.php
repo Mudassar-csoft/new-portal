@@ -1,24 +1,28 @@
 @extends('layouts.theme')
 
-@section('title', 'Create Campus / Franchise')
+@section('title', 'Edit Campus / Franchise')
 
 @section('content')
     <div class="campus-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default campus-form-card">
             <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0">Create Campus / Franchise</h3>
-                    <small class="text-muted">Add a new company-owned campus or franchise branch with code, contact, and royalty setup.</small>
+                    <h3 class="panel-title mb-0">Edit Campus / Franchise</h3>
+                    <small class="text-muted">Update campus location, contact details, status, and operational setup.</small>
                 </div>
-                <a href="{{ route('campus.index') }}" class="btn btn-default">Back to Campuses</a>
+                <div class="d-flex" style="gap:10px;">
+                    <a href="{{ route('campus.index') }}" class="btn btn-default">Back to Campuses</a>
+                    <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-primary">View Inventory</a>
+                </div>
             </header>
             <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('campus.store') }}">
+                <form method="POST" action="{{ route('campus.update', $campus) }}">
                     @csrf
+                    @method('PUT')
                     @include('campus.partials.form')
 
                     <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary">Create Campus</button>
+                        <button type="submit" class="btn btn-primary">Update Campus</button>
                     </div>
                 </form>
             </div>

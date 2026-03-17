@@ -1,24 +1,28 @@
 @extends('layouts.theme')
 
-@section('title', 'Create Programme')
+@section('title', 'Edit Programme')
 
 @section('content')
     <div class="program-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default program-form-card">
             <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0">Create Programme</h3>
-                    <small class="text-muted">Set up programme pricing, discounts, outline file, and admission visibility.</small>
+                    <h3 class="panel-title mb-0">Edit Programme</h3>
+                    <small class="text-muted">Update programme pricing, discounts, outline file, and status settings.</small>
                 </div>
-                <a href="{{ route('program.index') }}" class="btn btn-default">Back to Programmes</a>
+                <div class="d-flex" style="gap:10px;">
+                    <a href="{{ route('program.index') }}" class="btn btn-default">Back to Programmes</a>
+                    <a href="{{ route('batch.index', ['program_id' => $program->id]) }}" class="btn btn-primary">Related Batches</a>
+                </div>
             </header>
             <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('program.store') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('program.update', $program) }}" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     @include('program.partials.form')
 
                     <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary">Create Programme</button>
+                        <button type="submit" class="btn btn-primary">Update Programme</button>
                     </div>
                 </form>
             </div>
