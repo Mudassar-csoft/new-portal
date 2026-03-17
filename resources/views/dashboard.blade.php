@@ -37,9 +37,9 @@
 				<span class="dashboard-campus-label">Dashboard Scope</span>
 				<strong>{{ $selectedCampusLabel }}</strong>
 			</div>
-			@if(isset($selectedCampus) && $selectedCampus)
+			<!-- @if(isset($selectedCampus) && $selectedCampus)
 				<a href="{{ route('dashboard', ['campus_id' => 0]) }}" class="btn btn-inline btn-primary-outline">Show All Campuses</a>
-			@endif
+			@endif -->
 		</div>
 		<div class="row" >
 
