@@ -131,17 +131,16 @@
             border-radius:none !important;
         } 
 
-        .sign-box {
-    
-    height: 100vh;
+       .sign-box {
+    height: 85vh;
     background: rgba(255, 255, 255, 0.78);
     border: 0px;
     box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
     border-radius: 16px;
-    width: 100%;
+    width: 92%;
     margin: 0 !important;
     max-width: 100%;
-    padding: 24px 24px 30px;
+    /* padding: 24px 24px 30px; */
     backdrop-filter: blur(10px);
     pointer-events: auto;
 }
@@ -151,7 +150,7 @@
 
         .sign-box .sign-avatar {
             margin-bottom: 8px;
-            margin-top: 15%;
+            margin-top: 10%;
         }
 
         .sign-box .form-control {
@@ -283,7 +282,7 @@
 </head>
 <body>
     <div class="login-shell row">
-        <div class="login-media col-md-8">
+        <!-- <div class="login-media col-md-8">
             <div class="login-slider" id="loginSlider">
                 <div class="slide is-active">
                     <img src="{{ asset('media/3.jpg') }}" alt="Career Institute">
@@ -308,8 +307,8 @@
             </div>
             <div class="media-glow" aria-hidden="true"></div>
            
-        </div>
-         <div class="login-form-panel col-md-4 ">
+        </div> -->
+         <div class="login-form-panel mx-auto ">
                 <form class="sign-box" method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <div class="sign-avatar">
@@ -343,7 +342,7 @@
                             {{ $errors->first() }}
                         </div>
                     @endif
-                    <div class="trust-row mt-2">
+                    <div class="trust-row mt-4">
                         <span>Flexible timings</span>
                         <span>Industry mentors</span>
                         <span>Career support</span>

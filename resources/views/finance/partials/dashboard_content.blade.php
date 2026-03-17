@@ -17,14 +17,14 @@
     $selectedCampus = $campuses->firstWhere('id', $filters['campus_id'] ?? null);
 @endphp
 
-<div class="finance-dashboard">
+<div class="finance-dashboard mt-2">
     @if(session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
 
     <div class="finance-header">
         <div>
-            <h1 class="finance-title form-label">{{ $pageTitle ?? 'Finance Dashboard' }}</h1>
+            <h1 class="finance-title panel-title">{{ $pageTitle ?? 'Finance Dashboard' }}</h1>
             <p class="finance-subtitle">Live finance summary by campus/franchise.</p>
         </div>
         <div class="finance-filter-summary-wrap">
@@ -78,8 +78,8 @@
                 class="finance-kpi finance-kpi-link kpi-income"
                 href="{{ route('finance.dashboard.income', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
             >
-                <div class="kpi-label">Total Income</div>
-                <div class="kpi-value">Rs. {{ number_format((float) ($stats['total_income'] ?? 0), 0) }}</div>
+            <div class="kpi-value">Rs. {{ number_format((float) ($stats['total_income'] ?? 0), 0) }}</div>
+            <div class="kpi-label">Total Income</div>
             </a>
         </div>
         <div class="col-xl-3 col-md-6">
@@ -87,8 +87,8 @@
                 class="finance-kpi finance-kpi-link kpi-expense"
                 href="{{ route('finance.dashboard.expense', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
             >
-                <div class="kpi-label">Total Expense</div>
-                <div class="kpi-value">Rs. {{ number_format((float) ($stats['total_expense'] ?? 0), 0) }}</div>
+            <div class="kpi-value">Rs. {{ number_format((float) ($stats['total_expense'] ?? 0), 0) }}</div>
+            <div class="kpi-label">Total Expense</div>
             </a>
         </div>
         <div class="col-xl-2 col-md-6">
@@ -96,8 +96,8 @@
                 class="finance-kpi finance-kpi-link kpi-payable"
                 href="{{ route('finance.dashboard.payables', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
             >
-                <div class="kpi-label">Payables</div>
-                <div class="kpi-value">Rs. {{ number_format((float) ($stats['payables'] ?? 0), 0) }}</div>
+            <div class="kpi-value">Rs. {{ number_format((float) ($stats['payables'] ?? 0), 0) }}</div>
+            <div class="kpi-label">Payables</div>
             </a>
         </div>
         <div class="col-xl-2 col-md-6">
@@ -105,8 +105,8 @@
                 class="finance-kpi finance-kpi-link kpi-receivable"
                 href="{{ route('finance.dashboard.receivables', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
             >
-                <div class="kpi-label">Receivables</div>
-                <div class="kpi-value">Rs. {{ number_format((float) ($stats['receivables'] ?? 0), 0) }}</div>
+            <div class="kpi-value">Rs. {{ number_format((float) ($stats['receivables'] ?? 0), 0) }}</div>
+            <div class="kpi-label">Receivables</div>
             </a>
         </div>
         <div class="col-xl-2 col-md-6">
@@ -114,8 +114,8 @@
                 class="finance-kpi finance-kpi-link kpi-cash"
                 href="{{ route('finance.dashboard.netcashflow', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
             >
+            <div class="kpi-value">Rs. {{ number_format((float) ($stats['net_cashflow'] ?? 0), 0) }}</div>
                 <div class="kpi-label">Net Cashflow</div>
-                <div class="kpi-value">Rs. {{ number_format((float) ($stats['net_cashflow'] ?? 0), 0) }}</div>
             </a>
         </div>
     </div>
@@ -172,7 +172,7 @@
     <style>
        
 
-        .finance-dashboard { padding: 6px 0 16px; }
+        .finance-dashboard { padding:19px 20px;background-color: white; }
         .finance-header {
             display: flex;
             justify-content: space-between;
@@ -181,7 +181,23 @@
             flex-wrap: wrap;
             margin-bottom: 16px;
         }
-        .finance-title { margin: 0 0 4px; font-weight: 700; color: #2f3b52; }
+        .kpi-label {
+                font-size: 12px;
+    text-transform: uppercase;
+    opacity: .88;
+    text-align: center;
+    margin-top: 1rem;
+        }
+        .kpi-value {
+           margin-top: 6px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700;
+        }
+        .finance-title { 
+            margin: 0 0 4px;  
+               font-size: 22px !important;
+    font-weight: 500 !important; }
         .finance-subtitle { margin: 0; color: #6c7a89; }
         .finance-filter-summary-wrap {
             display: flex;
@@ -264,6 +280,7 @@
             padding: 12px 14px;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+             height: 25vh;
         }
         .finance-kpi-link {
             display: block;
@@ -279,12 +296,12 @@
             filter: brightness(1.02);
         }
         .finance-kpi .kpi-label { font-size: 12px; text-transform: uppercase; opacity: 0.88; }
-        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 4px; }
-        .kpi-income { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .kpi-expense { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .kpi-payable { background: linear-gradient(135deg, #f97316, #ea580c); }
-        .kpi-receivable { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .kpi-cash { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 20px; }
+        .kpi-income { background: #f35f62; }
+        .kpi-expense { background: #fdc518; }
+        .kpi-payable { background:  #975ce7; }
+        .kpi-receivable { background: #a2cf37; }
+        .kpi-cash { background: #00a8ff; }
         .finance-card .panel-heading { padding: 8px 14px; }
         .finance-card .panel-title { font-weight: 700; }
         .finance-card .panel-body { padding: 12px 14px 16px; }

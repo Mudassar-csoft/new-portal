@@ -10,7 +10,7 @@
             ['label' => 'Active Employees', 'value' => (int) ($stats['employees_active'] ?? 0), 'tone' => 'active'],
             ['label' => 'Inactive Employees', 'value' => (int) ($stats['employees_inactive'] ?? 0), 'tone' => 'inactive'],
             ['label' => 'Today Attendance', 'value' => (int) ($stats['today_attendance'] ?? 0), 'tone' => 'attendance'],
-            ['label' => 'Attendance Requests', 'value' => (int) ($stats['pending_attendance_requests'] ?? 0), 'tone' => 'request'],
+            //['label' => 'Attendance Requests', 'value' => (int) ($stats['pending_attendance_requests'] ?? 0), 'tone' => 'request'],
             ['label' => 'Leave Requests', 'value' => (int) ($stats['pending_leave_requests'] ?? 0), 'tone' => 'leave'],
             ['label' => 'Draft Payroll Runs', 'value' => (int) ($stats['draft_payroll_runs'] ?? 0), 'tone' => 'payroll'],
             ['label' => 'Published Notices', 'value' => (int) ($stats['published_announcements'] ?? 0), 'tone' => 'notice'],
@@ -33,13 +33,13 @@
                     <a href="{{ route('hrm.payroll.index') }}" class="btn btn-inline btn-primary-outline">Payroll</a>
                 </div>
             </header>
-            <div class="box-typical-body panel-body">
+            <div class="box-typical-body panel-body hrm-dashboard-div">
                 <div class="row">
                     @foreach($cards as $card)
-                        <div class="col-xl-4 col-md-6">
+                        <div class="col-xl-3 col-md-6">
                             <article class="hrm-stat tone-{{ $card['tone'] }}">
-                                <div class="stat-label">{{ $card['label'] }}</div>
                                 <div class="stat-value">{{ number_format((int) $card['value']) }}</div>
+                                <div class="stat-label">{{ $card['label'] }}</div>
                             </article>
                         </div>
                     @endforeach
@@ -51,6 +51,9 @@
 
 @push('styles')
     <style>
+        .hrm-dashboard-div{
+            padding:14px !important;
+        }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-head {
             display: flex;
@@ -62,30 +65,35 @@
         .hrm-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
         .hrm-stat {
             border-radius: 10px;
+            height: 25vh;
             color: #fff;
+            
             padding: 14px;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
         }
         .hrm-stat .stat-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            opacity: .88;
+                font-size: 12px;
+    text-transform: uppercase;
+    opacity: .88;
+    text-align: center;
+    margin-top: 1rem;
         }
         .hrm-stat .stat-value {
-            margin-top: 6px;
-            font-size: 24px;
-            font-weight: 700;
+           margin-top: 6px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700;
         }
-        .tone-total { background: linear-gradient(135deg, #1f2937, #111827); }
-        .tone-active { background: linear-gradient(135deg, #16a34a, #15803d); }
-        .tone-inactive { background: linear-gradient(135deg, #6b7280, #4b5563); }
-        .tone-attendance { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-        .tone-request { background: linear-gradient(135deg, #f97316, #ea580c); }
-        .tone-leave { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
-        .tone-payroll { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-        .tone-notice { background: linear-gradient(135deg, #0f766e, #115e59); }
-        .tone-doc { background: linear-gradient(135deg, #334155, #1e293b); }
+        .tone-total { background: #f35f62; }
+        .tone-active { background: #fdc518; }
+        .tone-inactive { background: #975ce7 }
+        .tone-attendance { background: #a2cf37; }
+        .tone-request { background: #975ce7; }
+        .tone-leave { background: #4285f4; }
+        .tone-payroll { background: #00a8ff; }
+        .tone-notice { background: #f35f62; }
+        .tone-doc { background: #34a853; }
     </style>
 @endpush
 

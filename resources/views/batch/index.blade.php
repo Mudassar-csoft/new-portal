@@ -8,7 +8,7 @@
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Batches</h3>
-					<small class="text-muted">List of batches by campus and program.</small>
+					<!-- <small class="text-muted">List of batches by campus and program.</small> -->
 				</div>
 				<a href="{{ route('batch.create') }}" class="btn btn-primary">New Batch</a>
 			</header>

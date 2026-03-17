@@ -8,7 +8,7 @@
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Campuses</h3>
-					<small class="text-muted">List of campuses.</small>
+					<!-- <small class="text-muted">List of campuses.</small> -->
 				</div>
 				<a href="{{ route('campus.create') }}" class="btn btn-primary">New Campus</a>
 			</header>

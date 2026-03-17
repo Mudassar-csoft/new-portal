@@ -1,6 +1,6 @@
 
 <div class="mobile-menu-left-overlay"></div>
-	<nav class="side-menu">
+	<nav class="side-menu " style="margin-top: 4.1rem;">
 		<ul class="side-menu-list">
 			<li>
 				<a href="{{ route('dashboard') }}" style="padding-left:10px">
@@ -444,7 +444,7 @@
 
 	<style>
 		.label.label-pill.label-custom{
-			padding: 5px 5px !important ;
+			padding: 5px 7px !important ;
 			font-size:13px !important;
 			width:auto !important;
 			margin-right:5px;

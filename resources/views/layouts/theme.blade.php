@@ -101,7 +101,7 @@ input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
 select,
 textarea {
 color: #343434;
-font-family: 'Proxima Nova', sans-serif;
+/* font-family: 'Proxima Nova', sans-serif; */
 line-height: 1.4;
 min-height:32px !important;
 text-rendering: optimizeLegibility;
@@ -154,7 +154,7 @@ padding: 0.8375rem 1.25rem;
 margin-bottom: 0 !important;
 }
 .side-menu-list {
-margin: -18px 0 20px;
+margin: -79px 0 20px;
 }
 
 .side-menu-list .lbl {
@@ -195,7 +195,7 @@ border-color: #6c757d;
 
 .side-menu-list a,
 .side-menu-list li > span {
-padding: 6px 12px 6px 46px;
+padding: 9px 12px 6px 46px;
 }
 
 /* =========================================================
@@ -270,7 +270,8 @@ padding-left: 10px !important;
     align-items: center;
     justify-content: space-between !important;
     /* gap: 488px !important; */
-    margin-bottom: 4px !important;
+    margin-bottom: 8px !important;
+	padding: 10px;
 }
 .dataTables_wrapper .table-responsive {
 overflow-x: auto;
@@ -292,7 +293,9 @@ padding: 0 10px;
 }
 
 .follow-footer {
-padding: 0 12px !important;
+padding: 4px 12px !important;
+display: flex;
+    align-items: baseline !important;
 }
 
 .row {
@@ -619,7 +622,7 @@ body, button, html, input, select, textarea {
 			align-items: center;
 			justify-content: space-between;
 			gap: 12px;
-			margin-bottom: 12px;
+			padding: 12px;
 		}
 
 		.follow-search {
@@ -875,6 +878,7 @@ button[id^="action-"].btn[aria-expanded="true"] {
 
 .box-typical.box-typical-dashboard .box-typical-body {
 overflow: hidden;
+    padding: 1px;
 }
 
 .box-typical.box-typical-dashboard {

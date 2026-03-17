@@ -10,7 +10,7 @@
 				<form method="POST" action="{{ route('batch.store') }}">
 					@csrf
 					<div class="form-row">
-						<div class="form-group col-md-3">
+						<div class="form-group col-lg-3 col-md-6">
 							<label class="required">Select Campus</label>
 							<select class="form-control" name="campus_id" required>
 								<option value="">- Select -</option>
@@ -19,7 +19,7 @@
 								@endforeach
 							</select>
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-lg-3 col-md-6">
 							<label class="required">Select Program</label>
 							<select class="form-control" name="program_id" id="program-select" required>
 								<option value="">- Select -</option>
@@ -28,41 +28,50 @@
 								@endforeach
 							</select>
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-lg-3 col-md-6">
 							<label class="required">Batch Code</label>
 							<input type="text" class="form-control" id="batch-code" placeholder="Auto generated" readonly>
 						</div>
+						<div class="form-group col-lg-3 col-md-6">
+							<label class="required">Instructor/Teacher</label>
+							<input type="text" class="form-control" name="instructor" placeholder="Enter instructor" required>
+</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-3">
-							<label class="required">Instructor/Teacher</label>
-							<input type="text" class="form-control" name="instructor" placeholder="Enter instructor" required>
-						</div>
-						<div class="form-group col-md-3">
+						
+						<div class="form-group col-lg-3 col-md-6">
 							<label class="required">Batch Starting Date</label>
 							<input type="date" class="form-control" name="start_date" id="start-date" required>
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-lg-3 col-md-6">
 							<label class="required">Expected Batch Ending Date</label>
 							<input type="date" class="form-control" name="end_date">
+						</div>
+						<div class="form-group col-lg-3 col-md-6">
+							<label class="required">Batch Start Time</label>
+							<input type="time" class="form-control" name="start_time" required>
+						</div>
+						<div class="form-group col-lg-3 col-md-6">
+							<label class="required">Batch End Time</label>
+							<input type="time" class="form-control" name="end_time" required>
 						</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-3">
+						<div class="form-group col-lg-3 col-md-6">
 							<!-- <label class="required">Batch Session</label>
 							<div class="mt-1 session-options">
 								<label class="mr-3"><input type="radio" name="session" value="morning" checked> Morning</label>
 								<label class="mr-3"><input type="radio" name="session" value="evening"> Evening</label>
 								<label><input type="radio" name="session" value="weekend"> Weekend</label>
 							</div> -->
-							<div class="form-group form-group-radios">
-    <label class="form-label" id="signup_v2-session">
-        Batch Session <span class="color-red">*</span>
-    </label>
-
-    <div class="radio">
+							<div class="form-group form-group-radios ">
+							<label class="form-label" id="signup_v2-session">
+								Batch Session <span class="color-red">*</span>
+							</label>
+<div class="d-flex row">
+    <div class="radio col-sm-4 g-1">
         <input id="signup_v2-session-morning"
                name="signup_v2[session]"
                data-validation="[NOTEMPTY]"
@@ -74,7 +83,7 @@
         <label for="signup_v2-session-morning">Morning</label>
     </div>
 
-    <div class="radio">
+    <div class="radio  col-sm-4 g-1">
         <input id="signup_v2-session-evening"
                name="signup_v2[session]"
                data-validation-group="signup_v2-session"
@@ -83,7 +92,7 @@
         <label for="signup_v2-session-evening">Evening</label>
     </div>
 
-    <div class="radio">
+    <div class="radio  col-sm-4 g-1">
         <input id="signup_v2-session-weekend"
                name="signup_v2[session]"
                data-validation-group="signup_v2-session"
@@ -92,33 +101,28 @@
         <label for="signup_v2-session-weekend">Weekend</label>
     </div>
 </div>
+</div>
 
 						</div>
-						<div class="form-group col-md-3">
-							<label class="required">Batch Start Time</label>
-							<input type="time" class="form-control" name="start_time" required>
-						</div>
-						<div class="form-group col-md-3">
-							<label class="required">Batch End Time</label>
-							<input type="time" class="form-control" name="end_time" required>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-4">
+						
+						<div class="form-group col-md-9">
 							<label class="required">Select Lab</label>
 							<input type="text" class="form-control" name="lab" placeholder="Enter lab" required>
 						</div>
 					</div>
 
-					<div class="form-group">
-						<label>Remarks</label>
-						<textarea class="form-control" name="remarks" rows="2" placeholder="Enter remarks"></textarea>
+					<div class="form-row">
+						
+						
+						<div class="form-group col-12">
+							<label>Remarks</label>
+							<textarea class="form-control" name="remarks" rows="2" placeholder="Enter remarks"></textarea>
+						</div>
 					</div>
-
+						
 					<div class="text-right">
 						<button type="submit" class="btn btn-inline btn-primary-outline">Create Batch</button>
-						<a href="{{ url()->previous() }}" class="btn btn-inline btn-secondary-outline btn-outline-danger ml-2">Cancel</a>
+						<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline btn-outline-danger ml-2">Cancel</a>
 					</div>
 				</form>
 			</div>
@@ -128,6 +132,45 @@
 
 @push('styles')
 	<style>
+
+
+/* input[type="radio"]:checked {
+    border-color: #00a8ff;
+}
+input[type="radio"]{
+	    min-height: 14px !important;
+    height: auto !important;
+} */
+	.checkbox input+label:before, .radio input+label:before{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid grey;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+	
+    background-color: #fff;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.radio input[type=radio]:checked+label:after {
+    width: 6px;
+    height: 6px;
+    background: #00a8ff;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    left: 4px;
+    top: 4px;
+}
+input[type=checkbox], input[type=radio] {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+
 		.batch-shell {
 			padding: 8px 0 16px;
 		}
@@ -137,10 +180,13 @@
 			border-radius: 8px;
 			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
 		}
-
+		.radio input+label{
+			padding: 0px 0 0 18px !important;
+		}
 		.batch-title {
 			margin-bottom: 16px;
-			font-weight: 700;
+			font-size:22px;
+			font-weight: 500;
 			color: #2f3b52;
 		}
 

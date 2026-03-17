@@ -576,8 +576,8 @@
 }
 .site-header-search input[type=text] {
     padding: 0px 0 0 14px !important;
-								}
-		.fa-classic,
+}
+.fa-classic,
 .fa-regular,
 .fa-solid,
 .far,

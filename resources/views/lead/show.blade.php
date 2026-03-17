@@ -325,7 +325,7 @@
    .lead-show-shell {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 7px;
+    padding: 2%;
     background: #fff;
     border: 1px solid #dbe4ed;
     border-radius: 10px;
@@ -395,7 +395,7 @@
 		.lead-show-shell {
 			max-width: 1400px;
 			margin: 0 auto;	
-			padding: 7px;
+			padding: 2%;
 			background: #fff;
 			border: 1px solid #dbe4ed;
 			border-radius: 10px;

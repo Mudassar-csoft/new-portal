@@ -8,12 +8,12 @@
 	</button>
 	<div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
 		@if(!empty($leadId))
-			<a class="dropdown-item" href="{{ route('leads.show', $leadId) }}">
+			<!-- <a class="dropdown-item" href="{{ route('leads.show', $leadId) }}">
 				<i class="fa fa-list-ul mr-2 text-primary p-1"></i>Follow-Up
 			</a>
 			<a class="dropdown-item" href="{{ route('leads.transfer.form', $leadId) }}">
 				<i class="fa fa-exchange mr-2 text-warning p-1"></i>Transfer Lead
-			</a>
+			</a> -->
 			<div class="dropdown-divider"></div>
 		@endif
 		<a class="dropdown-item" href="#"><i class="fa fa-file-text-o mr-2 text-primary p-1"></i>Register Now</a>
@@ -25,8 +25,8 @@
 		<a class="dropdown-item" href="#"><i class="fa fa-hourglass-start mr-2 text-warning p-1"></i>Start Trail</a>
 		<a class="dropdown-item" href="#"><i class="fa fa-exchange mr-2 text-warning p-1"></i>Transfer Lead</a>
 		<a class="dropdown-item" href="#"><i class="fa fa-times-circle-o mr-2 text-danger p-1"></i>Not Interested</a>
-		<div class="dropdown-divider"></div>
-		<a class="dropdown-item" href="#"><i class="fa fa-pencil-square-o mr-2 text-muted"></i>Edit</a>
+		<!-- <div class="dropdown-divider"></div> -->
+		<a class="dropdown-item" href="#"><i class="fa fa-pencil-square-o mr-2 pl-2 text-muted"></i>Edit</a>
 	</div>
 </div>
 
