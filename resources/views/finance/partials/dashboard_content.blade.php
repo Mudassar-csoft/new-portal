@@ -295,8 +295,8 @@
             transform: translateY(-1px);
             filter: brightness(1.02);
         }
-        .finance-kpi .kpi-label { font-size: 12px; text-transform: uppercase; opacity: 0.88; }
-        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 20px; }
+        .finance-kpi .kpi-label { font-size: 12px; text-transform: uppercase; opacity: 0.88;  color:white;}
+        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 20px;color:white; }
         .kpi-income { background: #f35f62; }
         .kpi-expense { background: #fdc518; }
         .kpi-payable { background:  #975ce7; }

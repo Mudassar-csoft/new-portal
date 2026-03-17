@@ -81,7 +81,8 @@
         }
         .hrm-stat .stat-value {
            margin-top: 6px;
-    font-size: 24px;
+    font-size: 24px; 
+    color:white;
     text-align: center;
     font-weight: 700;
         }

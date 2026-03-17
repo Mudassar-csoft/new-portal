@@ -262,11 +262,11 @@
             font-size: 22px;
             font-weight: 700;
         }
-        .tone-admission { background: linear-gradient(135deg, #16a34a, #15803d); }
-        .tone-coworking { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-        .tone-royalty { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-        .tone-other { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .tone-total { background: linear-gradient(135deg, #1f2937, #111827); }
+        .tone-admission { background: #f35f62;}
+        .tone-coworking { background: #fdc518;}
+        .tone-royalty { background: #975ce7 }
+        .tone-other { background: #a2cf37; }
+        .tone-total { background: #4285f4;  }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
