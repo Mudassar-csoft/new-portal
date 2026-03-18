@@ -9,7 +9,7 @@
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
 		$selectedCampusLabel = isset($selectedCampus) && $selectedCampus
 			? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name)
-			: 'All Campuses';
+			: '';
 		$dailyRows = $dailyActivity['rows'] ?? [];
 		$dailyTotals = $dailyActivity['totals'] ?? [
 			'leads' => 0,
@@ -29,28 +29,30 @@
 		</div>
 
 		<div id="dashboard-content " class="dashboard-content bg-white">
-	<div class="row ">
+		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="dashboard-campus-banner">
-			<div>
-				<span class="dashboard-campus-label">Dashboard Scope</span>
-				<strong>{{ $selectedCampusLabel }}</strong>
+		@if($selectedCampusLabel)
+			<div class="dashboard-campus-banner">
+				<div>
+					<!-- <span class="dashboard-campus-label">Dashboard Scope</span> -->
+					<strong>{{ $selectedCampusLabel }}</strong>
+				</div>
+				<!-- @if(isset($selectedCampus) && $selectedCampus)
+					<a href="{{ route('dashboard', ['campus_id' => 0]) }}" class="btn btn-inline btn-primary-outline">Show All Campuses</a>
+				@endif -->
 			</div>
-			<!-- @if(isset($selectedCampus) && $selectedCampus)
-				<a href="{{ route('dashboard', ['campus_id' => 0]) }}" class="btn btn-inline btn-primary-outline">Show All Campuses</a>
-			@endif -->
-		</div>
-		<div class="row" >
+		@endif
+		<div class="row"style=" align-items: flex-start !important;">
 
 		<div class="col-xl-6 pl-0 ">
 			<div class="chart-statistic-box">
 				
 				<div class="chart-container row ">
-					<div class="chart-txt col-5 p-0 m-0">
+					<div class="chart-txt col-5 p-0 m-0 ">
 					<div class="chart-txt-top pt-2">
-						<p><span class="unit ">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-						<p class="caption">Income</p>
+						<p><span class="unit">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+						<p class="caption">Income</p>  
 					</div>
 					<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
 						<div class="radio">
@@ -173,12 +175,18 @@
 	<div class="row ">
 		<div class="col-xl-6">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
-				<header class="box-typical-header panel-heading">
-					<div class="tbl">
-						<div class="tbl-row">
-							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard">Current Month Leads</h3>
-							</div>
+				<header class="box-typical-header panel-heading month-chart-header">
+					<div class="month-chart-header-content">
+						<div class="month-chart-header-wrap">
+							<h3 class="form-label-dashboard month-chart-header-title">Current Month Leads</h3>
+						</div>
+						<div class="month-chart-header-actions">
+							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month leads chart">
+								<i class="fa fa-window-maximize"></i>
+							</button>
+							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close current month leads chart">
+								<i class="fa fa-times"></i>
+							</button>
 						</div>
 					</div>
 				</header>
@@ -189,12 +197,18 @@
 		</div>
 		<div class="col-xl-6">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
-				<header class="box-typical-header panel-heading" style="padding: 0px;">
-					<div class="tbl">
-						<div class="tbl-row">
-							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard p-2 ">Current Month Admissions</h3>
-							</div>
+				<header class="box-typical-header panel-heading month-chart-header">
+					<div class="month-chart-header-content">
+						<div class="month-chart-header-wrap">
+							<h3 class="form-label-dashboard month-chart-header-title">Current Month Admissions</h3>
+						</div>
+						<div class="month-chart-header-actions">
+							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month admissions chart">
+								<i class="fa fa-window-maximize"></i>
+							</button>
+							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close current month admissions chart">
+								<i class="fa fa-times"></i>
+							</button>
 						</div>
 					</div>
 				</header>
@@ -205,15 +219,21 @@
 		</div>
 	</div>
 <!--Daily Activity-->
-	<div class="row">
-		<div class="col-xl-12">
-			<section class="box-typical box-typical-dashboard panel panel-default daily-activity-card">
-				<header class="box-typical-header panel-heading" style="padding: 0px;">
-					<div class="tbl">
-						<div class="tbl-row">
-							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? $selectedCampusLabel : 'Each Campus' }}</h3>
-							</div>
+	<div class="row dashboard-equal-row">
+		<div class="col-xl-6 d-flex">
+			<section class="box-typical box-typical-dashboard panel panel-default daily-activity-card dashboard-equal-card">
+				<header class="box-typical-header panel-heading month-chart-header">
+					<div class="month-chart-header-content">
+						<div class="month-chart-header-wrap">
+							<h3 class="form-label-dashboard month-chart-header-title">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? $selectedCampusLabel : 'Each Campus' }}</h3>
+						</div>
+						<div class="month-chart-header-actions">
+							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize daily activity">
+								<i class="fa fa-window-maximize"></i>
+							</button>
+							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close daily activity">
+								<i class="fa fa-times"></i>
+							</button>
 						</div>
 					</div>
 				</header>
@@ -258,17 +278,21 @@
 				</div>
 			</section>
 		</div>
-	</div>
 	<!--campus Month Charts-->
-	<div class="row">
-		<div class="col-xl-12">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
-				<header class="box-typical-header panel-heading">
-					<div class="tbl">
-						<div class="tbl-row">
-							<div class="tbl-cell tbl-cell-title">
-								<h3 class="form-label-dashboard">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</h3>
-							</div>
+		<div class="col-xl-6 d-flex">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card dashboard-equal-card">
+				<header class="box-typical-header panel-heading month-chart-header">
+					<div class="month-chart-header-content">
+						<div class="month-chart-header-wrap">
+							<h3 class="form-label-dashboard month-chart-header-title">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</h3>
+						</div>
+						<div class="month-chart-header-actions">
+							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize campus admissions comparison">
+								<i class="fa fa-window-maximize"></i>
+							</button>
+							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close campus admissions comparison">
+								<i class="fa fa-times"></i>
+							</button>
 						</div>
 					</div>
 				</header>
@@ -292,11 +316,53 @@
 		*{
 			font-size: 15px !important;	
 		}
+		.box-typical.box-typical-dashboard {
+			margin: 1% 5px !important;
+			height: 318px;
+		}
+		.chart-txt-top.pt-2 {
+    font-size: 17px !important;
+}
 		.chart-range {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 8px 12px;
 			margin: 8px 0 20px;
+		}
+		.chart-statistic-box {
+			border-radius: 12px;
+			overflow: hidden;
+		}
+		.chart-statistic-box .chart-container {
+			margin-left: 0;
+			border-radius: 12px;
+			overflow: hidden;
+		}
+		.chart-statistic-box .chart-txt {
+			background: #304b58;
+			border-radius: 12px 0 0 12px;
+			overflow: hidden;
+		}
+		.chart-statistic-box .chart-txt .chart-txt-top p:first-child {
+			display: flex;
+			align-items: baseline;
+			justify-content: center;
+			gap: 6px;
+			line-height: 1;
+		}
+		.chart-statistic-box .chart-txt .chart-txt-top .unit {
+			margin: 0;
+			padding: 0;
+			position: static;
+			top: auto;
+			line-height: 1;
+		}
+		.chart-statistic-box .chart-txt .chart-txt-top .number {
+			line-height: 1;
+		}
+		.chart-statistic-box .chart-container-in {
+			border-radius: 0 12px 12px 0;
+			overflow: hidden;
 		}
 		.dashboard-campus-banner {
 			display: flex;
@@ -343,20 +409,36 @@
             margin-top: 8px;
             padding-bottom: 6px;
         }
- 
+ .statistic-box {
+    padding: 2px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+	    text-align: center;
+    color: #fff;
+    background: no-repeat 50% 50%;
+    background-size: cover;
+	    height: 150px;
+		margin: 0 0 15px;
+		margin-top:0px;
+
+    
+}
         .statistic-box .stat-inner {
             position: relative;
         }
-.statistic-box .number  {
-    font-size: 1.625rem !important;
+.statistic-box .number, 
+.statistic-box .caption{
+    font-size:32px !important;
 
 }
 *{
-	font-size:14px;	
+	font: size 15px ;
 }
 .text{
 	font-size:14px;
 }
+
 
         .statistic-box .stat-eye {
             position: absolute;
@@ -381,6 +463,59 @@
         .month-chart-card .panel-heading {
             padding: 6px 12px;
         }
+        .month-chart-header {
+            padding: 10px 14px !important;
+            border-bottom: 1px solid #e6eef3;
+            background: linear-gradient(135deg, #f8fbfd 0%, #eef6fb 100%);
+        }
+        .month-chart-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+        }
+        .month-chart-header-wrap {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .month-chart-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        .month-chart-header-title {
+            margin: 0;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            color: #304b58;
+        }
+        .dashboard-panel-action {
+            align-items: center;
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 50%;
+            background: #eef4f8;
+            color: #5b6b79;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+        .dashboard-panel-action:hover {
+            background: #00a8ff;
+            color: #fff;
+        }
+        .month-chart-card {
+            margin-bottom: 15px;
+        }
 
         .month-chart-card .box-typical-body,
         .month-chart-card .panel-body {
@@ -388,6 +523,25 @@
             height: auto;
             overflow: hidden !important;
             padding: 10px 14px;
+        }
+        .dashboard-equal-row > [class*="col-"] {
+            display: flex;
+        }
+        .dashboard-equal-card {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .dashboard-equal-card .panel-body,
+        .dashboard-equal-card .box-typical-body {
+            flex: 1 1 auto;
+        }
+        .daily-activity-card .panel-body {
+            min-height: 320px;
+            overflow: visible !important;
+        }
+        .dashboard-equal-card #campus-admissions-chart {
+            height: 320px;
         }
 
         #leads-chart,
@@ -409,6 +563,7 @@
             width: 100%;
             overflow: hidden;
 			font-size:10px;
+			margin: 1%;
         }
 
         .dashboard-loader {
@@ -440,7 +595,7 @@
             animation: bounce 0.9s ease-in-out infinite;
         }
 		text{
-			font-size:12px !important;
+			font-size:8px !important;
 			
 		}
         .dashboard-spinner .dot:nth-child(2) {
@@ -493,20 +648,48 @@
         }
 
         .daily-activity-card .panel-heading {
-            border-top: 4px solid #f9a825;
+            border-top: 0;
         }
-
-        .daily-campus {
-            background: #f9a825;
-            color: #fff;
+        .daily-activity-card .panel-body {
+            padding: 10px 14px;
+        }
+        .daily-activity-card .tbl-typical {
+            width: 100%;
+            margin-bottom: 0;
+            table-layout: auto;
+        }
+        .daily-activity-card .tbl-typical th,
+        .daily-activity-card .tbl-typical td {
+            font-size: 13px !important;
+            line-height: 1.45;
+            vertical-align: middle;
+            color: #304b58;
+            width: auto !important;
+        }
+        .daily-activity-card .tbl-typical th {
             font-weight: 700;
-            padding: 6px 12px;
-            
+            text-align: left;
+            white-space: normal;
+        }
+        .tbl-typical th > div {
+            padding: 6px 10px !important;
+        }
+        .daily-activity-card .tbl-typical td:not(:first-child),
+        .daily-activity-card .tbl-typical th:not(:first-child) {
+            text-align: center;
+        }
+        .daily-campus {
+            background: transparent;
+            color: #304b58;
+            font-weight: 600;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
         }
 
         .daily-activity-total td {
-            background: #f9a825;
-            color: #fff;
+            background: #f8fbfd;
+            color: #304b58;
             font-weight: 700;
         }
     </style>
@@ -532,7 +715,7 @@
 
 		var currentIncomeRange = 'today';
 
-		$(document).ready(function () {
+			$(document).ready(function () {
 			var maskedValue = '***';
 			$('.panel').each(function () {
 				try {
@@ -580,6 +763,29 @@
 						break;
 					default:
 						break;
+				}
+			});
+
+			$(document).on('click', '.dashboard-panel-action', function (e) {
+				e.preventDefault();
+				var action = $(this).data('action');
+				var targetSelector = $(this).data('target-panel');
+				var panel = targetSelector ? $(targetSelector).first() : $(this).closest('.box-typical');
+
+				if (!panel.length) {
+					return;
+				}
+
+				if (action === 'close') {
+					panel.remove();
+					return;
+				}
+
+				if (action === 'fullscreen') {
+					panel.toggleClass('box-typical-full-screen');
+					setTimeout(function () {
+						$(window).trigger('resize');
+					}, 150);
 				}
 			});
 

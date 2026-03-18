@@ -41,17 +41,17 @@
             <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Student Attendance</h3>
-                    <small class="text-muted">Check daily attendance by campus, batch, program, and student search.</small>
+                    <!-- <small class="text-muted">Check daily attendance by campus, batch, program, and student search.</small> -->
                 </div>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('student.attendance.index') }}" class="mb-3">
                     <div class="form-row student-attendance-filters">
-                        <div class="form-group student-col">
+                        <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Attendance Date</label>
                             <input type="date" name="attendance_date" class="form-control" value="{{ $filters['attendance_date'] }}">
                         </div>
-                        <div class="form-group student-col">
+                        <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -62,7 +62,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group student-col">
+                        <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Program</label>
                             <select name="program_id" class="form-control">
                                 <option value="">All Programmes</option>
@@ -73,7 +73,10 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group student-col">
+                        
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Batch</label>
                             <select name="batch_id" class="form-control">
                                 <option value="">All Batches</option>
@@ -84,7 +87,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group student-col">
+                        <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Status</label>
                             <select name="status" class="form-control">
                                 <option value="">All Statuses</option>
@@ -95,41 +98,41 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group student-col student-col-wide">
+                        <div class="form-group    col-lg-4 col-md-6">
                             <label class="form-label">Search Student</label>
                             <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="Student name, roll number, or registration number">
                         </div>
-                        <div class="form-group student-actions">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('student.attendance.index') }}" class="btn btn-danger-outline">Reset</a>
+                        <div class="form-group student-actions  mr-1">
+                            <button type="submit" class="btn btn-primary ">Filter</button>
+                            <a href="{{ route('student.attendance.index') }}" class="btn btn-danger-outline p-2">Reset</a>
                         </div>
                     </div>
                 </form>
 
                 <div class="student-summary-grid">
-                    <div class="student-summary-card">
-                        <span class="student-summary-label">Total Students</span>
+                    <div class="student-summary-card ">
                         <strong>{{ number_format((int) ($summary['total'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Total Students</span>
                     </div>
                     <div class="student-summary-card tone-green">
-                        <span class="student-summary-label">Present</span>
                         <strong>{{ number_format((int) ($summary['present'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Present</span>
                     </div>
                     <div class="student-summary-card tone-yellow">
-                        <span class="student-summary-label">Late</span>
                         <strong>{{ number_format((int) ($summary['late'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Late</span>
                     </div>
                     <div class="student-summary-card tone-blue">
-                        <span class="student-summary-label">Half Day</span>
                         <strong>{{ number_format((int) ($summary['half_day'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Half Day</span>
                     </div>
                     <div class="student-summary-card tone-purple">
-                        <span class="student-summary-label">Leave</span>
                         <strong>{{ number_format((int) ($summary['leave'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Leave</span>
                     </div>
                     <div class="student-summary-card tone-red">
-                        <span class="student-summary-label">Absent</span>
                         <strong>{{ number_format((int) ($summary['absent'] ?? 0)) }}</strong>
+                        <span class="student-summary-label">Absent</span>
                     </div>
                 </div>
 
@@ -196,7 +199,7 @@
                 <h3 class="panel-title mb-0">Biometric / CSV Import</h3>
             </header>
             <div class="box-typical-body panel-body">
-                <div class="alert alert-info">
+                <div class="alert alert-info m-2">
                     Import ZKTeco export files or standard CSV files. Supported headers include
                     <strong>roll_number</strong>, <strong>registration_number</strong>, <strong>student_name</strong>,
                     <strong>attendance_date</strong>, <strong>punch_time</strong>, <strong>check_in_at</strong>,
@@ -207,26 +210,26 @@
                 <form method="POST" action="{{ route('student.attendance.import') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-row student-attendance-filters">
-                        <div class="form-group student-col">
+                        <div class="form-group col-md-3 ">
                             <label class="form-label">Source Type</label>
                             <select name="source_type" class="form-control" required>
                                 <option value="zkteco">ZKTeco Export</option>
                                 <option value="csv">Generic CSV</option>
                             </select>
                         </div>
-                        <div class="form-group student-col">
+                        <div class="form-group col-md-3 ">
                             <label class="form-label">Device / Source Name</label>
                             <input type="text" name="source_name" class="form-control" placeholder="ZKTeco Main Gate">
                         </div>
-                        <div class="form-group student-col student-col-wide">
+                        <div class="form-group  col-md-3">
                             <label class="form-label">Remarks</label>
                             <input type="text" name="remarks" class="form-control" placeholder="Morning shift import">
                         </div>
-                        <div class="form-group student-col">
+                        <div class="form-group col-md-3 ">
                             <label class="form-label">CSV File</label>
                             <input type="file" name="import_file" class="form-control-file" required>
                         </div>
-                        <div class="form-group student-actions">
+                        <div class="form-group student-actions mr-1">
                             <button type="submit" class="btn btn-primary">Import Attendance</button>
                         </div>
                     </div>
@@ -282,19 +285,9 @@
 
         .student-attendance-filters {
             display: flex;
-            gap: 14px;
+            /* gap: 14px; */
             flex-wrap: wrap;
             align-items: end;
-        }
-
-        .student-col {
-            flex: 1 1 180px;
-            min-width: 180px;
-        }
-
-        .student-col-wide {
-            flex: 2 1 260px;
-            min-width: 260px;
         }
 
         .student-actions {
@@ -306,15 +299,19 @@
 
         .student-summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(3, minmax(150px, 1fr));
             gap: 14px;
+            padding:15px;
         }
 
         .student-summary-card {
             border: 1px solid #e6edf5;
             border-radius: 12px;
             padding: 14px 16px;
-            background: #f8fafc;
+            background: #34a853;
+            text-align:center;
+            height:25vh;
+            color:white;
         }
 
         .student-summary-card strong {
@@ -322,20 +319,23 @@
             font-size: 22px;
             line-height: 1.2;
             margin-top: 8px;
+            text-align:center;
+            margin-top:2rem;
         }
 
         .student-summary-label {
-            color: #5f6d7b;
+            color: white;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: .04em;
+
         }
 
-        .tone-green { background: #eefbf2; }
-        .tone-yellow { background: #fff9e8; }
-        .tone-blue { background: #eef6ff; }
-        .tone-purple { background: #f4efff; }
-        .tone-red { background: #fff1f2; }
+        .tone-green { background: #f35f62; }
+        .tone-yellow { background: #fdc518; }
+        .tone-blue { background:  #975ce7; }
+        .tone-purple { background: #a2cf37; }
+        .tone-red { background: #00a8ff; }
 
         .student-attendance-table thead th {
             white-space: nowrap;

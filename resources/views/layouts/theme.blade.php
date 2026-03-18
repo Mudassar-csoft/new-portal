@@ -48,7 +48,7 @@ input,
 textarea,
 select,
 button {
-  font-size: 13px !important; 
+  font-size: 17px !important; 
   line-height: 1.5;
 }
 
@@ -57,9 +57,10 @@ button,
 a.btn,
 input[type="button"],
 input[type="submit"] {
-  padding: 0.375rem 0.75rem; /* 6px 12px */
-  height: 32px; /* keep px */
-  line-height: 1rem;
+  padding: 0.375rem 0.75rem  ; /* 6px 12px */
+  height: 37px ; /* keep px */
+  line-height: 1.rem;
+  
 }
 
 hr {
@@ -98,8 +99,7 @@ body,
 html,
 button,
 input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
-select,
-textarea {
+select {
 color: #343434;
 /* font-family: 'Proxima Nova', sans-serif; */
 line-height: 1.4;
@@ -183,7 +183,7 @@ gap: 8px;
 }
 
 .dataTables_filter input{
-    font-size:13px;
+    font-size:13px !important
 }
 .side-menu .stage-count {
 min-width: 32px;
@@ -355,7 +355,7 @@ margin: 0 !important;
 .select2-container--white .select2-selection--single .select2-selection__rendered {
 border: solid 1px #d8e2e7;
 border-radius: .25rem;
-font-size: 1rem;
+font-size: 13px !important;
 line-height: 1.5;
 color: #343434;
 padding: .375rem 25px .375rem 1rem;
@@ -474,9 +474,9 @@ text-align: center !important;
     color: #343a40 !important;
 }
 
-body, button, html, input, select, textarea {
+body, button, html, input, select {
     color: #343434;
-    height: 32px;
+    height: 37px !important;
     font-family: 'Proxima Nova', sans-serif;
     line-height: 1.4;
     text-rendering: optimizeLegibility;
@@ -597,7 +597,9 @@ body, button, html, input, select, textarea {
 			position: relative;
 			border-bottom: 3px solid transparent;
 		}
-
+.student-directory .dataTables_wrapper .follow-controls, .student-directory .dataTables_wrapper .follow-footer{
+	    align-items: flex-start !important;
+}
 		.follow-tab.active {
 			color: #0f3c6e;
 			background-color:white;	

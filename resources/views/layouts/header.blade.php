@@ -475,7 +475,7 @@
 
                 <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
 
-                    <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead">
+                    <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->
 
                     <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;" href="{{ route('leads.create') }}">Lead</a>
                     <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;"  href="#">Admission</a>

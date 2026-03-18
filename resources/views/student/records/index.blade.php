@@ -10,7 +10,7 @@
                     <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
                         <div>
                             <h3 class="panel-title mb-0 form-label">{{ $pageTitle }}</h3>
-                            <small class="text-muted">{{ $pageDescription }}</small>
+                            <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
                         </div>
                     </header>
                     <div class="box-typical-body panel-body">

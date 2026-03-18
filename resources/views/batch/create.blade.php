@@ -3,7 +3,7 @@
 @section('title', 'Create Batch')
 
 @section('content')
-<<<<<<< HEAD
+
 	<div class="batch-shell">
 		<div class="batch-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
@@ -190,7 +190,6 @@ input[type=checkbox], input[type=radio] {
 			font-weight: 500;
 			color: #2f3b52;
 		}
-=======
     <div class="batch-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default batch-form-card">
             <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
@@ -232,7 +231,7 @@ input[type=checkbox], input[type=radio] {
             content: ' *';
             color: #e53935;
         }
->>>>>>> ac36970fb8c7815c4bb9a6c6371234632cfba700
+
 
         .session-radio-group {
             display: flex;

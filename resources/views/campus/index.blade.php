@@ -3,7 +3,7 @@
 @section('title', $pageTitle)
 
 @section('content')
-<<<<<<< HEAD
+
 	<div class="campus-shell">
 		<div class="box-typical box-typical-dashboard panel panel-default campus-card">
 			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
@@ -50,7 +50,6 @@
 			</div>
 		</div>
 	</div>
-=======
     @php
         $filters = $filters ?? ['scope' => 'all', 'campus_type' => null, 'status' => null, 'country' => null, 'city' => null, 'search' => null];
         $scopeCards = $scopeCards ?? [];
@@ -220,7 +219,7 @@
             </div>
         </div>
     </div>
->>>>>>> ac36970fb8c7815c4bb9a6c6371234632cfba700
+
 @endsection
 
 @push('styles')
