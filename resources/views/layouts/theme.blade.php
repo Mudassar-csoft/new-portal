@@ -34,7 +34,7 @@
    Base (Mobile First)
    ========================================================= */
 * {
-  font-family: "Montserrat", sans-serif !important;
+  font-family: 'Proxima Nova', sans-serif !important;
   font-size: 14px; /* 12px */
   margin: 0;
   padding: 0;
@@ -135,7 +135,8 @@ height: 16px !important;
 .table a {
 border-bottom: 1px solid #e9ecef;
 }
-
+.finance-summary-row { margin: 2px 0 10px; padding:7px;}
+.finance-shell { padding: 8px 0 16px; background-color:white;}
 .bootstrap-table .table td,
 .fixed-table-body .table td,
 .table td,
@@ -158,7 +159,7 @@ margin: -79px 0 20px;
 }
 
 .side-menu-list .lbl {
-font-size: 12px !important;
+font-size: 13.5px !important;
 font-weight: 600 !important;
 line-height: 1.3;
 }
@@ -340,11 +341,13 @@ margin: 0 !important;
    Forms
    ========================================================= */
 .form-label{
-font-size:12px !important;
-font-weight:500 !important;
-text-transform:uppercase;
-margin-bottom:0.1875rem;
-color: inherit !important;
+/* display: block; */
+    margin-bottom: 6px;
+    margin-top: 6px;
+    font-size: 0.80rem;
+   color: #343a40 !important;
+    text-transform: uppercase;
+	font-weight:600;
 }
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
@@ -356,7 +359,7 @@ font-size: 1rem;
 line-height: 1.5;
 color: #343434;
 padding: .375rem 25px .375rem 1rem;
-min-height: 32px !important;
+min-height: 37px !important;
 background: #fff;
 }
 
@@ -464,13 +467,8 @@ text-align: center !important;
     min-height: 32px;
     background: #fff
 }
-.form-label{
-    font-size: 11px;
-    font-weight: 500 ;
-    color: #343a40!important;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    
+.btn{
+	font-size:16px !important;
 }
 .text-dark {
     color: #343a40 !important;
@@ -1023,9 +1021,6 @@ padding-left: 7px;
 padding-right: 28px;
 }
 
-.side-menu-list .lbl {
-font-size: 13px !important;
-}
 
 .side-menu-list a,
 .side-menu-list li > span {

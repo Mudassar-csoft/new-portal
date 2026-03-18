@@ -25,11 +25,15 @@
         body {
             background: #f5f7fb;
             overflow-x: hidden;
+            overflow-y: hidden;
         }
 
         .login-shell {
             position: relative;
             min-height: 100vh;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
         }
 
         .login-media {
@@ -121,28 +125,28 @@
         }
 
         .login-form-panel {
-            
-            inset: 0;
             display: flex;
             align-items: center;
-            justify-content: end !important;
-            padding: 0px;;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 24px 16px;
             pointer-events: none;
-            border-radius:none !important;
-        } 
+        }
 
        .sign-box {
-    height: 85vh;
+    max-height: calc(100vh - 48px);
     background: rgba(255, 255, 255, 0.78);
     border: 0px;
     box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
     border-radius: 16px;
-    width: 92%;
+    width: 100%;
     margin: 0 !important;
-    max-width: 100%;
-    /* padding: 24px 24px 30px; */
+    max-width: 420px;
+    padding: 24px 24px 30px;
     backdrop-filter: blur(10px);
     pointer-events: auto;
+    overflow-y: auto;
 }
         .sign-box::before {
            display:none;
@@ -256,18 +260,27 @@
 
         
     @media (max-width: 760px) {
+        body {
+            overflow-y: auto;
+        }
+
+        .login-shell {
+            min-height: 100svh;
+        }
+
         .login-media,
         .login-slider{
             height:50vh;
         }
          .login-form-panel {
-            width:60%;
-            height:80vh;
-            position: absolute;
-            top: 50%;
-            left: 23%;
-            
-            
+            width: 100%;
+            min-height: 100svh;
+            padding: 20px 14px;
+         }
+         .sign-box {
+            width: 100%;
+            max-width: 420px;
+            max-height: none;
          }
          .sign-avatar{
             margin-top: 5px !important;

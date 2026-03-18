@@ -54,11 +54,11 @@
 						@include('lead.certification')
 						@include('lead.coworking')
 						@include('lead.study_abroad')
-						<div class="form-actions text-right mt-2 mr-3">
+						<div class="form-actions mb-2 mt-3 text-right  mr-3">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline ">Create Lead</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Lead</button>
 
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline">Cancel</a>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px; ">Cancel</a>
 						</div>
 					</form>
 				</div>

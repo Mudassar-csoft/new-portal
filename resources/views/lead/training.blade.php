@@ -2,7 +2,7 @@
 <div class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
     <!-- ROW 1 -->
-    <div class="row" >
+    <div class="row mt-1" >
         <!-- Full Name -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small text-dark required">
@@ -61,51 +61,49 @@
             <label class="form-label text-dark fw-semibold small ">
                 Teaching Method <span class="text-danger">*</span>
             </label>
-            <div class="row  mt-2 ml-3" >
-                <div class="col-sm-4 d-flex align-items-center mb-1">
-                
-                        <input class="form-check-input  "
+            <div class="row mt-2 ">
+                <div class="col-sm-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
                             type="radio"
                             id="teaching-method-online"
                             name="details[teaching_method]"
                             value="online"
-                            
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'online'))==='online')>
-                        <label class="form-check-label small mt-1 ml-1"
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'online')) === 'online')>
+                        <label class="form-check-label small mb-0"
                             for="teaching-method-online">
                             Online
                         </label>
-                
+                    </div>
                 </div>
-                <div class="d-flex justify-content-center col-sm-4">
-                    <div class="form-check d-flex align-items-center ">
+                <div class="col-sm-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
                             id="teaching-method-campus"
                             name="details[teaching_method]"
                             value="campus"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method'))==='campus')>
-                        <label class="form-check-label small "
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'campus')>
+                        <label class="form-check-label small mb-0"
                             for="teaching-method-campus">
                             Campus
                         </label>
                     </div>
                 </div>
-                <div class=" d-flex justify-content-center col-sm-4">
+                <div class="col-sm-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
-                        <input class="form-check-input mt-0  mr-1"
+                        <input class="form-check-input mt-0 mr-1"
                             type="radio"
                             id="teaching-method-hybrid"
                             name="details[teaching_method]"
                             value="hybrid"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method'))==='hybrid')>
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
                         <label class="form-check-label small mb-0"
                             for="teaching-method-hybrid">
                             Hybrid
                         </label>
                     </div>
                 </div>
-
             </div>
             @error('details.teaching_method')
             <div class="field-error">{{ $message }}</div>
@@ -164,7 +162,7 @@
         </div>
     </div>
     <!-- ROW 3 -->
-    <div class="row mt-1">
+    <div class="row mt-2" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3 mt-lg-1">
             <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
             <select name="marketing_source"
@@ -216,21 +214,51 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3 mb-lg-1">
-            <label class="form-label text-dark fw-semibold small mt-0">
+            <label class="form-label text-dark fw-semibold small ">
                 Gender <span class="text-danger">*</span>
             </label>
-             <div class=" row d-flex align-items-center mt-1 ml-3 ">
-                <div class="form-check d-flex align-items-center col-sm-4 " >
-                    <input class="form-check-input mt-0  " type="radio" id="details-gender-male" name="details[gender]" value="male" @checked(old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))==='male')>
-                    <label class="form-check-label small mb-0 ml-1" for="details-gender-male">Male</label>
+             <div class="row mt-2 ">
+                <div class="col-sm-4 d-flex justify-content-center mb-1 mt-1">
+                    <div class="form-check d-flex align-items-center mt-0">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="details-gender-male"
+                            name="details[gender]"
+                            value="male"
+                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender', 'male')) === 'male')>
+                        <label class="form-check-label small mb-0"
+                            for="details-gender-male">
+                            Male
+                        </label>
+                    </div>
                 </div>
-                <div class="form-check d-flex align-items-center col-sm-4">
-                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-female" name="details[gender]" value="female" @checked(old('details.gender', data_get($leadPrefill, 'details.gender'))==='female')>
-                    <label class="form-check-label small mb-0 " for="details-gender-female">Female</label>
+                <div class="col-sm-4 d-flex justify-content-center">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="details-gender-female"
+                            name="details[gender]"
+                            value="female"
+                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'female')>
+                        <label class="form-check-label small mb-0"
+                            for="details-gender-female">
+                            Female
+                        </label>
+                    </div>
                 </div>
-                <div class="form-check d-flex align-items-center col-sm-4">
-                    <input class="form-check-input mt-0 me-2 mr-1" type="radio" id="details-gender-other" name="details[gender]" value="other" @checked(old('details.gender', data_get($leadPrefill, 'details.gender'))==='other')>
-                    <label class="form-check-label small mb-0" for="details-gender-other">Other</label>
+                <div class="col-sm-4 d-flex justify-content-center ">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="details-gender-other"
+                            name="details[gender]"
+                            value="other"
+                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'other')>
+                        <label class="form-check-label small mb-0"
+                            for="details-gender-other">
+                            Other
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -241,7 +269,7 @@
     </div>
 
     <!-- Radio Section -->
-    <div class="row ">
+    <div class="row mt-2" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3">
                 <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
                 <input type="datetime-local"
@@ -252,34 +280,90 @@
                     <div class="field-error">{{ $message }}</div>
                 @enderror
         </div>
-        <div class="col-md-6 col-lg-3 mt-4">
-            <label class="form-label small fw-semibold text-dark required">
-                Probability
-            </label>
-            <input type="range"
-                min="0"
-                max="100"
-                step="5"
-                id="probabilitySlider"
-                name="details[probability]"
-                value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
-                class="custom-range">
 
-            <div class="range-numbers pt-0 mt-1.5">
-                <span>0</span>
-                <span>10</span>
-                <span>20</span>
-                <span>40</span>
-                <span>60</span>
-                <span>80</span>
-                <span>100</span>
-            </div>
-            <div class="">
-                Selected: <span id="probabilityValue">
-                    {{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%
-                </span>
-            </div>
-        </div>
+<div class="col-md-6 col-lg-3">
+    <label class="form-label small fw-semibold text-dark required">
+        Probability
+    </label>
+
+    <!-- Slider -->
+    <input type="range"
+        min="0"
+        max="100"
+        step="5"
+        id="probabilitySlider"
+        value="10"
+        class="custom-range">
+
+    <!-- Scale -->
+    <div class="range-scale"></div>
+
+    <!-- Numbers -->
+    <div class="range-numbers text-muted">
+        <span>0</span>
+        <span>20</span>
+        <span>40</span>
+        <span>60</span>
+        <span>80</span>
+        <span>100</span>
+    </div>
+
+    <!-- Selected -->
+    <div class="  ">
+        Selected: <span id="probabilityValue">10%</span>
+    </div>
+</div>
+
+<style>
+.custom-range {
+    width: 100%;
+}
+
+/* SCALE WITH BIG + SMALL TICKS */
+.range-scale {
+    width: 100%;
+    height: 6px;
+    margin-top: 1px;
+    background:
+        /* BIG ticks */
+        repeating-linear-gradient(
+            to right,
+            #d0d3d8 0px,
+            #d0d3d8 1px,
+            transparent 1px,
+            transparent 20%
+        ),
+        /* SMALL ticks */
+        repeating-linear-gradient(
+            to right,
+           #d0d3d8 0px,
+           #d0d3d8 1px,
+            transparent 1px,
+            transparent 5%
+        );
+
+   
+}
+
+/* Numbers */
+.range-numbers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1px !important;
+}
+
+/* JS */
+</style>
+
+<script>
+const slider = document.getElementById("probabilitySlider");
+const output = document.getElementById("probabilityValue");
+
+slider.oninput = function () {
+    output.innerText = this.value + "%";
+};
+</script>
+
     </div>
     <!-- Remarks -->
     <div class="row mt-lg-1">
@@ -454,7 +538,9 @@ input[name="details[probability]"] + .small {
     font-size: 12px;
 }
 .range-numbers span{
-    font-size:10px;
+    font-size:12px !important;
+    font-weight:bold;
+    color: #99a4ac;
     margin-bottom: 3px ;
 }
 

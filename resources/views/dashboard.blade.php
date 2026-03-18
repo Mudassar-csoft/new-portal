@@ -88,8 +88,8 @@
 						</tr>
 					</table>
 				</div>
-					<div class="chart-container-in col-7 pt-1 m-0 p-0">
-						<div id="chart_div"></div>
+					<div class="chart-container-in col-7  m-0 p-0 fs-1">
+						<div id="chart_div" style = "font-size:10px;"></div>
 						<div id="chart_fallback" style="display:none; height:314px;">
 							<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
 								<defs>
@@ -110,7 +110,7 @@
 								<circle cx="380" cy="170" r="5" fill="#fff" />
 							</svg>
 						</div>
-						<div class="chart-caption"></div>
+						<!-- <div class="chart-caption"></div> -->
 						<div class="chart-container-x"></div>
 						<div class="chart-container-y"></div>
 					</div>
@@ -357,9 +357,7 @@
 .text{
 	font-size:14px;
 }
-.statistic-box {
-	padding:10px;
-}
+
         .statistic-box .stat-eye {
             position: absolute;
             right: 10px;
@@ -441,7 +439,10 @@
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
         }
-
+		text{
+			font-size:12px !important;
+			
+		}
         .dashboard-spinner .dot:nth-child(2) {
             animation-delay: 0.15s;
             background: #1f8ef1;
@@ -466,9 +467,7 @@
             position: relative;
             min-height: 400px;
         }
-		.chart-txt{
-			top:-14px;
-		}
+		
 		
 			
 		

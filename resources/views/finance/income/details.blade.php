@@ -29,8 +29,8 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.income') }}">
-                    <div class="form-row">
-                        <div class="form-group custom-col-3">
+                    <div class="form-row pt-1">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,11 +41,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label>From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
@@ -59,34 +59,35 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="col-lg-2 custom-col-4 col-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="income-summary-card tone-admission">
-                    <div class="summary-label">Admission Fee</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['admission_fee'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Admission Fee</div>
                 </div>
             </div>
-            <div class="col-lg-2 custom-col-4 col-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="income-summary-card tone-coworking">
-                    <div class="summary-label">Coworking Fee</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['coworking_fee'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Coworking Fee</div>
                 </div>
             </div>
-            <div class="col-lg-2 custom-col-4 col-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="income-summary-card tone-royalty">
-                    <div class="summary-label">Royalty</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['franchise_royalty'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Royalty</div>
                 </div>
             </div>
-            <div class="col-lg-2 custom-col-4 col-6">
+            
+            <div class="col-lg-6 col-md-6">
                 <div class="income-summary-card tone-other">
-                    <div class="summary-label">Other Income</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['other_income'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Other Income</div>
                 </div>
             </div>
-            <div class="col-lg-4 custom-col-8 col-12">
+            <div class="col-lg-6 col-12">
                 <div class="income-summary-card tone-total">
-                    <div class="summary-label">Total Income</div>
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['total_income'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Total Income</div>
                 </div>
             </div>
         </div>
@@ -235,7 +236,7 @@
 
 @push('styles')
     <style>
-        .finance-shell { padding: 8px 0 16px; }
+        .finance-shell { padding: 8px 0 16px; background-color: white; }
         .finance-header {
             display: flex;
             justify-content: space-between;
@@ -243,7 +244,7 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        .finance-summary-row { margin: 2px 0 10px; }
+        .finance-summary-row { margin: 2px 0 10px;padding:7px; }
         .income-summary-card {
             border-radius: 10px;
             padding: 12px 14px;
@@ -253,14 +254,17 @@
             min-height: 86px;
         }
         .income-summary-card .summary-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            opacity: 0.88;
+           font-size: 12px;
+    text-transform: uppercase;
+    opacity: .88;
+    text-align: center;
+    margin-top: 1rem;
         }
         .income-summary-card .summary-value {
             margin-top: 6px;
-            font-size: 22px;
-            font-weight: 700;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700;
         }
         .tone-admission { background: #f35f62;}
         .tone-coworking { background: #fdc518;}

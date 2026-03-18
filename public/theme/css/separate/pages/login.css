@@ -8,16 +8,18 @@
    Login
    ========================================================================== */
 .sign-box {
-  width: 100%;
-  max-width: 322px;
-  margin: 0 auto;
-  background: #fff;
-  border: solid 1px #d8e2e7;
-  -webkit-border-radius: 5px;
-          border-radius: 5px;
-  padding: 20px;
-  font-size: 1rem /*16*/;
-  position: relative;
+    max-height: calc(100vh - 48px);
+    background: rgba(255, 255, 255, 0.78);
+    border: 0px;
+    box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
+    border-radius: 16px;
+    width: 100% !important;
+    margin: 0 !important;
+    max-width: 420px;
+    padding: 24px 24px 30px;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    overflow-y: auto;
 }
 .sign-box .sign-avatar {
   width: 100px;

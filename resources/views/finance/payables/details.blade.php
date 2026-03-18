@@ -53,20 +53,20 @@
         <div class="row finance-summary-row">
             <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-pending">
-                    <div class="payable-label">Pending</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['pending'] ?? 0), 0) }}</div>
+                    <div class="payable-label">Pending</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-approved">
-                    <div class="payable-label">Approved Unpaid</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['approved'] ?? 0), 0) }}</div>
+                    <div class="payable-label">Approved Unpaid</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="payable-card tone-total">
-                    <div class="payable-label">Total Payables</div>
                     <div class="payable-value">Rs. {{ number_format((float) ($summary['total'] ?? 0), 0) }}</div>
+                    <div class="payable-label">Total Payables</div>
                 </div>
             </div>
         </div>
@@ -121,17 +121,25 @@
         }
         .finance-summary-row { margin: 2px 0 10px; }
         .payable-card {
+            height:25vh;
             border-radius: 10px;
             padding: 12px 14px;
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .payable-label { font-size: 12px; text-transform: uppercase; opacity: 0.88; }
-        .payable-value { margin-top: 6px; font-size: 20px; font-weight: 700; }
-        .tone-pending { background: linear-gradient(135deg, #f97316, #ea580c); }
-        .tone-approved { background: linear-gradient(135deg, #0284c7, #0369a1); }
-        .tone-total { background: linear-gradient(135deg, #1f2937, #111827); }
+        .payable-label {   font-size: 12px;
+    text-transform: uppercase;
+    opacity: .88;
+    text-align: center;
+    margin-top: 1rem; }
+        .payable-value { margin-top: 6px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700; }
+        .tone-pending { background: #f35f62; }
+        .tone-approved { background: #fdc518; }
+        .tone-total {  background:  #975ce7; }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;

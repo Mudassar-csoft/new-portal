@@ -24,206 +24,164 @@
                   <i class="font-icon-alarm"></i>
                   <span class="notification-total-badge">{{ (int) ($webLeadNotificationTotal ?? 0) }}</span>
                 </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" style="min-width: 935px; font-size:12px;"aria-labelledby="dd-notification">
-                  <div class="dropdown-menu-notif-header w-ful">
-                    <div class="lead-tabs-wrapper w-100">
-                      <ul class="nav lead-tabs p-0 m-0 gap-0">
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" data-target="#notif-coworking">
-                            Coworking FollowUp
-                            <span class="count">0</span>
-                          </a>
-                        </li>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">
+                  @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
+                  @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
+                  @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
+                  @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
 
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" data-target="#notif-followup">
-                            Follow Up
-                            <span class="count">0</span>
-                          </a>
-                        </li>
-
-                        <li class="nav-item">
-                          <a class="nav-link active" href="#" data-target="#notif-quick-leads">
-                            Quick Leads
-                            <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
-                          </a>
-                        </li>
-
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" data-target="#notif-enrollments">
-                            Website Enrollments
-                            <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
-                          </a>
-                        </li>
-
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" data-target="#notif-admissions">
-                            Website Admissions
-                            <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
-                          </a>
-                        </li>
-
-                        <li class="nav-item">
-                          <a class="nav-link" href="#" data-target="#notif-brochures">
-                            Brochure Downloads
-                            <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
-                          </a>
-                        </li>
-                      </ul>
+                  <div class="notif-layout">
+                    <div class="notif-sidebar">
+                      <div class="notif-sidebar-title">Notifications</div>
+                      <div class="nav flex-column nav-pills notif-pills" id="notif-tabs">
+                        <a class="nav-link notif-pill-link active" href="#" data-target="#notif-quick-leads">
+                          <span>Quick Leads</span>
+                          <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
+                        </a>
+                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-enrollments">
+                          <span>Website Enrollments</span>
+                          <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
+                        </a>
+                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-admissions">
+                          <span>Website Admissions</span>
+                          <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
+                        </a>
+                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-brochures">
+                          <span>Brochure Downloads</span>
+                          <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
+                        </a>
+                      </div>
                     </div>
-                    
-                  </div>
-                  <div class="dropdown-menu-notif-list">
-                    <div class="tab-content notif-tab-content text-center">
-                      <div class="tab-pane" id="notif-coworking">
-                        <div class="text-center p-3 text-muted">No coworking follow-up notifications.</div>
-                      </div>
-                      <div class="tab-pane" id="notif-followup">
-                        <div class="text-center p-3 text-muted">No follow-up notifications.</div>
-                      </div>
-                      <div class="tab-pane active show" id="notif-quick-leads">
-                        <div class="table-responsive">
-                          <table class="table table-sm mb-0 notification-table ">
-                            <thead>
-                              <tr>
-                                <th>Full Name</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>Ateeqa Mubarik</td>
-                                <td>12-Feb-26</td>
-                                <td>10:27 AM</td>
-                              </tr>
-                              <tr>
-                                <td>Ali Raza</td>
-                                <td>12-Feb-26</td>
-                                <td>09:15 AM</td>
-                              </tr>
-                              <tr>
-                                <td>Ali Raza</td>
-                                <td>12-Feb-26</td>
-                                <td>09:15 AM</td>
-                              </tr>
-                              <tr>
-                                <td>Sara Khan</td>
-                                <td>11-Feb-26</td>
-                                <td>04:42 PM</td>
-                              </tr>
-                            </tbody>
-                          </table>
+
+                    <div class="notif-detail">
+                      <div class="tab-content notif-tab-content">
+                        <div class="tab-pane active show" id="notif-quick-leads">
+                          <div class="notif-pane-header">
+                            <h6>Quick Leads</h6>
+                            <!-- <span>{{ $webLeadNotificationCounts['quick_lead'] }}</span> -->
+                          </div>
+                          @if ($quickLeads->isEmpty())
+                            <div class="text-center p-4 text-muted">No quick leads notifications.</div>
+                          @else
+                            <div class="table-responsive">
+                              <table class="table table-sm mb-0 notification-table">
+                                <thead>
+                                  <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  @foreach ($quickLeads as $webLead)
+                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                      <td>{{ $webLead->full_name }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    </tr>
+                                  @endforeach
+                                </tbody>
+                              </table>
+                            </div>
+                          @endif
                         </div>
-                        @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
-                        @if ($quickLeads->isEmpty())
-                          <div class="text-center p-3 text-muted">No quick leads notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($quickLeads as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                  </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
+
+                        <div class="tab-pane" id="notif-enrollments">
+                          <div class="notif-pane-header">
+                            <h6>Website Enrollments</h6>
+                            <!-- <span>{{ $webLeadNotificationCounts['website_enrollment'] }}</span> -->
                           </div>
-                        @endif
-                      </div>
-                      <div class="tab-pane" id="notif-enrollments">
-                        @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
-                        @if ($websiteEnrollments->isEmpty())
-                          <div class="text-center p-3 text-muted">No website enrollments notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($websiteEnrollments as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                          @if ($websiteEnrollments->isEmpty())
+                            <div class="text-center p-4 text-muted">No website enrollments notifications.</div>
+                          @else
+                            <div class="table-responsive">
+                              <table class="table table-sm mb-0 notification-table">
+                                <thead>
+                                  <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                   </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
+                                </thead>
+                                <tbody>
+                                  @foreach ($websiteEnrollments as $webLead)
+                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                      <td>{{ $webLead->full_name }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    </tr>
+                                  @endforeach
+                                </tbody>
+                              </table>
+                            </div>
+                          @endif
+                        </div>
+
+                        <div class="tab-pane" id="notif-admissions">
+                          <div class="notif-pane-header">
+                            <h6>Website Admissions</h6>
+                            <!-- <span>{{ $webLeadNotificationCounts['website_admission'] ?? 0 }} items</span> -->
                           </div>
-                        @endif
-                      </div>
-                      <div class="tab-pane" id="notif-admissions">
-                        @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
-                        @if ($websiteAdmissions->isEmpty())
-                          <div class="text-center p-3 text-muted">No website admissions notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($websiteAdmissions as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                          @if ($websiteAdmissions->isEmpty())
+                            <div class="text-center p-4 text-muted">No website admissions notifications.</div>
+                          @else
+                            <div class="table-responsive">
+                              <table class="table table-sm mb-0 notification-table">
+                                <thead>
+                                  <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                   </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
+                                </thead>
+                                <tbody>
+                                  @foreach ($websiteAdmissions as $webLead)
+                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                      <td>{{ $webLead->full_name }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    </tr>
+                                  @endforeach
+                                </tbody>
+                              </table>
+                            </div>
+                          @endif
+                        </div>
+
+                        <div class="tab-pane" id="notif-brochures">
+                          <div class="notif-pane-header">
+                            <h6>Brochure Downloads</h6>
+                            <!-- <span>{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }} items</span> -->
                           </div>
-                        @endif
-                      </div>
-                      <div class="tab-pane" id="notif-brochures">
-                        @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
-                        @if ($brochureDownloads->isEmpty())
-                          <div class="text-center p-3 text-muted">No brochure download notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($brochureDownloads as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                          @if ($brochureDownloads->isEmpty())
+                            <div class="text-center p-4 text-muted">No brochure download notifications.</div>
+                          @else
+                            <div class="table-responsive">
+                              <table class="table table-sm mb-0 notification-table">
+                                <thead>
+                                  <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                   </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
-                          </div>
-                        @endif
+                                </thead>
+                                <tbody>
+                                  @foreach ($brochureDownloads as $webLead)
+                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                      <td>{{ $webLead->full_name }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    </tr>
+                                  @endforeach
+                                </tbody>
+                              </table>
+                            </div>
+                          @endif
+                        </div>
                       </div>
                     </div>
                   </div>
+
                   <div class="dropdown-menu-notif-more">
                     <a href="{{ route('web-leads.index') }}">See more</a>
                   </div>
@@ -512,16 +470,16 @@
                           <div class="dropdown add-lead">
                 <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Add
+                    Add New
                 </button>
 
-                <div class="dropdown-menu p-2" aria-labelledby="dd-header-add">
+                <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
 
                     <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead">
 
-                    <a class="dropdown-item" href="{{ route('leads.create') }}">Create New Lead</a>
-                    <a class="dropdown-item" href="#">Create New Admission</a>
-                    <a class="dropdown-item" href="#">Create New Registration</a>
+                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;" href="{{ route('leads.create') }}">Lead</a>
+                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;"  href="#">Admission</a>
+                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;"  href="#">Registration</a>
 
                 </div>
             </div>
@@ -622,6 +580,8 @@ button.dropdown-toggle{
 }
 .site-header .dropdown.dropdown-notification {
     float: right;
+    position: relative;
+    z-index: 120;
 }
 .site-header{
 	height:70px;
@@ -642,6 +602,8 @@ button.dropdown-toggle{
 	background:#f7f7f7;
 	transition:0.2s;
 	position: relative;
+    cursor: pointer;
+    z-index: 121;
 }
 .notification-total-badge{
 	position:absolute;
@@ -667,6 +629,117 @@ button.dropdown-toggle{
 }
 .site-header .dropdown-menu-notif-item{
 	width: 600px !important;
+}
+.site-header .dropdown-menu-notif{
+  width: 395px;
+    height: 224px;
+}
+.notif-detail{
+      width: 294px !important;
+}
+.dropdown-menu-notif{
+	width: 935px;
+	max-width: calc(100vw - 32px);
+	font-size: 12px;
+	overflow: hidden;
+}
+.notif-layout{
+	display: flex;
+	align-items: stretch;
+	min-height: 390px;
+}
+.notif-sidebar{
+	width: 235px;
+	background: #f7f9fc;
+	border-right: 1px solid #e7edf5;
+	padding: 14px;
+}
+.notif-sidebar-title{
+	font-size: 13px;
+	font-weight: 700;
+	color: #5c6b7a;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	margin-bottom: 12px;
+}
+.notif-pills{
+	gap: 8px;
+}
+.notif-pills .nav-link{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 14px;
+	border-radius: 12px !important;
+	background: #fff;
+	border: 1px solid #e3eaf3;
+	color: #2d3a48;
+	font-weight: 600;
+}
+.notif-pills .nav-link.active{
+	background: #eaf3ff;
+	color: #0a6fd1;
+	border-color: #b7d4ff;
+}
+.notif-pills .count{
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: #dc3545;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 22px;
+	text-align: center;
+}
+.notif-detail{
+	flex: 1;
+	background: #fff;
+}
+.notif-tab-content{
+	height: 100%;
+}
+.notif-tab-content .tab-pane{
+	display: none;
+	height: 100%;
+}
+.notif-tab-content .tab-pane.active,
+.notif-tab-content .tab-pane.show{
+	display: block;
+}
+.notif-pane-header{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #edf2f7;
+	background: #fff;
+}
+.notif-pane-header h6{
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #1f2d3d;
+}
+.notif-pane-header span{
+	font-size: 12px;
+	color: #7a8897;
+	font-weight: 600;
+}
+.notif-detail .table-responsive{
+	max-height: 310px;
+	overflow-y: auto;
+}
+.notif-detail .notification-table{
+	margin-bottom: 0;
+}
+.notif-detail .notification-table thead th{
+	position: sticky;
+	top: 0;
+	background: #f9fbfd;
+	z-index: 1;
 }
 .site-logo img{
     transition:0.3s;
@@ -860,28 +933,83 @@ img.icon{
     margin-left: -10px;
 
 }
+@media (max-width: 760px) {
+    .dropdown-menu-notif{
+        width: calc(100vw - 24px);
+    }
+    .notif-layout{
+        flex-direction: column;
+        min-height: auto;
+    }
+    .notif-sidebar{
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid #e7edf5;
+    }
+}
 
 	</style>
 
 
 <script>
-  document.querySelectorAll('.lead-tabs .nav-link').forEach(function(tab) {
+document.addEventListener("DOMContentLoaded", function () {
+  var notificationToggle = document.getElementById('dd-notification');
+  var notificationDropdown = notificationToggle ? notificationToggle.closest('.dropdown-notification') : null;
+  var notificationMenu = notificationDropdown ? notificationDropdown.querySelector('.dropdown-menu-notif') : null;
+
+  if (notificationToggle && notificationDropdown && notificationMenu) {
+    notificationToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var isOpen = notificationDropdown.classList.contains('open');
+
+      document.querySelectorAll('.dropdown-notification.open').forEach(function(dropdown) {
+        dropdown.classList.remove('open');
+      });
+
+      document.querySelectorAll('.dropdown-menu-notif.show').forEach(function(menu) {
+        menu.classList.remove('show');
+      });
+
+      if (!isOpen) {
+        notificationDropdown.classList.add('open');
+        notificationMenu.classList.add('show');
+        notificationToggle.setAttribute('aria-expanded', 'true');
+      } else {
+        notificationDropdown.classList.remove('open');
+        notificationMenu.classList.remove('show');
+        notificationToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    notificationMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    document.addEventListener('click', function() {
+      notificationDropdown.classList.remove('open');
+      notificationMenu.classList.remove('show');
+      notificationToggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  document.querySelectorAll('.notif-pill-link').forEach(function(tab) {
     tab.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+
       var targetId = this.getAttribute('data-target');
 
-      // remove active from all
-      document.querySelectorAll('.lead-tabs .nav-link')
-        .forEach(el => el.classList.remove('active'));
-
-      // add active to clicked
-      this.classList.add('active');
+      document.querySelectorAll('.notif-pill-link').forEach(function(link) {
+        link.classList.remove('active');
+      });
 
       document.querySelectorAll('.notif-tab-content .tab-pane').forEach(function(pane) {
         pane.classList.remove('active');
         pane.classList.remove('show');
       });
+
+      this.classList.add('active');
 
       if (targetId) {
         var targetPane = document.querySelector(targetId);
@@ -890,10 +1018,17 @@ img.icon{
           targetPane.classList.add('show');
         }
       }
-
     });
   });
-document.addEventListener("DOMContentLoaded", function () {
+
+  document.querySelectorAll('.notification-clickable').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var href = this.getAttribute('data-href');
+      if (href) {
+        window.location.href = href;
+      }
+    });
+  });
 
   function setupSearch(inputId){
     const input = document.getElementById(inputId);

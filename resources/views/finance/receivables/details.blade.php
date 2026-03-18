@@ -31,7 +31,7 @@
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
                     <div class="form-row">
-                        <div class="form-group custom-col-4">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -52,22 +52,22 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="receivable-card tone-other">
-                    <div class="receivable-label">Pending Other Charges</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['pending_other'] ?? 0), 0) }}</div>
+                    <div class="receivable-label">Pending Other Charges</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="receivable-card tone-royalty">
-                    <div class="receivable-label">Pending Royalties</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['pending_royalty'] ?? 0), 0) }}</div>
+                    <div class="receivable-label">Pending Royalties</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class="col-lg-4 col-md-6">
                 <div class="receivable-card tone-total">
-                    <div class="receivable-label">Total Receivables</div>
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['total'] ?? 0), 0) }}</div>
+                    <div class="receivable-label">Total Receivables</div>
                 </div>
             </div>
         </div>
@@ -155,17 +155,29 @@
         }
         .finance-summary-row { margin: 2px 0 10px; }
         .receivable-card {
+            height:25vh;
             border-radius: 10px;
             padding: 12px 14px;
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .receivable-label { font-size: 12px; text-transform: uppercase; opacity: 0.88; }
-        .receivable-value { margin-top: 6px; font-size: 20px; font-weight: 700; }
-        .tone-other { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .tone-royalty { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
-        .tone-total { background: linear-gradient(135deg, #1f2937, #111827); }
+        .receivable-label {
+                font-size: 12px;
+    text-transform: uppercase;
+    opacity: .88;
+    text-align: center;
+    margin-top: 1rem;
+        }
+        .receivable-value {
+           margin-top: 6px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700;
+        }
+        .tone-other {background: #f35f62;  }
+        .tone-royalty { background: #fdc518; }
+        .tone-total { background:  #975ce7; }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;

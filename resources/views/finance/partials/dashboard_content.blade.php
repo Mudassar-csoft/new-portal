@@ -73,7 +73,7 @@
     </div>
 
     <div class="row finance-kpis">
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-income"
                 href="{{ route('finance.dashboard.income', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
@@ -82,7 +82,7 @@
             <div class="kpi-label">Total Income</div>
             </a>
         </div>
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-4 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-expense"
                 href="{{ route('finance.dashboard.expense', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
@@ -91,7 +91,7 @@
             <div class="kpi-label">Total Expense</div>
             </a>
         </div>
-        <div class="col-xl-2 col-md-6">
+        <div class="col-xl-4 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-payable"
                 href="{{ route('finance.dashboard.payables', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
@@ -100,7 +100,7 @@
             <div class="kpi-label">Payables</div>
             </a>
         </div>
-        <div class="col-xl-2 col-md-6">
+        <div class="col-xl-6 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-receivable"
                 href="{{ route('finance.dashboard.receivables', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"
@@ -109,7 +109,7 @@
             <div class="kpi-label">Receivables</div>
             </a>
         </div>
-        <div class="col-xl-2 col-md-6">
+        <div class="col-xl-6 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-cash"
                 href="{{ route('finance.dashboard.netcashflow', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}"

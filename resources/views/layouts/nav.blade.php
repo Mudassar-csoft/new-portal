@@ -5,21 +5,21 @@
 			<li>
 				<a href="{{ route('dashboard') }}" style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/dashboard.png" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Dashboard</span>
 				</a>
 			</li>
 			<li class="brown with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/enquiry.JPG" alt="Leads"
-					 	style="height: 20px; width: 20px; margin-right: 8px;">
+					 	style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Leads Management</span></span>
 				<ul>
 					<li><a href="{{ route('leads.create') }}"><span class="lbl">Create New Lead</span></a></li>
 					<li class="with-sub">
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/classroom.webp" alt="Dashboard"
-								style="height: 20px; width: 20px; margin-right: 8px;">
+								style="height: 15px; width: 15px; margin-right: 8px;">
 							<span class="lbl">Training Leads</span>
 						</span>
 						<ul>
@@ -41,7 +41,7 @@
 					<li class="with-sub">
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/meeting.webp" alt="CO leads"
-								style="height: 20px; width: 20px; margin-right: 8px;">
+								style="height: 15px; width: 15px; margin-right: 8px;">
 							<span class="lbl">Coworking Leads</span>
 						</span>
 						<ul>
@@ -83,7 +83,7 @@
 					<li class="with-sub">
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp"
-								alt="Exam Leads" style="height: 20px; width: 20px; margin-right: 8px;">
+								alt="Exam Leads" style="height: 15px; width: 15px; margin-right: 8px;">
 							<span class="lbl">Exam Leads</span>
 						</span>
 						<ul>
@@ -128,7 +128,7 @@
 					<li class="with-sub">
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/study-abroad.webp" alt="SA Leads"
-								style="height: 20px; width: 20px; margin-right: 8px;">
+								style="height: 15px; width: 15px; margin-right: 8px;">
 							<span class="lbl">Study Abroad Leads</span>
 						</span>
 						<ul>
@@ -175,7 +175,7 @@
 			<li class="purple with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/admission.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Registration Management</span></span>
 				<ul>
 					<li><a href="{{ route('registration.status') }}" class="stage-link"><span class="lbl">All Registration</span><span
@@ -185,7 +185,7 @@
 			<li class="gold orange with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/admissions.webp" alt="Admissions"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Admission Management</span></span>
 				<ul>
 					<li><a href="{{ route('admission.status') }}" class="stage-link"><span class="lbl">All Admissions</span><span
@@ -195,7 +195,7 @@
 			<li class="magenta with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/students.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Student Management</span></span>
 				<ul>
 					<li><a href="{{ route('student.attendance.index') }}" class="stage-link"><span class="lbl">Attendance</span><span
@@ -223,7 +223,7 @@
 			<li class="blue with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/batch-time.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Batches &amp; Time Table</span></span>
 				<ul>
 					<li><a href="{{ route('batch.create') }}" class="stage-link"><span class="lbl">Create Batch</span><span
@@ -247,7 +247,7 @@
 			<li class="green with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/courses.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Programmes</span></span>
 				<ul>
 					<li><a href="{{ route('program.create') }}" class="stage-link"><span class="lbl">Create Program</span><span
@@ -263,7 +263,7 @@
 			<li class="orange-red with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/campuses.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Campuses / Franchise</span></span>
 				<ul>
 					<li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span
@@ -281,7 +281,7 @@
 			<li class="grey with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/humanresource.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Human Resources</span></span>
 				<ul>
 					<li><a href="{{ route('hrm.dashboard') }}" class="stage-link"><span class="lbl">HRM Dashboard</span></a></li>
@@ -298,7 +298,7 @@
 			<li class="gold with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/expense.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Finance Management</span></span>
 				<ul>
 					<li><a href="{{ route('finance.dashboard') }}" class="stage-link"><span class="lbl">Dashboard</span></a></li>
@@ -334,7 +334,7 @@
 			<li class="teal with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/courses.webp" alt="Inventory"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Inventory Management</span></span>
 				<ul>
 					<li><a href="{{ route('inventory.create') }}" class="stage-link"><span class="lbl">Feed Campus Inventory</span></a></li>
@@ -344,7 +344,7 @@
 			<li class="blue with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/certificate.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Certificate Management</span></span>
 				<ul>
 					<li><a href="#" class="stage-link"><span class="lbl">Request for Approval</span><span
@@ -364,7 +364,7 @@
 			<li class="green with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/user.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">User Management</span></span>
 				<ul>
 					<li><a href="{{ route('users.index') }}"><span class="lbl">Users</span></a></li>
@@ -376,7 +376,7 @@
 			<li class="gold orange with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/event.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Event Management</span></span>
 				<ul>
 					<li><a href="#" class="stage-link"><span class="lbl">Create Event</span></a></li>
@@ -395,7 +395,7 @@
 			<li class="magenta with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/marketing.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Marketing Management</span></span>
 				<ul>
 					<li><a href="#" class="stage-link"><span class="lbl">Draft Campaigns</span><span
@@ -415,7 +415,7 @@
 			<li class="brown with-sub">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Reports</span></span>
 				<ul>
 					<li><a href="#" class="stage-link"><span class="lbl">Leads &amp; Admissions</span></a></li>
@@ -429,13 +429,13 @@
 			<li class="brown">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/website.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Website</span></span>
 			</li>
 			<li class="brown">
 				<span style="padding-left:10px">
 					<img class="font-icon-dashboard" src="img/navbarIcons/goto.webp" alt="Dashboard"
-						style="height: 20px; width: 20px; margin-right: 8px;">
+						style="height: 15px; width: 15px; margin-right: 8px;">
 					<span class="lbl">Website Admin Panel</span></span>
 			</li>
 		</ul>
@@ -452,7 +452,5 @@
 
 
 
-.side-menu-list li.with-sub>span{
-	padding-right:8px;
-}
+
 	</style>
