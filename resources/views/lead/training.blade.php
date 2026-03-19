@@ -36,7 +36,7 @@
                     Course Interested
                 </label>
                 <select name="program_id"
-                        class="form-select form-select-sm @error('program_id') is-invalid @enderror" 
+                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror" 
                         
                         required>
                     <option value="">-Select-</option>
@@ -59,7 +59,7 @@
         
         <div class="col-md-6 col-lg-3 ">
             <label class="form-label text-dark fw-semibold small ">
-                Teaching Method <span class="text-danger">*</span>
+                Teaching Method <span class="required-feild_symbol">*</span>
             </label>
             <div class="row mt-2 ">
                 <div class="col-sm-4 d-flex justify-content-center mb-1">
@@ -116,7 +116,7 @@
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark">
-                Email Address
+                Email Address <span class="required-feild_symbol">*</span>
             </label>
             <input type="email"
                    name="email"
@@ -129,7 +129,7 @@
         
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required">Country</label>
+            <label class="form-label small fw-semibold text-dark required"> Country </label>
             <select id="lead-country-select"
                     name="details[country]"
                     class="form-select form-select-sm @error('details.country') is-invalid @enderror">
@@ -139,7 +139,7 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required">City</label>
+            <label class="form-label small fw-semibold text-dark required"> City </label>
             <select id="lead-city-select"
                     name="city"
                     class="form-select form-select-sm @error('city') is-invalid @enderror">
@@ -150,8 +150,8 @@
             @enderror
         </div>
          <div class="col-md-6 col-lg-3 ">
-            <label class="form-label small fw-semibold text-dark required">Area</label>
-            <input type="text"
+            <label class="form-label small fw-semibold text-dark required"> Area </label>
+            <input type="text" placeholder = "Enter Area Here"
                    name="details[area]"
                    class="form-control form-control-sm @error('details.area') is-invalid @enderror"
                    value="{{ old('details.area', data_get($leadPrefill, 'details.area')) }}"
@@ -164,7 +164,7 @@
     <!-- ROW 3 -->
     <div class="row mt-2" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3 mt-lg-1">
-            <label class="form-label small fw-semibold text-dark required">Marketing Source</label>
+            <label class="form-label small fw-semibold text-dark required"> Marketing Source </label>
             <select name="marketing_source"
                     class="form-select form-select-sm @error('marketing_source') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -180,7 +180,7 @@
             @enderror
         </div>
          <div class="col-md-6 col-lg-3 mt-lg-1">
-            <label class="form-label small fw-semibold text-dark required">Origin</label>
+            <label class="form-label small fw-semibold text-dark required"> Origin </label>
             <select name="origin"
                     class="form-select form-select-sm @error('origin') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -196,7 +196,7 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3 mt-lg-1">
-            <label class="form-label small fw-semibold text-dark required">Preferred Campus</label>
+            <label class="form-label small fw-semibold text-dark required"> Preferred Campus </label>
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
                 <option value="">-Select-</option>
@@ -215,7 +215,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-lg-1">
             <label class="form-label text-dark fw-semibold small ">
-                Gender <span class="text-danger">*</span>
+                Gender <span class="required-feild_symbol">*</span>
             </label>
              <div class="row mt-2 ">
                 <div class="col-sm-4 d-flex justify-content-center mb-1 mt-1">
@@ -271,7 +271,7 @@
     <!-- Radio Section -->
     <div class="row mt-2" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3">
-                <label class="form-label small fw-semibold text-dark required">Next Follow Up</label>
+                <label class="form-label small fw-semibold text-dark required">Next Follow Up </label>
                 <input type="datetime-local"
                     name="details[next_followup_at]"
                     class="form-control form-control-sm @error('details.next_followup_at') is-invalid @enderror"
@@ -404,7 +404,6 @@ gap:.5rem;
     border: solid 1px #d8e2e7;
     -webkit-border-radius: .25rem;
     border-radius: .25rem;
-    font-size: 12px !important;
     line-height: 2 !important;
     color: #343434;
     padding: .300rem 25px .300rem 1rem;
@@ -426,6 +425,12 @@ height:2.25rem;
 textarea.form-control-sm {
     height:5rem;
     resize: vertical;
+}
+.training-course-select{
+    width: fit-content;
+    min-width: 180px;
+    max-width: 100%;
+    display: inline-block;
 }
 
 /* ---------- Radio Buttons ---------- */

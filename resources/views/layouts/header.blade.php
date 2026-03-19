@@ -30,154 +30,136 @@
                   @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
                   @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
 
-                  <div class="notif-layout">
-                    <div class="notif-sidebar">
-                      <div class="notif-sidebar-title">Notifications</div>
-                      <div class="nav flex-column nav-pills notif-pills" id="notif-tabs">
-                        <a class="nav-link notif-pill-link active" href="#" data-target="#notif-quick-leads">
-                          <span>Quick Leads</span>
-                          <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
-                        </a>
-                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-enrollments">
-                          <span>Website Enrollments</span>
-                          <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
-                        </a>
-                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-admissions">
-                          <span>Website Admissions</span>
-                          <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
-                        </a>
-                        <a class="nav-link notif-pill-link" href="#" data-target="#notif-brochures">
-                          <span>Brochure Downloads</span>
-                          <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
-                        </a>
+                  <div class="notif-accordion">
+                    <div class="notif-accordion-item notif-hover-card active">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="true">
+                        <span>Quick Leads</span>
+                        <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel show" id="notif-quick-leads">
+                        @if ($quickLeads->isEmpty())
+                          <div class="text-center p-4 text-muted">No quick leads notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($quickLeads as $webLead)
+                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                    <td>{{ $webLead->full_name }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
                       </div>
                     </div>
 
-                    <div class="notif-detail">
-                      <div class="tab-content notif-tab-content">
-                        <div class="tab-pane active show" id="notif-quick-leads">
-                          <div class="notif-pane-header">
-                            <h6>Quick Leads</h6>
-                            <!-- <span>{{ $webLeadNotificationCounts['quick_lead'] }}</span> -->
-                          </div>
-                          @if ($quickLeads->isEmpty())
-                            <div class="text-center p-4 text-muted">No quick leads notifications.</div>
-                          @else
-                            <div class="table-responsive">
-                              <table class="table table-sm mb-0 notification-table">
-                                <thead>
-                                  <tr>
-                                    <th>Full Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-enrollments" aria-expanded="false">
+                        <span>Website Enrollments</span>
+                        <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-enrollments">
+                        @if ($websiteEnrollments->isEmpty())
+                          <div class="text-center p-4 text-muted">No website enrollments notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($websiteEnrollments as $webLead)
+                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                    <td>{{ $webLead->full_name }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  @foreach ($quickLeads as $webLead)
-                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                      <td>{{ $webLead->full_name }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                    </tr>
-                                  @endforeach
-                                </tbody>
-                              </table>
-                            </div>
-                          @endif
-                        </div>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
 
-                        <div class="tab-pane" id="notif-enrollments">
-                          <div class="notif-pane-header">
-                            <h6>Website Enrollments</h6>
-                            <!-- <span>{{ $webLeadNotificationCounts['website_enrollment'] }}</span> -->
-                          </div>
-                          @if ($websiteEnrollments->isEmpty())
-                            <div class="text-center p-4 text-muted">No website enrollments notifications.</div>
-                          @else
-                            <div class="table-responsive">
-                              <table class="table table-sm mb-0 notification-table">
-                                <thead>
-                                  <tr>
-                                    <th>Full Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-admissions" aria-expanded="false">
+                        <span>Website Admissions</span>
+                        <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-admissions">
+                        @if ($websiteAdmissions->isEmpty())
+                          <div class="text-center p-4 text-muted">No website admissions notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($websiteAdmissions as $webLead)
+                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                    <td>{{ $webLead->full_name }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  @foreach ($websiteEnrollments as $webLead)
-                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                      <td>{{ $webLead->full_name }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                    </tr>
-                                  @endforeach
-                                </tbody>
-                              </table>
-                            </div>
-                          @endif
-                        </div>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
 
-                        <div class="tab-pane" id="notif-admissions">
-                          <div class="notif-pane-header">
-                            <h6>Website Admissions</h6>
-                            <!-- <span>{{ $webLeadNotificationCounts['website_admission'] ?? 0 }} items</span> -->
-                          </div>
-                          @if ($websiteAdmissions->isEmpty())
-                            <div class="text-center p-4 text-muted">No website admissions notifications.</div>
-                          @else
-                            <div class="table-responsive">
-                              <table class="table table-sm mb-0 notification-table">
-                                <thead>
-                                  <tr>
-                                    <th>Full Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-brochures" aria-expanded="false">
+                        <span>Brochure Downloads</span>
+                        <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-brochures">
+                        @if ($brochureDownloads->isEmpty())
+                          <div class="text-center p-4 text-muted">No brochure download notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($brochureDownloads as $webLead)
+                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                    <td>{{ $webLead->full_name }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
-                                </thead>
-                                <tbody>
-                                  @foreach ($websiteAdmissions as $webLead)
-                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                      <td>{{ $webLead->full_name }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                    </tr>
-                                  @endforeach
-                                </tbody>
-                              </table>
-                            </div>
-                          @endif
-                        </div>
-
-                        <div class="tab-pane" id="notif-brochures">
-                          <div class="notif-pane-header">
-                            <h6>Brochure Downloads</h6>
-                            <!-- <span>{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }} items</span> -->
+                                @endforeach
+                              </tbody>
+                            </table>
                           </div>
-                          @if ($brochureDownloads->isEmpty())
-                            <div class="text-center p-4 text-muted">No brochure download notifications.</div>
-                          @else
-                            <div class="table-responsive">
-                              <table class="table table-sm mb-0 notification-table">
-                                <thead>
-                                  <tr>
-                                    <th>Full Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  @foreach ($brochureDownloads as $webLead)
-                                    <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                      <td>{{ $webLead->full_name }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                      <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                    </tr>
-                                  @endforeach
-                                </tbody>
-                              </table>
-                            </div>
-                          @endif
-                        </div>
+                        @endif
                       </div>
                     </div>
                   </div>
@@ -193,17 +175,17 @@
                             aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
                             <i class="fa-solid fa-building"></i>
                           </button>
-                          <div class="dropdown-menu p-1">
-                            <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
+                          <div class="dropdown-menu p-2 campus-dropdown-menu">
+                            <!-- <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
                             <div class="campus-dropdown-caption px-2 pb-2">
                               <span class="text-muted">Current:</span>
                               <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}</strong>
-                            </div>
-                            <a class="dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
+                            </div> -->
+                            <a class="dropdown-item campus-dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
                               <i class="fa-solid fa-building campus-item-icon"></i>All Campuses
                             </a>
                             @foreach(($dashboardCampuses ?? collect()) as $campus)
-                              <a class="dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
+                              <a class="dropdown-item campus-dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
                                 <i class="fa-solid fa-building campus-item-icon"></i>{{ $campus->code }}-{{ $campus->name }}
                               </a>
                             @endforeach
@@ -230,15 +212,14 @@
                             </div>
                             <div class="dp-main-menu ">
                             <div class="dp-main-menu "style = "line-height: 20px;">
-                                <a href="#" class="dropdown-item p-1  ml-2 m-1 ">
+                                <a href="#" class="dropdown-item p-1 ml-2 m-1 login-dropdown-item">
                                   <i class="fas fa-user me-2 "></i> Profile
                                 </a>
-                                <a href="#" class="dropdown-item  ml-2 m-1  p-1">
+                                <a href="#" class="dropdown-item ml-2 m-1 p-1 login-dropdown-item">
                                   <i class="fas fa-key me-2"></i> Change Password
                                 </a>
-                                <a href="#" class="dropdown-item  ml-2 m-1 text-danger">
-                                  <i class="
-                                fa-solid fa-right-from-bracket me-2"></i> Log Out
+                                <a href="#" class="dropdown-item ml-2 m-1 text-danger login-dropdown-item">
+                                  <i class="fas fa-sign-out-alt me-2"></i> Log Out
                                 </a>
                               </div>
                             </div>
@@ -477,9 +458,9 @@
 
                     <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->
 
-                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;" href="{{ route('leads.create') }}">Lead</a>
-                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;"  href="#">Admission</a>
-                    <a class="dropdown-item p-2" style = "background-color:white; border-radius:5%; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12); border: 1px solid #e3eaf3; margin-bottom:8px;"  href="#">Registration</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item" href="{{ route('leads.create') }}">Lead</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Admission</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Registration</a>
 
                 </div>
             </div>
@@ -630,59 +611,52 @@ button.dropdown-toggle{
 .site-header .dropdown-menu-notif-item{
 	width: 600px !important;
 }
-.site-header .dropdown-menu-notif{
-  width: 395px;
-    height: 224px;
-}
-.notif-detail{
-      width: 294px !important;
-}
 .dropdown-menu-notif{
-	width: 935px;
+	width: 720px;
 	max-width: calc(100vw - 32px);
 	font-size: 12px;
 	overflow: hidden;
 }
-.notif-layout{
-	display: flex;
-	align-items: stretch;
-	min-height: 390px;
-}
-.notif-sidebar{
-	width: 235px;
+.notif-accordion{
+	max-height: 390px;
+	overflow-y: auto;
+	padding: 12px;
 	background: #f7f9fc;
-	border-right: 1px solid #e7edf5;
-	padding: 14px;
 }
-.notif-sidebar-title{
-	font-size: 13px;
-	font-weight: 700;
-	color: #5c6b7a;
-	text-transform: uppercase;
-	letter-spacing: .04em;
-	margin-bottom: 12px;
+.notif-accordion-item{
+	background: #fff;
+	border: 1px solid #e3eaf3;
+	border-radius: 12px;
+	overflow: hidden;
+	transition: background-color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
-.notif-pills{
-	gap: 8px;
+.notif-accordion-item + .notif-accordion-item{
+	margin-top: 10px;
 }
-.notif-pills .nav-link{
+.notif-hover-card:hover{
+	background: #eef5ff;
+	border-color: #cfe0f5;
+	transform: translateY(-1px);
+	box-shadow: 0 3px 10px rgba(15, 54, 88, 0.08);
+}
+.notif-accordion-toggle{
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 10px;
+	width: 100%;
 	padding: 12px 14px;
-	border-radius: 12px !important;
-	background: #fff;
-	border: 1px solid #e3eaf3;
+	background: transparent;
+	border: 0;
 	color: #2d3a48;
 	font-weight: 600;
+	cursor: pointer;
 }
-.notif-pills .nav-link.active{
+.notif-accordion-item.active .notif-accordion-toggle{
 	background: #eaf3ff;
 	color: #0a6fd1;
-	border-color: #b7d4ff;
 }
-.notif-pills .count{
+.notif-accordion-toggle .count{
 	min-width: 22px;
 	height: 22px;
 	padding: 0 6px;
@@ -694,48 +668,22 @@ button.dropdown-toggle{
 	line-height: 22px;
 	text-align: center;
 }
-.notif-detail{
-	flex: 1;
-	background: #fff;
-}
-.notif-tab-content{
-	height: 100%;
-}
-.notif-tab-content .tab-pane{
+.notif-accordion-panel{
 	display: none;
-	height: 100%;
+	background: #fff;
+	border-top: 1px solid #edf2f7;
 }
-.notif-tab-content .tab-pane.active,
-.notif-tab-content .tab-pane.show{
+.notif-accordion-panel.show{
 	display: block;
 }
-.notif-pane-header{
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 16px 20px;
-	border-bottom: 1px solid #edf2f7;
-	background: #fff;
-}
-.notif-pane-header h6{
-	margin: 0;
-	font-size: 16px;
-	font-weight: 700;
-	color: #1f2d3d;
-}
-.notif-pane-header span{
-	font-size: 12px;
-	color: #7a8897;
-	font-weight: 600;
-}
-.notif-detail .table-responsive{
+.notif-accordion-panel .table-responsive{
 	max-height: 310px;
 	overflow-y: auto;
 }
-.notif-detail .notification-table{
+.notif-accordion-panel .notification-table{
 	margin-bottom: 0;
 }
-.notif-detail .notification-table thead th{
+.notif-accordion-panel .notification-table thead th{
 	position: sticky;
 	top: 0;
 	background: #f9fbfd;
@@ -873,6 +821,19 @@ border:2px solid #ddd;
     justify-content: center;
 	border:1px solid black;
 }
+.login-dropdown-item{
+	background-color:white;
+	border-radius:5%;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+	border: 1px solid #e3eaf3;
+	padding: 10px 12px !important;
+	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.login-dropdown-item:hover{
+	background: #eef5ff;
+	border-color: #cfe0f5;
+	transform: translateY(-1px);
+}
 .dropdown-menu.p-1.show {
     width: 366px !important;
     left: -73px  !important;
@@ -882,16 +843,56 @@ border:2px solid #ddd;
 	font-size: 12px !important;
 	margin-bottom: 4px;
 }
+.campus-dropdown-menu{
+	background-color:#f7f9fc;
+	min-width: 260px;
+	width: 320px;
+}
+.campus-dropdown-item{
+	background-color:white;
+	border-radius:5%;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+	border: 1px solid #e3eaf3;
+	margin-bottom:8px;
+	padding: 10px 12px !important;
+	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.campus-dropdown-menu .dropdown-item:last-child{
+	margin-bottom: 0;
+}
 .campus-item-icon{
 	width: 16px;
 	margin-right: 8px;
 	color: #00a8ff;
 	text-align: center;
 }
+.campus-dropdown-item:hover{
+	background: #eef5ff;
+	border-color: #cfe0f5;
+	transform: translateY(-1px);
+}
+.add-new-dropdown-item{
+	background-color:white;
+	border-radius:5%;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+	border: 1px solid #e3eaf3;
+	margin-bottom:8px;
+	padding: 10px 12px !important;
+	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.add-new .dropdown-menu .dropdown-item:last-child{
+	margin-bottom: 0;
+}
+.add-new-dropdown-item:hover{
+	background: #eef5ff;
+	border-color: #cfe0f5;
+	transform: translateY(-1px);
+}
 .dropdown-campus .dropdown-item.active,
 .dropdown-campus .dropdown-item:active{
 	background: #eaf4ff;
 	color: #0a6fd1;
+	border-color: #bfd8fb;
 }
 .dropdown-menu{
     
@@ -937,14 +938,8 @@ img.icon{
     .dropdown-menu-notif{
         width: calc(100vw - 24px);
     }
-    .notif-layout{
-        flex-direction: column;
-        min-height: auto;
-    }
-    .notif-sidebar{
-        width: 100%;
-        border-right: 0;
-        border-bottom: 1px solid #e7edf5;
+    .notif-accordion{
+        max-height: 70vh;
     }
 }
 
@@ -993,30 +988,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  document.querySelectorAll('.notif-pill-link').forEach(function(tab) {
-    tab.addEventListener('click', function(e) {
+  document.querySelectorAll('.notif-accordion-toggle').forEach(function(toggle) {
+    toggle.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
 
       var targetId = this.getAttribute('data-target');
+      var parentItem = this.closest('.notif-accordion-item');
+      var targetPanel = targetId ? document.querySelector(targetId) : null;
+      var isOpen = parentItem && parentItem.classList.contains('active');
 
-      document.querySelectorAll('.notif-pill-link').forEach(function(link) {
-        link.classList.remove('active');
+      document.querySelectorAll('.notif-accordion-item').forEach(function(item) {
+        item.classList.remove('active');
       });
 
-      document.querySelectorAll('.notif-tab-content .tab-pane').forEach(function(pane) {
-        pane.classList.remove('active');
-        pane.classList.remove('show');
+      document.querySelectorAll('.notif-accordion-panel').forEach(function(panel) {
+        panel.classList.remove('show');
       });
 
-      this.classList.add('active');
+      document.querySelectorAll('.notif-accordion-toggle').forEach(function(button) {
+        button.setAttribute('aria-expanded', 'false');
+      });
 
-      if (targetId) {
-        var targetPane = document.querySelector(targetId);
-        if (targetPane) {
-          targetPane.classList.add('active');
-          targetPane.classList.add('show');
-        }
+      if (!isOpen && parentItem && targetPanel) {
+        parentItem.classList.add('active');
+        targetPanel.classList.add('show');
+        this.setAttribute('aria-expanded', 'true');
       }
     });
   });

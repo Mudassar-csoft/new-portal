@@ -115,20 +115,6 @@
 			padding: 0;
 		}
 
-		.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-		.select2-container--default .select2-selection--single .select2-selection__rendered,
-		.select2-container--white .select2-selection--single .select2-selection__rendered {
-			border: solid 1px #d8e2e7;
-			-webkit-border-radius: .25rem;
-			border-radius: .25rem;
-			font-size: 1rem;
-			line-height: 1.5;
-			color: #343434;
-			padding: .375rem 25px .375rem 1rem;
-			min-height: 32px;
-			background: #fff;
-		}
-
 		.form-label {
 			font-size: 11px;
 			font-weight: 600;

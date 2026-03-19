@@ -179,13 +179,6 @@
 			align-items: center;
 			width: 100%;
 		}
-		.select2-container--white .select2-selection--single .select2-selection__rendered {
-			line-height: 36px;
-			padding-left: 12px;
-			padding-right: 28px;
-			flex: 1;
-			min-width: 0;
-		}
 		.select2-container--white .select2-selection--multiple {
 			height: 36px;
 			display: flex;

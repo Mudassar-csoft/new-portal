@@ -48,7 +48,7 @@ input,
 textarea,
 select,
 button {
-  font-size: 17px !important; 
+  font-size: 14px !important; 
   line-height: 1.5;
 }
 
@@ -68,6 +68,7 @@ hr {
 }
 .fa-classic,
 .fa-regular,
+.fa-solid,
 .fa-solid,
 .far,
 .fa,
@@ -300,7 +301,7 @@ display: flex;
 }
 
 .row {
-  align-items: center !important;
+  align-items: flex-start !important;
   margin-left: -0.5rem;  /* -8px */
   margin-right: -0.5rem; /* -8px */
 }
@@ -344,25 +345,36 @@ margin: 0 !important;
 /* display: block; */
     margin-bottom: 6px;
     margin-top: 6px;
-    font-size: 0.80rem;
+    font-size: 14px !important;
    color: #343a40 !important;
     text-transform: uppercase;
 	font-weight:600;
 }
+.required::after,
+.required-feild_symbol {
+    color: red;
+    font-size: 18px !important;
+	margin-left: 1px;
+}
+
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--white .select2-selection--single .select2-selection__rendered {
 border: solid 1px #d8e2e7;
 border-radius: .25rem;
-font-size: 13px !important;
+font-size: 16px !important;
+/* font-weight:600; */
 line-height: 1.5;
 color: #343434;
 padding: .375rem 25px .375rem 1rem;
 min-height: 37px !important;
 background: #fff;
 }
+.select2-results__option{
+font-size: 16px !important;
 
+}
 /* =========================================================
    Action Dropdowns
    ========================================================= */
@@ -454,19 +466,6 @@ line-height: 1.2 !important;
 text-align: center !important;
 }
 
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
-.select2-container--default .select2-selection--single .select2-selection__rendered,
-.select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
-    -webkit-border-radius: .25rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #343434;
-    padding: .375rem 25px .375rem 1rem;
-    min-height: 32px;
-    background: #fff
-}
 .btn{
 	font-size:16px !important;
 }

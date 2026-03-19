@@ -7,9 +7,6 @@
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
-		$selectedCampusLabel = isset($selectedCampus) && $selectedCampus
-			? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name)
-			: '';
 		$dailyRows = $dailyActivity['rows'] ?? [];
 		$dailyTotals = $dailyActivity['totals'] ?? [
 			'leads' => 0,
@@ -32,145 +29,134 @@
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		@if($selectedCampusLabel)
-			<div class="dashboard-campus-banner">
-				<div>
-					<!-- <span class="dashboard-campus-label">Dashboard Scope</span> -->
-					<strong>{{ $selectedCampusLabel }}</strong>
-				</div>
-				<!-- @if(isset($selectedCampus) && $selectedCampus)
-					<a href="{{ route('dashboard', ['campus_id' => 0]) }}" class="btn btn-inline btn-primary-outline">Show All Campuses</a>
-				@endif -->
-			</div>
-		@endif
 		<div class="row"style=" align-items: flex-start !important;">
 
-		<div class="col-xl-6 pl-0 ">
-			<div class="chart-statistic-box">
-				
-				<div class="chart-container row ">
-					<div class="chart-txt col-5 p-0 m-0 ">
-					<div class="chart-txt-top pt-2">
-						<p><span class="unit">RS.</span><span class="number">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-						<p class="caption">Income</p>  
-					</div>
-					<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
-						<div class="radio">
-							<input type="radio" name="income-range" id="range-today" value="today" checked>
-							<label for="range-today">Today</label>
-						</div>
-						
-						<div class="radio">
-							<input type="radio" name="income-range" id="range-week" value="week">
-							<label for="range-week">Weekly</label>
-						</div>
-						
-						<div class="radio">
-							<input type="radio" name="income-range" id="range-month" value="month">
-							<label for="range-month">Monthly</label>
-						</div>
+			<div class="col-xl-6 pl-0 ">
+				<div class="chart-statistic-box">
 					
-						<div class="radio">
-							<input type="radio" name="income-range" id="range-year" value="year">
-							<label for="range-year">Yearly</label>
+					<div class="chart-container row ">
+						<div class="chart-txt col-5 p-0 m-0 ">
+						<div class="chart-txt-top pt-3">
+							<p ><span class="unit"style="font-size:18px !important;">RS.</span><span class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+							<p class="caption"style="font-size:18px !important;">Income</p>  
+						</div>
+						<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
+							<div class="radio">
+								<input type="radio" name="income-range" id="range-today" value="today" checked>
+								<label for="range-today">Today</label>
+							</div>
+							
+							<div class="radio">
+								<input type="radio" name="income-range" id="range-week" value="week">
+								<label for="range-week">Weekly</label>
+							</div>
+							
+							<div class="radio">
+								<input type="radio" name="income-range" id="range-month" value="month">
+								<label for="range-month">Monthly</label>
+							</div>
+						
+							<div class="radio">
+								<input type="radio" name="income-range" id="range-year" value="year">
+								<label for="range-year">Yearly</label>
+							</div>
+						</div>
+						<table class="tbl-data ml-lg-3 ml-2">
+							<tr>
+								<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+								<td style = "font-size:14px;	">Today Collection</td>
+							</tr>
+							<tr>
+								<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+								<td style = "font-size:14px;	">Weekly Collection</td>
+							</tr>
+							<tr>
+								<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+								<td style = "font-size:14px;	">Monthly Collection</td>
+							</tr>
+						</table>
+					</div>
+						<div class="chart-container-in col-7  m-0 p-0 fs-1">
+							<div id="chart_div" style = "font-size:10px;"></div>
+							<div id="chart_fallback" style="display:none; height:314px;">
+								<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
+									<defs>
+										<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+											<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
+											<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
+										</linearGradient>
+									</defs>
+									<rect width="400" height="314" fill="url(#incomeGradient)" />
+									<polyline fill="none" stroke="#fff" stroke-width="4"
+										points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
+									<circle cx="20" cy="240" r="5" fill="#fff" />
+									<circle cx="80" cy="200" r="5" fill="#fff" />
+									<circle cx="140" cy="206" r="5" fill="#fff" />
+									<circle cx="200" cy="180" r="5" fill="#fff" />
+									<circle cx="260" cy="210" r="5" fill="#fff" />
+									<circle cx="320" cy="140" r="5" fill="#fff" />
+									<circle cx="380" cy="170" r="5" fill="#fff" />
+								</svg>
+							</div>
+							<!-- <div class="chart-caption"></div> -->
+							<div class="chart-container-x"></div>
+							<div class="chart-container-y"></div>
 						</div>
 					</div>
-					<table class="tbl-data ml-lg-3 ml-2">
-						<tr>
-							<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
-							<td style = "font-size:14px;	">Today Collection</td>
-						</tr>
-						<tr>
-							<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
-							<td style = "font-size:14px;	">Weekly Collection</td>
-						</tr>
-						<tr>
-							<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
-							<td style = "font-size:14px;	">Monthly Collection</td>
-						</tr>
-					</table>
-				</div>
-					<div class="chart-container-in col-7  m-0 p-0 fs-1">
-						<div id="chart_div" style = "font-size:10px;"></div>
-						<div id="chart_fallback" style="display:none; height:314px;">
-							<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
-								<defs>
-									<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-										<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
-										<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
-									</linearGradient>
-								</defs>
-								<rect width="400" height="314" fill="url(#incomeGradient)" />
-								<polyline fill="none" stroke="#fff" stroke-width="4"
-									points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
-								<circle cx="20" cy="240" r="5" fill="#fff" />
-								<circle cx="80" cy="200" r="5" fill="#fff" />
-								<circle cx="140" cy="206" r="5" fill="#fff" />
-								<circle cx="200" cy="180" r="5" fill="#fff" />
-								<circle cx="260" cy="210" r="5" fill="#fff" />
-								<circle cx="320" cy="140" r="5" fill="#fff" />
-								<circle cx="380" cy="170" r="5" fill="#fff" />
-							</svg>
-						</div>
-						<!-- <div class="chart-caption"></div> -->
-						<div class="chart-container-x"></div>
-						<div class="chart-container-y"></div>
-					</div>
-				</div>
-				
-			</div><!--.chart-statistic-box-->
-		</div>
-		<div class="col-xl-6 pr-0">
-			<div class="row">
-				<div class="col-sm-6">
-					<article class="statistic-box red">
-						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
-							<div class="caption">
-								<div class="text">Total Leads</div>
+					
+				</div><!--.chart-statistic-box-->
+			</div>
+			<div class="col-xl-6 pr-0">
+				<div class="row">
+					<div class="col-sm-6">
+						<article class="statistic-box red">
+							<div class="stat-inner">
+								<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
+								<div class="caption">
+									<div class="text">Total Leads</div>
+								</div>
 							</div>
-						</div>
-					</article>
-				</div><!--.col-->
-				<div class="col-sm-6">
-					<article class="statistic-box purple">
-						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
-							<div class="caption">
-								<div class="text">Current Students</div>
+						</article>
+					</div><!--.col-->
+					<div class="col-sm-6">
+						<article class="statistic-box purple">
+							<div class="stat-inner">
+								<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
+								<div class="caption">
+									<div class="text">Current Students</div>
+								</div>
 							</div>
-						</div>
-					</article>
-				</div><!--.col-->
-				<div class="col-sm-6">
-					<article class="statistic-box yellow">
-						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3">***</div>
-							<div class="caption">
-								<div class="text">Current Month Collection</div>
+						</article>
+					</div><!--.col-->
+					<div class="col-sm-6">
+						<article class="statistic-box yellow">
+							<div class="stat-inner">
+								<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3">***</div>
+								<div class="caption">
+									<div class="text">Current Month Collection</div>
+								</div>
 							</div>
-						</div>
-					</article>
-				</div><!--.col-->
-				<div class="col-sm-6">
-					<article class="statistic-box green">
-						<div class="stat-inner">
-							<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
-							<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
-							<div class="caption">
-								<div class="text">Current Month Pending</div>
+						</article>
+					</div><!--.col-->
+					<div class="col-sm-6">
+						<article class="statistic-box green">
+							<div class="stat-inner">
+								<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
+								<div class="caption">
+									<div class="text">Current Month Pending</div>
+								</div>
 							</div>
-						</div>
-					</article>
-				</div><!--.col-->
-			</div><!--.row-->
-		</div><!--.col-->
-	
-		<!--.col-->
-	</div>
+						</article>
+					</div><!--.col-->
+				</div><!--.row-->
+			</div><!--.col-->
+		
+		
+	    </div>
 <!--Current Month Charts-->
 	<div class="row ">
 		<div class="col-xl-6">
@@ -225,7 +211,7 @@
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? $selectedCampusLabel : 'Each Campus' }}</h3>
+							<h3 class="form-label-dashboard month-chart-header-title">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name) : 'Each Campus' }}</h3>
 						</div>
 						<div class="month-chart-header-actions">
 							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize daily activity">
@@ -363,25 +349,6 @@
 		.chart-statistic-box .chart-container-in {
 			border-radius: 0 12px 12px 0;
 			overflow: hidden;
-		}
-		.dashboard-campus-banner {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 12px;
-			padding: 10px 14px;
-			margin-bottom: 12px;
-			border: 1px solid #d8e2e7;
-			border-radius: 8px;
-			background: linear-gradient(135deg, #f5fbff 0%, #eaf4ff 100%);
-		}
-		.dashboard-campus-label {
-			display: block;
-			font-size: 11px !important;
-			font-weight: 700;
-			text-transform: uppercase;
-			color: #6c7a89;
-			margin-bottom: 2px;
 		}
 
 		.chart-range .radio {

@@ -23,9 +23,9 @@
 					<div class="tbl w-100">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title p-0 m-0">
-								<h2 class="panel-title lead-title ">Create New Lead <small class="text-muted ml-2">(All fields marked with * are required)</small></h2>
+								<h2 class="panel-title lead-title ">Create New Lead <small class=" ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</small></h2>
 							</div>
-							<div class="text-right" style="width: 300px; text-align: left !important;">
+							<div class="text-right" style="width: 200px; text-align: left !important;">
 								<select id="leadTypeSelect" class="form-control lead-type-select">
 									<option value="training" selected>Trainings</option>
 									<option value="certification">Certification Exam</option>
@@ -69,6 +69,10 @@
 
 @push('styles')
 	<style>
+		.row{
+	padding:3px 10px;
+	/* gap:5px;%% */
+}
 		.lead-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
