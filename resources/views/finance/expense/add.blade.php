@@ -47,7 +47,7 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Supplier / Payee / Employee</label>
+                            <label class="form-label">Supplier / Payee / Employee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
                                 @foreach($payees as $payee)
@@ -98,22 +98,22 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Payment Ref No</label>
+                            <label class="form-label">Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}" placeholder="Txn/Receipt reference">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Bank Name</label>
+                            <label class="form-label">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Cheque No</label>
+                            <label class="form-label">Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required" >Bank Receipt No</label>
+                            <label class="form-label" >Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
@@ -124,14 +124,14 @@
 
                     <div class="row " style="padding-left:15px;">
     <div class="col-12">
-        <label class="form-label small fw-semibold text-dark required">
+        <label class="form-label small fw-semibold text-dark">
             Remarks
         </label>
-       <textarea name="details[remarks]"
-    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
+       <textarea name="remarks"
+    class="form-control form-control-sm @error('remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style="width:99%; margin-bottom:7px;">{{ old('details.remarks', '') }}</textarea>
-        @error('details.remarks')
+    placeholder="Remarks" style= "padding:10px; width:99%; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
+        @error('remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
     </div>

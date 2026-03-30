@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Campus;
 use App\Models\FinanceBill;
+use App\Models\FinanceBillPayment;
 use App\Models\FinanceExpense;
 use App\Models\FinanceExpenseType;
 use App\Models\FinancePayee;
@@ -253,8 +254,9 @@ class ExpenseController extends Controller
         ]);
 
         if ($expense->category === 'utility' && $expense->bill_id) {
-            $bill = FinanceBill::query()->find($expense->bill_id);
+            $bill = FinanceBill::query()->with('campus')->find($expense->bill_id);
             if ($bill) {
+                $this->upsertUtilityBillPayment($expense, $bill, $request);
                 $bill->paid_amount = (float) $bill->paid_amount + (float) $expense->amount;
                 if ((float) $bill->paid_amount <= 0) {
                     $bill->status = 'unpaid';
@@ -361,6 +363,70 @@ class ExpenseController extends Controller
         $modeCode = $modeCode !== '' ? $modeCode : 'GEN';
         $prefix = $campusCode . '-' . strtoupper($modeCode) . '-' . now()->format('my');
         $count = FinanceExpense::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
+        return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
+    }
+
+    protected function upsertUtilityBillPayment(FinanceExpense $expense, FinanceBill $bill, Request $request): FinanceBillPayment
+    {
+        $paymentDate = $expense->payment_date?->toDateString() ?? now()->toDateString();
+        $paymentMethod = (string) ($expense->payment_method ?? 'cash');
+
+        $query = FinanceBillPayment::query()
+            ->where('bill_id', $bill->id)
+            ->whereDate('payment_date', $paymentDate)
+            ->where('paid_amount', (float) $expense->amount)
+            ->where('payment_method', $paymentMethod);
+
+        if ($expense->payment_ref_no) {
+            $query->where('payment_ref_no', $expense->payment_ref_no);
+        } else {
+            $query->whereNull('payment_ref_no');
+        }
+
+        if ($expense->attachment_path) {
+            $query->where('attachment_path', $expense->attachment_path);
+        } else {
+            $query->whereNull('attachment_path');
+        }
+
+        $data = [
+            'bill_id' => $bill->id,
+            'payment_date' => $paymentDate,
+            'paid_amount' => $expense->amount,
+            'payment_method' => $paymentMethod,
+            'payment_ref_no' => $expense->payment_ref_no,
+            'bank_name' => $expense->bank_name,
+            'cheque_no' => $expense->cheque_no,
+            'bank_receipt_no' => $expense->bank_receipt_no,
+            'attachment_path' => $expense->attachment_path,
+            'remarks' => $expense->remarks,
+            'created_by' => $expense->created_by ?: $request->user()?->id,
+        ];
+
+        $payment = $query->latest('id')->first();
+        if ($payment) {
+            $payment->fill($data);
+            if (!$payment->receipt_no) {
+                $payment->receipt_no = $this->generateBillPaymentReceiptNo($bill->campus?->code ?? 'GEN', $paymentMethod);
+            }
+            $payment->save();
+
+            return $payment;
+        }
+
+        $data['receipt_no'] = $this->generateBillPaymentReceiptNo($bill->campus?->code ?? 'GEN', $paymentMethod);
+
+        return FinanceBillPayment::create($data);
+    }
+
+    protected function generateBillPaymentReceiptNo(string $campusCode, string $method): string
+    {
+        $campusCode = $campusCode !== '' ? $campusCode : 'GEN';
+        $modeCode = strtoupper(substr($method, 0, 3));
+        $modeCode = $modeCode !== '' ? $modeCode : 'GEN';
+        $prefix = $campusCode . '-UTL-' . $modeCode . '-' . now()->format('my');
+        $count = FinanceBillPayment::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
+
         return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
     }
 

@@ -68,11 +68,11 @@
 
                     <div class="form-row" >
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Issue Date</label>
+                            <label class="form-label">Issue Date</label>
                             <input type="date" name="issue_date" class="form-control" value="{{ old('issue_date') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Due Date</label>
+                            <label class="form-label">Due Date</label>
                             <input type="date" name="due_date" class="form-control" value="{{ old('due_date') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
@@ -80,21 +80,21 @@
                             <input type="number" step="0.01" min="0" name="amount_within_due_date" class="form-control" value="{{ old('amount_within_due_date') }}" required>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Fine</label>
+                            <label class="form-label">Fine</label>
                             <input type="number" step="0.01" min="0" name="fine" class="form-control" value="{{ old('fine', 0) }}">
                         </div>
                     </div>
 
                     <div class="row mt-3 ml-3">
     <div class="col-12 ">
-        <label class="form-label small fw-semibold text-dark required">
+        <label class="form-label small fw-semibold text-dark">
             Remarks
         </label>
-       <textarea name="details[remarks]"
-    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
+       <textarea name="remarks"
+    class="form-control form-control-sm @error('remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style="margin-bottom:7px; width:99.5%;">{{ old('details.remarks', '') }}</textarea>
-        @error('details.remarks')
+    placeholder="Remarks" style= "padding:10px; margin-bottom:7px; width:99.5%">{{ old('remarks') }}</textarea>
+        @error('remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
     </div>

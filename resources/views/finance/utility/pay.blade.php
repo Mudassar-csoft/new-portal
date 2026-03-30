@@ -26,7 +26,7 @@
                     @csrf
                     <div class="form-row mt-3">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Select Bill</label class="form-label required">
+                            <label class="form-label required">Select Bill</label>
                             <select name="bill_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($bills as $bill)
@@ -40,15 +40,15 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Payment Date</label class="form-label required">
+                            <label class="form-label required">Payment Date</label>
                             <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Paid Amount</label class="form-label required">
+                            <label class="form-label required">Paid Amount</label>
                             <input type="number" step="0.01" min="1" name="paid_amount" class="form-control" value="{{ old('paid_amount') }}" required>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Payment Method</label class="form-label required">
+                            <label class="form-label required">Payment Method</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
                                 <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
@@ -58,39 +58,39 @@
 </div>
                         <div class="form-row" >
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Payment Ref No</label class="form-label required">
+                            <label class="form-label">Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
                         </div>
                         
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Bank Name</label class="form-label required">
+                            <label class="form-label">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Cheque No</label class="form-label required">
+                            <label class="form-label">Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Bank Receipt No</label class="form-label required">
+                            <label class="form-label">Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
                     </div>
                     <div class="form-row" >
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Transaction Image</label class="form-label required">
+                            <label class="form-label required">Transaction Image</label>
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>
                     </div>
 
                     <div class="col-12 mt-0">
-        <label class="form-label small fw-semibold text-dark required">
+        <label class="form-label small fw-semibold text-dark">
             Remarks
-        </label class="form-label required">
-       <textarea name="details[remarks]"
-    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
+        </label>
+       <textarea name="remarks"
+    class="form-control form-control-sm @error('remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style="margin-bottom:7px;">{{ old('details.remarks', '') }}</textarea>
-        @error('details.remarks')
+    placeholder="Remarks" style= "padding:10px; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
+        @error('remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
     </div>

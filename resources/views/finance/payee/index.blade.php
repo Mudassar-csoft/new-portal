@@ -27,7 +27,7 @@
                     <h4 class="section-title mt-2" style = "gap:18px;padding-left:15px">Basic Profile</h4>
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Type</label class="form-label required">
+                            <label class="form-label required">Type</label>
                             <select name="type" class="form-control" required>
                                 @foreach(['supplier' => 'Supplier', 'payee' => 'Payee', 'employee' => 'Employee'] as $k => $v)
                                     <option value="{{ $k }}" @selected(old('type') === $k)>{{ $v }}</option>
@@ -35,15 +35,15 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Full Name</label class="form-label required">
+                            <label class="form-label required">Full Name</label>
                             <input type="text" name="full_name" class="form-control" value="{{ old('full_name') }}" required>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Display Name</label class="form-label required">
+                            <label class="form-label">Display Name</label>
                             <input type="text" name="display_name" class="form-control" value="{{ old('display_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Campus / Franchise</label class="form-label required">
+                            <label class="form-label">Campus / Franchise</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">- Select -</option>
                                 @foreach($campuses as $campus)
@@ -57,34 +57,34 @@
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Phone</label class="form-label required">
+                            <label class="form-label">Phone</label>
                             <input type="text" name="phone" class="form-control" value="{{ old('phone') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Mobile</label class="form-label required">
+                            <label class="form-label">Mobile</label>
                             <input type="text" name="mobile" class="form-control" value="{{ old('mobile') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Email</label class="form-label required">
+                            <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control" value="{{ old('email') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">CNIC</label class="form-label required">
+                            <label class="form-label">CNIC</label>
                             <input type="text" name="cnic" class="form-control" value="{{ old('cnic') }}">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Company Name</label class="form-label required">
+                            <label class="form-label">Company Name</label>
                             <input type="text" name="company_name" class="form-control" value="{{ old('company_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Payment Terms</label class="form-label required">
+                            <label class="form-label">Payment Terms</label>
                             <input type="text" name="payment_terms" class="form-control" value="{{ old('payment_terms') }}" placeholder="Due on receipt / Net 30">
                         </div>
                         <div class="form-group custom-col-6">
-                            <label class="form-label required">Address</label class="form-label required">
+                            <label class="form-label">Address</label>
                             <input type="text" name="postal_address" class="form-control" value="{{ old('postal_address') }}">
                         </div>
                     </div>
@@ -92,19 +92,19 @@
                     <h4 class="section-title mt-1" style = "gap:18px;padding-left:15px">Employee Fields (for payroll)</h4>
                     <div class="form-row" >
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Employee Code</label class="form-label required">
+                            <label class="form-label">Employee Code</label>
                             <input type="text" name="employee_code" class="form-control" value="{{ old('employee_code') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Designation</label class="form-label required">
+                            <label class="form-label">Designation</label>
                             <input type="text" name="designation" class="form-control" value="{{ old('designation') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Monthly Salary (PKR)</label class="form-label required">
+                            <label class="form-label">Monthly Salary (PKR)</label>
                             <input type="number" step="0.01" min="0" name="monthly_salary" class="form-control" value="{{ old('monthly_salary') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Joining Date</label class="form-label required">
+                            <label class="form-label">Joining Date</label>
                             <input type="date" name="joining_date" class="form-control" value="{{ old('joining_date') }}">
                         </div>
                     </div>
@@ -112,32 +112,32 @@
                     <h4 class="section-title mt-1" style = "gap:18px;padding-left:15px">Bank Details</h4>
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Bank Name</label class="form-label required">
+                            <label class="form-label">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Account Title</label class="form-label required">
+                            <label class="form-label">Account Title</label>
                             <input type="text" name="account_title" class="form-control" value="{{ old('account_title') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Account Number</label class="form-label required">
+                            <label class="form-label">Account Number</label>
                             <input type="text" name="account_number" class="form-control" value="{{ old('account_number') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">IBAN</label class="form-label required">
+                            <label class="form-label">IBAN</label>
                             <input type="text" name="iban" class="form-control" value="{{ old('iban') }}">
                         </div>
                     </div>
 
                     <div class="col-12 pr-1">
-        <label class="form-label small fw-semibold text-dark required">
+        <label class="form-label small fw-semibold text-dark">
             Remarks
-        </label class="form-label required">
-       <textarea name="details[remarks]"
-    class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
+        </label>
+       <textarea name="remarks"
+    class="form-control form-control-sm @error('remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style="margin-bottom:7px;">{{ old('details.remarks', '') }}</textarea>
-        @error('details.remarks')
+    placeholder="Remarks" style= "padding:10px; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
+        @error('remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
     </div>

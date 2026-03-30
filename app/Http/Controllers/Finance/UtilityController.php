@@ -134,20 +134,10 @@ class UtilityController extends Controller
         }
         $path = $this->storeAttachment($request->file('attachment'));
 
-        FinanceBillPayment::create([
-            'bill_id' => $bill->id,
-            'payment_date' => $validated['payment_date'],
-            'paid_amount' => $validated['paid_amount'],
-            'payment_method' => $validated['payment_method'],
-            'payment_ref_no' => $validated['payment_ref_no'] ?? null,
-            'bank_name' => $validated['bank_name'] ?? null,
-            'cheque_no' => $validated['cheque_no'] ?? null,
-            'bank_receipt_no' => $validated['bank_receipt_no'] ?? null,
-            'receipt_no' => $this->generateBillPaymentReceiptNo($bill->campus?->code ?? 'GEN', $validated['payment_method']),
-            'attachment_path' => $path,
-            'remarks' => $validated['remarks'] ?? null,
-            'created_by' => $request->user()?->id,
-        ]);
+        $expenseRemarks = 'Utility bill payment request. Bill Ref: ' . ($bill->reference_number ?? 'N/A');
+        if (!empty($validated['remarks'])) {
+            $expenseRemarks .= ' | ' . $validated['remarks'];
+        }
 
         $expenseType = $this->ensureExpenseType('Utility Bill', 'utility');
         FinanceExpense::create([
@@ -167,7 +157,7 @@ class UtilityController extends Controller
             'receipt_no' => $this->generateExpenseReceiptNo($bill->campus?->code ?? 'GEN', strtoupper(substr($validated['payment_method'], 0, 3))),
             'attachment_path' => $path,
             'status' => 'pending',
-            'remarks' => 'Utility bill payment request. Bill Ref: ' . ($bill->reference_number ?? 'N/A'),
+            'remarks' => $expenseRemarks,
             'created_by' => $request->user()?->id,
             'requested_by' => $request->user()?->id,
             'is_reversal' => false,
@@ -217,15 +207,6 @@ class UtilityController extends Controller
         $modeCode = $modeCode !== '' ? $modeCode : 'GEN';
         $prefix = $campusCode . '-' . strtoupper($modeCode) . '-' . now()->format('my');
         $count = FinanceExpense::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
-        return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
-    }
-
-    private function generateBillPaymentReceiptNo(string $campusCode, string $method): string
-    {
-        $campusCode = $campusCode !== '' ? $campusCode : 'GEN';
-        $modeCode = strtoupper(substr($method, 0, 3));
-        $prefix = $campusCode . '-UTL-' . $modeCode . '-' . now()->format('my');
-        $count = FinanceBillPayment::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
         return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
     }
 
