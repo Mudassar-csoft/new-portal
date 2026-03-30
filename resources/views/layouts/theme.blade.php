@@ -1495,7 +1495,11 @@ margin-left: 0;
 				gap:30px;
 			}
 			    .chart-statistic-box .chart-txt{
-					        border-radius: 4px 4px 0 0;
+					        border-radius: 4px 4px 4px 4px;
+				}
+				.chart-statistic-box .chart-container-in{
+					        border-radius: 4px 4px 4px 4px;
+
 				}
 		}
 	</style>
