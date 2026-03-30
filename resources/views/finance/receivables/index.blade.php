@@ -121,7 +121,7 @@
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ route('finance.receivables') }}">
                     <div class="form-row">
-                        <div class="form-group col-md-6 col-lg-5">
+                        <div class="form-group col-md-5">
                             <label class="form-label required" >Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -132,7 +132,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-6 col-lg-5">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -140,9 +140,9 @@
                                 <option value="paid" @selected(($filters['status'] ?? '') === 'paid')>Paid</option>
                             </select>
                         </div>
-                         <div class="form-group leave-button  col-lg-2 text-right">
-                            <button type="submit" class="btn btn-inline btn-primary-outline p-2 mt-4">Filter</button>
-                            <a href="{{ route('finance.receivables') }}" class="btn btn-inline mt-4 btn-danger-outline p-2">Reset</a>
+                         <div class="form-group d-flex col-md-3 mt-4 pt-3 justify-content-end">
+                            <button type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
+                            <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-danger-outline ">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -159,7 +159,7 @@
                                 <th>Net</th>
                                 <th>Status</th>
                                 <th>Payment Ref</th>
-                                <th style="width: 170px;">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -250,7 +250,7 @@
 
 @push('styles')
     <style>
-        
+       
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }

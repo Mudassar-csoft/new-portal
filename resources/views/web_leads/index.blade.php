@@ -50,7 +50,7 @@
 						<table class="table table-bordered follow-table" id="web-lead-table">
 							<thead>
 								<tr>
-									<th style="width: 50px;">Sr</th>
+									<th>Sr</th>
 									<th>Lead Type</th>
 									<th>Name</th>
 									<th>Contact No</th>
@@ -58,7 +58,7 @@
 									<th>City</th>
 									<th>Interested Program</th>
 									<th>Submitted</th>
-									<th class="text-left" style="width: 110px;">Action</th>
+									<th class="text-left">Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -86,7 +86,7 @@
 									</tr>
 								@endforeach
 								<tr id="web-lead-empty-row" @if ($webLeads->isNotEmpty()) style="display:none;" @endif>
-									<td colspan="9" class="text-center text-muted">No web leads found for this tab.</td>
+									<td colspan="9" class="text-center text-muted"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -361,7 +361,7 @@
 			position: absolute !important;
 			top: 0 !important;
 			left: auto !important;
-			right: calc(100% + 2px) !important;
+			right: 100% !important;
 			margin: 0 !important;
 			transform: none !important;
 			z-index: 9999;

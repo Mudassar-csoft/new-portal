@@ -17,15 +17,23 @@
 @endif
 
 <div class="form-row">
-    <div class="form-group col-md-4">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="required">Campus Name</label>
         <input type="text" name="name" class="form-control" value="{{ old('name', $campus->name) }}" placeholder="Enter campus name" required>
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-lg-3 col-md-6">
         <label>Display Title</label>
         <input type="text" name="title" class="form-control" value="{{ old('title', $campus->title) }}" placeholder="Optional public or short title">
     </div>
-    <div class="form-group col-md-4">
+    <div class="form-group col-md-3">
+        <label class="required">Status</label>
+        <select class="form-control" name="status" required>
+            @foreach($statusOptions as $key => $label)
+                <option value="{{ $key }}" @selected($selectedStatus === $key)>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group col-lg-3 col-md-6">
         <label class="required">Campus Code</label>
         <input
             type="text"
@@ -37,7 +45,7 @@
             data-current-code="{{ $campus->code }}"
             readonly
         >
-        <small class="text-muted">Code is generated from the city abbreviation.</small>
+        <!-- <small class="text-muted">Code is generated from the city abbreviation.</small> -->
     </div>
 </div>
 
@@ -58,60 +66,79 @@
         <label class="required">City Abbreviation</label>
         <input type="text" name="city_abbr" id="campus-city-abbr" class="form-control text-uppercase" value="{{ old('city_abbr', $campus->city_abbr) }}" placeholder="e.g. FSD" required>
     </div>
-    <div class="form-group col-md-3">
-        <label class="required">Status</label>
-        <select class="form-control" name="status" required>
-            @foreach($statusOptions as $key => $label)
-                <option value="{{ $key }}" @selected($selectedStatus === $key)>{{ $label }}</option>
-            @endforeach
-        </select>
-    </div>
-</div>
-
-<div class="form-row">
-    <div class="form-group col-md-4">
+    
+    <div class="form-group col-lg-3 col-md-6">
         <label>Campus Email Address</label>
         <input type="email" name="campus_email" class="form-control" value="{{ old('campus_email', $campus->campus_email) }}" placeholder="Enter campus email address">
     </div>
-    <div class="form-group col-md-4">
-        <label>Campus Landline Number</label>
-        <input type="text" name="landline" class="form-control" value="{{ old('landline', $campus->landline) }}" placeholder="Enter landline number">
-    </div>
-    <div class="form-group col-md-4">
-        <label>Campus Mobile Number</label>
-        <input type="text" name="mobile" class="form-control" value="{{ old('mobile', $campus->mobile) }}" placeholder="Enter mobile number">
-    </div>
 </div>
 
 <div class="form-row">
-    <div class="form-group col-md-6">
-        <label class="required d-block">Campus Type</label>
-        <div class="campus-type-options">
-            @foreach($typeOptions as $key => $label)
-                <label class="campus-type-option">
-                    <input type="radio" name="campus_type" value="{{ $key }}" @checked($selectedType === $key)>
-                    <span>{{ $label }}</span>
-                </label>
-            @endforeach
-        </div>
+    <div class="form-group col-lg-3 col-md-6">
+        <label>Campus Landline Number</label>
+        <input type="text" name="landline" class="form-control" value="{{ old('landline', $campus->landline) }}" placeholder="Enter landline number">
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
+        <label>Campus Mobile Number</label>
+        <input type="text" name="mobile" class="form-control" value="{{ old('mobile', $campus->mobile) }}" placeholder="Enter mobile number">
+    </div>
+     <div class="form-group col-md-3">
         <label>Number of Labs</label>
         <input type="number" name="labs_count" class="form-control" min="0" value="{{ old('labs_count', $campus->labs_count) }}" placeholder="Enter number of labs">
     </div>
     <div class="form-group col-md-3">
         <label>Royalty Rate (%)</label>
         <input type="number" step="0.01" min="0" name="royalty_rate" id="royalty-rate" class="form-control" value="{{ old('royalty_rate', $campus->royalty_rate) }}" placeholder="Franchise only">
-        <small class="text-muted">Only used for franchise branches.</small>
+        <!-- <small class="text-muted">Only used for franchise branches.</small> -->
     </div>
 </div>
 
-<div class="form-group">
-    <label class="required">Campus Address</label>
-    <textarea class="form-control" name="address" rows="3" placeholder="Enter campus address here..." required>{{ old('address', $campus->address) }}</textarea>
+<div class="form-row">
+    <div class="form-group col-lg-3 col-md-6 ">
+        <label class="required d-block">Campus Type</label>
+        <div class=" campus-type-options mt-2 pl-0 pr-0 d-flex">
+            @foreach($typeOptions as $key => $label)
+                <div class="d-flex justify-content-center m-0 pr-0 pl-0">
+                    <div class="form-check d-flex align-items-center campus-type-option">
+                        <input
+                            class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="campus-type-{{ $key }}"
+                            name="campus_type"
+                            value="{{ $key }}"
+                            @checked($selectedType === $key)
+                        >
+                        <label class="form-check-label small mb-0" for="campus-type-{{ $key }}">
+                            {{ $label }}
+                        </label>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+   
 </div>
 
-<div class="form-group">
+<div class="form-row">
+    <div class="col-12">
+    <label class="required">Campus Address</label>
+    <textarea class="form-control" name="address" rows="3" placeholder="Enter campus address here..." required>{{ old('address', $campus->address) }}</textarea>
+</div></div>
+
+<!-- <div class="row">
+    <div class="col-12">
     <label>Remarks</label>
-    <textarea name="remarks" class="form-control" rows="3" placeholder="Enter remarks, admin notes, or branch details">{{ old('remarks', $campus->remarks) }}</textarea>
-</div>
+</div></div> -->
+
+
+<div class="form-row mt-lg-1">
+    <div class="col-12">
+        <label class="form-label small fw-semibold text-dark required">
+            Remarks
+        </label>
+        <textarea name="remarks" class="form-control" rows="3" placeholder="Enter remarks, admin notes, or branch details">{{ old('remarks', $campus->remarks) }}</textarea>
+        </div>
+    </div>
+
+
+

@@ -89,7 +89,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style= "padding:10px; margin-bottom:7px;" >{{ old('details.remarks', '') }}</textarea>
+    placeholder="Remarks" style="margin-bottom:7px;">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
@@ -111,7 +111,7 @@
                     <table class="table table-bordered finance-table">
                         <thead>
                             <tr>
-                                <th style="width: 60px;">Sr#</th>
+                                <th>Sr#</th>
                                 <th>Receipt</th>
                                 <th>Bill Ref</th>
                                 <th>Campus</th>
@@ -119,7 +119,7 @@
                                 <th>Amount</th>
                                 <th>Method</th>
                                 <th>Date</th>
-                                <th style="width: 120px;">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>

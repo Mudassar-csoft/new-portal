@@ -27,7 +27,7 @@
                         <form method="POST" action="{{ route('hrm.masters.departments.store') }}" class="mb-3">
                             @csrf
                             <div class="form-row mt-3" style = "gap:5px;padding-left:15px">
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3   p-0">
                                     <select class="form-control" name="campus_id">
                                         <option value="">All Campuses</option>
                                         @foreach($campuses as $campus)
@@ -35,22 +35,22 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3   p-0">
                                     <input type="text" class="form-control" name="name" placeholder="Department Name" required>
                                 </div>
-                                <div class="form-group custom-col-3">
+                                <div class="form-group col-md-3   p-0">
                                     <select class="form-control" name="status">
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-2">
+                                <div class="form-group col-md-2 p-0">
                                     <button class="btn btn-inline btn-primary-outline w-100" style="margin-top:2px;"    type="submit">Save</button>
                                 </div>
                             </div>
                         </form>
 
-                        <div class="table-responsive" style = "gap:18px;padding-left:15px; ">
+                        <div class="table-responsive">
                             <table class="table table-bordered hrm-table">
                                 <thead><tr><th>Name</th><th>Campus</th><th>Status</th></tr></thead>
                                 <tbody>
@@ -73,10 +73,11 @@
 
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
-                    <header class="box-typical-header panel-heading">
+                    <header class="box-typical-header panel-heading"
+                    >
                         <h3 class="panel-title form-label">Designations</h3>
                     </header>
-                    <div class="box-typical-body panel-body">
+                    <div class="box-typical-body panel-body pt-3">
                         <form method="POST" action="{{ route('hrm.masters.designations.store') }}" class="mb-3">
                             @csrf
                             <div class="form-row" style = "gap:18px;padding-left:15px; padding-top:11px;" >
@@ -91,7 +92,7 @@
                                 <div class="form-group custom-col-4">
                                     <input type="text" class="form-control" name="name" placeholder="Designation Name" required>
                                 </div>
-                                <div class="form-group custom-col-2">
+                                <div class="form-group col-md-2 p-0">
                                     <button class="btn btn-inline btn-primary-outline w-100" type="submit">Save</button>
                                 </div>
                             </div>
@@ -128,20 +129,20 @@
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.masters.leave-types.store') }}" class="mb-3">
                             @csrf
-                            <div class="form-row mt-3" style="gap:8px; padding-left:15px;">
-                                <div class="form-group custom-col-2"><input type="text" class="form-control" name="name" placeholder="Name" required></div>
-                                <div class="form-group custom-col-2"><input type="text" class="form-control" name="code" placeholder="Code"></div>
-                                <div class="form-group custom-col-2"><input type="number" step="0.01" min="0" class="form-control" name="annual_quota" placeholder="Quota"></div>
-                                <div class="form-group custom-col-2">
+                            <div class="form-row mt-3">
+                                <div class="form-group col-md-3 p-0"><input type="text" class="form-control" name="name" placeholder="Name" required></div>
+                                <div class="form-group col-md-2 p-0"><input type="text" class="form-control" name="code" placeholder="Code"></div>
+                                <div class="form-group col-md-3 p-0"><input type="number" step="0.01" min="0" class="form-control" name="annual_quota" placeholder="Quota"></div>
+                                <div class="form-group col-md-3 p-0">
                                     <select class="form-control" name="accrual_frequency">
                                         <option value="none">None</option>
                                         <option value="monthly">Monthly</option>
                                         <option value="yearly" selected>Yearly</option>
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-2">
-                                    <button class="btn btn-inline btn-primary-outline w-100" type="submit">Save</button>
-                                </div>
+                            </div>
+                            <div class="form-group text-right p-0">
+                                <button class="btn btn-inline btn-primary-outline " type="submit">Save</button>
                             </div>
                         </form>
 
@@ -176,7 +177,7 @@
                         <form method="POST" action="{{ route('hrm.masters.holidays.store') }}" class="mb-3">
                             @csrf
                             <div class="form-row mt-3" style="gap:8px; padding-left:15px;">
-                                <div class="form-group custom-col-2">
+                                <div class="form-group col-md-3 p-0">
                                     <select class="form-control" name="campus_id">
                                         <option value="">All Campuses</option>
                                         @foreach($campuses as $campus)
@@ -184,11 +185,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-2"><input type="text" class="form-control" name="name" placeholder="Holiday Name" required></div>
-                                <div class="form-group custom-col-2"><input type="date" class="form-control" name="holiday_date" required></div>
-                                <div class="form-group custom-col-2"><input type="text" class="form-control" name="holiday_type" placeholder="Type"></div>
-                                <div class="form-group custom-col-2"><button class="btn btn-inline btn-primary-outline w-100" type="submit">Save</button></div>
+                                <div class="form-group col-md-3 p-0"><input type="text" class="form-control" name="name" placeholder="Holiday Name" required></div>
+                                <div class="form-group col-md-2 p-0"><input type="date" class="form-control" name="holiday_date" required></div>
+                                <div class="form-group col-md-3 p-0"><input type="text" class="form-control" name="holiday_type" placeholder="Type"></div>
                             </div>
+                            <div class="form-group text-right p-0"><button class="btn btn-inline btn-primary-outline" type="submit">Save</button></div>
                         </form>
 
                         <div class="table-responsive">
@@ -230,7 +231,33 @@
 }
 
         .hrm-shell { padding: 8px 0 16px; }
+        .hrm-shell form .form-row {
+            gap: 6px !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        .hrm-shell form .form-row > [class*="col-"],
+        .hrm-shell form .form-row > .custom-col-4 {
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+        .hrm-shell .table-responsive {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+        .hrm-shell > .row {
+            margin-left: -6px;
+            margin-right: -6px;
+        }
+        .hrm-shell > .row > [class*="col-"] {
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        .hrm-table th,
+        .hrm-table td {
+            padding-left: 6px !important;
+            padding-right: 6px !important;
+        }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
     </style>
 @endpush
-

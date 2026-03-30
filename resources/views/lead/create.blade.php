@@ -243,7 +243,7 @@
 			max-height: none !important;
 			overflow: visible !important;
 		}
-
+/* 
 		.form-row {
 			display: flex;
 			flex-wrap: wrap;
@@ -267,7 +267,7 @@
 
 		.form-row .form-group.col-md-3 {
 			flex-basis: 24%;
-		}
+		} */
 
 		input[type="range"] {
 			width: 100%;
@@ -278,9 +278,9 @@
 			overflow: visible !important;
 		}
 
-		.form-row {
+		/* .form-row {
 			margin-bottom: 12px;
-		}
+		} */
 
 		.follow-action-dropdown .dropdown-menu {
 			min-width: 220px;
@@ -429,5 +429,68 @@
 				city: @json($prefillCity)
 			});
 		});
+	</script>
+	<script>
+		(function () {
+			function escapeHtml(value) {
+				return String(value ?? '')
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#39;');
+			}
+
+			function formatTrainingCourseOption(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				if (!option) {
+					return state.text;
+				}
+
+				var title = option.getAttribute('data-title') || state.text || '';
+				var fee = option.getAttribute('data-fee') || '';
+				var duration = option.getAttribute('data-duration') || '';
+
+				return (
+					'<div class="training-course-option">' +
+						'<span class="training-course-option-line"> <span class="training-course-option-label">' + escapeHtml(title) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Fee:</span> <span class="training-course-option-value">' + escapeHtml(fee) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Duration:</span> <span class="training-course-option-value">' + escapeHtml(duration) + ' months</span></span>' +
+					'</div>'
+				);
+			}
+
+			function formatTrainingCourseSelection(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				return option ? (option.getAttribute('data-title') || state.text || '') : state.text;
+			}
+
+			$(function () {
+				if (!window.jQuery || !$.fn.select2) {
+					return;
+				}
+
+				$('.training-course-select').select2({
+					width: '100%',
+					templateResult: function (state) {
+						return $(formatTrainingCourseOption(state));
+					},
+					templateSelection: function (state) {
+						return formatTrainingCourseSelection(state);
+					},
+					escapeMarkup: function (markup) {
+						return markup;
+					}
+				});
+			});
+		})();
 	</script>
 @endpush

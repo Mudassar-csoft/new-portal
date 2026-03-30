@@ -63,14 +63,14 @@
 					<table class="table table-bordered follow-table" id="adm-table">
 						<thead>
 							<tr>
-								<th style="width: 50px;">Sr</th>
+								<th>Sr</th>
 								<th>Name</th>
 								<th>Course</th>
 								<th>Batch</th>
 								<th>Date</th>
 								<th>Contact</th>
 								<th>City</th>
-								<th class="text-center" style="width: 110px;">Actions</th>
+								<th class="text-center">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -237,7 +237,7 @@
 			position: absolute !important;
 			top: 0 !important;
 			left: auto !important;
-			right: calc(100% + 2px) !important;
+			right: 100% !important;
 			margin-right: 0 !important;
 			transform: none !important;
 			z-index: 9999;
@@ -250,6 +250,23 @@
 			font-size: 1rem;
 			color: #54667a;
 			padding: 4px 4px 0;
+		}
+
+		@media (max-width: 768px) {
+			.adm-status-shell .table-responsive {
+				overflow-x: auto !important;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			.adm-status-shell .follow-table {
+				width: max-content !important;
+				min-width: 100% !important;
+			}
+
+			.adm-status-shell .follow-table th,
+			.adm-status-shell .follow-table td {
+				white-space: nowrap;
+			}
 		}
 	</style>
 @endpush

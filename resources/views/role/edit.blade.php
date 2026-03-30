@@ -5,10 +5,10 @@
 @section('content')
 	<div class="role-shell">
 		<div class="box-typical box-typical-dashboard panel panel-default role-card">
-			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Edit Role</h3>
-					<small class="text-muted">Update role details and permissions.</small>
+					<!-- <small class="text-muted">Update role details and permissions.</small> -->
 				</div>
 				<a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
 			</header>

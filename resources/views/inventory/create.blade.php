@@ -40,7 +40,7 @@
                         @method('PUT')
                     @endif
                     <div class="form-row mt-2">
-                        <div class="form-group col-lg-4 col-md-6">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
                                 <option value="">- Select Campus -</option>
@@ -51,7 +51,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-4 col-md-6">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Inventory Category</label>
                             <select name="category" class="form-control" required>
                                 <option value="">- Select Category -</option>
@@ -65,36 +65,37 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-4 col-md-6">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Item Name</label>
                             <input type="text" name="item_name" class="form-control" value="{{ old('item_name', $inventoryItem?->item_name) }}" placeholder="Dell OptiPlex / Office Chair / A4 Paper" required>
                         </div>
+                        
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label required">Brand</label>
+                            <input type="text" name="brand" class="form-control" value="{{ old('brand', $inventoryItem?->brand) }}" placeholder="Dell / HP / Local">
+                        </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Brand</label>
-                            <input type="text" name="brand" class="form-control" value="{{ old('brand', $inventoryItem?->brand) }}" placeholder="Dell / HP / Local">
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Model No</label>
+                            <label class="form-label required">Model No</label>
                             <input type="text" name="model_no" class="form-control" value="{{ old('model_no', $inventoryItem?->model_no) }}" placeholder="Model / Part number">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Serial No</label>
+                            <label class="form-label required">Serial No</label>
                             <input type="text" name="serial_no" class="form-control" value="{{ old('serial_no', $inventoryItem?->serial_no) }}" placeholder="Optional serial number">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Room / Location</label>
+                            <label class="form-label required">Room / Location</label>
                             <input type="text" name="room_location" class="form-control" value="{{ old('room_location', $inventoryItem?->room_location) }}" placeholder="Lab 1 / Store / Reception">
                         </div>
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Quantity</label>
                             <input type="number" min="1" name="quantity" class="form-control" value="{{ old('quantity', $inventoryItem?->quantity ?? 1) }}" required>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Unit</label>
                             <select name="unit" class="form-control" required>
@@ -104,7 +105,7 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Minimum Stock Level</label>
+                            <label class="form-label required">Minimum Stock Level</label>
                             <input type="number" min="0" name="minimum_stock" class="form-control" value="{{ old('minimum_stock', $inventoryItem?->minimum_stock ?? 0) }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
@@ -115,20 +116,21 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label required">Purchase Date</label>
+                            <input type="date" name="purchase_date" class="form-control" value="{{ old('purchase_date', optional($inventoryItem?->purchase_date)->format('Y-m-d')) }}">
+                        </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-lg-4 col-md-6">
-                            <label class="form-label">Purchase Date</label>
-                            <input type="date" name="purchase_date" class="form-control" value="{{ old('purchase_date', optional($inventoryItem?->purchase_date)->format('Y-m-d')) }}">
-                        </div>
-                        <div class="form-group col-lg-8 col-md-6">
+                        
+                        <div class="form-group col-md-12">
                             <label class="form-label">Remarks</label>
                             <textarea name="remarks" class="form-control inventory-remarks" rows="3" placeholder="Any note about condition, warranty, or assigned room">{{ old('remarks', $inventoryItem?->remarks) }}</textarea>
                         </div>
                     </div>
 
-                    <div class="text-right">
+                    <div class="text-right mt-4">
                         <button type="submit" class="btn btn-inline btn-primary-outline">{{ $submitLabel }}</button>
                     </div>
                 </form>

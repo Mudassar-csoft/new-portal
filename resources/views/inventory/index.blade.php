@@ -16,16 +16,16 @@
             <div class="box-typical-body panel-body">
                 <div class="inventory-summary">
                     <div class="summary-tile">
-                        <span class="summary-label">Records</span>
                         <strong>{{ number_format($summary['records']) }}</strong>
+                        <span class="summary-label">Records</span>
                     </div>
                     <div class="summary-tile">
-                        <span class="summary-label">Total Quantity</span>
                         <strong>{{ number_format($summary['total_quantity']) }}</strong>
+                        <span class="summary-label">Total Quantity</span>
                     </div>
                     <div class="summary-tile warning">
-                        <span class="summary-label">Low Stock Items</span>
                         <strong>{{ number_format($summary['low_stock']) }}</strong>
+                        <span class="summary-label">Low Stock Items</span>
                     </div>
                 </div>
 
@@ -171,11 +171,14 @@
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 12px;
             margin-bottom: 12px;
+            padding: 23px;
         }
         .summary-tile {
+            height: 25vh;
+            padding: 45px 14px;
+            text-align: center;
             border: 1px solid #d8e2e7;
             border-radius: 8px;
-            padding: 12px 14px;
             background: #f9fcff;
         }
         .summary-tile.warning {
@@ -184,14 +187,10 @@
         }
         .summary-label {
             display: block;
+            margin-bottom: 4px;
             color: #6c7a89;
             font-size: 12px;
-            margin-bottom: 4px;
             text-transform: uppercase;
-        }
-        .inventory-table thead th {
-            background: #1f8ef1;
-            color: #fff;
         }
         .inventory-filter-form {
             margin-top: 2px;
@@ -201,6 +200,10 @@
             justify-content: flex-end;
             gap: 8px;
             margin-top: 4px;
+        }
+        .inventory-table thead th {
+            background: #1f8ef1;
+            color: #fff;
         }
         .stock-badge {
             display: inline-block;

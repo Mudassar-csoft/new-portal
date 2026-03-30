@@ -130,7 +130,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style= "padding:10px; width:99%; margin-bottom:7px;" >{{ old('details.remarks', '') }}</textarea>
+    placeholder="Remarks" style="width:99%; margin-bottom:7px;">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror
@@ -161,7 +161,7 @@
                             <th>Date</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th style="width: 160px;">Actions</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>

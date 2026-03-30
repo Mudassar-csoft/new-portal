@@ -7,10 +7,10 @@
 		<div class="row">
 			<div class="col-md-8">
 				<div class="box-typical box-typical-dashboard panel panel-default">
-					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0">Edit Permission</h3>
-							<small class="text-muted">Update resource and action.</small>
+							<!-- <small class="text-muted">Update resource and action.</small> -->
 						</div>
 						<a href="{{ route('permissions.index') }}" class="btn btn-default">Back</a>
 					</header>

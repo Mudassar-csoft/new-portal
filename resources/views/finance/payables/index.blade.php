@@ -41,7 +41,7 @@
                         <input type="hidden" name="scope" value="open">
                     @endif
                     <div class="form-row mt-3">
-                        <div class="form-group col-md-6 col-lg-5">
+                        <div class="form-group col-md-5">
                             <label class="form-label required">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -52,7 +52,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-6 col-lg-5">
+                        <div class="form-group col-md-4">
                             <label class="form-label required">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All</option>
@@ -63,11 +63,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-2 d-flex align-items-end justify-end">
-                            <button type="submit" class="btn btn-inline btn-primary-outline mt-4">Filter</button>
+                        <div class="form-group col-md-3 d-flex align-items-end mt-4 pt-2 justify-content-end ">
+                            <button type="submit" class="btn btn-inline btn-primary-outline ">Filter</button>
                             <a
                                 href="{{ route('finance.payables', (($filters['scope'] ?? '') === 'open') ? ['scope' => 'open'] : []) }}"
-                                class="btn btn-inline btn-danger-outline p-2"
+                                class="btn btn-inline btn-danger-outline"
                             >
                                 Reset
                             </a>
@@ -86,7 +86,7 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Status</th>
-                                <th style="width: 170px;">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>

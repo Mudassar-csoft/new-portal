@@ -6,7 +6,7 @@
 
 	<div class="batch-shell">
 		<div class="batch-card box-typical box-typical-dashboard panel panel-default">
-			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Batches</h3>
 					<!-- <small class="text-muted">List of batches by campus and program.</small> -->
@@ -86,7 +86,7 @@
         @endif
 
         <div class="box-typical box-typical-dashboard panel panel-default batch-index-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
                     <small class="text-muted">{{ $pageDescription }}</small>
@@ -97,20 +97,20 @@
                 </div>
             </header>
             <div class="box-typical-body panel-body">
-                <div class="batch-scope-grid">
+                <div class="batch-scope-grid p-2 ">
                     @foreach($scopeCards as $card)
                         <a href="{{ route('batch.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="batch-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
-                            <span class="batch-scope-label">{{ $card['label'] }}</span>
-                            <strong>{{ number_format((int) $card['count']) }}</strong>
+                           <strong>{{ number_format((int) $card['count']) }}</strong>
+                           <span class="batch-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
                 </div>
 
-                <form method="GET" action="{{ route('batch.index') }}" class="batch-filter-form">
+                <form method="GET" action="{{ route('batch.index') }}" class="batch-filter-form ">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
-                    <div class="form-row batch-filter-row">
-                        <div class="form-group batch-filter-col">
+                    <div class="form-row batch-filter-row ">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -121,7 +121,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label">Programme</label>
                             <select class="form-control" name="program_id">
                                 <option value="">All Programmes</option>
@@ -132,7 +132,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label">Session</label>
                             <select class="form-control" name="session">
                                 <option value="">All Sessions</option>
@@ -141,7 +141,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All Statuses</option>
@@ -150,7 +150,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col batch-filter-col-wide">
+                        <div class="form-group col-lg-4 col-md-6 batch-filter-col-wide">
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch code, name, campus, instructor, or lab">
                         </div>
@@ -239,10 +239,14 @@
             max-width: 1450px;
             margin: 0 auto;
         }
+.form-group.batch-filter-actions
 
+ {
+    margin: 3.8%;
+}
         .batch-scope-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(31%, 1fr));
             gap: 14px;
             margin-bottom: 18px;
         }
@@ -252,9 +256,11 @@
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
+            padding-right: 10px;
             background: #f8fbff;
             color: #334155;
             text-decoration: none;
+            text-align: center;
             transition: all .18s ease;
         }
 

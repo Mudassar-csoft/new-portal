@@ -86,7 +86,7 @@
                             <th>Date</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th style="width: 150px;">Action</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>

@@ -7,10 +7,10 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default permission-directory">
-					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+					<header class="class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title form-label mb-0">Permissions</h3>
-							<small class="text-muted">Manage permission definitions.</small>
+							<!-- <small class="text-muted">Manage permission definitions.</small> -->
 						</div>
 						<div class="d-flex gap-2">
 							<a href="{{ route('permissions.create') }}" class="btn btn-primary">New Permission</a>
@@ -154,6 +154,7 @@
 			$('#permissions-table').DataTable({
 				processing: true,
 				serverSide: true,
+				autoWidth: false,
 				dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
 				ajax: "{{ route('permissions.index') }}",
 				order: [[1, 'asc']],

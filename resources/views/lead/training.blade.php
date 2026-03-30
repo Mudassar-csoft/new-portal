@@ -47,8 +47,6 @@
                             data-duration="{{ $program->duration_weeks / 4 }}"
                             @selected(old('program_id', $leadPrefill['program_id'] ?? null) == $program->id)>
                             {{ $program->title ?? $program->name }}
-                            - Fee: {{ number_format($program->fee) }}
-                            ({{ $program->duration_weeks / 4 }} months)
                         </option>
                     @endforeach
                 </select>
@@ -62,7 +60,7 @@
                 Teaching Method <span class="required-feild_symbol">*</span>
             </label>
             <div class="row mt-2 ">
-                <div class="col-sm-4 d-flex justify-content-center mb-1">
+                <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -76,7 +74,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-4 d-flex justify-content-center mb-1">
+                <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -90,7 +88,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-4 d-flex justify-content-center mb-1">
+                <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -218,7 +216,7 @@
                 Gender <span class="required-feild_symbol">*</span>
             </label>
              <div class="row mt-2 ">
-                <div class="col-sm-4 d-flex justify-content-center mb-1 mt-1">
+                <div class="col-4 d-flex justify-content-center mb-1 mt-1">
                     <div class="form-check d-flex align-items-center mt-0">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -232,7 +230,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-4 d-flex justify-content-center">
+                <div class="col-4 d-flex justify-content-center">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -246,7 +244,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-4 d-flex justify-content-center ">
+                <div class="col-4 d-flex justify-content-center ">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -296,7 +294,14 @@
         class="custom-range">
 
     <!-- Scale -->
-    <div class="range-scale"></div>
+    <div class="range-scale" aria-hidden="true">
+        @for ($tick = 0; $tick <= 100; $tick += 5)
+            <span
+                class="range-tick {{ $tick % 20 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tick === 0 ? ' range-tick-start' : '' }}{{ $tick === 100 ? ' range-tick-end' : '' }}"
+                style="left: {{ $tick }}%;"
+            ></span>
+        @endfor
+    </div>
 
     <!-- Numbers -->
     <div class="range-numbers text-muted">
@@ -321,35 +326,47 @@
 
 /* SCALE WITH BIG + SMALL TICKS */
 .range-scale {
-    width: 100%;
-    height: 6px;
-    margin-top: 1px;
-    background:
-        /* BIG ticks */
-        repeating-linear-gradient(
-            to right,
-            #d0d3d8 0px,
-            #d0d3d8 1px,
-            transparent 1px,
-            transparent 20%
-        ),
-        /* SMALL ticks */
-        repeating-linear-gradient(
-            to right,
-           #d0d3d8 0px,
-           #d0d3d8 1px,
-            transparent 1px,
-            transparent 5%
-        );
+    position: relative;
+    width: calc(100% - 4px);
+    height: 12px;
+    margin: 1px 2px 0;
+}
 
-   
+.range-tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    border-radius: 999px;
+}
+
+.range-tick-minor {
+    width: 1px;
+    height: 7px;
+    background: #d0d3d8;
+}
+
+.range-tick-major {
+    width: 1px;
+    height: 10px;
+    background: #b8c1cb;
+}
+
+.range-tick-start {
+    left: 0 !important;
+    transform: none;
+}
+
+.range-tick-end {
+    left: 100% !important;
+    transform: translateX(-100%);
 }
 
 /* Numbers */
 .range-numbers {
     display: flex;
     justify-content: space-between;
-    margin-top: 1px !important;
+    width: calc(100% - 4px);
+    margin: 1px 2px 0 !important;
 }
 
 /* JS */
@@ -371,7 +388,7 @@ slider.oninput = function () {
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3"  style = "width:98.8%;height:5rem; margin-right:10px;"placeholder="Remarks" style= "padding:10px">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" style="width:98.8%; margin-right:10px;" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -427,10 +444,47 @@ textarea.form-control-sm {
     resize: vertical;
 }
 .training-course-select{
-    width: fit-content;
-    min-width: 180px;
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
-    display: inline-block;
+    display: block;
+}
+
+.training-course-select + .select2-container {
+    width: 100% !important;
+}
+
+.training-course-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    line-height: 1.25;
+}
+
+.training-course-option-line {
+    display: block;
+    white-space: normal;
+    margin-bottom: 0px;
+}
+
+.training-course-option-line:last-child {
+    margin-bottom: 0;
+}
+
+.training-course-option-label {
+    font-weight: 700 !important;
+    color: #54667a;
+}
+
+.training-course-option-value {
+    color: #343434;
+    display: inline;
+    white-space: normal;
+}
+
+.select2-results__option--highlighted .training-course-option-label,
+.select2-results__option--highlighted .training-course-option-value {
+    color: inherit;
 }
 
 /* ---------- Radio Buttons ---------- */
@@ -517,9 +571,10 @@ textarea.form-control-sm {
 /* Numbers Below */
 .range-numbers {
     display: flex;
-    justify-content: space-between;
+    gap: 5%;
+    width: calc(100% - -2px);
     font-size:0.625rem;
-margin-top:0.5rem;
+    margin: 0.5rem 2px 0;
     color: #666;
     
 }

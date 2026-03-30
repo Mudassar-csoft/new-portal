@@ -176,7 +176,7 @@
 				<table class="table table-bordered followup-table">
 					<thead>
 						<tr>
-							<th style="width: 40px;">Sr</th>
+							<th>Sr</th>
 							<th>Follower</th>
 							<th>Method</th>
 							<th>Probability</th>
@@ -626,7 +626,6 @@
 		}
 
 		.info-table th {
-			width: 14%;
 			height:auto;
 			background: #f6f8fb;
 			color: #4c5a6a;

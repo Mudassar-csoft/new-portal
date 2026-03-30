@@ -69,7 +69,7 @@
             color: #fff;
             
             padding: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 32px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
         }
         .hrm-stat .stat-label {

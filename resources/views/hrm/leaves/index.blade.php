@@ -37,9 +37,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group leave-button col-md-4 text-right mt-2 ml-4">
-                            <button class="btn btn-inline btn-primary-outline mr-2  mt-4 mb-0 " type="submit">Filter</button>
-                            <a href="{{ route('hrm.leaves.index') }}" class="btn btn-inline btn-danger-outline p-2 mb-0 mt-4">Reset</a>
+                        <div class="form-group leave-button col-md-4 text-right ">
+                            <button class="btn btn-inline btn-primary-outline " type="submit">Filter</button>
+                            <a href="{{ route('hrm.leaves.index') }}" class="btn btn-inline btn-danger-outline ">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -47,7 +47,7 @@
                 <form method="POST" action="{{ route('hrm.leaves.requests.store') }}" class="mb-3 hrm-box">
                     @csrf
                     <div class="form-row justify-between" >
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="col-md-4">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -56,7 +56,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class=" col-md-4">
                             <label class="form-label required" >Leave Type</label>
                             <select name="leave_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -65,19 +65,21 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class=" col-md-4">
                             <label class="form-label required" >From</label>
                             <input type="date" name="from_date" class="form-control" required>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        </div>
+                        <div class="form-row">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >To</label>
                             <input type="date" name="to_date" class="form-control" required>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >Days</label>
                             <input type="number" step="0.5" min="0.5" name="days" class="form-control" placeholder="Auto">
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >Reason</label>
                             <input type="text" name="reason" class="form-control">
                         </div>
@@ -145,7 +147,7 @@
                 <form method="POST" action="{{ route('hrm.leaves.balances.store') }}" class="mb-3 hrm-box">
                     @csrf
                     <div class="form-row " >
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="form-group col-md-4 ">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -154,7 +156,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >Leave Type</label>
                             <select name="leave_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -163,23 +165,25 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                        <div class="form-group col-md-4">
                             <label class="form-label required" >Year</label>
                             <input type="number" name="year" class="form-control" value="{{ now()->year }}" required>
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Opening</label>
                             <input type="number" step="0.01" min="0" name="opening_balance" class="form-control">
                         </div>
-                        <div class="form-group col-md-4 col-lg-2">
-                            <label class="form-label required" >Accrued</label>
-                            <input type="number" step="0.01" min="0" name="accrued" class="form-control">
-                        </div>
-                        <div class="form-group col-md-4 col-lg-1">
+    <div class="form-group col-md-3">
+        <label class="form-label required" >Accrued</label>
+        <input type="number" step="0.01" min="0" name="accrued" class="form-control">
+    </div>
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Used</label>
                             <input type="number" step="0.01" min="0" name="used" class="form-control">
                         </div>
-                        <div class="form-group col-md-4 col-lg-1">
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Encashed</label>
                             <input type="number" step="0.01" min="0" name="encashed" class="form-control">
                         </div>
@@ -217,9 +221,11 @@
 
 @push('styles')
     <style>
-        .col-md-4 col-lg-2
-            { margin-left:0.7%;}
-        
+      
+        .leave-button{
+                margin: auto;
+    padding-top: 33px;
+        }
         .hrm-shell { padding: 8px 0 16px; }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }

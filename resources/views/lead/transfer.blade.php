@@ -202,7 +202,7 @@
             box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
         }
 
-        .form-row {
+        /* .form-row {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -217,7 +217,7 @@
 
         .form-row .form-group.col-md-12 {
             flex-basis: 100%;
-        }
+        } */
     </style>
 @endpush
 

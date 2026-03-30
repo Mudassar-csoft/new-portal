@@ -27,12 +27,12 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('hrm.attendance.index') }}" class="mb-3">
-                    <div class="form-row mt-2" style = "gap:18px;padding-left:15px">
-                        <div class="form-group custom-col-5">
+                    <div class="form-row mt-2">
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Date</label>
                             <input type="date" class="form-control" name="date" value="{{ $filters['date'] ?? now()->toDateString() }}">
                         </div>
-                        <div class="form-group custom-col-5">
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -43,7 +43,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-5">
+                        <div class="form-group col-md-3">
                             <label class="form-label required" >Request Status</label>
                             <select class="form-control" name="request_status">
                                 <option value="">All</option>
@@ -52,20 +52,20 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-1 d-flex align-items-end justify-end">
-                            <button class="btn btn-inline btn-primary-outline mr-2 p-2  mt-4" type="submit">Filter</button>
-                            <a href="{{ route('hrm.attendance.index') }}" class="btn btn-inline btn-danger-outline p-2 mt-4">Reset</a>
+                        <div class="form-group col-md-3 leave-button d-flex justify-end ">
+                            <button class="btn btn-inline btn-primary-outline m" type="submit">Filter</button>
+                            <a href="{{ route('hrm.attendance.index') }}" class="btn btn-inline btn-danger-outline ">Reset</a>
                         </div>
                     </div>
                 </form>
 
                 <div class="row" >
-                    <div class="col-lg-6" style = "gap:18px;padding-left:15px">
+                    <div class="col-lg-6"  >
                         <form method="POST" action="{{ route('hrm.attendance.checkin') }}" class="mb-3 hrm-box">
                             @csrf
-                            <h5 class="form-label required" >Check-in</h5>
+                            <h5 class="form-label-mute text-muted required" >Check-in</h5>
                             <div class="form-row" style = "gap:0px;padding-left:5px">
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -74,11 +74,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Check-in At</label>
                                     <input type="datetime-local" name="check_in_at" class="form-control">
                                 </div>
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Shift</label>
                                     <select name="shift_id" class="form-control">
                                         <option value="">Auto/None</option>
@@ -97,17 +97,17 @@
                     <div class="col-lg-6" >
                         <form method="POST" action="{{ route('hrm.attendance.import') }}" enctype="multipart/form-data" class="mb-3 hrm-box">
                             @csrf
-                            <h5 class="form-label required" >Biometric / Device Import (Optional)</h5>
+                            <h5 class="form-label-mute text-muted required" >Biometric / Device Import (Optional)</h5>
                             <div class="form-row" style = "gap:0px;padding-left:5px">
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Source Name</label>
                                     <input type="text" name="source_name" class="form-control" placeholder="ZKTeco Device A">
                                 </div>
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Remarks</label>
                                     <input type="text" name="remarks" class="form-control">
                                 </div>
-                                <div class="form-group custom-col-4">
+                                <div class="form-group col-md-4">
                                     <label class="form-label required" >Import File (CSV)</label>
                                     <input type="file" name="import_file" class="form-control-file">
                                 </div>
@@ -178,8 +178,8 @@
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('hrm.attendance.requests.store') }}" class="mb-3">
                     @csrf
-                    <div class="form-row mt-3" style = "gap:18px;padding-left:15px">
-                        <div class="form-group col-md-3 col-lg-2">
+                    <div class="form-row mt-3"  >
+                        <div class="form-group col-md-3 col-lg-3">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -188,7 +188,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-3 col-lg-2">
+                        <div class="form-group col-md-3 col-lg-3">
                             <label class="form-label required" >Type</label>
                             <select name="request_type" class="form-control">
                                 <option value="checkin_correction">Check-in</option>
@@ -274,6 +274,11 @@
             border: 1px solid #e6ebf1;
             border-radius: 8px;
             padding: 10px;
+        }
+        .leave-button{
+                margin: auto;
+    padding-top: 33px;
+    justify-content: end;
         }
     </style>
 @endpush

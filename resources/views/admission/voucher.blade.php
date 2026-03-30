@@ -51,8 +51,8 @@
 
 				<table class="table">
 					<tr>
-						<td width="60%">Admission Fee</td>
-						<td width="40%">Rs. {{ number_format($adm->fee_package ?? 0, 0) }}</td>
+						<td>Admission Fee</td>
+						<td>Rs. {{ number_format($adm->fee_package ?? 0, 0) }}</td>
 					</tr>
 					<tr>
 						<td>Discount</td>

@@ -1,4 +1,7 @@
-@php
+ @extends('layouts.theme')
+
+ 
+ @php
     $actionId = $actionId ?? ('campus-action-' . $campus->id);
 @endphp
 

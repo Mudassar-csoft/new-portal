@@ -23,7 +23,7 @@
         @endif
 
         <div class="box-typical box-typical-dashboard panel panel-default batch-timetable-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Manage Time Table</h3>
                     <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small>
@@ -36,7 +36,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('batch.timetable.index') }}" class="batch-filter-form">
                     <div class="form-row batch-filter-row">
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4">
                             <label class="form-label">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -47,7 +47,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4">
                             <label class="form-label">Programme</label>
                             <select class="form-control" name="program_id">
                                 <option value="">All Programmes</option>
@@ -58,7 +58,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4">
                             <label class="form-label">Batch</label>
                             <select class="form-control" name="batch_id">
                                 <option value="">All Batches</option>
@@ -69,7 +69,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4">
                             <label class="form-label">Day</label>
                             <select class="form-control" name="day_of_week">
                                 <option value="">All Days</option>
@@ -78,7 +78,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col">
+                        <div class="form-group col-lg-4">
                             <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All Statuses</option>
@@ -87,7 +87,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group batch-filter-col batch-filter-col-wide">
+                        <div class="form-group col-lg-4 batch-filter-col-wide">
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch, room, instructor, or topic">
                         </div>
@@ -315,7 +315,10 @@
             gap: 18px;
             align-items: start;
         }
-
+.form-group.batch-filter-actions
+ {
+    margin: 3.8%;
+}
         .batch-timetable-form-card,
         .batch-timetable-board-card {
             border: 1px solid #dbe5f1;

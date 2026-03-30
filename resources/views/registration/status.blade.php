@@ -63,7 +63,7 @@
 					<table class="table table-bordered follow-table" id="reg-table">
 						<thead>
 							<tr>
-								<th style="width: 50px;">Sr</th>
+								<th>Sr</th>
 								<th>Name</th>
 								<th>Program</th>
 								<th>Reg. No</th>
@@ -71,7 +71,7 @@
 								<th>Contact</th>
 								<th>Fee (Rs.)</th>
 								<th>Receipt</th>
-								<th class="text-center" style="width: 110px;">Actions</th>
+								<th class="text-center">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -234,7 +234,7 @@ border-bottom: 2px solid #008efb;		}
 			min-width: 180px;
 			position: absolute !important;
 			top: 0 !important;
-			right: calc(100% + 2px) !important;
+			right: 100% !important;
 			margin-right: 0 !important;
 			left: auto !important;
 			transform: none !important;
@@ -248,6 +248,23 @@ border-bottom: 2px solid #008efb;		}
 			font-size: 13px;
 			color: #54667a;
 			padding: 4px 4px 0;
+		}
+
+		@media (max-width: 768px) {
+			.reg-status-shell .table-responsive {
+				overflow-x: auto !important;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			.reg-status-shell .follow-table {
+				width: max-content !important;
+				min-width: 100% !important;
+			}
+
+			.reg-status-shell .follow-table th,
+			.reg-status-shell .follow-table td {
+				white-space: nowrap;
+			}
 		}
 	</style>
 @endpush

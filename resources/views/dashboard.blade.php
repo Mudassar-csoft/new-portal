@@ -29,87 +29,89 @@
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="row"style=" align-items: flex-start !important;">
+		<div class="row pl-3 pr-3">
 
-			<div class="col-xl-6 pl-0 ">
+			<div class="col-xl-6 pl-0 ml-3 mr-2 m-md-0 m-lg-0 ">
 				<div class="chart-statistic-box">
 					
 					<div class="chart-container row ">
-						<div class="chart-txt col-5 p-0 m-0 ">
-						<div class="chart-txt-top pt-3">
-							<p ><span class="unit"style="font-size:18px !important;">RS.</span><span class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-							<p class="caption"style="font-size:18px !important;">Income</p>  
-						</div>
-						<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
-							<div class="radio">
-								<input type="radio" name="income-range" id="range-today" value="today" checked>
-								<label for="range-today">Today</label>
+						<div class="chart-txt col-md-5 p-0 m-0 ">
+							<div class="chart-txt-top pt-3">
+								<p ><span class="unit"style="font-size:18px !important;">RS.</span><span class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+								<p class="caption"style="font-size:18px !important;">Income</p>  
 							</div>
+							<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
+								<div class="radio">
+									<input type="radio" name="income-range" id="range-today" value="today" checked>
+									<label for="range-today">Today</label>
+								</div>
+								
+								<div class="radio">
+									<input type="radio" name="income-range" id="range-week" value="week">
+									<label for="range-week">Weekly</label>
+								</div>
+								
+								<div class="radio">
+									<input type="radio" name="income-range" id="range-month" value="month">
+									<label for="range-month">Monthly</label>
+								</div>
 							
-							<div class="radio">
-								<input type="radio" name="income-range" id="range-week" value="week">
-								<label for="range-week">Weekly</label>
+								<div class="radio">
+									<input type="radio" name="income-range" id="range-year" value="year">
+									<label for="range-year">Yearly</label>
+								</div>
 							</div>
-							
-							<div class="radio">
-								<input type="radio" name="income-range" id="range-month" value="month">
-								<label for="range-month">Monthly</label>
-							</div>
-						
-							<div class="radio">
-								<input type="radio" name="income-range" id="range-year" value="year">
-								<label for="range-year">Yearly</label>
-							</div>
+							<table class="tbl-data ml-lg-3 ml-2">
+								<tr>
+									<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+									<td style = "font-size:14px;	">Today Collection</td>
+								</tr>
+								<tr>
+									<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+									<td style = "font-size:14px;	">Weekly Collection</td>
+								</tr>
+								<tr>
+									<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+									<td style = "font-size:14px;	">Monthly Collection</td>
+								</tr>
+							</table>
 						</div>
-						<table class="tbl-data ml-lg-3 ml-2">
-							<tr>
-								<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
-								<td style = "font-size:14px;	">Today Collection</td>
-							</tr>
-							<tr>
-								<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
-								<td style = "font-size:14px;	">Weekly Collection</td>
-							</tr>
-							<tr>
-								<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
-								<td style = "font-size:14px;	">Monthly Collection</td>
-							</tr>
-						</table>
-					</div>
-						<div class="chart-container-in col-7  m-0 p-0 fs-1">
-							<div id="chart_div" style = "font-size:10px;"></div>
-							<div id="chart_fallback" style="display:none; height:314px;">
-								<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
-									<defs>
-										<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-											<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
-											<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
-										</linearGradient>
-									</defs>
-									<rect width="400" height="314" fill="url(#incomeGradient)" />
-									<polyline fill="none" stroke="#fff" stroke-width="4"
-										points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
-									<circle cx="20" cy="240" r="5" fill="#fff" />
-									<circle cx="80" cy="200" r="5" fill="#fff" />
-									<circle cx="140" cy="206" r="5" fill="#fff" />
-									<circle cx="200" cy="180" r="5" fill="#fff" />
-									<circle cx="260" cy="210" r="5" fill="#fff" />
-									<circle cx="320" cy="140" r="5" fill="#fff" />
-									<circle cx="380" cy="170" r="5" fill="#fff" />
-								</svg>
+						<div class="chart-container-in col-md-7  m-0 p-0 fs-1">
+							<div class="pr-md-2">
+								<div id="chart_div" style = "font-size:11px;"></div>
+								<div id="chart_fallback" style="display:none; height:314px;">
+									<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
+										<defs>
+											<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+												<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
+												<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
+											</linearGradient>
+										</defs>
+										<rect width="400" height="314" fill="url(#incomeGradient)" />
+										<polyline fill="none" stroke="#fff" stroke-width="4"
+											points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
+										<circle cx="20" cy="240" r="5" fill="#fff" />
+										<circle cx="80" cy="200" r="5" fill="#fff" />
+										<circle cx="140" cy="206" r="5" fill="#fff" />
+										<circle cx="200" cy="180" r="5" fill="#fff" />
+										<circle cx="260" cy="210" r="5" fill="#fff" />
+										<circle cx="320" cy="140" r="5" fill="#fff" />
+										<circle cx="380" cy="170" r="5" fill="#fff" />
+									</svg>
+								</div>
+								<!-- <div class="chart-caption"></div> -->
+								<div class="chart-container-x"></div>
+								<div class="chart-container-y"></div>
 							</div>
-							<!-- <div class="chart-caption"></div> -->
-							<div class="chart-container-x"></div>
-							<div class="chart-container-y"></div>
 						</div>
 					</div>
 					
 				</div><!--.chart-statistic-box-->
 			</div>
-			<div class="col-xl-6 pr-0">
+			<div class="col-xl-6 pr-4">
 				<div class="row">
-					<div class="col-sm-6">
-						<article class="statistic-box red">
+					<div class="col-md-6 ">
+						<article class="statistic-box red"  >
 							<div class="stat-inner">
 								<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
@@ -119,8 +121,8 @@
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="col-sm-6">
-						<article class="statistic-box purple">
+					<div class="col-md-6 ">
+						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
 								<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
@@ -130,7 +132,7 @@
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="col-sm-6">
+					<div class="col-md-6 ">
 						<article class="statistic-box yellow">
 							<div class="stat-inner">
 								<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
@@ -141,8 +143,8 @@
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="col-sm-6">
-						<article class="statistic-box green">
+					<div class="col-md-6 ">
+						<article class="statistic-box green mr-1">
 							<div class="stat-inner">
 								<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
@@ -158,20 +160,34 @@
 		
 	    </div>
 <!--Current Month Charts-->
-	<div class="row ">
-		<div class="col-xl-6">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
+	<div class="row pl-4 pr-3 tables-dashbord">
+		<div class="col-xl-6 pl-1  ml-1 mr-2 m-md-0 m-lg-0">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">Current Month Leads</h3>
+							<h3 class="form-label-dashboard month-chart-header-title">
+								<span class="month-chart-header-label">Current Month Leads</span>
+							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month leads chart">
-								<i class="fa fa-window-maximize"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit current month leads title">
+								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
-							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close current month leads chart">
-								<i class="fa fa-times"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move current month leads panel slightly">
+								<i class="glyphicon glyphicon-move"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh current month leads chart">
+								<i class="font-icon font-icon-refresh"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="collapse" aria-label="Collapse current month leads chart" aria-expanded="true">
+								<i class="font-icon font-icon-minus"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month leads chart">
+								<i class="font-icon font-icon-expand"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close current month leads chart">
+								<i class="font-icon font-icon-close"></i>
 							</button>
 						</div>
 					</div>
@@ -181,19 +197,33 @@
 				</div>
 			</section>
 		</div>
-		<div class="col-xl-6">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card">
+		<div class="col-xl-6 pl-2 pr-4">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">Current Month Admissions</h3>
+							<h3 class="form-label-dashboard month-chart-header-title">
+								<span class="month-chart-header-label">Current Month Admissions</span>
+							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month admissions chart">
-								<i class="fa fa-window-maximize"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit current month admissions title">
+								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
-							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close current month admissions chart">
-								<i class="fa fa-times"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move current month admissions panel slightly">
+								<i class="glyphicon glyphicon-move"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh current month admissions chart">
+								<i class="font-icon font-icon-refresh"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="collapse" aria-label="Collapse current month admissions chart" aria-expanded="true">
+								<i class="font-icon font-icon-minus"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month admissions chart">
+								<i class="font-icon font-icon-expand"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close current month admissions chart">
+								<i class="font-icon font-icon-close"></i>
 							</button>
 						</div>
 					</div>
@@ -205,20 +235,34 @@
 		</div>
 	</div>
 <!--Daily Activity-->
-	<div class="row dashboard-equal-row">
-		<div class="col-xl-6 d-flex">
-			<section class="box-typical box-typical-dashboard panel panel-default daily-activity-card dashboard-equal-card">
+	<div class="row dashboard-equal-row pl-4 pr-3 mt-4  tables-dashbord ">
+		<div class="col-xl-6 d-flex pl-1 ml-1 mr-2 m-md-0 m-lg-0">
+			<section class="box-typical box-typical-dashboard panel panel-default daily-activity-card dashboard-equal-card bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">Daily Activity <span class="color-blue-grey">|</span> {{ isset($selectedCampus) && $selectedCampus ? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name) : 'Each Campus' }}</h3>
+							<h3 class="form-label-dashboard month-chart-header-title">
+								<span class="month-chart-header-label">Daily Activity | {{ isset($selectedCampus) && $selectedCampus ? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name) : 'Each Campus' }}</span>
+							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize daily activity">
-								<i class="fa fa-window-maximize"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit daily activity title">
+								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
-							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close daily activity">
-								<i class="fa fa-times"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move daily activity panel slightly">
+								<i class="glyphicon glyphicon-move"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh daily activity">
+								<i class="font-icon font-icon-refresh"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="collapse" aria-label="Collapse daily activity" aria-expanded="true">
+								<i class="font-icon font-icon-minus"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize daily activity">
+								<i class="font-icon font-icon-expand"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close daily activity">
+								<i class="font-icon font-icon-close"></i>
 							</button>
 						</div>
 					</div>
@@ -227,7 +271,7 @@
 					<table class="tbl-typical">
 						<thead>
 							<tr>
-								<th style="width: 20%;"><div>Campus</div></th>
+								<th><div>Campus</div></th>
 								<th><div>Leads</div></th>
 								<th><div>Followups</div></th>
 								<th><div>Admissions</div></th>
@@ -265,19 +309,33 @@
 			</section>
 		</div>
 	<!--campus Month Charts-->
-		<div class="col-xl-6 d-flex">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card dashboard-equal-card">
+		<div class="col-xl-6 d-flex pl-2 pr-4">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card dashboard-equal-card  bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</h3>
+							<h3 class="form-label-dashboard month-chart-header-title">
+								<span class="month-chart-header-label">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</span>
+							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="dashboard-panel-action" data-action="fullscreen" aria-label="Maximize campus admissions comparison">
-								<i class="fa fa-window-maximize"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit campus admissions comparison title">
+								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
-							<button type="button" class="dashboard-panel-action" data-action="close" aria-label="Close campus admissions comparison">
-								<i class="fa fa-times"></i>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move campus admissions comparison panel slightly">
+								<i class="glyphicon glyphicon-move"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh campus admissions comparison">
+								<i class="font-icon font-icon-refresh"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="collapse" aria-label="Collapse campus admissions comparison" aria-expanded="true">
+								<i class="font-icon font-icon-minus"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize campus admissions comparison">
+								<i class="font-icon font-icon-expand"></i>
+							</button>
+							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close campus admissions comparison">
+								<i class="font-icon font-icon-close"></i>
 							</button>
 						</div>
 					</div>
@@ -303,7 +361,7 @@
 			font-size: 15px !important;	
 		}
 		.box-typical.box-typical-dashboard {
-			margin: 1% 5px !important;
+			margin: 1% 1px !important;
 			height: 318px;
 		}
 		.chart-txt-top.pt-2 {
@@ -316,19 +374,26 @@
 			margin: 8px 0 20px;
 		}
 		.chart-statistic-box {
-			border-radius: 12px;
+			border-radius: 4px;
 			overflow: hidden;
 		}
 		.chart-statistic-box .chart-container {
 			margin-left: 0;
-			border-radius: 12px;
+			border-radius: 4px;
 			overflow: hidden;
 		}
 		.chart-statistic-box .chart-txt {
-			background: #304b58;
-			border-radius: 12px 0 0 12px;
-			overflow: hidden;
-		}
+    float: left;
+    width: 200px;
+    height: 314px;
+    padding: 15px 20px;
+    background: #304b58;
+    -webkit-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+    color: #fff;
+    position: relative;
+    z-index: 5;
+}
 		.chart-statistic-box .chart-txt .chart-txt-top p:first-child {
 			display: flex;
 			align-items: baseline;
@@ -377,17 +442,13 @@
             padding-bottom: 6px;
         }
  .statistic-box {
-    padding: 2px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-	    text-align: center;
+       -webkit-border-radius: 4px;
+    border-radius: 4px;
+    text-align: center;
     color: #fff;
     background: no-repeat 50% 50%;
     background-size: cover;
-	    height: 150px;
-		margin: 0 0 15px;
-		margin-top:0px;
+    margin: 0 0 30px;
 
     
 }
@@ -431,9 +492,9 @@
             padding: 6px 12px;
         }
         .month-chart-header {
-            padding: 10px 14px !important;
+            padding: 14px 18px !important;
             border-bottom: 1px solid #e6eef3;
-            background: linear-gradient(135deg, #f8fbfd 0%, #eef6fb 100%);
+            background: #fff;
         }
         .month-chart-header-content {
             display: flex;
@@ -451,37 +512,93 @@
         .month-chart-header-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0;
             flex-shrink: 0;
             margin-left: auto;
             justify-content: flex-end;
         }
         .month-chart-header-title {
             margin: 0;
-            font-size: 16px !important;
+            font-size: 17px !important;
             font-weight: 600 !important;
-            color: #304b58;
+            color: #25364a;
+            min-width: 0;
+            width: 100%;
         }
-        .dashboard-panel-action {
-            align-items: center;
-            width: 34px;
-            height: 34px;
-            border: 0;
-            border-radius: 50%;
-            background: #eef4f8;
-            color: #5b6b79;
+        .month-chart-header-label {
+            display: inline-block;
+            min-width: 0;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 6px;
+            transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .month-chart-header-label.is-editing {
+            min-width: 220px;
+            max-width: none;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            padding: 4px 8px;
+            background: #fff;
+            border: 1px solid #cfd9e3;
+            box-shadow: 0 0 0 3px rgba(18, 160, 255, 0.12);
+            outline: none;
+        }
+        .month-chart-header-actions .action-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.15s ease, color 0.15s ease;
+            margin: 0 0 0 16px;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            color: #b2bcc7;
+            font-size: 12.8px !important;
+            line-height: 1;
+            min-width: 16px;
+            transition: color 0.15s ease;
         }
-        .dashboard-panel-action:hover {
-            background: #00a8ff;
-            color: #fff;
+        .month-chart-header-actions .action-btn:first-child {
+            margin-left: 0;
+        }
+        .month-chart-header-actions .action-btn:hover,
+        .month-chart-header-actions .action-btn:focus {
+            color: #7d8b99;
+            background: transparent;
+        }
+        .month-chart-header-actions .action-btn.is-active {
+            color: #4f6072;
+        }
+        .month-chart-header-actions .action-btn .font-icon,
+        .month-chart-header-actions .action-btn .glyphicon {
+            line-height: 1;
+            font-size: 12.8px !important;
+        }
+        .month-chart-header-actions .dashboard-panel-action[data-action="fullscreen"] .font-icon {
+            font-size: 14px !important;
+        }
+        .month-chart-header-actions .action-btn .glyphicon {
+            font-family: 'Glyphicons Halflings' !important;
+            font-style: normal;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .dashboard-panel-action.is-spinning .font-icon {
+            animation: dashboardSpin 0.75s linear infinite;
+        }
+		
+        .dashboard-panel-offset {
+            transform: translate(24px, -14px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 18px 40px rgba(37, 54, 74, 0.16);
         }
         .month-chart-card {
             margin-bottom: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .month-chart-card .box-typical-body,
@@ -493,19 +610,75 @@
         }
         .dashboard-equal-row > [class*="col-"] {
             display: flex;
+            align-items: flex-start;
         }
         .dashboard-equal-card {
             width: 100%;
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dashboard-content .box-typical.box-typical-collapsed {
+            height: auto !important;
+            min-height: 0 !important;
+            align-self: flex-start;
+        }
+        .dashboard-content .box-typical.box-typical-collapsed .box-typical-body,
+        .dashboard-content .box-typical.box-typical-collapsed .panel-body {
+            display: none !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            overflow: hidden !important;
+            flex: 0 0 auto !important;
         }
         .dashboard-equal-card .panel-body,
         .dashboard-equal-card .box-typical-body {
             flex: 1 1 auto;
         }
+        body.dashboard-panel-fullscreen-active {
+            overflow: hidden;
+        }
+        .dashboard-content .box-typical.box-typical-full-screen {
+            position: fixed !important;
+            top: 10px !important;
+            right: 10px !important;
+            bottom: 10px !important;
+            left: 10px !important;
+            width: auto !important;
+            height: auto !important;
+            max-width: none !important;
+            margin: 0 !important;
+            z-index: 1200 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            transform: none !important;
+            box-shadow: 0 22px 55px rgba(15, 23, 42, 0.26);
+        }
+        .dashboard-content .box-typical.box-typical-full-screen .box-typical-header {
+            flex: 0 0 auto;
+        }
+        .dashboard-content .box-typical.box-typical-full-screen .box-typical-body,
+        .dashboard-content .box-typical.box-typical-full-screen .panel-body {
+            flex: 1 1 auto;
+            height: auto !important;
+            max-height: none !important;
+            overflow: auto !important;
+        }
+        .dashboard-content .box-typical.box-typical-full-screen #leads-chart,
+        .dashboard-content .box-typical.box-typical-full-screen #admissions-chart,
+        .dashboard-content .box-typical.box-typical-full-screen #campus-admissions-chart {
+            height: calc(100vh - 120px) !important;
+            min-height: 420px;
+        }
+        .dashboard-content .box-typical.box-typical-full-screen.daily-activity-card .panel-body {
+            min-height: 0;
+        }
         .daily-activity-card .panel-body {
             min-height: 320px;
-            overflow: visible !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
         }
         .dashboard-equal-card #campus-admissions-chart {
             height: 320px;
@@ -613,6 +786,14 @@
                 opacity: 1;
             }
         }
+        @keyframes dashboardSpin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         .daily-activity-card .panel-heading {
             border-top: 0;
@@ -628,7 +809,7 @@
         .daily-activity-card .tbl-typical th,
         .daily-activity-card .tbl-typical td {
             font-size: 13px !important;
-            line-height: 1.45;
+            line-height: 0.45;
             vertical-align: middle;
             color: #304b58;
             width: auto !important;
@@ -653,11 +834,169 @@
             border: 0;
             border-radius: 0;
         }
-
         .daily-activity-total td {
             background: #f8fbfd;
             color: #304b58;
             font-weight: 700;
+        }
+
+        @media (max-width: 767px) {
+            .dashboard-shell {
+                margin: 0 !important;
+            }
+
+            .dashboard-shell .dashboard-content {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .dashboard-shell .row {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .dashboard-shell [class*="col-"] {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .dashboard-shell .box-typical.box-typical-dashboard,
+            .dashboard-shell .statistic-box {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .dashboard-shell .col-xl-6,
+            .dashboard-shell .col-md-6,
+            .dashboard-shell .dashboard-equal-row > [class*="col-"] {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .dashboard-shell .chart-statistic-box,
+            .dashboard-shell .statistic-box,
+            .dashboard-shell .month-chart-card,
+            .dashboard-shell .dashboard-equal-card {
+                width: 100% !important;
+            }
+
+            .statistic-box .stat-inner {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 18px 12px !important;
+            }
+
+            .statistic-box .number,
+            .statistic-box .caption,
+            .statistic-box .caption .text {
+                width: 100%;
+                text-align: center !important;
+                padding: 0 !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+
+            .statistic-box .number {
+                margin-top: 0 !important;
+                margin-bottom: 8px !important;
+                line-height: 1.15;
+            }
+
+            .statistic-box .caption {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            .statistic-box .caption .text {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            .chart-statistic-box .chart-range,
+            .chart-statistic-box .tbl-data {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .chart-statistic-box .chart-container-in > div {
+                padding-right: 0 !important;
+            }
+
+            .chart-statistic-box .chart-container {
+                display: flex;
+                flex-wrap: wrap;
+				justify-content: center;
+            }
+
+            .chart-statistic-box .chart-txt {
+                float: none;
+                width: 100% !important;
+                max-width: 100%;
+                height: auto;
+                min-height: 0;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                gap: 12px 16px;
+                padding: 16px 14px !important;
+                border-radius: 4px 4px 0 0;
+                flex: 0 0 100%;
+            }
+
+            .chart-statistic-box .chart-txt .chart-txt-top {
+                flex: 1 1 100%;
+                padding-top: 0 !important;
+            }
+
+            .chart-statistic-box .chart-txt .chart-range {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 8px 14px;
+                margin: 0 !important;
+                width: 100%;
+            }
+
+            .chart-statistic-box .chart-txt .tbl-data {
+                width: 100%;
+                margin: 0 !important;
+            }
+
+            .chart-statistic-box .chart-txt .tbl-data td {
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+            .chart-statistic-box .chart-container-in {
+                flex: 0 0 100%;
+                max-width: 100%;
+                border-radius: 0 0 4px 4px;
+            }
+
+            .daily-activity-card .panel-body {
+                overflow-x: auto !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .daily-activity-card .tbl-typical {
+                width: max-content !important;
+                min-width: 100% !important;
+            }
+
+            .daily-activity-card .tbl-typical th,
+            .daily-activity-card .tbl-typical td {
+                white-space: nowrap;
+            }
         }
     </style>
 @endpush
@@ -738,22 +1077,163 @@
 				var action = $(this).data('action');
 				var targetSelector = $(this).data('target-panel');
 				var panel = targetSelector ? $(targetSelector).first() : $(this).closest('.box-typical');
+				var button = $(this);
+				var body = panel.find('.box-typical-body').first();
+				var titleLabel = panel.find('.month-chart-header-label').first();
 
 				if (!panel.length) {
 					return;
 				}
 
+				function syncFullscreenState() {
+					$('body').toggleClass('dashboard-panel-fullscreen-active', $('.box-typical.box-typical-full-screen').length > 0);
+				}
+
+				function finishTitleEdit(revertChanges) {
+					if (!titleLabel.length || !titleLabel.hasClass('is-editing')) {
+						return;
+					}
+
+					var originalText = titleLabel.data('original-text') || '';
+					var nextText = revertChanges ? originalText : $.trim(titleLabel.text().replace(/\s+/g, ' '));
+					if (!nextText) {
+						nextText = originalText || 'Panel Title';
+					}
+
+					titleLabel.text(nextText);
+					titleLabel.removeAttr('contenteditable spellcheck');
+					titleLabel.removeClass('is-editing');
+					button.removeClass('is-active');
+				}
+
 				if (action === 'close') {
+					if (panel.hasClass('box-typical-full-screen')) {
+						panel.removeClass('box-typical-full-screen');
+						syncFullscreenState();
+					}
 					panel.remove();
 					return;
 				}
 
+				if (action === 'edit-title') {
+					var activeLabel = $('.month-chart-header-label.is-editing').not(titleLabel).first();
+					if (activeLabel.length) {
+						activeLabel.trigger('blur');
+					}
+
+					if (!titleLabel.length) {
+						return;
+					}
+
+					if (titleLabel.hasClass('is-editing')) {
+						finishTitleEdit(false);
+						return;
+					}
+
+					titleLabel.data('original-text', $.trim(titleLabel.text().replace(/\s+/g, ' ')));
+					titleLabel.attr('contenteditable', 'true');
+					titleLabel.attr('spellcheck', 'false');
+					titleLabel.addClass('is-editing');
+					button.addClass('is-active');
+
+					setTimeout(function () {
+						var node = titleLabel.get(0);
+						if (!node) {
+							return;
+						}
+						node.focus();
+						if (window.getSelection && document.createRange) {
+							var range = document.createRange();
+							range.selectNodeContents(node);
+							var selection = window.getSelection();
+							selection.removeAllRanges();
+							selection.addRange(range);
+						}
+					}, 0);
+					return;
+				}
+
+				if (action === 'offset') {
+					panel.toggleClass('dashboard-panel-offset');
+					button.toggleClass('is-active', panel.hasClass('dashboard-panel-offset'));
+					return;
+				}
+
+				if (action === 'refresh') {
+					button.addClass('is-spinning');
+					panel.addClass('panel-loading');
+					setTimeout(function () {
+						panel.removeClass('panel-loading');
+						button.removeClass('is-spinning');
+						$(window).trigger('resize');
+					}, 450);
+					return;
+				}
+
+				if (action === 'collapse') {
+					if (!body.length) {
+						return;
+					}
+
+					if (panel.hasClass('box-typical-collapsed')) {
+						panel.removeClass('box-typical-collapsed');
+						button.attr('aria-expanded', 'true');
+						body.stop(true, true).show();
+						$(window).trigger('resize');
+					} else {
+						button.attr('aria-expanded', 'false');
+						body.stop(true, true).hide();
+						panel.addClass('box-typical-collapsed');
+						$(window).trigger('resize');
+					}
+					return;
+				}
+
 				if (action === 'fullscreen') {
+					var wasFullScreen = panel.hasClass('box-typical-full-screen');
+					$('.box-typical.box-typical-full-screen').not(panel).removeClass('box-typical-full-screen');
+					$('.dashboard-panel-action[data-action="fullscreen"]').not(button).removeClass('is-active');
+					panel.removeClass('dashboard-panel-offset');
+					panel.find('.dashboard-panel-action[data-action="offset"]').removeClass('is-active');
 					panel.toggleClass('box-typical-full-screen');
+					button.toggleClass('is-active', !wasFullScreen);
+					syncFullscreenState();
 					setTimeout(function () {
 						$(window).trigger('resize');
 					}, 150);
 				}
+			});
+
+			$(document).on('keydown', '.month-chart-header-label.is-editing', function (e) {
+				if (e.key === 'Enter') {
+					e.preventDefault();
+					$(this).trigger('blur');
+					return;
+				}
+
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					var label = $(this);
+					label.text(label.data('original-text') || label.text());
+					label.trigger('blur');
+				}
+			});
+
+			$(document).on('blur', '.month-chart-header-label.is-editing', function () {
+				var label = $(this);
+				var panel = label.closest('.box-typical');
+				var editButton = panel.find('.dashboard-panel-action[data-action="edit-title"]').first();
+				var nextText = $.trim(label.text().replace(/\s+/g, ' '));
+				var originalText = label.data('original-text') || '';
+
+				if (!nextText) {
+					nextText = originalText || 'Panel Title';
+				}
+
+				label.text(nextText);
+				label.removeAttr('contenteditable spellcheck');
+				label.removeClass('is-editing');
+				editButton.removeClass('is-active');
 			});
 
 			$('input[name="income-range"]').on('change', function () {
@@ -1017,7 +1497,7 @@
 						strokeWidth: 0
 					},
 					chartArea: {
-						left: 50,
+						left: 38,
 						right: 20,
 						top: 20,
 						bottom: 50,

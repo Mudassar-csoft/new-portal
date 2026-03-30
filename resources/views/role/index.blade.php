@@ -7,10 +7,10 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default role-directory">
-					<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0 form-label">Roles</h3>
-							<small class="text-muted">Manage role definitions and attached permissions.</small>
+							<!-- <small class="text-muted">Manage role definitions and attached permissions.</small> -->
 						</div>
 						<div class="d-flex gap-2">
 							<a href="{{ route('roles.create') }}" class="btn btn-primary">New Role</a>
@@ -167,6 +167,7 @@
 			$('#roles-table').DataTable({
 				processing: true,
 				serverSide: true,
+				autoWidth: false,
 				dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
 				ajax: "{{ route('roles.index') }}",
 				order: [[1, 'asc']],

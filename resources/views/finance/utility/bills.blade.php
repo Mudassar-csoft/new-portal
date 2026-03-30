@@ -93,7 +93,7 @@
        <textarea name="details[remarks]"
     class="form-control form-control-sm @error('details.remarks') is-invalid @enderror"
     rows="3"
-    placeholder="Remarks" style= "padding:10px; margin-bottom:7px; width:99.5%">{{ old('details.remarks', '') }}</textarea>
+    placeholder="Remarks" style="margin-bottom:7px; width:99.5%;">{{ old('details.remarks', '') }}</textarea>
         @error('details.remarks')
             <div class="field-error">{{ $message }}</div>
         @enderror

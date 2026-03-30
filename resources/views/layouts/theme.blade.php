@@ -63,6 +63,24 @@ input[type="submit"] {
   
 }
 
+.btn[class*="-outline"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 37px;
+  padding: 0.375rem 1rem !important;
+  line-height: 1.2 !important;
+}
+
+.btn.btn-inline[class*="-outline"] {
+  margin-right: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.btn.btn-inline[class*="-outline"]:last-child {
+  margin-right: 0 !important;
+}
+
 hr {
   margin: 1rem 0 !important;
 }
@@ -81,6 +99,7 @@ font-family: "Font Awesome 6 Free" !important;
 .box-typical .panel-title{
 	font-size: 22px !important;
   font-weight: 500 !important;
+      text-wrap: auto;
 }
 .btn.btn-default {
   background-color: #00a8ff;
@@ -145,6 +164,58 @@ tr {
   height: 29px !important;
   padding: 0.1875rem 0.3125rem !important; /* 3px 5px */
   text-align: left !important;
+}
+
+/* Lead module tables */
+.follow-shell .table,
+.lead-status-shell .table,
+.lead-show-shell .table,
+.web-lead-detail-card .table {
+  width: auto !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  table-layout: auto !important;
+}
+
+.follow-shell .table th,
+.follow-shell .table td,
+.lead-status-shell .table th,
+.lead-status-shell .table td,
+.lead-show-shell .table th,
+.lead-show-shell .table td,
+.web-lead-detail-card .table th,
+.web-lead-detail-card .table td {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+.follow-shell .table .action-cell,
+.lead-status-shell .table .action-cell,
+.lead-show-shell .table .action-cell,
+.web-lead-detail-card .table .action-cell {
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+/* Student module tables */
+.student-attendance-shell .table,
+.student-directory .table {
+  width: auto !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  table-layout: auto !important;
+}
+
+.student-attendance-shell .table th,
+.student-attendance-shell .table td,
+.student-directory .table th,
+.student-directory .table td {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
 }
 
 .box-typical .panel-heading {
@@ -240,6 +311,12 @@ padding: 10px 16px !important;
 /* =========================================================
    DataTables
    ========================================================= */
+.dataTables_wrapper {
+  box-sizing: border-box;
+  padding-left: 3px !important;
+  padding-right: 12px !important;
+}
+
 .dataTables_wrapper .dataTables_filter input,
 .login-logs .dataTables_filter input {
   border: 1px solid #d9e2ef;
@@ -279,8 +356,15 @@ padding-left: 10px !important;
 overflow-x: auto;
 }
 
-.dataTables_wrapper table {
-width: 100%;
+.dataTables_wrapper table.dataTable {
+width: auto !important;
+min-width: 100%;
+table-layout: auto !important;
+}
+
+.dataTables_wrapper table.dataTable th,
+.dataTables_wrapper table.dataTable td {
+width: auto !important;
 }
 
 .table-responsive {
@@ -299,11 +383,11 @@ padding: 4px 12px !important;
 display: flex;
     align-items: baseline !important;
 }
-
+/* 
 .row {
   align-items: flex-start !important;
-  margin-left: -0.5rem;  /* -8px */
-  margin-right: -0.5rem; /* -8px */
+  margin-left: -0.5rem;  
+  margin-right: -0.5rem; 
 }
 
 .row > [class*="col-"] {
@@ -321,7 +405,7 @@ margin-right: 2px;
 .form-row > [class*=col-] {
 padding-right: 3px;
 padding-left: 5px;
-}
+} */
 
 
 
@@ -350,6 +434,119 @@ margin: 0 !important;
     text-transform: uppercase;
 	font-weight:600;
 }
+/* =========================================================
+   Shared Form Rhythm
+   Match the spacing pattern used in the training lead form
+   ========================================================= */
+:root {
+  --lead-form-row-padding-y: 3px;
+  --lead-form-row-padding-x: 10px;
+  --lead-form-row-gap: 8px;
+  --lead-form-col-padding-x: 15px;
+  --lead-form-group-margin: 6px;
+  --lead-form-control-height: 2.25rem;
+  --lead-form-control-padding-y: 0.375rem;
+  --lead-form-control-padding-x: 0.625rem;
+  --lead-form-textarea-min-height: 5rem;
+}
+
+form .form-row,
+form .row {
+  align-items: flex-start !important;
+  gap: 0 !important;
+  row-gap: var(--lead-form-row-gap) !important;
+  padding: var(--lead-form-row-padding-y) var(--lead-form-row-padding-x) !important;
+}
+
+form .form-row > .col,
+form .form-row > [class*=col-],
+form .row > .col,
+form .row > [class*=col-] {
+  padding-left: var(--lead-form-col-padding-x) !important;
+  padding-right: var(--lead-form-col-padding-x) !important;
+}
+
+form .form-group {
+  margin-bottom: var(--lead-form-group-margin) !important;
+}
+
+form > .form-group {
+  padding-left: calc(var(--lead-form-row-padding-x) + var(--lead-form-col-padding-x)) !important;
+  padding-right: calc(var(--lead-form-row-padding-x) + var(--lead-form-col-padding-x)) !important;
+}
+
+form .form-control,
+form .form-select,
+form select.form-control,
+form input.form-control,
+form input.form-control-sm,
+form select.form-select-sm,
+form textarea.form-control,
+form textarea.form-control-sm {
+  height: var(--lead-form-control-height) !important;
+  min-height: var(--lead-form-control-height) !important;
+  padding: var(--lead-form-control-padding-y) var(--lead-form-control-padding-x) !important;
+  border-radius: 0.25rem !important;
+}
+
+form textarea.form-control,
+form textarea.form-control-sm {
+  min-height: var(--lead-form-textarea-min-height) !important;
+  height: var(--lead-form-textarea-min-height) !important;
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+  resize: vertical;
+  line-height: 1.4 !important;
+}
+
+form .field-error {
+  margin-top: 4px !important;
+}
+
+form .select2-container {
+  width: 100% !important;
+}
+
+form .select2-container--default .select2-selection--single,
+form .select2-container--white .select2-selection--single,
+form .select2-container--default .select2-selection--multiple,
+form .select2-container--white .select2-selection--multiple {
+  height: var(--lead-form-control-height) !important;
+  min-height: var(--lead-form-control-height) !important;
+  border-radius: 0.25rem !important;
+}
+
+form .select2-container--default .select2-selection--single .select2-selection__rendered,
+form .select2-container--white .select2-selection--single .select2-selection__rendered {
+  height: var(--lead-form-control-height) !important;
+  min-height: var(--lead-form-control-height) !important;
+  line-height: calc(var(--lead-form-control-height) - 2px) !important;
+  padding-left: var(--lead-form-control-padding-x) !important;
+  padding-right: 2rem !important;
+}
+
+form .select2-container--default .select2-selection--single .select2-selection__arrow,
+form .select2-container--white .select2-selection--single .select2-selection__arrow {
+  height: var(--lead-form-control-height) !important;
+}
+
+form .select2-container--default .select2-selection--multiple .select2-selection__rendered,
+form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
+  padding: 0.25rem var(--lead-form-control-padding-x) !important;
+}
+
+form .embed-actions,
+form .form-actions {
+  padding: 6px 10px 0 !important;
+}
+
+form > .text-right,
+form > .form-actions,
+form > .embed-actions {
+  padding-left: calc(var(--lead-form-row-padding-x) + var(--lead-form-col-padding-x)) !important;
+  padding-right: calc(var(--lead-form-row-padding-x) + var(--lead-form-col-padding-x)) !important;
+}
+
 .required::after,
 .required-feild_symbol {
     color: red;
@@ -384,22 +581,43 @@ font-size: 16px !important;
 .permission-action-dropdown,
 .user-action-dropdown,
 .role-action-dropdown,
-.action-cell {
+.student-action-dropdown,
+.campus-action-dropdown,
+.batch-action-dropdown,
+.program-action-dropdown,
+.inventory-action-dropdown,
+.action-cell,
+td.actions-cell,
+.inventory-action-cell,
+.table td > .dropdown {
 position: relative;
 }
 
-.action-cell {
+.action-cell,
+td.actions-cell,
+.inventory-action-cell {
 min-width: 110px;
 white-space: nowrap;
 }
 
 .table .action-cell > .dropdown,
 .table td.actions-cell > .dropdown,
-.table .permission-action-dropdown,
-.table .user-action-dropdown,
-.table .role-action-dropdown {
+.table td > .dropdown,
+.table [class*="-action-dropdown"] {
 display: flex;
-justify-content: center;
+justify-content: flex-start;
+width: max-content;
+max-width: 100%;
+margin-left: auto;
+margin-right: auto;
+}
+
+.dropdown.dropdown-action-menu,
+.table .action-cell > .dropdown.dropdown-action-menu,
+.table td.actions-cell > .dropdown.dropdown-action-menu,
+.table td > .dropdown.dropdown-action-menu,
+.table [class*="-action-dropdown"].dropdown-action-menu {
+z-index: 1055 !important;
 }
 
 .dropdown-menu.action-key,
@@ -407,57 +625,58 @@ justify-content: center;
 .registration-action-dropdown .dropdown-menu {
 font-size: 12px !important;
 min-width: 180px;
-position: absolute;
-left: -73px !important;
-z-index: 9999;
+z-index: 1060 !important;
 }
 
-.follow-action-dropdown .dropdown-menu {
+.dropdown.dropdown-action-menu > .dropdown-menu,
+.table .action-cell > .dropdown.dropdown-action-menu > .dropdown-menu,
+.table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu,
+.table td > .dropdown.dropdown-action-menu > .dropdown-menu,
+.table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu {
+position: absolute !important;
 top: 0 !important;
+bottom: auto !important;
 left: auto !important;
-right: calc(100% + 2px) !important;
+right: 100% !important;
 margin: 0 !important;
 transform: none !important;
+z-index: 1060 !important;
 }
 
-.registration-action-dropdown .dropdown-menu,
-.admission-action-dropdown .dropdown-menu{
+.dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
+.table .action-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
+.table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
+.table td > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
+.table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu.dropdown-menu-upward {
 top: 0 !important;
+bottom: auto !important;
 left: auto !important;
-right: calc(90% + 2px) !important;
+right: 100% !important;
 margin: 0 !important;
 transform: none !important;
+z-index: 1060 !important;
 }
 
-
-.table .permission-action-dropdown .dropdown-menu.action-key,
-.table .user-action-dropdown .dropdown-menu.action-key,
-.table .role-action-dropdown .dropdown-menu.action-key {
-position: absolute;
-top: calc(100% - 33px) !important;
-left: -94px !important;
-right: auto !important;
-transform: translate3d(-50%, 0, 0) !important;
-z-index: 9999;
+.dropdown.dropdown-action-menu.show,
+.table .action-cell > .dropdown.dropdown-action-menu.show,
+.table td.actions-cell > .dropdown.dropdown-action-menu.show,
+.table td > .dropdown.dropdown-action-menu.show,
+.table [class*="-action-dropdown"].dropdown-action-menu.show {
+z-index: 1065 !important;
 }
 
-.table .permission-action-dropdown .dropdown-menu.action-key,
-.table .user-action-dropdown .dropdown-menu.action-key,
-.table .role-action-dropdown .dropdown-menu.action-key {
-    top: auto !important;
-    bottom: 100% !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+.dropdown.dropdown-action-menu.show > .dropdown-menu,
+.table .action-cell > .dropdown.dropdown-action-menu.show > .dropdown-menu,
+.table td.actions-cell > .dropdown.dropdown-action-menu.show > .dropdown-menu,
+.table td > .dropdown.dropdown-action-menu.show > .dropdown-menu,
+.table [class*="-action-dropdown"].dropdown-action-menu.show > .dropdown-menu {
+z-index: 1070 !important;
 }
 
 .table .action-cell .dropdown-toggle,
 .table td.actions-cell .dropdown-toggle,
-.table .follow-action-dropdown .dropdown-toggle,
-.table .registration-action-dropdown .dropdown-toggle,
-.table .admission-action-dropdown .dropdown-toggle,
-.table .permission-action-dropdown .dropdown-toggle,
-.table .user-action-dropdown .dropdown-toggle,
-.table .role-action-dropdown .dropdown-toggle {
+.table td > .dropdown > .dropdown-toggle,
+.table [class*="-action-dropdown"] .dropdown-toggle {
 height: 22px !important;
 padding: 1px 8px !important;
 min-width: 68px !important;
@@ -721,7 +940,7 @@ body, button, html, input, select {
 	position: absolute !important;
 	top: 0 !important;
 	left: auto !important;
-	right: calc(100% + 2px) !important;
+	right: 100% !important;
 	margin: 0 !important;
 	transform: none !important;
     z-index: 9999;       
@@ -732,7 +951,13 @@ body, button, html, input, select {
 .with-side-menu .side-menu {
 width: 240px;
 }
-
+.form-label-mute{
+	 margin-bottom: 6px;
+    margin-top: 6px;
+    font-size: 14px !important;
+    text-transform: uppercase;
+	font-weight:600;
+}
 .with-side-menu .page-content {
 margin-left: 0;
 margin-top: -0.125rem; /* -2px */
@@ -806,7 +1031,7 @@ input[type="checkbox"] {
 -moz-appearance: none;
 appearance: none;
 width: 13px;
-height: 13px;
+height: 13px !important;
 border: 2px solid grey;
 border-radius: 3px;
 background-color: #fff;
@@ -903,18 +1128,124 @@ padding-right: 12px;
 }
 }
 @media (max-width: 768px) {
+form .form-row,
+form .row {
+	padding-left: 6px !important;
+	padding-right: 6px !important;
+}
+
+form .form-row > .col,
+form .form-row > [class*=col-],
+form .row > .col,
+form .row > [class*=col-] {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+
+form > .form-group,
+form > .text-right,
+form > .form-actions,
+form > .embed-actions {
+	padding-left: 16px !important;
+	padding-right: 16px !important;
+}
+
+.dataTables_wrapper {
+	overflow-x: auto !important;
+	-webkit-overflow-scrolling: touch;
+}
+
+.table-responsive {
+	overflow-x: auto !important;
+	-webkit-overflow-scrolling: touch;
+}
+
+.table-responsive > .table,
+.table-responsive > table {
+	width: max-content !important;
+	min-width: 100% !important;
+}
+
+.table-responsive > .table th,
+.table-responsive > .table td,
+.table-responsive > table th,
+.table-responsive > table td {
+	white-space: nowrap;
+}
+
+.dataTables_wrapper .table-responsive {
+	overflow-x: auto !important;
+	overflow-y: hidden !important;
+	-webkit-overflow-scrolling: touch;
+}
+
+.dataTables_wrapper table.dataTable {
+	width: max-content !important;
+	min-width: 100% !important;
+}
+
+.dataTables_wrapper table.dataTable th,
+.dataTables_wrapper table.dataTable td {
+	white-space: nowrap;
+}
+
 .dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer{
 	flex-direction:column;
 	align-items: flex-start;
 }
+.follow-footer {
+flex-direction: column;
+margin-top:10px;
+text
+}
+.font-icon-menu-addl{
+	font-size: 24px !important;
+}
+ .site-header .site-header-collapsed {
+       
+        z-index: 125;
+}
+.site-header .site-header-collapsed .site-header-collapsed-in {
+margin-right: 0px !important;
+}
+.student-summary-grid {
+    display: grid;
+    gap: 14px;
+    padding: 15px;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    [class*="summary-grid"],
+    [class*="scope-grid"],
+    .inventory-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    [class*="summary-grid"],
+    [class*="scope-grid"],
+    .inventory-summary {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+}
+.program-discount-header,
+.box-typical.box-typical-dashboard .box-typical-header{
+	flex-direction: column;
+	padding:5px;
+	align-items: left !important;
+}
+.tables-dashbord{
+	gap:25px;
+}
 }
 /* >= 768px */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
 .form-row {
 display: flex;
 
 }
-}
+} */
 /* <div class="form-group col-md-6 col-lg-3 d-flex mt-4">
                         <button type="submit" class="btn btn-inline btn-primary-outline p-2" >Filter</button>
                         <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-danger-outline p-2" >Reset</a>
@@ -1064,6 +1395,95 @@ margin-left: 0;
 
 
 	</style>
+	<style>
+		/* =========================================================
+   Global Page Spacing Overrides
+   ========================================================= */
+		:root {
+			--layout-header-height: 45px;
+			--layout-side-menu-width: 206px;
+			--layout-control-panel-width: 30px;
+			--layout-control-panel-open-width: 246px;
+			--layout-shell-gap: 20px;
+			--layout-container-gutter: 12px;
+		}
+
+		@media (min-width: 1200px) {
+			:root {
+				--layout-shell-gap: 24px;
+			}
+		}
+
+		body.with-side-menu .page-content {
+			margin-left: 0 !important;
+			margin-top: 0 !important;
+			padding-top: calc(var(--layout-header-height) + var(--layout-shell-gap)) !important;
+			padding-right: calc(var(--layout-control-panel-width) + var(--layout-shell-gap)) !important;
+			padding-bottom: var(--layout-shell-gap) !important;
+			padding-left: calc(var(--layout-side-menu-width) + var(--layout-shell-gap)) !important;
+		}
+
+		body.control-panel.open.with-side-menu .page-content {
+			padding-right: calc(var(--layout-control-panel-open-width) + var(--layout-shell-gap)) !important;
+		}
+
+		body.with-side-menu .page-content > .container-fluid {
+			max-width: 100% !important;
+			margin: 0 !important;
+			padding-left: var(--layout-container-gutter) !important;
+			padding-right: 0 !important;
+			height: auto !important;
+		}
+
+		.menu-left-hidden .page-content,
+		body.sidebar-hidden .page-content {
+			padding-left: var(--layout-shell-gap) !important;
+		}
+
+		@media (max-width: 1056px) {
+			:root {
+				--layout-shell-gap: 10px;
+				--layout-container-gutter: 0px;
+			}
+
+			body.with-side-menu .page-content,
+			body.sidebar-hidden .page-content,
+			.menu-left-hidden .page-content {
+				padding-left: var(--layout-shell-gap) !important;
+			}
+
+			body.with-side-menu .page-content > .container-fluid,
+			body.sidebar-hidden .page-content > .container-fluid,
+			.menu-left-hidden .page-content > .container-fluid {
+				padding-left: var(--layout-container-gutter) !important;
+				padding-right: var(--layout-container-gutter) !important;
+			}
+
+			body.with-side-menu .page-content > .container-fluid > .container-fluid,
+			body.sidebar-hidden .page-content > .container-fluid > .container-fluid,
+			.menu-left-hidden .page-content > .container-fluid > .container-fluid {
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+			}
+		}
+
+		@media (max-width: 767px) {
+			:root {
+				--layout-shell-gap: 10px;
+				--layout-container-gutter: 0px;
+			}
+
+			body.with-side-menu .page-content,
+			body.control-panel.open.with-side-menu .page-content,
+			body.sidebar-hidden.with-side-menu .page-content,
+			.menu-left-hidden .page-content {
+				padding-top: calc(var(--layout-header-height) + var(--layout-shell-gap)) !important;
+				padding-right: var(--layout-shell-gap) !important;
+				padding-bottom: var(--layout-shell-gap) !important;
+				padding-left: var(--layout-shell-gap) !important;
+			}
+		}
+	</style>
 </head>
 
 <body class="with-side-menu control-panel control-panel-compact">
@@ -1090,13 +1510,73 @@ margin-left: 0;
 	<script src="js/app.js"></script>
 	<script>
 		$(function () {
+			function clearDataTableInlineWidths(table) {
+				if (!table) return;
+
+				var $table = $(table);
+				var cellSelector = 'thead th, tbody td, tfoot th, tfoot td';
+
+				$table.css('width', '');
+				$table.removeAttr('width');
+
+				$table.find('colgroup col').each(function () {
+					this.style.width = '';
+					this.style.minWidth = '';
+					this.style.maxWidth = '';
+					this.removeAttribute('width');
+				});
+
+				$table.find(cellSelector).each(function () {
+					this.style.width = '';
+					this.style.minWidth = '';
+					this.style.maxWidth = '';
+					this.removeAttribute('width');
+				});
+			}
+
+			function queueDataTableWidthCleanup(table) {
+				if (window.requestAnimationFrame) {
+					window.requestAnimationFrame(function () {
+						clearDataTableInlineWidths(table);
+					});
+					return;
+				}
+
+				setTimeout(function () {
+					clearDataTableInlineWidths(table);
+				}, 0);
+			}
+
+			$(document).on('init.dt draw.dt column-sizing.dt', function (event, settings) {
+				if (!settings || !settings.nTable) return;
+				queueDataTableWidthCleanup(settings.nTable);
+			});
+
+			function isActionDropdown($dropdown, $menu) {
+				var dropdownClass = $dropdown.attr('class') || '';
+				var toggleText = $.trim($dropdown.children('.dropdown-toggle').first().text()).toLowerCase();
+
+				return dropdownClass.indexOf('-action-dropdown') !== -1 ||
+					$dropdown.closest('.action-cell, td.actions-cell, .inventory-action-cell').length > 0 ||
+					$menu.hasClass('action-key') ||
+					toggleText === 'action' ||
+					toggleText === 'actions';
+			}
+
 			$(document).on('shown.bs.dropdown', '.dropdown', function () {
 				var $dropdown = $(this);
 				var $menu = $dropdown.find('.dropdown-menu').first();
 				if (!$menu.length) return;
+				var actionDropdown = isActionDropdown($dropdown, $menu);
 
 				$menu.removeClass('dropdown-menu-upward');
 				$dropdown.removeClass('dropup');
+				$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
+
+				if (actionDropdown) {
+					$menu.addClass('dropdown-menu-upward');
+					return;
+				}
 
 				var rect = this.getBoundingClientRect();
 				var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
@@ -1112,7 +1592,7 @@ margin-left: 0;
 			});
 
 			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
-				$(this).removeClass('dropup');
+				$(this).removeClass('dropup dropdown-action-menu');
 				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
 			});
 		});

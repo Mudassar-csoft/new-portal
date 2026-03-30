@@ -45,13 +45,13 @@
 						<table class="table table-bordered follow-table" id="follow-table">
 							<thead>
 								<tr>
-									<th style="width: 50px;">Sr</th>
+									<th>Sr</th>
 									<th>Name</th>
 									<th>Contact No</th>
 									<th>Status</th>
 									<th>Interested Course</th>
 									<th>Campus</th>
-									<th class="text-left" style="width: 110px;">Action</th>
+									<th class="text-left">Action</th>
 								</tr>
 							</thead>
 							<tbody>

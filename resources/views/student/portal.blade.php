@@ -252,6 +252,20 @@
             text-transform: uppercase;
         }
 
+        .portal-tabs .table {
+            width: auto;
+            min-width: 100%;
+            max-width: none;
+            table-layout: auto;
+        }
+
+        .portal-tabs .table th,
+        .portal-tabs .table td {
+            width: auto;
+            min-width: 0;
+            max-width: none;
+        }
+
         .badge-status {
             background: #00a8ff;
             color: #fff;

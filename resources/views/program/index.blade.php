@@ -18,10 +18,10 @@
         @endif
 
         <div class="box-typical box-typical-dashboard panel panel-default program-index-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
-                    <small class="text-muted">{{ $pageDescription }}</small>
+                    <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
                 </div>
                 <a href="{{ route('program.create') }}" class="btn btn-primary">Create Programme</a>
             </header>
@@ -30,8 +30,8 @@
                     @foreach($scopeCards as $card)
                         <a href="{{ route('program.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="program-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
-                            <span class="program-scope-label">{{ $card['label'] }}</span>
-                            <strong>{{ number_format((int) $card['count']) }}</strong>
+                           <strong>{{ number_format((int) $card['count']) }}</strong>
+                           <span class="program-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
                 </div>
@@ -39,7 +39,7 @@
                 <form method="GET" action="{{ route('program.index') }}" class="program-filter-form">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
                     <div class="form-row program-filter-row">
-                        <div class="form-group program-filter-col">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">Programme Type</label>
                             <select class="form-control" name="program_type">
                                 <option value="">All Types</option>
@@ -48,7 +48,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group program-filter-col">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">Status</label>
                             <select class="form-control" name="status">
                                 <option value="">All Statuses</option>
@@ -57,7 +57,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group program-filter-col">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label">Discount Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>
@@ -68,7 +68,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group program-filter-col program-filter-col-wide">
+                        <div class="form-group col-lg-3 col-md-6 col-lg-3 col-md-6-wide">
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Programme title, code, type, remarks, or discount campus">
                         </div>
@@ -178,6 +178,7 @@
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 14px;
             margin-bottom: 18px;
+            padding:10px;
         }
 
         .program-scope-card {
@@ -188,6 +189,7 @@
             background: #f8fbff;
             color: #334155;
             text-decoration: none;
+            text-align:center;
             transition: all .18s ease;
         }
 
@@ -227,15 +229,15 @@
             align-items: end;
         }
 
-        .program-filter-col {
+        /* .col-lg-3 col-md-6 {
             flex: 1 1 180px;
             min-width: 180px;
         }
 
-        .program-filter-col-wide {
+        .col-lg-3 col-md-6-wide {
             flex: 2 1 280px;
             min-width: 260px;
-        }
+        } */
 
         .program-filter-actions {
             display: flex;

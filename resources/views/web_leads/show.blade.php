@@ -12,7 +12,7 @@
     @endphp
 
     <div class="box-typical box-typical-dashboard panel panel-default web-lead-detail-card">
-        <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+        <header class="box-typical-header panel-heading d-flex justify-content-between">
             <div>
                 <h3 class="panel-title mb-0 form-label">{{ $webLead->full_name }}</h3>
                 <small class="text-muted">{{ $webLead->source_label }} from {{ $webLead->source_site }}</small>

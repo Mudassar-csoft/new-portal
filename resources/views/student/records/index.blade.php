@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="box-typical box-typical-dashboard panel panel-default student-directory">
-                    <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+                    <header class="box-typical-header panel-heading d-flex justify-content-between">
                         <div>
                             <h3 class="panel-title mb-0 form-label">{{ $pageTitle }}</h3>
                             <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
@@ -162,6 +162,7 @@
             $('#student-records-table').DataTable({
                 processing: true,
                 serverSide: true,
+                autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('student.records.index', ['scope' => $scope]) }}",
                 order: [[7, 'desc']],

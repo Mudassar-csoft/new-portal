@@ -5,10 +5,10 @@
 @section('content')
 	<div class="user-shell">
 		<div class="box-typical box-typical-dashboard panel panel-default user-card">
-			<header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0 form-label">Create Role</h3>
-					<small class="text-muted">Define a role and attach permissions.</small>
+					<!-- <small class="text-muted">Define a role and attach permissions.</small> -->
 				</div>
 				<a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
 			</header>

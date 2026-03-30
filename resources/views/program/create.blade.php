@@ -5,10 +5,10 @@
 @section('content')
     <div class="program-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default program-form-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Create Programme</h3>
-                    <small class="text-muted">Set up programme pricing, discounts, outline file, and admission visibility.</small>
+                    <!-- <small class="text-muted">Set up programme pricing, discounts, outline file, and admission visibility.</small> -->
                 </div>
                 <a href="{{ route('program.index') }}" class="btn btn-default">Back to Programmes</a>
             </header>

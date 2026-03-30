@@ -15,7 +15,7 @@
 
         <div id="transfer-content" class="follow-content">
             <div class="box-typical box-typical-dashboard panel panel-default follow-card">
-                <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+                <header class="box-typical-header panel-heading d-flex justify-content-between">
                     <div>
                         <h3 class="panel-title">Lead Management | <span class="text-muted ">Transferred Leads</span></h3>
                     </div>
@@ -248,6 +248,7 @@ table#transfer-grid{
             $('#transfer-grid').DataTable({
                 processing: true,
                 serverSide: true,
+                autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('leads.transfer') }}",
                 order: [[8, 'desc']],

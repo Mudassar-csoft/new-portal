@@ -38,7 +38,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-2 col-md-2 d-flex align-items-end mt-2 pt-3">
+                        <div class="form-group col-lg-2 col-md-2 d-flex align-items-end mt-4 pt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                         </div>
                     </div>
@@ -48,11 +48,11 @@
                     <table class="table table-bordered finance-table">
                         <thead>
                         <tr>
-                            <th style="width: 80px;">Sr#</th>
+                            <th>Sr#</th>
                             <th>Type Name</th>
                             <th>Category</th>
                             <th>Status</th>
-                            <th style="width: 160px;">Date</th>
+                            <th>Date</th>
                         </tr>
                         </thead>
                         <tbody>

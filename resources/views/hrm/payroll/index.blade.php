@@ -21,23 +21,23 @@
             </div>
         @endif
 
-        <div class="row mb-3">
+        <div class="row mb-3 bg-white p-2 m-2">
             <div class="col-md-6 col-lg-4">
                 <div class="payroll-stat tone-bank">
-                    <div class="payroll-label">Bank Payout List</div>
                     <div class="payroll-value">Rs. {{ number_format((float) ($payoutSummary['bank'] ?? 0), 0) }}</div>
+                    <div class="payroll-label">Bank Payout List</div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="payroll-stat tone-cash">
-                    <div class="payroll-label">Cash Payout List</div>
                     <div class="payroll-value">Rs. {{ number_format((float) ($payoutSummary['cash'] ?? 0), 0) }}</div>
+                    <div class="payroll-label">Cash Payout List</div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">
                 <div class="payroll-stat tone-cheque">
-                    <div class="payroll-label">Cheque Payout List</div>
                     <div class="payroll-value">Rs. {{ number_format((float) ($payoutSummary['cheque'] ?? 0), 0) }}</div>
+                    <div class="payroll-label">Cheque Payout List</div>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                         <form method="POST" action="{{ route('hrm.payroll.structures.store') }}" class="pb-0 hrm-box">
                             @csrf
                             <div class="form-row mb-0" >
-                                <div class="form-group col-md-6 col-lg-3 mt-0">
+                                <div class="form-group col-md-4 mt-0">
                                     <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -61,37 +61,44 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-3">
+                                <div class="form-group col-md-4 col-md-4">
                                     <label class="form-label required" >From</label>
                                     <input type="date" name="effective_from" class="form-control" value="{{ now()->toDateString() }}" required>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-2">
+                                <div class="form-group col-md-4 col-md-4">
                                     <label class="form-label required" >To</label>
                                     <input type="date" name="effective_to" class="form-control">
                                 </div>
-                                <div class="form-group col-md-4 col-lg-2">
+                                
+                            </div>
+                            <div class="form-row mt-0">
+                                <div class="form-group col-md-4 ">
                                     <label class="form-label required" >Basic</label>
                                     <input type="number" min="0" step="0.01" name="basic_salary" class="form-control" required>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-2">
+                                 <div class="form-group col-md-4 ">
                                     <label class="form-label required" >OT Rate</label>
                                     <input type="number" min="0" step="0.01" name="overtime_rate" class="form-control" value="0">
                                 </div>
-                            </div>
-                            <div class="form-row mt-0">
-                                <div class="form-group col-md-6 col-lg-4">
-                                    <label class="form-label required" >Allowances JSON</label>
-                                    <input type="text" name="allowances_json" class="form-control" placeholder='{"house_rent":5000,"transport":2000}'>
+                                <div class="form-group col-md-4 d-flex justify-center align-center mt-2" style="gap:5px;">
+                                        <input type="checkbox" class="mt-4" name="is_active" value="1" checked>
+                                        <label class="form-label required justify-center align-middle" style="margin-top:22px;" > Active Structure</label>
+                                    </div>
+                                    
+                                    
                                 </div>
-                                <div class="form-group col-md-6 col-lg-4">
-                                    <label class="form-label required" >Deductions JSON</label>
-                                    <input type="text" name="deductions_json" class="form-control" placeholder='{"tax":1000,"eobi":200}'>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 col-lg-4">
+                                        <label class="form-label required" >Allowances JSON</label>
+                                        <input type="text" name="allowances_json" class="form-control" placeholder='{"house_rent":5000,"transport":2000}'>
+                                    </div>
+
+                                    <div class="form-group col-md-6 col-lg-4">
+                                        <label class="form-label required" >Deductions JSON</label>
+                                        <input type="text" name="deductions_json" class="form-control" placeholder='{"tax":1000,"eobi":200}'>
+                                    </div>
+                                    
                                 </div>
-                                <div class="form-group custom-col-6 d-flex justify-center align-center mt-2" style="gap:5px;">
-                                    <input type="checkbox" class="mt-4" name="is_active" value="1" checked>
-                                    <label class="form-label required justify-center align-middle" style="margin-top:22px;" > Active Structure</label>
-                                </div>
-                            </div>
                             <div class="text-right">
 
                                 <button class="btn btn-inline btn-primary-outline" type="submit">Save Structure</button>
@@ -102,7 +109,7 @@
                             @csrf
                             <h5 class="form-label pl-2">Advance / Loan</h5>
                             <div class="form-row">
-                                <div class="form-group col-md-6 col-lg-3">
+                                <div class="form-group col-md-6 col-md-4">
                                     <label class="form-label required" >Employee</label>
                                     <select name="employee_id" class="form-control" required>
                                         <option value="">- Select -</option>
@@ -111,10 +118,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-2"><label class="form-label required" >Amount</label><input type="number" min="1" step="0.01" name="amount" class="form-control" required></div>
-                                <div class="form-group col-md-4 col-lg-2"><label class="form-label required" >Installment</label><input type="number" min="0" step="0.01" name="installment_amount" class="form-control"></div>
-                                <div class="form-group col-md-6 col-lg-3"><label class="form-label required" >Issued Date</label><input type="date" name="issued_date" class="form-control" value="{{ now()->toDateString() }}"></div>
-                                <div class="form-group col-md-4 col-lg-2"><label class="form-label required" >Remarks</label><input type="text" name="remarks" class="form-control"></div>
+                                <div class="form-group col-md-6 "><label class="form-label required" >Amount</label><input type="number" min="1" step="0.01" name="amount" class="form-control" required></div>
+                                <div class="form-group col-md-6"><label class="form-label required" >Installment</label><input type="number" min="0" step="0.01" name="installment_amount" class="form-control"></div>
+                                <div class="form-group col-md-6"><label class="form-label required" >Issued Date</label><input type="date" name="issued_date" class="form-control" value="{{ now()->toDateString() }}"></div>
+                                <div class="form-group col-md-12"><label class="form-label required" >Remarks</label><input type="text" name="remarks" class="form-control"></div>
                             </div>
                             <div class="text-right">
 
@@ -134,7 +141,7 @@
                         <form method="POST" action="{{ route('hrm.payroll.runs.store') }}" class="mb-3 hrm-box">
                             @csrf
                             <div class="form-row m-0">
-                                <div class="form-group col-md-6 col-lg-3">
+                                <div class="form-group col-md-6 ">
                                     <label class="form-label required" >Campus</label>
                                     <select name="campus_id" class="form-control">
                                         <option value="">All</option>
@@ -143,12 +150,12 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-3">
+                                <div class="form-group col-md-6">
                                     <label class="form-label required" >Month</label>
                                     <input type="month" name="payroll_month" class="form-control" value="{{ now()->format('Y-m') }}" required>
                                 </div>
-                                <div class="form-group col-md-4 col-lg-3"><label class="form-label required" >From</label><input type="date" name="from_date" class="form-control" value="{{ now()->startOfMonth()->toDateString() }}" required></div>
-                                <div class="form-group col-md-4 col-lg-3"><label class="form-label required" >To</label><input type="date" name="to_date" class="form-control" value="{{ now()->endOfMonth()->toDateString() }}" required></div>
+                                <div class="form-group col-md-6"><label class="form-label required" >From</label><input type="date" name="from_date" class="form-control" value="{{ now()->startOfMonth()->toDateString() }}" required></div>
+                                <div class="form-group col-md-6"><label class="form-label required" >To</label><input type="date" name="to_date" class="form-control" value="{{ now()->endOfMonth()->toDateString() }}" required></div>
                                 <div class="form-group col-md-12"><label class="form-label required" >Notes</label><input type="text" name="notes" class="form-control"></div>
                                 
                             </div>
@@ -257,16 +264,18 @@
         .hrm-shell { padding: 8px 0 16px; }
         .payroll-stat {
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 45px 14px;
             color: #fff;
+            text-align: center;
+            height: 25vh;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
         }
-        .payroll-label { font-size: 12px; text-transform: uppercase; opacity: .88; }
+        .payroll-label { font-size: 14px; margin-top:5px; text-transform: uppercase; opacity: .88; font-weight: 700; }
         .payroll-value { margin-top: 6px; font-size: 21px; font-weight: 700; }
-        .tone-bank { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-        .tone-cash { background: linear-gradient(135deg, #16a34a, #15803d); }
-        .tone-cheque { background: linear-gradient(135deg, #d97706, #b45309); }
+        .tone-bank { background: #f35f62; }
+        .tone-cash { background: #fdc518; }
+        .tone-cheque { background: #a2cf37 }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }
     </style>

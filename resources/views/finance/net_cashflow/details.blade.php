@@ -30,7 +30,7 @@
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.netcashflow') }}">
                     <div class="form-row">
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -41,15 +41,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3">
                             <label>From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group custom-col-3">
+                        <div class="form-group col-md-3">
                             <label>To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group custom-col-2 d-flex align-items-end mt-3 pt-1">
+                        <div class="form-group col-md-3 d-flex align-items-end mt-3 pt-1">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.dashboard.netcashflow') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
@@ -59,22 +59,22 @@
         </section>
 
         <div class="row finance-summary-row">
-            <div class="custom-col-4">
+            <div class=" col-md-4">
                 <div class="cash-card tone-income">
-                    <div class="cash-label">Total Income</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['total_income'] ?? 0), 0) }}</div>
+                    <div class="cash-label">Total Income</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class=" col-md-4">
                 <div class="cash-card tone-expense">
-                    <div class="cash-label">Total Expense</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['total_expense'] ?? 0), 0) }}</div>
+                    <div class="cash-label">Total Expense</div>
                 </div>
             </div>
-            <div class="custom-col-4">
+            <div class=" col-md-4">
                 <div class="cash-card tone-net {{ ((float) ($summary['net_cashflow'] ?? 0)) < 0 ? 'is-negative' : '' }}">
-                    <div class="cash-label">Net Cashflow</div>
                     <div class="cash-value">Rs. {{ number_format((float) ($summary['net_cashflow'] ?? 0), 0) }}</div>
+                    <div class="cash-label">Net Cashflow</div>
                 </div>
             </div>
         </div>
@@ -151,13 +151,15 @@
         .finance-summary-row { margin: 2px 0 10px; }
         .cash-card {
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 45px 14px;
             color: #fff;
+            height: 25vh;
+            text-align: center;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
         .cash-label {
-            font-size: 12px;
+            font-size: 16px;
             text-transform: uppercase;
             opacity: 0.88;
         }
@@ -166,9 +168,9 @@
             font-size: 22px;
             font-weight: 700;
         }
-        .tone-income { background: linear-gradient(135deg, #16a34a, #15803d); }
-        .tone-expense { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-        .tone-net { background: linear-gradient(135deg, #0f766e, #115e59); }
+        .tone-income { background:  #f35f62}
+        .tone-expense { background: #16b3fb; }
+        .tone-net { background: #a2cf37; }
         .tone-net.is-negative { background: linear-gradient(135deg, #7f1d1d, #450a0a); }
         .finance-table thead th {
             background: #eef2f7;

@@ -192,7 +192,7 @@ input[type=checkbox], input[type=radio] {
 		}
     <div class="batch-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default batch-form-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Create Batch</h3>
                     <small class="text-muted">Create a new batch and keep the code, timing, and instructor aligned with your layout.</small>

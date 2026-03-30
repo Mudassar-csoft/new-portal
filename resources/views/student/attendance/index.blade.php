@@ -38,7 +38,7 @@
         @endif
 
         <section class="box-typical box-typical-dashboard panel panel-default student-attendance-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Student Attendance</h3>
                     <!-- <small class="text-muted">Check daily attendance by campus, batch, program, and student search.</small> -->
@@ -339,6 +339,20 @@
 
         .student-attendance-table thead th {
             white-space: nowrap;
+        }
+
+        .student-attendance-table {
+            width: auto !important;
+            min-width: 100% !important;
+            max-width: none !important;
+            table-layout: auto !important;
+        }
+
+        .student-attendance-table th,
+        .student-attendance-table td {
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
         }
 
         @media (max-width: 767px) {

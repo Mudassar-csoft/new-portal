@@ -5,19 +5,19 @@
 @section('content')
     <div class="campus-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default campus-form-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Create Campus / Franchise</h3>
-                    <small class="text-muted">Add a new company-owned campus or franchise branch with code, contact, and royalty setup.</small>
+                    <!-- <small class="text-muted">Add a new company-owned campus or franchise branch with code, contact, and royalty setup.</small> -->
                 </div>
-                <a href="{{ route('campus.index') }}" class="btn btn-default">Back to Campuses</a>
+                <a href="{{ route('campus.index') }}" class="btn btn-outline-primary">Back to Campuses</a>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('campus.store') }}">
                     @csrf
                     @include('campus.partials.form')
 
-                    <div class="text-right mt-3">
+                    <div class="text-right mt-3 mb-2">
                         <button type="submit" class="btn btn-primary">Create Campus</button>
                     </div>
                 </form>
@@ -43,25 +43,55 @@
         }
 
         .campus-type-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
             margin-top: 8px;
         }
 
         .campus-type-option {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border: 1px solid #d9e2ef;
-            border-radius: 8px;
-            background: #fff8f3;
+            gap: 0;
             cursor: pointer;
+            padding: 0;
+            background: transparent;
+            border: 0;
         }
 
-        .campus-type-option input {
+        .campus-type-option .form-check-input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 14px !important;
+            border: 2px solid grey;
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            background-color: #fff;
+            transition: background 0.2s, box-shadow 0.2s;
             margin: 0;
+        }
+
+        .campus-type-option .form-check-input:checked {
+            border-color: #00a8ff;
+        }
+
+        .campus-type-option .form-check-input:checked::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #00a8ff;
+        }
+
+        .campus-type-option .form-check-label {
+            font-size: .75rem;
+            margin-bottom: 0;
+            cursor: pointer;
+            color: #343434;
         }
     </style>
 @endpush

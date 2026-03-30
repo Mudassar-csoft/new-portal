@@ -31,7 +31,7 @@
                     <input type="hidden" name="from" value="{{ $filters['from'] ?? '' }}">
                     <input type="hidden" name="to" value="{{ $filters['to'] ?? '' }}">
                     <div class="form-row">
-                        <div class="form-group col-lg-4 col-md-6">
+                        <div class="form-group  col-md-9">
                             <label>Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
@@ -42,8 +42,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group custom-col-7 d-flex align-items-end mt-3 pt-1">
-                            <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
+                        <div class="form-group col-md-3 d-flex align-items-end leave-button">
+                            <button type="submit" class="btn btn-inline btn-primary-outline ">Apply</button>
                             <a href="{{ route('finance.dashboard.receivables') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
                     </div>
@@ -182,6 +182,11 @@
             background: #eef2f7;
             color: #334155;
             font-weight: 700;
+        }
+         .leave-button{
+                margin: auto;
+    padding-top: 21px;
+    justify-content: end;
         }
     </style>
 @endpush

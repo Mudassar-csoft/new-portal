@@ -49,8 +49,8 @@
 
 				<table class="table">
 					<tr>
-						<td width="60%">Registration Fee</td>
-						<td width="40%">Rs. {{ number_format($reg->fee ?? 0, 0) }}</td>
+						<td>Registration Fee</td>
+						<td>Rs. {{ number_format($reg->fee ?? 0, 0) }}</td>
 					</tr>
 					<tr>
 						<td>Course Tuition Fee</td>

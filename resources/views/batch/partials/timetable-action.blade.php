@@ -1,3 +1,4 @@
+@extends('layouts.theme')
 @php
     $query = request()->query();
     $query['edit'] = $entry->id;

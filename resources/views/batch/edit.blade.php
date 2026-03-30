@@ -5,7 +5,7 @@
 @section('content')
     <div class="batch-form-shell">
         <div class="box-typical box-typical-dashboard panel panel-default batch-form-card">
-            <header class="box-typical-header panel-heading d-flex align-items-center justify-content-between">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Edit Batch</h3>
                     <small class="text-muted">Update batch timing, instructor, status, and session details.</small>

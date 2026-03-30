@@ -56,12 +56,12 @@
 						<table class="table table-bordered follow-table" id="lead-status-table">
 							<thead>
 								<tr>
-									<th style="width: 50px;">Sr</th>
+									<th>Sr</th>
 									<th>Name</th>
 									<th>Contact No</th>
 									<th>Status</th>
 									<th>Interested Course</th>
-									<th class="text-center" style="width: 110px;">Action</th>
+									<th class="text-center">Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -344,7 +344,7 @@
 	min-width: 180px;
 	position: absolute !important;
 	top: 0 !important;
-	right: calc(100% + 2px) !important;
+	right: 100% !important;
 	margin-right: 0 !important;
 	left: auto !important;
 	transform: none !important;
@@ -354,7 +354,7 @@
 .follow-action-dropdown .dropdown-menu.dropdown-menu-upward {
 	top: 0 !important;
 	left: auto !important;
-	right: calc(100% + 2px) !important;
+	right: 100% !important;
 	transform: none !important;
 }
 		.table td{
