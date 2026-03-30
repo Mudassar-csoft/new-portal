@@ -154,10 +154,10 @@
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch code, name, campus, instructor, or lab">
                         </div>
-                        <div class="form-group batch-filter-actions">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
-                        </div>
+                    </div>
+                    <div class="form-group batch-filter-actions text-right">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
                     </div>
                 </form>
 

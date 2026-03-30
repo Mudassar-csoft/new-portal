@@ -248,7 +248,7 @@ class BatchController extends Controller
             'in_progress' => 'Batches currently running based on dates.',
             'recently_ended' => 'Batches that ended in the last 30 days.',
             'completed' => 'Batches whose end date has passed.',
-            default => 'Manage batches, sessions, instructors, and linked timetable entries.',
+            default => '',
         };
     }
 

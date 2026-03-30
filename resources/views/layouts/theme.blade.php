@@ -59,7 +59,7 @@ input[type="button"],
 input[type="submit"] {
   padding: 0.375rem 0.75rem  ; /* 6px 12px */
   height: 37px ; /* keep px */
-  line-height: 1.rem;
+  line-height: 1.5;
   
 }
 
@@ -478,6 +478,7 @@ form > .form-group {
 form .form-control,
 form .form-select,
 form select.form-control,
+form select.form-control-sm,
 form input.form-control,
 form input.form-control-sm,
 form select.form-select-sm,
@@ -487,6 +488,17 @@ form textarea.form-control-sm {
   min-height: var(--lead-form-control-height) !important;
   padding: var(--lead-form-control-padding-y) var(--lead-form-control-padding-x) !important;
   border-radius: 0.25rem !important;
+}
+
+form select.form-control,
+form select.form-control-sm,
+form .form-select,
+form select.form-select-sm,
+select.form-control,
+select.form-control-sm {
+  line-height: calc(var(--lead-form-control-height) - 2px) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 form textarea.form-control,
@@ -562,11 +574,25 @@ border: solid 1px #d8e2e7;
 border-radius: .25rem;
 font-size: 16px !important;
 /* font-weight:600; */
-line-height: 1.5;
+line-height: 35px !important;
 color: #343434;
-padding: .375rem 25px .375rem 1rem;
+padding: 0 25px 0 1rem !important;
+height: 35px !important;
 min-height: 37px !important;
 background: #fff;
+}
+
+.select2-container--arrow .select2-selection--single,
+.select2-container--default .select2-selection--single,
+.select2-container--white .select2-selection--single {
+height: 37px !important;
+min-height: 37px !important;
+}
+
+.select2-container--arrow .select2-selection--single .select2-selection__arrow,
+.select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-container--white .select2-selection--single .select2-selection__arrow {
+height: 37px !important;
 }
 .select2-results__option{
 font-size: 16px !important;

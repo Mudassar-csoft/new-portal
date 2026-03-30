@@ -47,7 +47,7 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Supplier / Payee / Employee</label>
+                            <label class="form-label required">Supplier/Payee/Employee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
                                 @foreach($payees as $payee)
@@ -98,22 +98,22 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Payment Ref No</label>
+                            <label class="form-label required">Payment Ref No</label>
                             <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}" placeholder="Txn/Receipt reference">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Bank Name</label>
+                            <label class="form-label required">Bank Name</label>
                             <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Cheque No</label>
+                            <label class="form-label required">Cheque No</label>
                             <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label" >Bank Receipt No</label>
+                            <label class="form-label required" >Bank Receipt No</label>
                             <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">

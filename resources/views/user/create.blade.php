@@ -8,7 +8,7 @@
 			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title form-label mb-0">Create User</h3>
-					<small class="text-muted">Assign campus, roles, and access.</small>
+					<!-- <small class="text-muted">Assign campus, roles, and access.</small> -->
 				</div>
 				<a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a>
 			</header>
