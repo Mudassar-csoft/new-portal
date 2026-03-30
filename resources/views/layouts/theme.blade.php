@@ -1238,6 +1238,14 @@ margin-right: 0px !important;
 .tables-dashbord{
 	gap:25px;
 }
+.kpi-label{
+	padding: 0px !important;
+	margin-top: 0px !important;
+
+}
+.kpi-value{
+	margin-top: 5px !important;
+}
 }
 /* >= 768px */
 /* @media (min-width: 768px) {
@@ -1482,6 +1490,13 @@ margin-left: 0;
 				padding-bottom: var(--layout-shell-gap) !important;
 				padding-left: var(--layout-shell-gap) !important;
 			}
+			.chart-statistic-box .chart-container{
+				background-color:white;
+				gap:30px;
+			}
+			    .chart-statistic-box .chart-txt{
+					        border-radius: 4px 4px 0 0;
+				}
 		}
 	</style>
 </head>

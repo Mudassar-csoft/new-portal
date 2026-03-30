@@ -65,7 +65,7 @@
                     <input type="date" class="form-control" id="filter-to" name="to" value="{{ $filters['to'] ?? '' }}">
                 </div>
                 <div class="finance-filter-actions">
-                    <a class="btn btn-secondary" href="{{ route('finance.dashboard') }}">Reset</a>
+                    <a class="btn btn-danger" href="{{ route('finance.dashboard') }}">Reset</a>
                     <button class="btn btn-primary" type="submit">Apply</button>
                 </div>
             </form>
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <div class="row finance-charts">
+    <div class="row finance-charts" style="margin-bottom: 30px;">
         <div class="col-lg-6">
             <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                 <header class="box-typical-header panel-heading">
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <div class="row finance-charts">
+    <div class="row finance-charts" style="margin-bottom: 30px;">
         <div class="col-lg-6">
             <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                 <header class="box-typical-header panel-heading">
@@ -273,12 +273,12 @@
             margin-top: 6px;
         }
         body.finance-filter-open { overflow: hidden; }
-        .finance-kpis { margin-bottom: 14px; }
+       
         .finance-kpi {
             border-radius: 10px;
             color: #fff;
             padding: 12px 14px;
-            margin-bottom: 12px;
+            margin-bottom: 30px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
              height: 25vh;
         }
