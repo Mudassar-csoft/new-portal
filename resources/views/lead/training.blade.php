@@ -216,7 +216,7 @@
                 Gender <span class="required-feild_symbol">*</span>
             </label>
              <div class="row mt-2 ">
-                <div class="col-4 d-flex justify-content-center mb-1 ">
+                <div class="col-4 d-flex justify-content-center mb-1 mt-1">
                     <div class="form-check d-flex align-items-center mt-0">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"

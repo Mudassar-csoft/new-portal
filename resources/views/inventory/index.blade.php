@@ -179,17 +179,16 @@
             text-align: center;
             border: 1px solid #d8e2e7;
             border-radius: 8px;
-            background: #16b3fb;
-            color: white;
+            background: #f9fcff;
         }
         .summary-tile.warning {
-            background: #078bec;
+            background: #fff8ed;
             border-color: #ffd79a;
         }
         .summary-label {
             display: block;
             margin-bottom: 4px;
-            color: white;
+            color: #6c7a89;
             font-size: 12px;
             text-transform: uppercase;
         }

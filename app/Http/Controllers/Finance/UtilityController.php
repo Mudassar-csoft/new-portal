@@ -10,6 +10,7 @@ use App\Models\FinanceBillType;
 use App\Models\FinanceExpense;
 use App\Models\FinanceExpenseType;
 use App\Models\FinancePayee;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -28,23 +29,41 @@ class UtilityController extends Controller
         ]);
     }
 
-    public function typesStore(Request $request): RedirectResponse
+    public function typesStore(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:150'],
+            'company_name' => ['nullable', 'string', 'max:150'],
+            'service_name' => ['required', 'string', 'max:150'],
             'payee_id' => ['nullable', 'exists:finance_payees,id'],
         ]);
 
-        FinanceBillType::create([
-            'name' => $validated['name'],
+        $name = trim(implode(' - ', array_filter([$validated['company_name'] ?? null, $validated['service_name']])));
+
+        $type = FinanceBillType::create([
+            'name' => $name,
+            'company_name' => $validated['company_name'] ?? null,
+            'service_name' => $validated['service_name'],
             'payee_id' => $validated['payee_id'] ?? null,
             'is_active' => true,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Bill type added.',
+                'type' => [
+                    'id' => $type->id,
+                    'name' => $type->name,
+                    'display_name' => $type->display_name,
+                    'company_name' => $type->company_name,
+                    'service_name' => $type->service_name,
+                ],
+            ]);
+        }
+
         return back()->with('status', 'Bill type added.');
     }
 
-    public function billsIndex(): View
+    public function billsIndex(Request $request): View
     {
         $this->ensureDefaultBillTypes();
 
@@ -52,6 +71,8 @@ class UtilityController extends Controller
             'bills' => FinanceBill::query()->with(['campus', 'billType'])->orderByDesc('id')->paginate(20),
             'campuses' => Campus::query()->orderBy('name')->get(),
             'billTypes' => FinanceBillType::query()->where('is_active', true)->orderBy('name')->get(),
+            'payees' => FinancePayee::query()->where('status', 'active')->orderBy('full_name')->get(),
+            'isAdmin' => $this->isAdmin($request),
         ]);
     }
 
@@ -61,27 +82,19 @@ class UtilityController extends Controller
             'campus_id' => ['required', 'exists:campuses,id'],
             'bill_type_id' => ['required', 'exists:finance_bill_types,id'],
             'reference_number' => ['required', 'string', 'max:100'],
-            'bill_month' => ['required', 'date'],
-            'issue_date' => ['nullable', 'date'],
-            'due_date' => ['nullable', 'date'],
-            'amount_within_due_date' => ['required', 'numeric', 'min:0'],
-            'fine' => ['nullable', 'numeric', 'min:0'],
             'remarks' => ['nullable', 'string'],
         ]);
-
-        $fine = (float) ($validated['fine'] ?? 0);
-        $amount = (float) $validated['amount_within_due_date'] + $fine;
 
         FinanceBill::create([
             'campus_id' => $validated['campus_id'],
             'bill_type_id' => $validated['bill_type_id'],
             'reference_number' => $validated['reference_number'],
-            'bill_month' => $validated['bill_month'],
-            'issue_date' => $validated['issue_date'] ?? null,
-            'due_date' => $validated['due_date'] ?? null,
-            'amount_within_due_date' => $validated['amount_within_due_date'],
-            'fine' => $fine,
-            'amount' => $amount,
+            'bill_month' => null,
+            'issue_date' => null,
+            'due_date' => null,
+            'amount_within_due_date' => 0,
+            'fine' => 0,
+            'amount' => 0,
             'paid_amount' => 0,
             'status' => 'unpaid',
             'remarks' => $validated['remarks'] ?? null,
@@ -89,6 +102,75 @@ class UtilityController extends Controller
         ]);
 
         return back()->with('status', 'Utility bill added.');
+    }
+
+    public function billsUpdate(Request $request, FinanceBill $bill): RedirectResponse
+    {
+        $this->ensureAdmin($request);
+
+        $validated = $request->validate([
+            'campus_id' => ['required', 'exists:campuses,id'],
+            'bill_type_id' => ['required', 'exists:finance_bill_types,id'],
+            'reference_number' => ['required', 'string', 'max:100'],
+            'remarks' => ['nullable', 'string'],
+        ]);
+
+        $bill->update([
+            'campus_id' => $validated['campus_id'],
+            'bill_type_id' => $validated['bill_type_id'],
+            'reference_number' => $validated['reference_number'],
+            'remarks' => $validated['remarks'] ?? null,
+        ]);
+
+        return back()->with('status', 'Utility bill updated successfully.');
+    }
+
+    public function lookup(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'campus_id' => ['required', 'exists:campuses,id'],
+            'bill_type_id' => ['nullable', 'exists:finance_bill_types,id'],
+        ]);
+
+        $bills = FinanceBill::query()
+            ->with('billType')
+            ->where('campus_id', $validated['campus_id'])
+            ->whereIn('status', ['unpaid', 'partial'])
+            ->when($validated['bill_type_id'] ?? null, fn ($q, $billTypeId) => $q->where('bill_type_id', $billTypeId))
+            ->orderByDesc('id')
+            ->get();
+
+        $billTypes = $bills
+            ->filter(fn (FinanceBill $bill) => $bill->billType)
+            ->map(fn (FinanceBill $bill) => [
+                'id' => $bill->bill_type_id,
+                'name' => $bill->billType->service_name ?: $bill->billType->display_name,
+                'display_name' => $bill->billType->display_name,
+                'company_name' => $bill->billType->company_name,
+                'service_name' => $bill->billType->service_name,
+            ])
+            ->unique('id')
+            ->values();
+
+        return response()->json([
+            'billTypes' => $billTypes,
+            'bills' => $bills->map(function (FinanceBill $bill) {
+                $balance = max(0, (float) $bill->amount - (float) $bill->paid_amount);
+
+                return [
+                    'id' => $bill->id,
+                    'bill_type_id' => $bill->bill_type_id,
+                    'company_name' => $bill->billType?->company_name,
+                    'service_name' => $bill->billType?->service_name,
+                    'bill_type_name' => $bill->billType?->display_name ?? 'N/A',
+                    'reference_number' => $bill->reference_number,
+                    'amount' => (float) $bill->amount,
+                    'paid_amount' => (float) $bill->paid_amount,
+                    'balance' => $balance,
+                    'status' => $bill->status,
+                ];
+            })->values(),
+        ]);
     }
 
     public function payIndex(Request $request): View
@@ -109,7 +191,7 @@ class UtilityController extends Controller
             'bill_id' => ['required', 'exists:finance_bills,id'],
             'payment_date' => ['required', 'date'],
             'paid_amount' => ['required', 'numeric', 'min:1'],
-            'payment_method' => ['required', Rule::in(['cash', 'bank', 'cheque'])],
+            'payment_method' => ['required', Rule::in(['cash', 'bank', 'cheque', 'online_transfer', 'easypaisa', 'jazzcash'])],
             'payment_ref_no' => ['nullable', 'string', 'max:100'],
             'bank_name' => ['nullable', 'string', 'max:150'],
             'cheque_no' => ['nullable', 'string', 'max:100'],
@@ -120,6 +202,14 @@ class UtilityController extends Controller
 
         if (in_array($validated['payment_method'], ['bank', 'cheque'], true) && empty($validated['bank_name'])) {
             return back()->withErrors(['bank_name' => 'Bank name is required for bank/cheque payments.'])->withInput();
+        }
+
+        if (in_array($validated['payment_method'], ['bank', 'online_transfer', 'easypaisa', 'jazzcash'], true) && empty($validated['payment_ref_no'])) {
+            return back()->withErrors(['payment_ref_no' => 'Payment reference number is required for the selected payment method.'])->withInput();
+        }
+
+        if ($validated['payment_method'] === 'cheque' && empty($validated['cheque_no'])) {
+            return back()->withErrors(['cheque_no' => 'Cheque number is required for cheque payments.'])->withInput();
         }
 
         $bill = FinanceBill::query()->with(['campus', 'billType'])->findOrFail($validated['bill_id']);
@@ -147,6 +237,7 @@ class UtilityController extends Controller
             'bill_id' => $bill->id,
             'category' => 'utility',
             'payment_date' => $validated['payment_date'],
+            'expense_month' => $bill->bill_month?->toDateString(),
             'amount' => $validated['paid_amount'],
             'payment_method' => $validated['payment_method'],
             'payment_ref_no' => $validated['payment_ref_no'] ?? null,
@@ -154,7 +245,7 @@ class UtilityController extends Controller
             'cheque_no' => $validated['cheque_no'] ?? null,
             'bank_receipt_no' => $validated['bank_receipt_no'] ?? null,
             'voucher_no' => $this->generateExpenseVoucherNo($bill->campus?->code ?? 'GEN'),
-            'receipt_no' => $this->generateExpenseReceiptNo($bill->campus?->code ?? 'GEN', strtoupper(substr($validated['payment_method'], 0, 3))),
+            'receipt_no' => null,
             'attachment_path' => $path,
             'status' => 'pending',
             'remarks' => $expenseRemarks,
@@ -174,7 +265,15 @@ class UtilityController extends Controller
         if (!$user) {
             return false;
         }
+
         return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+    }
+
+    private function ensureAdmin(Request $request): void
+    {
+        if (!$this->isAdmin($request)) {
+            abort(403, 'Only admin can edit utility bill records.');
+        }
     }
 
     private function storeAttachment(?UploadedFile $file): ?string
@@ -182,6 +281,7 @@ class UtilityController extends Controller
         if (!$file) {
             return null;
         }
+
         return $file->store('finance/transactions', 'public');
     }
 
@@ -198,24 +298,29 @@ class UtilityController extends Controller
         $campusCode = $campusCode !== '' ? $campusCode : 'GEN';
         $prefix = $campusCode . '-EXP-' . now()->format('my');
         $count = FinanceExpense::query()->where('voucher_no', 'like', $prefix . '-%')->count() + 1;
-        return $prefix . '-' . str_pad((string) $count, 5, '0', STR_PAD_LEFT);
-    }
 
-    private function generateExpenseReceiptNo(string $campusCode, string $modeCode): string
-    {
-        $campusCode = $campusCode !== '' ? $campusCode : 'GEN';
-        $modeCode = $modeCode !== '' ? $modeCode : 'GEN';
-        $prefix = $campusCode . '-' . strtoupper($modeCode) . '-' . now()->format('my');
-        $count = FinanceExpense::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
-        return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
+        return $prefix . '-' . str_pad((string) $count, 5, '0', STR_PAD_LEFT);
     }
 
     private function ensureDefaultBillTypes(): void
     {
-        foreach (['Electricity', 'Gas', 'Internet', 'Water', 'Telephone'] as $name) {
+        $defaults = [
+            ['company_name' => 'FESCO', 'service_name' => 'Electricity'],
+            ['company_name' => 'SNGPL', 'service_name' => 'Gas'],
+            ['company_name' => 'PTCL', 'service_name' => 'Internet'],
+            ['company_name' => 'WASA', 'service_name' => 'Water'],
+            ['company_name' => 'PTCL', 'service_name' => 'Telephone'],
+        ];
+
+        foreach ($defaults as $row) {
             FinanceBillType::query()->firstOrCreate(
-                ['name' => $name],
-                ['payee_id' => null, 'is_active' => true]
+                ['name' => trim($row['company_name'] . ' - ' . $row['service_name'])],
+                [
+                    'company_name' => $row['company_name'],
+                    'service_name' => $row['service_name'],
+                    'payee_id' => null,
+                    'is_active' => true,
+                ]
             );
         }
     }
