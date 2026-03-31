@@ -47,7 +47,7 @@
             justify-content: space-between;
             align-items: left;
             gap: 12px;
-            padding: 10px;
+            padding: 10px 27px;
             margin-bottom: 14px;
         }
 

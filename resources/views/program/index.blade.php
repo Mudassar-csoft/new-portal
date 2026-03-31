@@ -183,11 +183,12 @@
 
         .program-scope-card {
             display: block;
+            height:25vh;
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
-            background: #f8fbff;
-            color: #334155;
+            background: #16b3fb;
+            color: white;
             text-decoration: none;
             text-align:center;
             transition: all .18s ease;
@@ -201,21 +202,21 @@
         }
 
         .program-scope-card.is-active {
-            background: #edf9f1;
+            background: #078bec;
             border-color: #40b56c;
         }
 
         .program-scope-card strong {
             display: block;
             font-size: 22px;
-            margin-top: 8px;
+            margin-top: 25px;
         }
 
         .program-scope-label {
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: #64748b;
+            color: white;
         }
 
         .program-filter-form {
@@ -243,6 +244,7 @@
             display: flex;
             gap: 10px;
             margin-left: auto;
+            padding-right: 16px;
         }
 
         .program-table thead th {

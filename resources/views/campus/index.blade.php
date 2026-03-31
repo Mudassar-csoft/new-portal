@@ -235,18 +235,19 @@
 
         .campus-scope-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(31%, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
             margin-bottom: 18px;
         }
 
         .campus-scope-card {
             display: block;
+            height:25vh;
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
-            background: #fff8f3;
-            color: #334155;
+            background: #16b3fb;
+            color: white;
             text-align: center;
             text-decoration: none;
             transition: all .18s ease;
@@ -260,21 +261,21 @@
         }
 
         .campus-scope-card.is-active {
-            background: #fff0e2;
+            background: #078bec;
             border-color: #ef7c2e;
         }
 
         .campus-scope-card strong {
             display: block;
             font-size: 22px;
-            margin-top: 8px;
+            margin-top: 25px;
         }
 
         .campus-scope-label {
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: #64748b;
+            color: white;
         }
 
         .campus-filter-form {

@@ -365,6 +365,8 @@ table-layout: auto !important;
 .dataTables_wrapper table.dataTable th,
 .dataTables_wrapper table.dataTable td {
 width: auto !important;
+text-align: left !important;
+
 }
 
 .table-responsive {
@@ -643,7 +645,7 @@ margin-right: auto;
 .table td.actions-cell > .dropdown.dropdown-action-menu,
 .table td > .dropdown.dropdown-action-menu,
 .table [class*="-action-dropdown"].dropdown-action-menu {
-z-index: 1055 !important;
+z-index: 99970 !important;
 }
 
 .dropdown-menu.action-key,
@@ -651,7 +653,7 @@ z-index: 1055 !important;
 .registration-action-dropdown .dropdown-menu {
 font-size: 12px !important;
 min-width: 180px;
-z-index: 1060 !important;
+z-index: 99970 !important;
 }
 
 .dropdown.dropdown-action-menu > .dropdown-menu,
@@ -1269,9 +1271,11 @@ margin-right: 0px !important;
 	margin-top: 0px !important;
 
 }
-.kpi-value{
+.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
+          
 	margin-top: 5px !important;
 }
+
 }
 /* >= 768px */
 /* @media (min-width: 768px) {
@@ -1680,6 +1684,8 @@ $(document).ready(function () {
     });
 
 });
+
+
 
 </script>
 		

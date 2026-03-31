@@ -243,11 +243,11 @@ class BatchController extends Controller
     private function resolvePageDescription(string $scope): string
     {
         return match ($scope) {
-            'upcoming' => 'Batches scheduled to start after today.',
-            'recently_started' => 'Batches that started in the last 30 days.',
-            'in_progress' => 'Batches currently running based on dates.',
-            'recently_ended' => 'Batches that ended in the last 30 days.',
-            'completed' => 'Batches whose end date has passed.',
+            'upcoming' => '',
+            'recently_started' => '',
+            'in_progress' => '',
+            'recently_ended' => '',
+            'completed' => '',
             default => '',
         };
     }
