@@ -355,7 +355,9 @@ padding-left: 10px !important;
 .dataTables_wrapper .table-responsive {
 overflow-x: auto;
 }
-
+.program-table thead th {
+	background-color: #16b3fb;
+}
 .dataTables_wrapper table.dataTable {
 width: auto !important;
 min-width: 100%;

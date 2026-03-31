@@ -48,6 +48,7 @@
 
         .campus-type-options {
             margin-top: 8px;
+            justify-content: space-between !important;
         }
 
         .campus-type-option {
