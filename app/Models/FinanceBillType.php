@@ -15,6 +15,8 @@ class FinanceBillType extends Model
 
     protected $fillable = [
         'name',
+        'company_name',
+        'service_name',
         'payee_id',
         'is_active',
     ];
@@ -31,5 +33,14 @@ class FinanceBillType extends Model
     public function bills(): HasMany
     {
         return $this->hasMany(FinanceBill::class, 'bill_type_id');
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->company_name || $this->service_name) {
+            return trim(implode(' - ', array_filter([$this->company_name, $this->service_name])));
+        }
+
+        return (string) $this->name;
     }
 }

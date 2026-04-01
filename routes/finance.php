@@ -5,6 +5,7 @@ use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\PayeeController;
 use App\Http\Controllers\Finance\PayrollController;
 use App\Http\Controllers\Finance\ReceivableController;
+use App\Http\Controllers\Finance\RentController;
 use App\Http\Controllers\Finance\UtilityController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::prefix('finance')->name('finance.')->group(function () {
 
     Route::get('/expense/add', [ExpenseController::class, 'addForm'])->name('expense.add');
     Route::post('/expense/add', [ExpenseController::class, 'store'])->name('expense.store');
+    Route::get('/expense/rent-meta', [ExpenseController::class, 'rentMeta'])->name('expense.rentMeta');
     Route::get('/expense/types', [ExpenseController::class, 'typesIndex'])->name('expense.types');
     Route::post('/expense/types', [ExpenseController::class, 'typesStore'])->name('expense.types.store');
     Route::get('/expense/rent', [ExpenseController::class, 'list'])->defaults('category', 'rent')->name('expense.rent');
@@ -36,8 +38,13 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::post('/utility/pay', [UtilityController::class, 'payStore'])->name('utility.pay.store');
     Route::get('/utility/bills', [UtilityController::class, 'billsIndex'])->name('utility.bills');
     Route::post('/utility/bills', [UtilityController::class, 'billsStore'])->name('utility.bills.store');
+    Route::patch('/utility/bills/{bill}', [UtilityController::class, 'billsUpdate'])->name('utility.bills.update');
+    Route::get('/utility/lookup', [UtilityController::class, 'lookup'])->name('utility.lookup');
     Route::get('/utility/types', [UtilityController::class, 'typesIndex'])->name('utility.types');
     Route::post('/utility/types', [UtilityController::class, 'typesStore'])->name('utility.types.store');
+    Route::get('/rent/setup', [RentController::class, 'index'])->name('rent.index');
+    Route::post('/rent/setup', [RentController::class, 'store'])->name('rent.store');
+    Route::patch('/rent/setup/{rent}', [RentController::class, 'update'])->name('rent.update');
 
     Route::get('/payees', [PayeeController::class, 'index'])->name('payees');
     Route::post('/payees', [PayeeController::class, 'store'])->name('payees.store');

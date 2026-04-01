@@ -96,7 +96,7 @@
 <div class="form-row">
     <div class="form-group col-lg-3 col-md-6 ">
         <label class="required d-block">Campus Type</label>
-        <div class=" campus-type-options mt-2 pl-0 pr-0 d-flex  justify-content-between">
+        <div class=" campus-type-options mt-2 pl-0 pr-0 d-flex">
             @foreach($typeOptions as $key => $label)
                 <div class="d-flex justify-content-center m-0 pr-0 pl-0">
                     <div class="form-check d-flex align-items-center campus-type-option">

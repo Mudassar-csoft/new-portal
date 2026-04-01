@@ -319,7 +319,8 @@
 									<li><a href="{{ route('finance.utility.bills') }}" class="stage-link"><span class="lbl">Add New Bill</span></a></li>
 								</ul>
 							</li>
-							<li><a href="{{ route('finance.expense.rent') }}" class="stage-link"><span class="lbl">Building Rent</span></a></li>
+							<li><a href="{{ route('finance.rent.index') }}" class="stage-link"><span class="lbl">Building Rent Setup</span></a></li>
+							<li><a href="{{ route('finance.expense.rent') }}" class="stage-link"><span class="lbl">Rent Expenses</span></a></li>
 							<li><a href="{{ route('finance.expense.marketing') }}" class="stage-link"><span class="lbl ">Marketing</span></a></li>
 							<li><a href="{{ route('finance.expense.assets') }}" class="stage-link"><span class="lbl ">Asset Purchase</span></a></li>
 							<li><a href="{{ route('finance.expense.payroll') }}" class="stage-link"><span class="lbl ">Payroll</span></a></li>

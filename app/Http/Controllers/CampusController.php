@@ -279,11 +279,11 @@ class CampusController extends Controller
     private function resolvePageDescription(string $scope): string
     {
         return match ($scope) {
-            'campuses' => '',
-            'franchise' => '.',
-            'suspended_campuses' => '',
-            'suspended_franchise' => '',
-            default => '',
+            'campuses' => 'Company-operated campuses currently registered in the system.',
+            'franchise' => 'Franchise-operated branches with their contact and royalty information.',
+            'suspended_campuses' => 'Inactive company-operated campuses.',
+            'suspended_franchise' => 'Inactive franchise branches.',
+            default => 'Manage campuses, franchise branches, contacts, and linked operational activity.',
         };
     }
 

@@ -8,7 +8,7 @@
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Edit Batch</h3>
-                    <!-- <small class="text-muted">Update batch timing, instructor, status, and session details.</small> -->
+                    <small class="text-muted">Update batch timing, instructor, status, and session details.</small>
                 </div>
                 <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
