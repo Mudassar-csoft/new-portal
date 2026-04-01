@@ -19,7 +19,7 @@
         </div>
         <!-- Phone -->
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required">
+            <label class="form-label small text-dark required">
                 Primary Contact Number
             </label>
             <input type="tel"
@@ -32,7 +32,7 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3">
-                <label class="form-label small fw-semibold text-dark required">
+                <label class="form-label small required">
                     Course Interested
                 </label>
                 <select name="program_id"

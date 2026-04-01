@@ -157,7 +157,7 @@
 
 @push('styles')
     <style>
-        .inventory-shell { padding: 8px 0 16px; }
+        .inventory-shell { padding:0 16px I !important; }
         .inventory-card { margin: 0 0 6px !important; }
         .inventory-header {
             display: flex;
