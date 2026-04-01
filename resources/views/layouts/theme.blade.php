@@ -1155,6 +1155,7 @@ padding: 110px 24px 24px;
 .with-side-menu .page-content > .container-fluid {
 padding-left: 7px;
 padding-right: 12px;
+padding-top: 10px;
 }
 }
 @media (max-width: 768px) {
@@ -1238,6 +1239,13 @@ text
 .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 0px !important;
 }
+.summary-tile {
+	    padding: 22px 14px;
+}
+    .site-header .site-header-collapsed .site-header-search.closed {
+        width: 100% !important;
+        border-color: #c5d6de;
+    }
 .student-summary-grid {
     display: grid;
     gap: 14px;
@@ -1521,6 +1529,7 @@ margin-left: 0;
 				padding-right: var(--layout-shell-gap) !important;
 				padding-bottom: var(--layout-shell-gap) !important;
 				padding-left: var(--layout-shell-gap) !important;
+				margin-top: 14px !important;
 			}
 			.chart-statistic-box .chart-container{
 				background-color:white;

@@ -47,6 +47,7 @@
         .student-directory {
             max-width: 1450px;
             margin: 0 auto;
+            position: relative;
             overflow: visible;
         }
 
@@ -58,6 +59,13 @@
         .student-directory .table-responsive {
             overflow-x: visible;
             overflow-y: visible;
+        }
+
+        .with-side-menu .page-content,
+        .with-side-menu .page-content > .container-fluid,
+        .student-directory .dataTables_wrapper,
+        .student-directory .dataTables_wrapper .table-responsive {
+            overflow: visible !important;
         }
 
         #student-records-table {
@@ -91,10 +99,26 @@
         #student-records-table td.actions-cell {
             text-align: right;
             white-space: nowrap;
+            position: relative;
         }
 
-        #student-records-table .dropdown-menu {
-            z-index: 1050;
+        #student-records-table td.actions-cell .dropdown,
+        #student-records-table td.actions-cell .student-action-dropdown {
+            position: relative;
+            z-index: 1065;
+        }
+
+        #student-records-table .student-action-dropdown .dropdown-menu {
+            z-index: 1070 !important;
+        }
+
+        body > .student-records-floating-menu {
+            position: fixed !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            transform: none !important;
+            right: auto !important;
+            bottom: auto !important;
         }
 
         .student-directory .dataTables_wrapper {
@@ -179,6 +203,94 @@
                     { data: 'certificate_status', name: 'certificate_status', orderable: false, searchable: false },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
                 ]
+            });
+
+            function restoreStudentRecordsMenu($menu) {
+                var $originDropdown = $menu.data('originDropdown');
+                if (!$originDropdown || !$originDropdown.length) {
+                    return;
+                }
+
+                $menu
+                    .removeClass('student-records-floating-menu')
+                    .removeAttr('style')
+                    .appendTo($originDropdown)
+                    .removeData('originDropdown');
+            }
+
+            function closeStudentRecordsMenus() {
+                $('body > .student-records-floating-menu').each(function () {
+                    var $menu = $(this);
+                    var $originDropdown = $menu.data('originDropdown');
+
+                    if ($originDropdown && $originDropdown.length) {
+                        $originDropdown.removeClass('show');
+                        $originDropdown.children('.dropdown-toggle').attr('aria-expanded', 'false');
+                    }
+
+                    restoreStudentRecordsMenu($menu);
+                });
+            }
+
+            $(document).on('click.studentRecords', '.student-action-dropdown .dropdown-toggle', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var $toggle = $(this);
+                var $dropdown = $toggle.closest('.student-action-dropdown');
+                var $menu = $dropdown.children('.dropdown-menu');
+
+                if (!$menu.length) {
+                    return;
+                }
+
+                if ($menu.data('originDropdown')) {
+                    closeStudentRecordsMenus();
+                    return;
+                }
+
+                closeStudentRecordsMenus();
+
+                var toggleRect = $toggle.get(0).getBoundingClientRect();
+                var viewportPadding = 12;
+                var availableAbove = toggleRect.top - viewportPadding;
+                var availableBelow = window.innerHeight - toggleRect.bottom - viewportPadding;
+
+                $dropdown.addClass('show');
+                $toggle.attr('aria-expanded', 'true');
+
+                $menu
+                    .data('originDropdown', $dropdown)
+                    .appendTo('body')
+                    .addClass('student-records-floating-menu')
+                    .attr('style', 'position:fixed !important; top:0; left:0; right:auto !important; bottom:auto !important; min-width:auto; visibility:hidden; display:block; margin:0; transform:none !important; z-index:99999;');
+
+                var menuWidth = Math.ceil($menu.outerWidth() || $menu.get(0).getBoundingClientRect().width || 180);
+                var menuHeight = Math.ceil($menu.outerHeight() || $menu.get(0).scrollHeight || 180);
+                var left = Math.round(toggleRect.left - menuWidth);
+                var top = Math.round(toggleRect.top);
+
+                if (availableBelow < menuHeight && availableAbove > availableBelow) {
+                    top = Math.round(toggleRect.bottom - menuHeight);
+                }
+
+                $menu.attr('style', 'position:fixed !important; top:' + top + 'px; left:' + left + 'px; right:auto !important; bottom:auto !important; min-width:' + menuWidth + 'px; visibility:visible; display:block; margin:0; transform:none !important; z-index:99999;');
+            });
+
+            $(document).on('click.studentRecords', function (event) {
+                if ($(event.target).closest('.student-records-floating-menu, .student-action-dropdown').length) {
+                    return;
+                }
+
+                closeStudentRecordsMenus();
+            });
+
+            $(window).on('resize.studentRecords', function () {
+                closeStudentRecordsMenus();
+            });
+
+            $('#student-records-table').on('draw.dt', function () {
+                closeStudentRecordsMenus();
             });
 
             var statusMessage = @json(session('status'));

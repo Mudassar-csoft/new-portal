@@ -47,7 +47,7 @@
                                 <option value="expired" @selected(($filters['status'] ?? '') === 'expired')>Expired</option>
                             </select>
                         </div>
-                        <div class="form-group custom-col-1 d-flex text-right mt-4">
+                        <div class=" form-group custom-col-1 d-flex text-right mt-4 pt-2">
                             <button class="btn btn-inline btn-primary-outline mr-2" type="submit">Filter</button>
                             <a href="{{ route('hrm.documents.index') }}" class="btn btn-inline btn-danger-outline p-2">Reset</a>
                         </div>

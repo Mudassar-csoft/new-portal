@@ -26,7 +26,7 @@
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
                     <h3 class="panel-title mb-0">Manage Time Table</h3>
-                    <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small>
+                    <!-- <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small> -->
                 </div>
                 <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
