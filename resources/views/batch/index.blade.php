@@ -231,9 +231,7 @@
 
 @push('styles')
     <style>
-        .batch-index-shell {
-            padding: 10px;
-        }
+        
 
         .batch-index-card {
             max-width: 1450px;

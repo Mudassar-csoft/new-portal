@@ -63,41 +63,45 @@
 							</div>
 							<table class="tbl-data ml-lg-3 ml-2">
 								<tr>
-									<td class="price color-purple" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
-									<td style = "font-size:14px;	">Today Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Today Collection</td> -->
+									<td class="price color-purple collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<td class="price color-yellow" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
-									<td style = "font-size:14px;	">Weekly Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Weekly Collection</td> -->
+									<td class="price color-yellow collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<td class="price color-lime" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
-									<td style = "font-size:14px;	">Monthly Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Monthly Collection</td> -->
+									<td class="price color-lime collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 								</tr>
 							</table>
 						</div>
 						<div class="chart-container-in col-md-7  m-0 p-0 fs-1">
 							<div class="pr-md-2">
-								<div id="chart_div" style = "font-size:11px;"></div>
-								<div id="chart_fallback" style="display:none; height:314px;">
-									<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
-										<defs>
-											<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-												<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
-												<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
-											</linearGradient>
-										</defs>
-										<rect width="400" height="314" fill="url(#incomeGradient)" />
-										<polyline fill="none" stroke="#fff" stroke-width="4"
-											points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
-										<circle cx="20" cy="240" r="5" fill="#fff" />
-										<circle cx="80" cy="200" r="5" fill="#fff" />
-										<circle cx="140" cy="206" r="5" fill="#fff" />
-										<circle cx="200" cy="180" r="5" fill="#fff" />
-										<circle cx="260" cy="210" r="5" fill="#fff" />
-										<circle cx="320" cy="140" r="5" fill="#fff" />
-										<circle cx="380" cy="170" r="5" fill="#fff" />
-									</svg>
+								<div class="income-chart-stage">
+									<div id="chart_div" ></div>
+									<div id="chart_fallback" style="display:none; height:314px; style = "font-size:11px;"">
+										<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
+											<defs>
+												<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+													<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
+													<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
+												</linearGradient>
+											</defs>
+											<rect width="400" height="314" fill="url(#incomeGradient)" />
+											<polyline fill="none" stroke="#fff" stroke-width="4"
+												points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
+											<circle cx="20" cy="240" r="5" fill="#fff" />
+											<circle cx="80" cy="200" r="5" fill="#fff" />
+											<circle cx="140" cy="206" r="5" fill="#fff" />
+											<circle cx="200" cy="180" r="5" fill="#fff" />
+											<circle cx="260" cy="210" r="5" fill="#fff" />
+											<circle cx="320" cy="140" r="5" fill="#fff" />
+											<circle cx="380" cy="170" r="5" fill="#fff" />
+										</svg>
+									</div>
+									<div id="income-axis-top" class="income-axis income-axis-top"></div>
+									<div id="income-axis-right" class="income-axis income-axis-right"></div>
 								</div>
 								<!-- <div class="chart-caption"></div> -->
 								<div class="chart-container-x"></div>
@@ -414,6 +418,61 @@
 		.chart-statistic-box .chart-container-in {
 			border-radius: 0 12px 12px 0;
 			overflow: hidden;
+		}
+
+		.chart-statistic-box .income-chart-stage {
+			position: relative;
+			height: 314px;
+		}
+
+		.chart-statistic-box #chart_div,
+		.chart-statistic-box #chart_fallback {
+			height: 314px;
+		}
+
+		.chart-statistic-box .income-axis {
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			z-index: 3;
+			color: #fff;
+			font-family: 'Proxima Nova', sans-serif;
+			font-size: 10px !important;
+			font-weight: 700;
+			display: none;
+		}
+
+		.chart-statistic-box .income-axis-label {
+			position: absolute;
+			line-height: 1;
+			white-space: nowrap;
+			font-size: 11px !important;
+		}
+
+		.chart-statistic-box .income-axis-top .income-axis-label {
+			transform: translateX(-50%);
+			font-size: 10px !important;
+		}
+
+		.chart-statistic-box .income-axis-right .income-axis-label {
+			transform: translateY(-50%);
+			text-align: right;
+			font-size: 11px !important;
+		}
+
+		.chart-statistic-box .tbl-data {
+			width: auto;
+		}
+
+		.chart-statistic-box .tbl-data .collection-label {
+			width: auto;
+			padding-right: 10px;
+		}
+
+		.chart-statistic-box .tbl-data .collection-amount {
+			text-align: left;
+			white-space: nowrap;
+			padding-left: 12px;
 		}
 
 		.chart-range .radio {
@@ -851,8 +910,8 @@
             }
 
             .dashboard-shell .row {
-                margin-left: 5px !important;
-                margin-right: 5px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }
@@ -1036,6 +1095,7 @@
 			function showChartFallback() {
 				$('#chart_div').hide();
 				$('#chart_fallback').show();
+				clearIncomeAxisOverlay();
 				var range = incomeRanges[currentIncomeRange] || incomeRanges.today;
 				$('.chart-caption').text(range.label);
 				updateIncomeHeadline();
@@ -1298,6 +1358,70 @@
 				$('.chart-txt-top .number').text(formatAmount(rangeTotal(range)));
 			}
 
+			function clearIncomeAxisOverlay() {
+				$('#income-axis-top, #income-axis-right').empty().hide();
+			}
+
+			function renderIncomeAxisOverlay(chart, range) {
+				var topAxis = $('#income-axis-top');
+				var rightAxis = $('#income-axis-right');
+				var points = Array.isArray(range.points) ? range.points : [];
+				var ticks = (range.ticks || [0, 10]).map(toNumber).sort(function (a, b) {
+					return a - b;
+				});
+
+				clearIncomeAxisOverlay();
+
+				if (!chart || !chart.getChartLayoutInterface || !points.length) {
+					return;
+				}
+
+				var layout = chart.getChartLayoutInterface();
+				var chartArea = layout.getChartAreaBoundingBox();
+				if (!chartArea || !chartArea.width || !chartArea.height) {
+					return;
+				}
+
+				var xLabelTop = Math.max(6, chartArea.top - 16);
+				var rightLabelLeft = chartArea.left + chartArea.width + 8;
+
+				points.forEach(function (point, index) {
+					var xPosition;
+					if (points.length === 1) {
+						xPosition = chartArea.left + (chartArea.width / 2);
+					} else {
+						xPosition = chartArea.left + ((chartArea.width * index) / (points.length - 1));
+					}
+					var labelText = String(point[0] || '').replace(/(\d)\s+([AP]M)$/i, '$1$2');
+
+					$('<div/>', {
+						'class': 'income-axis-label',
+						text: labelText
+					}).css({
+						left: xPosition + 'px',
+						top: xLabelTop + 'px'
+					}).appendTo(topAxis);
+				});
+
+				ticks.forEach(function (tick) {
+					var yPosition = layout.getYLocation(tick);
+					if (!Number.isFinite(yPosition)) {
+						return;
+					}
+
+					$('<div/>', {
+						'class': 'income-axis-label',
+						text: formatAmount(tick)
+					}).css({
+						left: rightLabelLeft + 'px',
+						top: yPosition + 'px'
+					}).appendTo(rightAxis);
+				});
+
+				topAxis.show();
+				rightAxis.show();
+			}
+
 			var leadCodes = (chartSeries.leads && chartSeries.leads.categories) ? chartSeries.leads.categories : ['No Data'];
 			var leadCounts = (chartSeries.leads && chartSeries.leads.counts) ? chartSeries.leads.counts.map(toNumber) : [0];
 			var admissionPrograms = (chartSeries.admissions && chartSeries.admissions.categories) ? chartSeries.admissions.categories : ['No Data'];
@@ -1446,8 +1570,9 @@
 				dataTable.addColumn('number', 'Values');
 				dataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true } });
 				dataTable.addRows(range.points.map(function (point) {
+					var label = String(point[0] || '').replace(/ /g, '\u00A0');
 					var amount = toNumber(point[1]);
-					return [point[0], amount, point[0] + ': RS. ' + formatAmount(amount)];
+					return [label, amount, point[0] + ': RS. ' + formatAmount(amount)];
 				}));
 
 				var options = {
@@ -1464,14 +1589,12 @@
 							bold: true,
 							italic: false
 						},
-						textPosition: 'out',
-						slantedText: true,
-						slantedTextAngle: 45,
+						textPosition: 'none',
 						viewWindowMode: 'pretty'
 					},
 					vAxis: {
 						minValue: 0,
-						textPosition: 'out',
+						textPosition: 'none',
 						textStyle: {
 							color: '#fff',
 							fontName: 'Proxima Nova',
@@ -1497,10 +1620,10 @@
 						strokeWidth: 0
 					},
 					chartArea: {
-						left: 38,
-						right: 20,
-						top: 20,
-						bottom: 50,
+						left: 20,
+						right: 48,
+						top: 36,
+						bottom: 24,
 						width: '100%',
 						height: '100%'
 					},
@@ -1514,6 +1637,11 @@
 
 				try {
 					var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+					google.visualization.events.addListener(chart, 'ready', function () {
+						renderIncomeAxisOverlay(chart, range);
+					});
+					$('#chart_fallback').hide();
+					$('#chart_div').show();
 					chart.draw(dataTable, options);
 				} catch (err) {
 					showChartFallback();
