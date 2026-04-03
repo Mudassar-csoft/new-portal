@@ -10987,12 +10987,7 @@ body {
 .site-header .site-logo:after {
   clear: both;
 }
-.site-header .site-logo img {
-  float: left;
-  height: 50px;
-  position: relative;
-  top: -5px;
-}
+
 @media (max-width: 767px) {
   .site-header .site-logo img {
     height: auto;
@@ -11017,7 +11012,6 @@ body {
 }
 .site-header .site-header-content .site-header-content-in {
   zoom: 1;
-  *zoom: 1;
   margin-left: 210px;
 }
 .site-header .site-header-content .site-header-content-in:before,
@@ -11039,7 +11033,6 @@ body {
 .site-header .site-header-shown {
   float: right;
   zoom: 1;
-  *zoom: 1;
 }
 .site-header .site-header-shown:before,
 .site-header .site-header-shown:after {
@@ -11398,7 +11391,7 @@ body {
 .site-header .user-menu.dropdown {
   float: left;
   margin: 0 0 0 15px;
-  height: 30px;
+  height: 30px !important;
   line-height: 30px;
 }
 .site-header .user-menu.dropdown .dropdown-item {
@@ -11408,7 +11401,7 @@ body {
 .site-header .user-menu.dropdown .dropdown-toggle {
   display: block;
   color: #adb7be;
-  height: 30px;
+  height: 30px !important;
   border: none;
   background: none;
   line-height: 30px;
@@ -11516,7 +11509,7 @@ body {
   font-size: 15px;
 }
 .site-header .dropdown .btn.dropdown-toggle {
-  height: 30px;
+  height: 30px !important;
   padding: 0 12px;
   font-size: 0.8125rem /*13/16*/;
   line-height: 28px;
@@ -11557,9 +11550,9 @@ body {
   margin-right: -199px;
 }
 .site-header .site-header-collapsed .site-header-collapsed-in {
-  margin-right: 199px;
+  margin-right: 137px;
   zoom: 1;
-  *zoom: 1;
+  
 }
 .site-header .site-header-collapsed .site-header-collapsed-in:before,
 .site-header .site-header-collapsed .site-header-collapsed-in:after {
@@ -14010,7 +14003,8 @@ html {
   position: relative;
   top: 5px;
   overflow: hidden;
-  margin: 0;
+      margin-left: 8px !important;
+
   padding: 0;
   width: 30px;
   height: 30px;

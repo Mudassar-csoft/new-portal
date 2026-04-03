@@ -3,12 +3,12 @@
 		<div class="container-fluid">
 			<a href="{{ url('/') }}" class="site-logo">
 				<img class="hidden-md-down" src="img/logo-career.webp" alt="Career-Institute"
-					style="height: 40px; width: 222px; margin-top: 5px;">
+					style="height: 35px; width: 160px;">
 				<img class="hidden-lg-down" src="img/mobile-logo.webp" alt="Career-Institute"
-					style="height: 40px; width: 40px; margin-top: -5px;">
+					style="height: 40px; width: 40px;">
 			</a>
 
-			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar padding" style="margin-left: 20px;">
+			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar">
 				<span>toggle menu</span>
 			</button>
 
@@ -16,13 +16,13 @@
 				<span>toggle menu</span>
 			</button>
 			<div class="site-header-content">
-				<div class="site-header-content-in" style="margin-top:-35px">
-					<div class="site-header-shown d-flex align-items-center">
-            <div class="dropdown dropdown-notification notif ">
-                <a href="#" class="header-alarm dropdown-toggle profile-log active" id="dd-notification"
+				<div class="site-header-content-in">
+					<div class="site-header-shown">
+            <div class="dropdown dropdown-notification notif">
+                <a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="font-icon-alarm"></i>
-                  <span class="notification-total-badge">{{ (int) ($webLeadNotificationTotal ?? 0) }}</span>
+                  <span class="notification-total-badge"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">
                   @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
@@ -171,9 +171,11 @@
 						</div>
             
             <div class="dropdown dropdown-campus">
-                          <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
+                          <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
                             <i class="fa-solid fa-building"></i>
+                  <span class="notification-total-badge"></span>
+
                           </button>
                           <div class="dropdown-menu p-2 campus-dropdown-menu">
                             <!-- <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
@@ -191,11 +193,12 @@
                             @endforeach
                           </div>
                         </div>
-                        <div class=" dropdown user-menu user-profile-dropdown profile-log m-0">
-                          <a href="#" class="nav-link  profile-log p-0 pt-1 user dropdown-toggle" id="notify" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                            <img src="data:image/jpeg;base64,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" alt="" class="icon"  />
-                          </a>
-                          <div class="dropdown-menu profile-dropdown dropdown-menu-right" aria-labelledby="notify">
+                        <div class=" dropdown user-menu">
+                         
+                        <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                            <img src="img/avatar-2-64.png" alt="">
+	                        </button>
+                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notify">
                             <div class="user-profile-section login-drop">
                               <div class="media mx-auto">
                                 <img src="data:image/jpeg;base64,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" alt="" class="img">
@@ -357,7 +360,7 @@
                       <div class="mobile-menu-right-overlay"></div>
                       <div class="site-header-collapsed">
                         <div class="site-header-collapsed-in">
-                          <div class="dropdown dropdown-typical">
+                          <!-- <div class="dropdown dropdown-typical">
                             <div class="dropdown-menu" aria-labelledby="dd-header-sales">
                               <a class="dropdown-item" href="#"><span
                                   class="font-icon font-icon-home"></span>Quant and Verbal</a>
@@ -370,7 +373,7 @@
                               <a class="dropdown-item" href="#"><span
                                   class="font-icon font-icon-comments"></span>Third Party Test</a>
                             </div>
-                          </div>
+                          </div> -->
                           <!-- <div class="dropdown dropdown-typical">
                                           <a class="dropdown-toggle" id="dd-header-marketing" data-target="#" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                               <span class="font-icon font-icon-cogwheel"></span>
@@ -448,13 +451,21 @@
                                               <a class="dropdown-item" href="#"><span class="font-icon font-icon-comments"></span>Third Party Test</a>
                                           </div>
                                       </div> -->
+							<div class="site-header-search-container">
+								 <form class="site-header-search ">
+	                                <input type="text" placeholder="Search"/>
+	                                <button type="submit">
+	                                    <span class="font-icon-search"></span>
+	                                </button>
+	                                <div class="overlay"></div>
+	                </form>
+							</div>
                           <div class="dropdown add-lead">
-                <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Add New
-                </button>
+                              <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                                Add
+	                            </button>
 
-                <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
+                             <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
 
                     <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->
 
@@ -464,22 +475,11 @@
 
                 </div>
             </div>
-
-						
-
-							<div class="site-header-search-container">
-								<form class="site-header-search closed">
-									<input type="text" placeholder="Search" />
-									<button type="submit">
-										<span class="font-icon-search"></span>
-									</button>
-									<div class="overlay"></div>
-								</form>
-							</div>
 						</div><!--.site-header-collapsed-in-->
 					</div><!--.site-header-collapsed-->
 				</div><!--site-header-content-in-->
-			</div><!--.site-header-content-->
+		  </div>
+      <!--.site-header-content-->
 		</div><!--.container-fluid-->
 	</header><!--.site-header-->
 
@@ -487,34 +487,67 @@
 
 	<style>
 .site-header .dropdown.dropdown-campus .dropdown-toggle{
-	width: 32px !important;
-	margin-left: 10px;
+    height: 36px;
+    line-height: 36px;
+    width: 36px;
+    padding: 0;
 }
-
-.site-header-search button{
+.site-header .dropdown.dropdown-campus {
+  /* margin-left: 12px; */
+  float:left;
+}
+.site-header .site-header-collapsed .site-header-collapsed-in{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:29px;
+}
+.site-header .site-header-search-container{
+    order:1;
+    flex:0 0 220px;
+    width:220px;
+    margin-right:0;
+}
+.site-header .site-header-search-container .site-header-search{
+    width:100%;
+}
+.site-header .site-header-collapsed .add-lead{
+    order:2;
+    flex:0 0 auto;
+    margin-left:auto;
+}
+.site-header .site-header-collapsed .add-lead .btn{
+    white-space:nowrap;
+}
+/* .site-header-search button{
 	    line-height: 22px !important;
-}
+} */
 .font-icon-alarm{
-	
 	font-size:16px !important;
+	line-height:1 !important;
 }
 .site-header .dropdown a.dropdown-toggle {
-  
     line-height: 36px !important;
 }
-.site-header .header-alarm.active:after{
+/* .site-header .header-alarm.active:after{
 	display: none !important;
-}
+} */
 .site-header .dropdown-campus .dropdown-toggle i{
-	font-size: 15px !important;
+	font-size: 16px !important;
+    line-height: 1 !important;
 }
-.font-icon-search{
+/* .font-icon-search{
 	    font-size: 18px !important;
-		/* line-height:1 !important; */
+		line-height:1 !important;
 
-}
+} */
 .site-header-search input[type=text] {
     padding: 0px 0 0 14px !important;
+    height: 30px;
+    line-height: 30px !important;
+}
+.site-header-search button{
+    line-height: 30px !important;
 }
 .fa-classic,
 .fa-regular,
@@ -528,17 +561,27 @@
   font-weight:500 !important;
   color: #adb7be;
 }
-.dropdown-toggle:after{
-  display:none;
+.dropdown-toggle::after{
+ display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
 }
-button.dropdown-toggle{
+/* button.dropdown-toggle{
   border: 2px solid #ddd;
   color: white;
-;
+; */
 
-}
+
 .site-header .dropdown-campus .dropdown-toggle{
-  height: 32px !important;
+  height: 36px !important;
+  width: 36px !important;
   background: white !important;
 }
 .select2-dropdown .select2-dropdown--below{
@@ -556,22 +599,67 @@ button.dropdown-toggle{
   overflow-x: auto;
   white-space: nowrap;
 }
-.site-header .user-menu.dropdown .dropdown-toggle img{
-	margin: -3px -9px -5px 0 !important;
+.site-header .user-menu.dropdown .dropdown-toggle{
+display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb7be;
+    width: 36px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    background: 0 0;
+    line-height: 36px;
 }
 .site-header .dropdown.dropdown-notification {
-    float: right;
-    position: relative;
-    z-index: 120;
+    float: left;
+   
 }
-.site-header{
-	height:70px;
-	background:#ffffff;
-	border-bottom:1px solid #e5e5e5;
-	box-shadow:0 2px 8px rgba(0,0,0,0.05);
-	padding:10px 15px 0 0 !important;
+
+.site-header .site-header-content {
+	margin-left: -300px !important;
 }
-.site-header .header-alarm,
+.dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+/* .site-header .site-header-content .site-header-content-in {
+	margin-left: 300px !important;
+} */
+
+@media (max-width: 767px) {
+	.site-header .site-header-content {
+		margin-left: -80px !important;
+	}
+
+	.site-header .site-header-content .site-header-content-in {
+		margin-left: 80px !important;
+	}
+    .site-header .site-header-collapsed .site-header-collapsed-in{
+        flex-direction:column;
+        align-items:stretch;
+        gap:12px;
+    }
+    .site-header .site-header-search-container,
+    .site-header .site-header-collapsed .add-lead{
+        width:100%;
+        flex-basis:auto;
+        margin-left:0;
+        margin-right:0;
+    }
+    .site-header .site-header-collapsed .add-lead .btn{
+        width:100%;
+    }
+}
+/* .site-header .header-alarm,
 .site-header .dropdown-campus .dropdown-toggle,
 .user-menu .nav-link{
 	width:38px;
@@ -585,22 +673,20 @@ button.dropdown-toggle{
 	position: relative;
     cursor: pointer;
     z-index: 121;
-}
+} */
 .notification-total-badge{
-	position:absolute;
-	top: -5px;
-    right: -6px;
-	min-width:18px;
-	height:18px;
-	padding:0 4px;
-	border-radius:999px;
-	background:#dc3545;
-	color:#fff;
-	font-size:10px !important;
-	font-weight:700;
-	    line-height: 15px;
-	text-align:center;
-	border:2px solid #fff;
+	content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: solid 1px #fff;
+    background: #fa424a;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    margin-left: 1px;
 }
 .site-header .header-alarm:hover,
 .site-header .dropdown-campus .dropdown-toggle:hover,
@@ -638,6 +724,20 @@ button.dropdown-toggle{
 	border-color: #cfe0f5;
 	transform: translateY(-1px);
 	box-shadow: 0 3px 10px rgba(15, 54, 88, 0.08);
+}
+[class*=" font-icon-"]:before, [class^=font-icon-]:before {
+    font-family: startui !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    vertical-align: middle;
+    position: relative;
+    top: -.15em;
 }
 .notif-accordion-toggle{
 	display: flex;
@@ -760,8 +860,8 @@ button.dropdown-toggle{
 }
 
 .site-header .user-menu.dropdown{
-    margin: 0px 0px 0px 10px!important;
-	    height: 25px;
+    /* margin: 0 0 0 12px !important; */
+    height: 34px;
 }
 img.icon {
     width: 27px !important;
@@ -905,10 +1005,7 @@ border:2px solid #ddd;
     border-radius: 5px;
 }
 
-.site-header .dropdown.dropdown-notification,
-.site-header .user-menu.dropdown {
-	position: static !important;
-}
+
 
 .site-header .dropdown.dropdown-notification .dropdown-menu-notif,
 .site-header .user-menu.dropdown .profile-dropdown {
@@ -922,6 +1019,49 @@ border:2px solid #ddd;
 .site-header .user-menu.dropdown .profile-dropdown {
 	width: 285px;
 	max-width: calc(100vw - 20px);
+}
+.site-header .header-alarm,
+.site-header .dropdown-campus .dropdown-toggle,
+.site-header .user-menu.dropdown .dropdown-toggle{
+    width: 34px !important;
+    height: 32px !important;
+    min-width: 36px;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    line-height: 36px !important;
+    text-align: center;
+}
+.site-header .header-alarm::after,
+.site-header .dropdown-campus .dropdown-toggle::after,
+.site-header .user-menu.dropdown .dropdown-toggle::after{
+    display: none !important;
+}
+.site-header .user-menu.dropdown .dropdown-toggle::after{
+    display: inline-block !important;
+    width: 0;
+    height: 0;
+    margin-left: 6px;
+    vertical-align: middle;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+.site-header .header-alarm i,
+.site-header .dropdown-campus .dropdown-toggle i{
+    font-size: 18px !important;
+}
+.site-header .user-menu.dropdown .dropdown-toggle img{
+    width: 32px;
+    height: 32px;
+    display: block;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0;
 }
 
 .media{
@@ -942,8 +1082,6 @@ img.img {
     color: white ;
     padding: 15px;
 }
-
-
 .media-body h5{
     font-weight: 600;
 }
@@ -964,6 +1102,38 @@ img.icon{
     .notif-accordion{
         max-height: 70vh;
     }
+}
+
+.site-header .dropdown-toggle,
+.site-header .dropdown-menu,
+.site-header .dropdown-item,
+.site-header .nav-link,
+.site-header .header-alarm,
+.site-header .dropdown-campus .dropdown-toggle,
+.site-header .login-dropdown-item,
+.site-header .campus-dropdown-item,
+.site-header .add-new-dropdown-item,
+.site-header .notif-accordion-item,
+.site-header .notif-accordion-toggle,
+.site-header .media {
+	/* border-radius: 0 !important; */
+}
+
+.site-header .dropdown-toggle,
+.site-header .dropdown-menu,
+.site-header .dropdown-item,
+.site-header .nav-link,
+.site-header .header-alarm,
+.site-header .dropdown-campus .dropdown-toggle,
+.site-header .login-dropdown-item,
+.site-header .campus-dropdown-item,
+.site-header .add-new-dropdown-item,
+.site-header .notif-accordion-item,
+.site-header .notif-accordion-toggle,
+.site-header .media {
+	border: 0 !important;
+	/* border-color: transparent !important;                  */
+	box-shadow: none !important;
 }
 
 	</style>

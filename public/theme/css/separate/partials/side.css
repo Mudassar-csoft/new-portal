@@ -3553,7 +3553,7 @@ video {
   cursor: pointer;
   -webkit-transition: background 0.3s;
   transition: background 0.3s;
-  background: none;
+  background: 0 0;
 }
 .show-hide-sidebar span {
   margin: 0 4px;

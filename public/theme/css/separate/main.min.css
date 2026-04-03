@@ -13128,13 +13128,13 @@ body {
     right: 0;
     top: 0;
     width: 35px;
-    height: 100%;
-    line-height: 30px;
+    height: 100% !important;
+    line-height: 30px !important;
     text-align: center;
     color: #adb7be;
     border: none;
     background: 0 0;
-    font-size: .9375rem
+    font-size: .9375rem !important;
 }
 
 .site-header-search button:hover {
@@ -13210,12 +13210,7 @@ body {
     clear: both
 }
 
-.site-header .site-logo img {
-    float: left;
-    height: 50px;
-    position: relative;
-    top: -5px
-}
+
 
 @media (max-width:767px) {
     .site-header .site-logo img {
@@ -13833,13 +13828,13 @@ body {
 }
 
 .site-header .dropdown .btn.dropdown-toggle {
-    height: 30px;
-    padding: 0 12px;
-    font-size: .8125rem;
-    line-height: 28px;
-    background-color: #00a8ff;
-    border-color: #00a8ff;
-    color: #fff
+   height: 30px !important;
+  padding: 0 12px;
+  font-size: 0.8125rem /*13/16*/ !important;
+  line-height: 28px;
+  background-color: #00a8ff;
+  border-color: #00a8ff;
+  color: #fff;
 }
 
 .site-header .dropdown .btn.dropdown-toggle:after {
@@ -13881,7 +13876,7 @@ body {
 }
 
 .site-header .site-header-collapsed .site-header-collapsed-in {
-    margin-right: 199px;
+    margin-right: 137px;
     zoom: 1
 }
 
@@ -16754,7 +16749,7 @@ html {
     position: relative;
     top: 5px;
     overflow: hidden;
-    margin: 0;
+    margin: 5px !important;
     padding: 0;
     width: 30px;
     height: 30px;

@@ -87,6 +87,7 @@
 .lobipanel .panel-heading .dropdown .dropdown-toggle::after {
   color: #adb7be;
 }
+
 .lobipanel .panel-heading .dropdown.open .dropdown-menu {
   border-color: #d8e2e7;
   font-size: 15px;
