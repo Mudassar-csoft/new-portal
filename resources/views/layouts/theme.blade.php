@@ -313,8 +313,8 @@ padding: 10px 16px !important;
    ========================================================= */
 .dataTables_wrapper {
   box-sizing: border-box;
-  padding-left: 3px !important;
-  padding-right: 12px !important;
+  padding-left: 5px !important;
+  padding-right: 7px !important;
 }
 
 .dataTables_wrapper .dataTables_filter input,
@@ -353,7 +353,7 @@ padding-left: 10px !important;
 	padding: 10px;
 }
 .dataTables_wrapper .table-responsive {
-overflow-x: auto;
+overflow: visible !important;
 }
 .program-table thead th {
 	background-color: #16b3fb;
@@ -1094,6 +1094,23 @@ transform: rotate(45deg);
     padding: 2px 50px 2px 10px !important;
     font-weight: 500;
 }
+
+@media (max-width: 767.98px) {
+    .dropdown-item {
+        font-size: 13px !important;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+		height:20px !important;
+    }
+
+    .login-dropdown-item,
+    .campus-dropdown-item,
+    .add-new-dropdown-item {
+        font-size: 13px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+}
 /* .btn.btn-primary:active, .btn.btn-primary:hover, button#lead-action-7, button#action-career-1, button#action-ahmed-khan-2, button#action-sara-iqbal-3, button#action-bilal-awan-4, button#action-areeba-fatima-6, button#action-zain-ali-5 {
   
   background-color: #00a8ff !important;
@@ -1172,6 +1189,9 @@ form .row > [class*=col-] {
 	padding-left: 10px !important;
 	padding-right: 10px !important;
 }
+.Traing-head-selector{
+	width:100% !important;
+}
 
 form > .form-group,
 form > .text-right,
@@ -1182,8 +1202,7 @@ form > .embed-actions {
 }
 
 .dataTables_wrapper {
-	overflow-x: auto !important;
-	-webkit-overflow-scrolling: touch;
+	overflow: visible !important;
 }
 
 .table-responsive {
@@ -1205,12 +1224,22 @@ form > .embed-actions {
 }
 
 .dataTables_wrapper .table-responsive {
-	overflow-x: auto !important;
-	overflow-y: hidden !important;
-	-webkit-overflow-scrolling: touch;
+	overflow: visible !important;
 }
 
 .dataTables_wrapper table.dataTable {
+	width: auto !important;
+	min-width: 100% !important;
+}
+
+.dataTables_wrapper .datatable-scroll-area {
+	overflow-x: auto !important;
+	overflow-y: hidden !important;
+	-webkit-overflow-scrolling: touch;
+	width: 100%;
+}
+
+.dataTables_wrapper .datatable-scroll-area > table.dataTable {
 	width: max-content !important;
 	min-width: 100% !important;
 }
@@ -1281,6 +1310,9 @@ margin-right: 0px !important;
 	margin-top: 0px !important;
 
 }
+    .program-discount-header, .box-typical.box-typical-dashboard .box-typical-header {
+        
+        padding: 16px;}
 .kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
           
 	margin-top: 5px !important;
@@ -1415,7 +1447,7 @@ width: 98%;
 max-width: 98%;
 margin-left: 8px;
 }
-
+}
 /* >= 1200px */
 @media (min-width: 1200px) {
 /* =========================================================
@@ -1607,8 +1639,24 @@ margin-left: 0;
 				}, 0);
 			}
 
+			function ensureDataTableScrollArea(table) {
+				if (!table) return;
+
+				var $table = $(table);
+				var $wrapper = $table.closest('.dataTables_wrapper');
+
+				if (!$wrapper.length) return;
+
+				if ($table.parent().hasClass('datatable-scroll-area')) {
+					return;
+				}
+
+				$table.wrap('<div class="datatable-scroll-area"></div>');
+			}
+
 			$(document).on('init.dt draw.dt column-sizing.dt', function (event, settings) {
 				if (!settings || !settings.nTable) return;
+				ensureDataTableScrollArea(settings.nTable);
 				queueDataTableWidthCleanup(settings.nTable);
 			});
 
