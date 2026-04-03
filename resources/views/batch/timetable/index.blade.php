@@ -91,10 +91,10 @@
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch, room, instructor, or topic">
                         </div>
-                    </div>
-                    <div class=" text-right">
-                        <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger">Reset</a>
+                        <div class="form-group batch-filter-actions">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger">Reset</a>
+                        </div>
                     </div>
                 </form>
 

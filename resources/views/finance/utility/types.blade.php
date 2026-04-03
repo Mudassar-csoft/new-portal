@@ -25,11 +25,15 @@
                 <form class="mb-3" method="POST" action="{{ route('finance.utility.types.store') }}">
                     @csrf
                     <div class="form-row">
-                        <div class="form-group col-lg-5 col-md-5">
-                            <label class="required">Bill Type</label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="required">Company Name</label>
+                            <input type="text" name="company_name" class="form-control" value="{{ old('company_name') }}" placeholder="FESCO">
                         </div>
-                        <div class="form-group col-lg-5 col-md-5">
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="required">Bill Type</label>
+                            <input type="text" name="service_name" class="form-control" value="{{ old('service_name') }}" placeholder="Electricity" required>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6">
                             <label>Default Payee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
@@ -40,7 +44,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-2 col-md-2 d-flex align-items-end mt-1 pt-3">
+                        <div class="form-group col-lg-2 col-md-6 d-flex align-items-end mt-1 pt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                         </div>
                     </div>
@@ -51,28 +55,30 @@
                         <thead>
                         <tr>
                             <th>Sr#</th>
+                            <th>Company</th>
                             <th>Bill Type</th>
+                            <th>Display Name</th>
                             <th>Default Payee</th>
                             <th>Status</th>
-                            <th>Date</th>
                         </tr>
                         </thead>
                         <tbody>
                         @forelse($types as $index => $type)
                             <tr>
                                 <td>{{ $types->firstItem() + $index }}</td>
-                                <td>{{ $type->name }}</td>
+                                <td>{{ $type->company_name ?? '-' }}</td>
+                                <td>{{ $type->service_name ?? $type->name }}</td>
+                                <td>{{ $type->display_name }}</td>
                                 <td>{{ $type->payee->full_name ?? 'N/A' }}</td>
                                 <td>
                                     <span class="badge {{ $type->is_active ? 'badge-success' : 'badge-secondary' }}">
                                         {{ $type->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                 </td>
-                                <td>{{ optional($type->created_at)->format('d-M-Y') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted">No bill type found.</td>
+                                <td colspan="6" class="text-center text-muted">No bill type found.</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -86,7 +92,6 @@
 
 @push('styles')
     <style>
-        
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }

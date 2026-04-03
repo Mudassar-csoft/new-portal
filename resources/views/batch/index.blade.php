@@ -154,10 +154,10 @@
                             <label class="form-label">Search</label>
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch code, name, campus, instructor, or lab">
                         </div>
-                    </div>
-                    <div class="form-group batch-filter-actions ">
-                        <button type="submit" class="btn btn-outline-primary">Filter</button>
-                        <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                        <div class="form-group batch-filter-actions">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                        </div>
                     </div>
                 </form>
 
@@ -241,7 +241,6 @@
 
  {
     margin: 3.8%;
-    margin-right: -0.2%;
 }
         .batch-scope-grid {
             display: grid;
@@ -252,13 +251,12 @@
 
         .batch-scope-card {
             display: block;
-            height:25vh;
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
             padding-right: 10px;
-            background: #16b3fb;
-            color: white;
+            background: #f8fbff;
+            color: #334155;
             text-decoration: none;
             text-align: center;
             transition: all .18s ease;
@@ -272,22 +270,21 @@
         }
 
         .batch-scope-card.is-active {
-            background: #078bec;
+            background: #e9f5ff;
             border-color: #1fb2ff;
         }
 
         .batch-scope-card strong {
             display: block;
             font-size: 22px;
-            margin-top: 25px;
+            margin-top: 8px;
         }
 
         .batch-scope-label {
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: white;
-            
+            color: #64748b;
         }
 
         .batch-filter-form {
@@ -314,7 +311,6 @@
         .batch-filter-actions {
             display: flex;
             gap: 10px;
-            justify-content: end;
             margin-left: auto;
         }
 
