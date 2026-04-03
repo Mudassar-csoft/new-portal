@@ -17,8 +17,10 @@ class FinanceExpense extends Model
         'payee_id',
         'expense_type_id',
         'bill_id',
+        'rent_id',
         'category',
         'payment_date',
+        'expense_month',
         'amount',
         'payment_method',
         'bank_name',
@@ -42,6 +44,7 @@ class FinanceExpense extends Model
 
     protected $casts = [
         'payment_date' => 'date',
+        'expense_month' => 'date',
         'amount' => 'decimal:2',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
@@ -66,6 +69,11 @@ class FinanceExpense extends Model
     public function bill(): BelongsTo
     {
         return $this->belongsTo(FinanceBill::class, 'bill_id');
+    }
+
+    public function rent(): BelongsTo
+    {
+        return $this->belongsTo(FinanceBuildingRent::class, 'rent_id');
     }
 
     public function creator(): BelongsTo

@@ -17,7 +17,7 @@
                     @csrf
                     @include('program.partials.form')
 
-                    <div class="text-right mt-3 mb-2">
+                    <div class="text-right mt-3">
                         <button type="submit" class="btn btn-primary">Create Programme</button>
                     </div>
                 </form>
@@ -45,9 +45,8 @@
         .program-discount-header {
             display: flex;
             justify-content: space-between;
-            align-items: left;
+            align-items: center;
             gap: 12px;
-            padding: 10px 27px;
             margin-bottom: 14px;
         }
 

@@ -121,11 +121,8 @@
                                                 </form>
                                             @endif
 
-                                            @if($isAdmin && $expense->status === 'approved')
-                                                <form method="POST" action="{{ route('finance.expense.markPaid', $expense) }}">
-                                                    @csrf
-                                                    <button class="dropdown-item text-primary" type="submit">Mark Paid</button>
-                                                </form>
+                                            @if($expense->status === 'approved')
+                                                @include('finance.partials.pay_now_modal', ['expense' => $expense, 'paymentMethods' => $paymentMethods, 'isAdmin' => $isAdmin])
                                             @endif
                                         </div>
                                     </div>
@@ -192,4 +189,8 @@
         .dropdown-menu form { margin: 0; }
         .dropdown-menu form .dropdown-item { width: 100%; text-align: left; background: transparent; border: 0; }
     </style>
+@endpush
+
+@push('scripts')
+    @include('finance.partials.pay_now_modal_script')
 @endpush
