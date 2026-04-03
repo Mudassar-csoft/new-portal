@@ -1106,7 +1106,7 @@ overflow: hidden;
 }
 
 .box-typical.box-typical-dashboard {
-margin: 1% 5px !important;
+margin:  5px !important;
 }
 
 .box-typical.box-typical-dashboard .box-typical-header {
@@ -1423,7 +1423,7 @@ margin-left: 0;
 		}
 
 		body.with-side-menu .page-content {
-			margin-left: 0 !important;
+			margin-left: 10px !important;
 			margin-top: 0 !important;
 			padding-top: calc(var(--layout-header-height) + var(--layout-shell-gap)) !important;
 			padding-right: calc(var(--layout-control-panel-width) + var(--layout-shell-gap)) !important;

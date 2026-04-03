@@ -63,15 +63,15 @@
 							</div>
 							<table class="tbl-data ml-lg-3 ml-2">
 								<tr>
-									<td class="collection-label" style = "font-size:14px;	">Today Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Today Collection</td> -->
 									<td class="price color-purple collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<td class="collection-label" style = "font-size:14px;	">Weekly Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Weekly Collection</td> -->
 									<td class="price color-yellow collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<td class="collection-label" style = "font-size:14px;	">Monthly Collection</td>
+									<!-- <td class="collection-label" style = "font-size:14px;	">Monthly Collection</td> -->
 									<td class="price color-lime collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 								</tr>
 							</table>
@@ -79,8 +79,8 @@
 						<div class="chart-container-in col-md-7  m-0 p-0 fs-1">
 							<div class="pr-md-2">
 								<div class="income-chart-stage">
-									<div id="chart_div" style = "font-size:11px;"></div>
-									<div id="chart_fallback" style="display:none; height:314px;">
+									<div id="chart_div" ></div>
+									<div id="chart_fallback" style="display:none; height:314px; style = "font-size:11px;"">
 										<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
 											<defs>
 												<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -446,15 +446,18 @@
 			position: absolute;
 			line-height: 1;
 			white-space: nowrap;
+			font-size: 11px !important;
 		}
 
 		.chart-statistic-box .income-axis-top .income-axis-label {
 			transform: translateX(-50%);
+			font-size: 10px !important;
 		}
 
 		.chart-statistic-box .income-axis-right .income-axis-label {
 			transform: translateY(-50%);
 			text-align: right;
+			font-size: 11px !important;
 		}
 
 		.chart-statistic-box .tbl-data {
@@ -907,8 +910,8 @@
             }
 
             .dashboard-shell .row {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
+                margin-left: 3px !important;
+                margin-right: 3px !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }
@@ -1389,10 +1392,11 @@
 					} else {
 						xPosition = chartArea.left + ((chartArea.width * index) / (points.length - 1));
 					}
+					var labelText = String(point[0] || '').replace(/(\d)\s+([AP]M)$/i, '$1$2');
 
 					$('<div/>', {
 						'class': 'income-axis-label',
-						text: String(point[0] || '')
+						text: labelText
 					}).css({
 						left: xPosition + 'px',
 						top: xLabelTop + 'px'

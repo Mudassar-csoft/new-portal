@@ -224,9 +224,9 @@
 
 @push('styles')
     <style>
-        .campus-index-shell {
+        /* .campus-index-shell {
             padding: 10px;
-        }
+        } */
 
         .campus-index-card {
             max-width: 1500px;
