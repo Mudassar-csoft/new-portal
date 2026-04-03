@@ -333,7 +333,7 @@ padding: 10px 16px !important;
 			width:200px;
 		}
 div.dataTables_wrapper div.dataTables_info {
-padding-top: 1em;
+padding-top: 1em !important;
 }
 div.dataTables_wrapper div.dataTables_filter input{
 	width:200px;
@@ -346,7 +346,7 @@ padding-left: 10px !important;
 }
 .dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer {
     display: flex;
-    align-items: center;
+    align-items: flex-start !important;
     justify-content: space-between !important;
     /* gap: 488px !important; */
     margin-bottom: 8px !important;
