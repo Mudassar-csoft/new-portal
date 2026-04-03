@@ -133,7 +133,7 @@
 		.dataTables_wrapper .follow-controls,
 		.dataTables_wrapper .follow-footer {
 			display: flex;
-			align-items: center;
+			align-items: flex-start !important;
 			justify-content: space-between;
 			gap: 12px;
 			margin-bottom: 12px;

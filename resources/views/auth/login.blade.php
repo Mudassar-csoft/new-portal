@@ -327,7 +327,7 @@
                     <div class="sign-avatar">
                         <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
                     </div>
-                    <header class="sign-title">Welcome back</header>
+                    <header class="sign-title">Welcome  career institue</header>
                     <div class="row">
 
                         <div class=" col-12">
