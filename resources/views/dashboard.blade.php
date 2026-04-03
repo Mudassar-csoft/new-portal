@@ -910,8 +910,8 @@
             }
 
             .dashboard-shell .row {
-                margin-left: 5px !important;
-                margin-right: 5px !important;
+                margin-left: 3px !important;
+                margin-right: 3px !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }
