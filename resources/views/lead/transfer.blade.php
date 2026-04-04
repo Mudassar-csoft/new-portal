@@ -34,8 +34,11 @@
                             <div class="alert alert-danger">{{ $errors->first() }}</div>
                         @endif
 
-                        <form method="POST" action="{{ route('leads.transfer.store', $lead) }}">
+                        <form method="POST" action="{{ route('leads.transfer.store', $lead) }}" id="lead-transfer-form">
                             @csrf
+                            @if(request()->boolean('embed'))
+                                <input type="hidden" name="embed" value="1">
+                            @endif
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label>Current Campus</label>
@@ -71,7 +74,11 @@
 
                             <div class="form-actions text-right mt-2">
                                 <button type="submit" class="btn btn-inline btn-primary-outline">Submit Transfer</button>
-                                <a href="{{ route('leads.show', $lead) }}" class="btn btn-inline btn-danger-outline">Cancel</a>
+                                @if(request()->boolean('embed'))
+                                    <button type="button" class="btn btn-inline btn-danger-outline embed-cancel">Cancel</button>
+                                @else
+                                    <a href="{{ route('leads.show', $lead) }}" class="btn btn-inline btn-danger-outline">Cancel</a>
+                                @endif
                             </div>
                         </form>
                     @endif
@@ -218,6 +225,33 @@
         .form-row .form-group.col-md-12 {
             flex-basis: 100%;
         } */
+
+        @if(request()->boolean('embed'))
+            .site-header,
+            .side-menu,
+            .taskbar,
+            .control-panel-container {
+                display: none !important;
+            }
+
+            .with-side-menu .page-content {
+                margin-left: 0 !important;
+                padding: 24px !important;
+            }
+
+            .page-content > .container-fluid {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+
+            .lead-shell {
+                min-height: auto;
+            }
+
+            .embed-cancel {
+                display: inline-block;
+            }
+        @endif
     </style>
 @endpush
 
@@ -231,4 +265,96 @@
             });
         })();
     </script>
+    @if(request()->boolean('embed'))
+        <script>
+            (function () {
+                function clearErrors(form) {
+                    form.querySelectorAll('.field-error').forEach(function (node) {
+                        node.textContent = '';
+                    });
+
+                    form.querySelectorAll('.is-invalid').forEach(function (field) {
+                        field.classList.remove('is-invalid');
+                    });
+                }
+
+                function renderErrors(form, errors) {
+                    Object.entries(errors || {}).forEach(function (entry) {
+                        var key = entry[0];
+                        var messages = entry[1] || [];
+                        var message = messages.length ? messages[0] : 'Invalid value.';
+                        var field = form.querySelector('[name="' + key + '"]');
+
+                        if (field) {
+                            field.classList.add('is-invalid');
+                            var errorNode = field.parentElement ? field.parentElement.querySelector('.field-error') : null;
+                            if (errorNode) {
+                                errorNode.textContent = message;
+                            }
+                        }
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    var form = document.getElementById('lead-transfer-form');
+
+                    document.querySelectorAll('.embed-cancel').forEach(function (button) {
+                        button.addEventListener('click', function () {
+                            if (window.parent) {
+                                window.parent.postMessage({ type: 'lead-modal-close' }, '*');
+                            }
+                        });
+                    });
+
+                    if (!form) {
+                        return;
+                    }
+
+                    form.addEventListener('submit', async function (event) {
+                        event.preventDefault();
+                        clearErrors(form);
+
+                        try {
+                            var response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': form.querySelector('[name="_token"]')?.value || ''
+                                },
+                                credentials: 'same-origin',
+                                body: new FormData(form)
+                            });
+
+                            if (response.status === 422) {
+                                var data = await response.json();
+                                renderErrors(form, data.errors || {});
+                                return;
+                            }
+
+                            if (!response.ok) {
+                                throw new Error('Unable to submit transfer request.');
+                            }
+
+                            if (window.parent) {
+                                window.parent.postMessage({
+                                    type: 'lead-modal-close',
+                                    reload: true,
+                                    status: 'Transfer request submitted for approval.'
+                                }, '*');
+                            }
+                        } catch (error) {
+                            if (window.swal) {
+                                swal({
+                                    title: 'Error',
+                                    text: error.message || 'Unable to submit transfer request.',
+                                    type: 'error'
+                                });
+                            }
+                        }
+                    });
+                });
+            })();
+        </script>
+    @endif
 @endpush

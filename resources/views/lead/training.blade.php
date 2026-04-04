@@ -59,7 +59,7 @@
             <label class="form-label text-dark fw-semibold small ">
                 Teaching Method <span class="required-feild_symbol">*</span>
             </label>
-            <div class="row mt-2 ">
+            <div class="row mt-2 choice-group @error('details.teaching_method') is-invalid @enderror">
                 <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
@@ -215,7 +215,7 @@
             <label class="form-label text-dark fw-semibold small ">
                 Gender <span class="required-feild_symbol">*</span>
             </label>
-             <div class="row mt-2 ">
+             <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
                 <div class="col-4 d-flex justify-content-center mb-1 mt-1">
                     <div class="form-check d-flex align-items-center mt-0">
                         <input class="form-check-input mt-0 mr-1"
@@ -259,11 +259,10 @@
                     </div>
                 </div>
             </div>
+            @error('details.gender')
+                <div class="field-error mt-1">{{ $message }}</div>
+            @enderror
         </div>
-    <!-- Validation error -->
-    @error('details.gender')
-        <div class="field-error mt-1">{{ $message }}</div>
-    @enderror
     </div>
 
     <!-- Radio Section -->
@@ -286,12 +285,13 @@
 
     <!-- Slider -->
     <input type="range"
+        name="details[probability]"
         min="0"
         max="100"
         step="5"
         id="probabilitySlider"
-        value="10"
-        class="custom-range">
+        value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
+        class="custom-range @error('details.probability') is-invalid @enderror">
 
     <!-- Scale -->
     <div class="range-scale" aria-hidden="true">
@@ -315,13 +315,28 @@
 
     <!-- Selected -->
     <div class="  ">
-        Selected: <span id="probabilityValue">10%</span>
+        Selected: <span id="probabilityValue">{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%</span>
     </div>
+    @error('details.probability')
+        <div class="field-error">{{ $message }}</div>
+    @enderror
 </div>
 
 <style>
 .custom-range {
     width: 100%;
+}
+
+.custom-range.is-invalid {
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+}
+
+.choice-group.is-invalid {
+    border: 1px solid #e53935;
+    border-radius: 6px;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 4px 0;
 }
 
 /* SCALE WITH BIG + SMALL TICKS */

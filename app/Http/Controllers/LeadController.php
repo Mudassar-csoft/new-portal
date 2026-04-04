@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -130,6 +131,7 @@ class LeadController extends Controller
             $details = $validated['details'] ?? [];
             $initialProbability = $details['probability'] ?? null;
             $initialNext = $details['next_followup_at'] ?? null;
+            $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
 
             $lead = Lead::create([
                 'campus_id' => $validated['campus_id'] ?? null,
@@ -154,7 +156,7 @@ class LeadController extends Controller
                 'method' => null,
                 'probability' => $initialProbability,
                 'next_action_date' => $initialNext,
-                'stage' => 'new',
+                'stage' => $initialStage,
                 'lead_status' => 'pending',
             ]);
 
@@ -182,16 +184,45 @@ class LeadController extends Controller
             return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.');
         }
 
-        $validated = $request->validate([
+        $currentStage = $this->resolveCurrentStage($lead);
+        $canUpdateLeadProfile = $currentStage === 'new';
+
+        $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
-            'method' => ['nullable', 'string', 'max:50'],
+            'method' => ['required', 'string', 'max:50'],
             'probability' => ['nullable', 'integer', 'min:0', 'max:100'],
             'note' => ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in(['new', 'contacted', 'need_analysis', 'branch_visited', 'proposal_negotiation', 'not_interesting', 'registered', 'enroll'])],
+        ];
+
+        if ($canUpdateLeadProfile) {
+            $rules['email'] = ['nullable', 'email', 'max:255'];
+            $rules['lead_details'] = ['nullable', 'array'];
+            $rules['lead_details.area'] = ['nullable', 'string', 'max:255'];
+            $rules['lead_details.gender'] = ['nullable', Rule::in(['male', 'female', 'other'])];
+        }
+
+        $validated = $request->validate($rules, [], [
+            'method' => 'follow-up method',
+            'note' => 'remarks',
         ]);
 
-        $followup = LeadFollowup::create([
+        if (in_array($validated['stage'], ['registered', 'enroll'], true)) {
+            throw ValidationException::withMessages([
+                'stage' => [
+                    $validated['stage'] === 'registered'
+                        ? 'Use the registration form popup to register this lead.'
+                        : 'Use the admission form popup to enroll this lead.',
+                ],
+            ]);
+        }
+
+        if ($canUpdateLeadProfile) {
+            $this->syncLeadProfileFromFollowup($lead, $validated);
+        }
+
+        LeadFollowup::create([
             'lead_id' => $lead->id,
             'campus_id' => $validated['campus_id'] ?? $lead->campus_id,
             'user_id' => $request->user()?->id,
@@ -483,6 +514,45 @@ class LeadController extends Controller
 
                 return $followup;
             });
+    }
+
+    private function resolveInitialFollowupStage(?string $origin): string
+    {
+        return Str::lower(trim((string) $origin)) === 'website'
+            ? 'new'
+            : 'contacted';
+    }
+
+    private function resolveCurrentStage(Lead $lead): string
+    {
+        return $lead->followups()->latest('id')->value('stage') ?? 'new';
+    }
+
+    private function syncLeadProfileFromFollowup(Lead $lead, array $validated): void
+    {
+        $leadUpdates = [];
+        $details = $lead->details ?? [];
+        $detailUpdates = $validated['lead_details'] ?? [];
+
+        if (filled($validated['email'] ?? null)) {
+            $leadUpdates['email'] = $validated['email'];
+        }
+
+        if (filled($detailUpdates['area'] ?? null)) {
+            $details['area'] = $detailUpdates['area'];
+        }
+
+        if (filled($detailUpdates['gender'] ?? null)) {
+            $details['gender'] = $detailUpdates['gender'];
+        }
+
+        if ($details !== ($lead->details ?? [])) {
+            $leadUpdates['details'] = $details;
+        }
+
+        if ($leadUpdates !== []) {
+            $lead->update($leadUpdates);
+        }
     }
 
     private function buildWebLeadPrefill(WebLead $webLead): array
