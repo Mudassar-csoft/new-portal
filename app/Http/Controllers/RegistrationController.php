@@ -9,6 +9,7 @@ use App\Models\Program;
 use App\Models\FeeCollection;
 use App\Models\Registration;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -37,7 +38,7 @@ class RegistrationController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'lead_id' => ['nullable', 'exists:leads,id'],
@@ -124,9 +125,23 @@ class RegistrationController extends Controller
                 }
             }
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'Registration created successfully.',
+                    'redirect_url' => route('registration.voucher', $registration),
+                ]);
+            }
+
             return redirect()->route('registration.voucher', $registration);
         } catch (Throwable $e) {
             report($e);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unable to save the registration right now. Please try again.',
+                ], 500);
+            }
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Unable to save the registration right now. Please try again.');

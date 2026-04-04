@@ -1,4 +1,4 @@
-@extends('layouts.theme')
+@extends(request()->boolean('embed') ? 'layouts.embed' : 'layouts.theme')
 
 @section('title', 'Transfer Lead')
 
@@ -34,7 +34,7 @@
                             <div class="alert alert-danger">{{ $errors->first() }}</div>
                         @endif
 
-                        <form method="POST" action="{{ route('leads.transfer.store', $lead) }}" id="lead-transfer-form">
+                        <form method="POST" action="{{ route('leads.transfer.store', $lead) }}" id="lead-transfer-form" class="lead-transfer-form">
                             @csrf
                             @if(request()->boolean('embed'))
                                 <input type="hidden" name="embed" value="1">
@@ -96,7 +96,7 @@
             min-height: 100vh;
             width: 100%;
             overflow: hidden;
-            padding: 0;
+            padding: 18px 0 24px;
             margin: 0;
         }
 
@@ -150,7 +150,7 @@
             visibility: hidden;
             transition: opacity 0.4s ease;
             position: relative;
-            min-height: 400px;
+            min-height: 260px;
         }
 
         body.transfer-form-ready .lead-content {
@@ -174,22 +174,37 @@
         }
 
         .lead-body {
-            padding: 10px 10px 5px;
+            padding: 24px 26px 22px;
             overflow: visible !important;
         }
 
         .lead-create-card {
             overflow: visible !important;
             max-height: none !important;
+            border: 1px solid #e3edf7;
+            border-radius: 24px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+            overflow: hidden !important;
+            background: #fff;
         }
 
         .lead-create-card .panel-heading {
-            padding: 10px 20px;
+            padding: 18px 24px;
+            border-bottom: 1px solid #e8eef5;
+            background: linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
         }
 
         .lead-title {
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #183b68;
+        }
+
+        .lead-title small {
+            font-size: 16px;
+            font-weight: 600;
+            color: #70839a !important;
         }
 
         .required::after {
@@ -209,47 +224,137 @@
             box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
         }
 
-        /* .form-row {
+        .lead-transfer-form .form-row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+        .lead-transfer-form .form-row > [class*="col-"] {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .lead-transfer-form .form-group {
+            margin-bottom: 18px;
+        }
+
+        .lead-transfer-form label {
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #223a57;
+        }
+
+        .lead-transfer-form .form-control {
+            min-height: 46px;
+            border-radius: 12px;
+            border: 1px solid #d6e2f0;
+            padding: 10px 14px;
+            background: #fff;
+            box-shadow: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lead-transfer-form textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .lead-transfer-form .form-control:focus {
+            border-color: #14a2f6;
+            box-shadow: 0 0 0 3px rgba(20, 162, 246, 0.12);
+        }
+
+        .lead-transfer-form .form-control[disabled] {
+            background: #f4f8fc;
+            color: #5f7289;
+        }
+
+        .form-actions {
             display: flex;
-            flex-wrap: wrap;
+            justify-content: flex-end;
             gap: 12px;
-            margin-bottom: 12px;
+            padding-top: 18px;
+            margin-top: 8px;
+            border-top: 1px solid #e8eef5;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
         }
 
-        .form-row .form-group {
-            margin-bottom: 0;
-            flex: 1 1 48%;
-            min-width: 260px;
+        .form-actions .btn {
+            min-width: 170px;
+            height: 44px;
+            border-radius: 12px;
+            font-weight: 700;
         }
 
-        .form-row .form-group.col-md-12 {
-            flex-basis: 100%;
-        } */
+        .btn.btn-primary-outline {
+            color: #fff;
+            background: linear-gradient(120deg, #0099f8, #17b3ff);
+            border-color: transparent;
+            box-shadow: 0 14px 28px rgba(0, 153, 248, 0.24);
+        }
+
+        .btn.btn-primary-outline:hover,
+        .btn.btn-primary-outline:focus {
+            color: #fff;
+            background: linear-gradient(120deg, #0088dd, #0ea4ef);
+            border-color: transparent;
+        }
+
+        .btn.btn-danger-outline {
+            color: #d64545;
+            border: 1px solid rgba(214, 69, 69, 0.32);
+            background: #fff;
+        }
+
+        .btn.btn-danger-outline:hover,
+        .btn.btn-danger-outline:focus {
+            color: #fff;
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        @media (max-width: 767px) {
+            .lead-shell {
+                padding: 16px;
+            }
+
+            .lead-body {
+                padding: 20px 18px 18px;
+            }
+
+            .lead-title {
+                font-size: 24px;
+            }
+
+            .lead-title small {
+                display: block;
+                margin-top: 6px;
+                margin-left: 0 !important;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
 
         @if(request()->boolean('embed'))
-            .site-header,
-            .side-menu,
-            .taskbar,
-            .control-panel-container {
-                display: none !important;
-            }
-
-            .with-side-menu .page-content {
-                margin-left: 0 !important;
-                padding: 24px !important;
-            }
-
-            .page-content > .container-fluid {
-                max-width: 100% !important;
-                padding: 0 !important;
-            }
-
             .lead-shell {
                 min-height: auto;
+                padding: 18px;
             }
 
-            .embed-cancel {
-                display: inline-block;
+            .lead-create-card {
+                box-shadow: none;
+                border-radius: 20px;
+            }
+
+            .lead-loader {
+                height: 100%;
             }
         @endif
     </style>
@@ -287,7 +392,8 @@
 
                         if (field) {
                             field.classList.add('is-invalid');
-                            var errorNode = field.parentElement ? field.parentElement.querySelector('.field-error') : null;
+                            var formGroup = field.closest('.form-group');
+                            var errorNode = formGroup ? formGroup.querySelector('.field-error') : null;
                             if (errorNode) {
                                 errorNode.textContent = message;
                             }
@@ -329,18 +435,33 @@
                             if (response.status === 422) {
                                 var data = await response.json();
                                 renderErrors(form, data.errors || {});
+
+                                if (window.swal) {
+                                    swal({
+                                        title: 'Error',
+                                        text: data.message || 'Please fix the highlighted fields and try again.',
+                                        type: 'error'
+                                    });
+                                }
+
                                 return;
                             }
 
+                            var responseData = {};
+                            var contentType = response.headers.get('content-type') || '';
+                            if (contentType.indexOf('application/json') !== -1) {
+                                responseData = await response.json();
+                            }
+
                             if (!response.ok) {
-                                throw new Error('Unable to submit transfer request.');
+                                throw new Error(responseData.message || 'Unable to submit transfer request.');
                             }
 
                             if (window.parent) {
                                 window.parent.postMessage({
                                     type: 'lead-modal-close',
                                     reload: true,
-                                    status: 'Transfer request submitted for approval.'
+                                    status: responseData.status || 'Transfer request submitted for approval.'
                                 }, '*');
                             }
                         } catch (error) {

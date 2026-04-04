@@ -705,15 +705,20 @@
 			color: #334155;
 		}
 
+		body.lead-modal-open {
+			overflow: hidden;
+		}
+
 		.lead-modal {
 			position: fixed;
 			inset: 0;
-			background: rgba(15, 23, 42, 0.55);
+			background: rgba(15, 23, 42, 0.6);
+			backdrop-filter: blur(4px);
 			display: none;
 			align-items: center;
 			justify-content: center;
 			z-index: 1055;
-			padding: 16px;
+			padding: 18px;
 		}
 
 		.lead-modal.show {
@@ -722,10 +727,11 @@
 
 		.lead-modal .modal-card {
 			background: #fff;
-			width: min(1100px, 96vw);
-			height: min(720px, 90vh);
-			border-radius: 12px;
-			box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+			width: min(1320px, 98vw);
+			height: min(900px, 94vh);
+			border-radius: 20px;
+			border: 1px solid rgba(255, 255, 255, 0.72);
+			box-shadow: 0 28px 80px rgba(15, 23, 42, 0.35);
 			display: flex;
 			flex-direction: column;
 			overflow: hidden;
@@ -735,22 +741,22 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 10px 16px;
+			padding: 14px 20px;
 			border-bottom: 1px solid #e2e8f0;
-			background: #f8fbff;
+			background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
 		}
 
 		.lead-modal .modal-title {
-			font-weight: 700;
+			font-weight: 800;
 			color: #0f3c6e;
 			margin: 0;
-			font-size: 16px;
+			font-size: 18px;
 		}
 
 		.lead-modal .modal-close {
 			border: 0;
 			background: transparent;
-			font-size: 22px;
+			font-size: 28px;
 			line-height: 1;
 			color: #5b6b80;
 			cursor: pointer;
@@ -760,6 +766,7 @@
 			flex: 1;
 			border: 0;
 			width: 100%;
+			background: #f3f8fd;
 		}
 
 		.custom-range {
@@ -960,6 +967,7 @@ input[name="probability"] + .small {
 			frame.src = url;
 			modal.classList.add('show');
 			modal.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('lead-modal-open');
 
 			if (titleNode) {
 				titleNode.textContent = title;
@@ -977,6 +985,7 @@ input[name="probability"] + .small {
 			frame.src = 'about:blank';
 			modal.classList.remove('show');
 			modal.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('lead-modal-open');
 		}
 
 		function initLeadModal() {
@@ -993,6 +1002,12 @@ input[name="probability"] + .small {
 
 			modal.addEventListener('click', function (event) {
 				if (event.target === modal) {
+					closeLeadModal();
+				}
+			});
+
+			document.addEventListener('keydown', function (event) {
+				if (event.key === 'Escape' && modal.classList.contains('show')) {
 					closeLeadModal();
 				}
 			});

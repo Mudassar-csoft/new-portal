@@ -312,10 +312,19 @@ class LeadController extends Controller
         return view('lead.transfer', compact('lead', 'campuses'));
     }
 
-    public function transferStore(Request $request, Lead $lead): RedirectResponse
+    public function transferStore(Request $request, Lead $lead): RedirectResponse|JsonResponse
     {
         if (in_array($lead->status, ['registered', 'enrolled'], true)) {
-            return Redirect::back()->withErrors(['transfer' => 'Registered or enrolled leads cannot be transferred.']);
+            $message = 'Registered or enrolled leads cannot be transferred.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors' => ['transfer' => [$message]],
+                ], 422);
+            }
+
+            return Redirect::back()->withErrors(['transfer' => $message]);
         }
         $validated = $request->validate([
             'to_campus_id' => ['required', 'exists:campuses,id', 'different:from_campus_id'],
@@ -323,7 +332,16 @@ class LeadController extends Controller
         ]);
 
         if ($lead->campus_id == $validated['to_campus_id']) {
-            return Redirect::back()->withErrors(['to_campus_id' => 'Lead is already in the selected campus.']);
+            $message = 'Lead is already in the selected campus.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors' => ['to_campus_id' => [$message]],
+                ], 422);
+            }
+
+            return Redirect::back()->withErrors(['to_campus_id' => $message]);
         }
 
         LeadTransfer::create([
@@ -335,7 +353,13 @@ class LeadController extends Controller
             'status' => 'pending',
         ]);
 
-        return Redirect::route('leads.transfer')->with('status', 'Transfer request submitted for approval.');
+        $message = 'Transfer request submitted for approval.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => $message]);
+        }
+
+        return Redirect::route('leads.transfer')->with('status', $message);
     }
 
     public function approveTransfer(Request $request, LeadTransfer $transfer): RedirectResponse
