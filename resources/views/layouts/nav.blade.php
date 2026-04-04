@@ -1,6 +1,6 @@
 
 <div class="mobile-menu-left-overlay"></div>
-	<nav class="side-menu " style="margin-top: 4.1rem;">
+	<nav class="side-menu " style="margin-top: 5.1rem; padding: 93px 0px 0px 5px;">
 		<ul class="side-menu-list">
 			<li>
 				<a href="{{ route('dashboard') }}" style="padding-left:10px">
