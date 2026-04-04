@@ -13112,9 +13112,12 @@ body {
 
 .site-header-search input[type=text] {
     width: 100%;
-    padding: 4px 0 0 14px;
+    display: block;
+    height: 100%;
+    padding: 0 0 0 14px;
     border: none;
     background: 0 0;
+    line-height: 30px;
     font-size: .875rem;
     font-weight: 600;
     color: #343434;
@@ -13123,18 +13126,52 @@ body {
 }
 
 .site-header-search button {
-    display: block;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
     position: absolute;
     right: 0;
     top: 0;
     width: 35px;
     height: 100%;
     line-height: 30px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
     text-align: center;
     color: #adb7be;
     border: none;
     background: 0 0;
     font-size: .9375rem
+}
+
+.site-header-search input[type=text]::placeholder {
+    line-height: 30px
+}
+
+.site-header-search button .font-icon-search {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    line-height: 1
+}
+
+.site-header-search button .font-icon-search:before {
+    display: block;
+    line-height: 30px;
+    top: 0;
+    vertical-align: baseline
 }
 
 .site-header-search button:hover {
@@ -13210,12 +13247,7 @@ body {
     clear: both
 }
 
-.site-header .site-logo img {
-    float: left;
-    height: 50px;
-    position: relative;
-    top: -5px
-}
+
 
 @media (max-width:767px) {
     .site-header .site-logo img {
@@ -13833,13 +13865,13 @@ body {
 }
 
 .site-header .dropdown .btn.dropdown-toggle {
-    height: 30px;
-    padding: 0 12px;
-    font-size: .8125rem;
-    line-height: 28px;
-    background-color: #00a8ff;
-    border-color: #00a8ff;
-    color: #fff
+    height: 30px !important;
+  padding: 0 12px;
+  font-size: 0.8125rem /*13/16*/;
+  line-height: 28px;
+  background-color: #00a8ff;
+  border-color: #00a8ff;
+  color: #fff;
 }
 
 .site-header .dropdown .btn.dropdown-toggle:after {
@@ -13881,7 +13913,7 @@ body {
 }
 
 .site-header .site-header-collapsed .site-header-collapsed-in {
-    margin-right: 199px;
+    margin-right: 137px;
     zoom: 1
 }
 
@@ -16753,9 +16785,9 @@ html {
 
 .show-hide-sidebar {
     position: relative;
-    top: 5px;
+    top: 3px;
     overflow: hidden;
-    margin: 0;
+    margin-left: 5px;
     padding: 0;
     width: 30px;
     height: 30px;
@@ -16922,5 +16954,4 @@ body.sidebar-hidden .side-menu-addl+.page-content {
         padding-right: 0
     }
 }
-
 

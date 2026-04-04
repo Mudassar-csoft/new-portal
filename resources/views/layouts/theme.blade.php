@@ -285,9 +285,9 @@ padding: 9px 12px 6px 46px;
 .side-menu .teal .stage-count { background-color: #00897b; border-color: #00897b; }
 .side-menu .gold .stage-count { background-color: #d4a017; border-color: #d4a017; }
 
-.site-header .site-header-collapsed .site-header-collapsed-in {
+/* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
-}
+} */
 
 .site-header .dropdown .btn.dropdown-toggle {
 height: 28px;
@@ -1478,7 +1478,7 @@ margin-left: 0;
 		body.with-side-menu .page-content > .container-fluid {
 			max-width: 100% !important;
 			margin: 0 !important;
-			padding-left: var(--layout-container-gutter) !important;
+			/* padding-left: var(--layout-container-gutter) !important; */
 			padding-right: 0 !important;
 			height: auto !important;
 		}
@@ -1663,7 +1663,7 @@ margin-left: 0;
 				if (!window.swal) return;
 				var name = @json(session('welcome'));
 				swal({
-					title: 'Welcome career institute ',
+					title: 'Welcome back',
 					text: name,
 					type: 'success',
 					customClass: 'welcome-swal',

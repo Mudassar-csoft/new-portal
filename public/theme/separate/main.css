@@ -11039,7 +11039,7 @@ body {
 .site-header .site-header-shown {
   float: right;
   zoom: 1;
-  *zoom: 1;
+
 }
 .site-header .site-header-shown:before,
 .site-header .site-header-shown:after {
