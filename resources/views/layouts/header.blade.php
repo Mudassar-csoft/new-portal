@@ -173,7 +173,7 @@
             <div class="dropdown dropdown-campus">
                           <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
-                            <i class="fa-solid fa-building"></i>
+                            <img class="camppus-branch" src="img/campuses.webp" alt="campus">
                   <span class="notification-total-badge"></span>
 
                           </button>
@@ -184,11 +184,11 @@
                               <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}</strong>
                             </div> -->
                             <a class="dropdown-item campus-dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
-                              <i class="fa-solid fa-building campus-item-icon"></i>All Campuses
+                              <img class="campus-item-icon" src="img/campuses.webp" alt="campus">All Campuses
                             </a>
                             @foreach(($dashboardCampuses ?? collect()) as $campus)
                               <a class="dropdown-item campus-dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
-                                <i class="fa-solid fa-building campus-item-icon"></i>{{ $campus->code }}-{{ $campus->name }}
+                                <img class="campus-item-icon" src="img/campuses.webp" alt="campus">{{ $campus->code }}-{{ $campus->name }}
                               </a>
                             @endforeach
                           </div>
@@ -496,33 +496,45 @@
   /* margin-left: 12px; */
   float:left;
 }
-.site-header .site-header-collapsed .site-header-collapsed-in{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:29px;
-}
-.site-header .site-header-search-container{
-    order:1;
-    flex:0 0 220px;
-    width:220px;
-    margin-right:0;
-}
-.site-header .site-header-search-container .site-header-search{
-    width:100%;
-}
-.site-header .site-header-collapsed .add-lead{
-    order:2;
-    flex:0 0 auto;
-    margin-left:auto;
-}
-.site-header .site-header-collapsed .add-lead .btn{
-    white-space:nowrap;
-    height:30px !important;
-    min-height:30px !important;
-    line-height:28px !important;
-    padding-top:0 !important;
-    padding-bottom:0 !important;
+@media (min-width: 1057px) {
+    .site-header .site-header-collapsed .site-header-collapsed-in{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+    }
+    .site-header .site-header-search-container{
+        order:1;
+        flex:0 0 220px;
+        width:220px;
+        margin-right:0;
+    }
+    .site-header .site-header-search-container .site-header-search,
+    .site-header .site-header-collapsed .site-header-search.closed{
+        width:100% !important;
+        border-color:#c5d6de !important;
+    }
+    .site-header .site-header-collapsed .site-header-search .overlay,
+    .site-header .site-header-collapsed .site-header-search.closed .overlay{
+        display:none !important;
+    }
+    .site-header .site-header-collapsed .site-header-search input[type="text"],
+    .site-header .site-header-collapsed .site-header-search.closed input[type="text"]{
+        opacity:1 !important;
+    }
+    .site-header .site-header-collapsed .add-lead{
+        order:2;
+        flex:0 0 auto;
+        margin-left:auto;
+    }
+    .site-header .site-header-collapsed .add-lead .btn{
+        white-space:nowrap;
+        height:30px !important;
+        min-height:30px !important;
+        line-height:28px !important;
+        padding-top:0 !important;
+        padding-bottom:0 !important;
+    }
 }
 /* .site-header-search button{
 	    line-height: 22px !important;
@@ -540,6 +552,13 @@
 .site-header .dropdown-campus .dropdown-toggle i{
 	font-size: 16px !important;
     line-height: 1 !important;
+}
+.site-header .dropdown-campus .dropdown-toggle .camppus-branch{
+	display:block;
+	width:16px !important;
+	height:16px !important;
+	object-fit:contain;
+	margin:0 auto;
 }
 /* .font-icon-search{
 	    font-size: 18px !important;
@@ -607,24 +626,6 @@
   font-weight:500 !important;
   color: #adb7be;
 }
-.dropdown-toggle::after{
- display: inline-block;
-    width: 0;
-    height: 0;
-    margin-left: .255em;
-    vertical-align: .255em;
-    content: "";
-    border-top: .3em solid;
-    border-right: .3em solid transparent;
-    border-bottom: 0;
-    border-left: .3em solid transparent;
-}
-/* button.dropdown-toggle{
-  border: 2px solid #ddd;
-  color: white;
-; */
-
-
 .site-header .dropdown-campus .dropdown-toggle{
   height: 36px !important;
   width: 36px !important;
@@ -662,8 +663,64 @@ display: flex;
    
 }
 
-.site-header .site-header-content {
-	margin-left: -300px !important;
+@media (min-width: 1057px) {
+	.site-header > .container-fluid {
+		display: flex;
+		align-items: center;
+		gap: 3px;
+	}
+
+	.site-header .site-logo,
+	.site-header .show-hide-sidebar,
+	.site-header .hamburger {
+		flex: 0 0 auto;
+	}
+
+	.site-header .site-header-content {
+		float: none !important;
+		height: auto !important;
+		padding: 5px 0 !important;
+		width: auto !important;
+		flex: 1 1 auto;
+		min-width: 0;
+		margin-left: 0 !important;
+	}
+
+	.site-header .site-header-content .site-header-content-in {
+		margin-left: 0 !important;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		min-width: 0;
+	}
+
+	.site-header .site-header-shown {
+		float: none !important;
+		display: flex;
+		align-items: center;
+		gap: 0px;
+		flex: 0 0 auto;
+		order: 2;
+	}
+
+	.site-header .site-header-collapsed {
+		float: none !important;
+		width: auto !important;
+		margin-right: 0 !important;
+		flex: 1 1 auto;
+		order: 1;
+		min-width: 0;
+	}
+
+	.site-header .site-header-collapsed .site-header-collapsed-in {
+		margin-right: 0 !important;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 20px;
+		min-width: 0;
+	}
 }
 .dropdown-toggle::after {
     display: inline-block;

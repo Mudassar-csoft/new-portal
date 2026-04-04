@@ -14001,7 +14001,7 @@ html {
 }
 .show-hide-sidebar {
   position: relative;
-  top: 3px;
+  top: 1px !important;
   overflow: hidden;
       margin-left: 8px !important;
 

@@ -16784,9 +16784,9 @@ html {
 }
 
 .show-hide-sidebar {
-    position: relative;
-    top: 3px;
-    overflow: hidden;
+      position: relative;
+      top: 1px;
+      overflow: hidden;
     margin-left: 5px;
     padding: 0;
     width: 30px;
@@ -16954,4 +16954,3 @@ body.sidebar-hidden .side-menu-addl+.page-content {
         padding-right: 0
     }
 }
-
