@@ -24,18 +24,7 @@ $(document).ready(function(){
     ========================================================================== */
 
 	$('.site-header .site-header-search').each(function(){
-		var parent = $(this),
-			overlay = parent.find('.overlay');
-
-		overlay.click(function(){
-			parent.removeClass('closed');
-		});
-
-		parent.clickoutside(function(){
-			if (!parent.hasClass('closed')) {
-				parent.addClass('closed');
-			}
-		});
+		$(this).removeClass('closed');
 	});
 
 /* ==========================================================================

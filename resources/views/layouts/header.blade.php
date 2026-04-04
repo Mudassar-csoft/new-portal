@@ -2,10 +2,10 @@
 <header class="site-header">
 		<div class="container-fluid">
 			<a href="{{ url('/') }}" class="site-logo">
+        <img class="hidden-lg-down" src="img/mobile-logo.webp" alt="Career-Institute"
+        style="height: 31px; width: 31px;">
 				<img class="hidden-md-down" src="img/logo-career.webp" alt="Career-Institute"
-					style="height: 35px; width: 160px;">
-				<img class="hidden-lg-down" src="img/mobile-logo.webp" alt="Career-Institute"
-					style="height: 40px; width: 40px;">
+					style="height: 31px; width: 160px;">
 			</a>
 
 			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar">
@@ -452,9 +452,9 @@
                                           </div>
                                       </div> -->
 							<div class="site-header-search-container">
-								 <form class="site-header-search ">
-	                                <input type="text" placeholder="Search"/>
-	                                <button type="submit">
+								 <form class="site-header-search">
+	                                <input type="text" class="site-header-search-input" placeholder="Search"/>
+	                                <button type="submit" class="site-header-search-btn">
 	                                    <span class="font-icon-search"></span>
 	                                </button>
 	                                <div class="overlay"></div>
@@ -518,6 +518,11 @@
 }
 .site-header .site-header-collapsed .add-lead .btn{
     white-space:nowrap;
+    height:30px !important;
+    min-height:30px !important;
+    line-height:28px !important;
+    padding-top:0 !important;
+    padding-bottom:0 !important;
 }
 /* .site-header-search button{
 	    line-height: 22px !important;
@@ -541,13 +546,54 @@
 		line-height:1 !important;
 
 } */
-.site-header-search input[type=text] {
-    padding: 0px 0 0 14px !important;
-    height: 30px;
-    line-height: 30px !important;
+.site-header-search{
+    display:flex !important;
+    align-items:center !important;
+    height:30px !important;
+    position:relative;
+    padding-right:35px !important;
 }
-.site-header-search button{
-    line-height: 30px !important;
+.site-header-search-input{
+    display:block !important;
+    width:100% !important;
+    height:28px !important;
+    padding:0 0 0 14px !important;
+    margin:0 !important;
+    border:none !important;
+    background:transparent !important;
+    line-height:28px !important;
+}
+.site-header-search-input::placeholder{
+    line-height:28px !important;
+}
+.site-header-search-btn{
+    position:absolute !important;
+    right:0 !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:35px !important;
+    height:28px !important;
+    padding:0 !important;
+    margin:0 !important;
+    line-height:28px !important;
+}
+.site-header-search-btn .font-icon-search{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:16px !important;
+    height:16px !important;
+    line-height:16px !important;
+}
+.site-header-search-btn .font-icon-search:before{
+    display:block !important;
+    position:static !important;
+    top:auto !important;
+    line-height:16px !important;
+    vertical-align:middle !important;
 }
 .fa-classic,
 .fa-regular,
@@ -1057,7 +1103,7 @@ border:2px solid #ddd;
 }
 .site-header .user-menu.dropdown .dropdown-toggle img{
     width: 32px;
-    height: 32px;
+    height: 31px;
     display: block;
     object-fit: cover;
     border-radius: 50%;
