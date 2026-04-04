@@ -518,9 +518,18 @@ class LeadController extends Controller
 
     private function resolveInitialFollowupStage(?string $origin): string
     {
-        return Str::lower(trim((string) $origin)) === 'website'
-            ? 'new'
-            : 'contacted';
+        $normalizedOrigin = trim((string) preg_replace('/[^a-z0-9]+/i', '_', (string) $origin), '_');
+        $normalizedOrigin = Str::lower($normalizedOrigin);
+
+        if (in_array($normalizedOrigin, ['website', 'web_site'], true)) {
+            return 'new';
+        }
+
+        if (in_array($normalizedOrigin, ['walk_in', 'walkin'], true)) {
+            return 'branch_visited';
+        }
+
+        return 'contacted';
     }
 
     private function resolveCurrentStage(Lead $lead): string
