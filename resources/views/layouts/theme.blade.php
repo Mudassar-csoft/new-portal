@@ -231,7 +231,7 @@ margin: -79px 0 20px;
 }
 
 .side-menu-list .lbl {
-font-size: 13.5px !important;
+font-size: 14.5px !important;
 font-weight: 600 !important;
 line-height: 1.3;
 }
