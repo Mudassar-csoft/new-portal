@@ -1478,7 +1478,7 @@ margin-left: 0;
 		body.with-side-menu .page-content > .container-fluid {
 			max-width: 100% !important;
 			margin: 0 !important;
-			padding-left: var(--layout-container-gutter) !important;
+			/* padding-left: var(--layout-container-gutter) !important; */
 			padding-right: 0 !important;
 			height: auto !important;
 		}
