@@ -174,8 +174,6 @@
                           <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
                             <img class="camppus-branch" src="img/campuses.webp" alt="campus">
-                  <span class="notification-total-badge"></span>
-
                           </button>
                           <div class="dropdown-menu p-2 campus-dropdown-menu">
                             <!-- <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
@@ -555,8 +553,8 @@
 }
 .site-header .dropdown-campus .dropdown-toggle .camppus-branch{
 	display:block;
-	width:16px !important;
-	height:16px !important;
+	width:19px !important;
+	height:19px !important;
 	object-fit:contain;
 	margin:0 auto;
 }
@@ -840,7 +838,7 @@ display: flex;
     -moz-osx-font-smoothing: grayscale;
     vertical-align: middle;
     position: relative;
-    top: -.15em;
+    top: 0px;
 }
 .notif-accordion-toggle{
 	display: flex;
