@@ -172,17 +172,17 @@
             
             <div class="dropdown dropdown-campus">
                           <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
+                            aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}">
                             <img class="camppus-branch" src="img/campuses.webp" alt="campus">
                           </button>
                           <div class="dropdown-menu p-2 campus-dropdown-menu">
                             <!-- <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
                             <div class="campus-dropdown-caption px-2 pb-2">
                               <span class="text-muted">Current:</span>
-                              <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}</strong>
+                              <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}</strong>
                             </div> -->
                             <a class="dropdown-item campus-dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
-                              <img class="campus-item-icon" src="img/campuses.webp" alt="campus">All Campuses
+                              <img class="campus-item-icon" src="img/campuses.webp" alt="campus">All Branches
                             </a>
                             @foreach(($dashboardCampuses ?? collect()) as $campus)
                               <a class="dropdown-item campus-dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">

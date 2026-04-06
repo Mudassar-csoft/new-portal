@@ -7,7 +7,9 @@
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
+		$admissionsActivity = $dashboard['admissionsActivity'] ?? [];
 		$dailyRows = $dailyActivity['rows'] ?? [];
+		$admissionRows = $admissionsActivity['rows'] ?? [];
 		$dailyTotals = $dailyActivity['totals'] ?? [
 			'leads' => 0,
 			'followups' => 0,
@@ -212,7 +214,7 @@
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Daily Activity | {{ isset($selectedCampus) && $selectedCampus ? (($selectedCampus->code ?: 'Campus') . ' - ' . $selectedCampus->name) : 'Each Campus' }}</span>
+								<span class="month-chart-header-label">Recent Leads</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
@@ -238,41 +240,37 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body">
-					<table class="tbl-typical">
+					<table class="tbl-typical daily-activity-table">
 						<thead>
 							<tr>
-								<th><div>Campus</div></th>
-								<th><div>Leads</div></th>
-								<th><div>Followups</div></th>
-								<th><div>Admissions</div></th>
-								<th><div>Collection</div></th>
+								<th><div>Status</div></th>
+								<th><div>Student Name</div></th>
+								<th><div>Phone Number</div></th>
+								<th><div>Date</div></th>
 							</tr>
 						</thead>
 						<tbody>
 							@forelse($dailyRows as $row)
 								<tr>
-									<td><span class="badge badge-pill badge-warning daily-campus">{{ $row['campus'] }}</span></td>
-									<td>{{ number_format((int) ($row['leads'] ?? 0)) }}</td>
-									<td>{{ number_format((int) ($row['followups'] ?? 0)) }}</td>
-									<td>{{ number_format((int) ($row['admissions'] ?? 0)) }}</td>
-									<td>RS. {{ number_format((float) ($row['collection'] ?? 0), 0) }}</td>
+									<td>
+										<span class="daily-status-badge daily-status-badge--{{ $row['status_tone'] ?? 'primary' }}">
+											{{ $row['status_label'] ?? 'New' }}
+										</span>
+									</td>
+									<td>
+										<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@if(!empty($row['show_campus']))
+											<div class="daily-student-campus">{{ $row['campus'] ?? 'Campus' }}</div>
+										@endif
+									</td>
+									<td class="daily-phone">{{ $row['phone'] ?? 'N/A' }}</td>
+									<td class="daily-date">{{ $row['date_label'] ?? 'N/A' }}</td>
 								</tr>
 							@empty
 								<tr>
-									<td><span class="badge badge-pill badge-warning daily-campus">N/A</span></td>
-									<td>0</td>
-									<td>0</td>
-									<td>0</td>
-									<td>RS. 0</td>
+									<td colspan="4" class="daily-empty-state">No lead activity found for today.</td>
 								</tr>
 							@endforelse
-							<tr class="daily-activity-total">
-								<td><strong>Total</strong></td>
-								<td>{{ number_format((int) ($dailyTotals['leads'] ?? 0)) }}</td>
-								<td>{{ number_format((int) ($dailyTotals['followups'] ?? 0)) }}</td>
-								<td>{{ number_format((int) ($dailyTotals['admissions'] ?? 0)) }}</td>
-								<td>RS. {{ number_format((float) ($dailyTotals['collection'] ?? 0), 0) }}</td>
-							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -285,7 +283,7 @@
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">{{ isset($selectedCampus) && $selectedCampus ? 'Admissions Overview' : 'Campus Admissions Comparison' }}</span>
+								<span class="month-chart-header-label">Recent Admissions</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
@@ -311,7 +309,39 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body">
-					<div id="campus-admissions-chart"></div>
+					<table class="tbl-typical daily-activity-table admission-activity-table">
+						<thead>
+							<tr>
+								<th><div>Status</div></th>
+								<th><div>Student Name</div></th>
+								<th><div>Phone Number</div></th>
+								<th><div>Date</div></th>
+							</tr>
+						</thead>
+						<tbody>
+							@forelse($admissionRows as $row)
+								<tr>
+									<td>
+										<span class="daily-status-badge daily-status-badge--{{ $row['status_tone'] ?? 'primary' }}">
+											{{ $row['status_label'] ?? 'Enrolled' }}
+										</span>
+									</td>
+									<td>
+										<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@if(!empty($row['show_campus']))
+											<div class="daily-student-campus">{{ $row['campus'] ?? 'Campus' }}</div>
+										@endif
+									</td>
+									<td class="daily-phone">{{ $row['phone'] ?? 'N/A' }}</td>
+									<td class="daily-date">{{ $row['date_label'] ?? 'N/A' }}</td>
+								</tr>
+							@empty
+								<tr>
+									<td colspan="4" class="daily-empty-state">No admissions found for today.</td>
+								</tr>
+							@endforelse
+						</tbody>
+					</table>
 				</div>
 			</section>
 		</div>
@@ -830,39 +860,108 @@
             width: 100%;
             margin-bottom: 0;
             table-layout: auto;
+            border-collapse: separate;
+            border-spacing: 0;
         }
-        .daily-activity-card .tbl-typical th,
+        
         .daily-activity-card .tbl-typical td {
             font-size: 13px !important;
-            line-height: 0.45;
+            line-height: 1.45;
             vertical-align: middle;
             color: #304b58;
             width: auto !important;
+            padding: 5px 5px;
+            border-bottom: 1px solid #e6edf3;
+        }
+		 .daily-activity-card .tbl-typical th
+         {
+            font-size: 13px !important;
+            line-height: 1.45;
+            vertical-align: middle;
+            color: #304b58;
+            width: auto !important;
+            /* padding: 5px 5px; */
+            border-bottom: 1px solid #e6edf3;
         }
         .daily-activity-card .tbl-typical th {
             font-weight: 700;
             text-align: left;
             white-space: normal;
+            color: #5d7386;
+            background: #f7fafc;
+            border-bottom-color: #d9e4ee;
         }
         .tbl-typical th > div {
-            padding: 6px 10px !important;
+            padding: 6px 5px !important;
         }
         .daily-activity-card .tbl-typical td:not(:first-child),
         .daily-activity-card .tbl-typical th:not(:first-child) {
+            text-align: left;
+        }
+        .daily-activity-table td:nth-child(2),
+        .daily-activity-table th:nth-child(2) {
+            text-align: left !important;
+        }
+        .daily-activity-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+        .daily-status-badge {
+            display: inline-block;
+            min-width: 88px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.1;
             text-align: center;
         }
-        .daily-campus {
-            background: transparent;
-            color: #304b58;
-            font-weight: 600;
-            padding: 0;
-            border: 0;
-            border-radius: 0;
+        .daily-status-badge--primary {
+            background: #ff4f87;
         }
-        .daily-activity-total td {
-            background: #f8fbfd;
+        .daily-status-badge--info {
+            background: #1296eb;
+        }
+        .daily-status-badge--success {
+            background: #45c156;
+        }
+        .daily-status-badge--warning {
+            background: #ffae2b;
+        }
+        .daily-status-badge--orange {
+            background: #f97316;
+        }
+        .daily-status-badge--muted {
+            background: #6f7d8c;
+        }
+        .daily-status-badge--danger {
+            background: #fa424a;
+        }
+        .daily-student-name {
             color: #304b58;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+        }
+        .daily-student-campus {
+            margin-top: 4px;
+            color: #8a9aaa;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+        .daily-phone,
+        .daily-date {
+            font-size: 15px !important;
+            font-weight: 500;
+        }
+        .daily-empty-state {
+            padding: 26px 14px !important;
+            color: #7b8b99 !important;
+            font-size: 14px !important;
+            font-weight: 600;
+            text-align: center !important;
+            border-bottom: 0 !important;
         }
 
         @media (max-width: 767px) {
@@ -1500,41 +1599,43 @@
 				padding: { right: 20 }
 			});
 
-			c3.generate({
-				bindto: '#campus-admissions-chart',
-				size: { height: 250 },
-				data: {
-					columns: [['Admissions'].concat(campusAdmissions)],
-					type: 'bar',
-					colors: { Admissions: '#12a0ff' },
-					color: function (color, d) {
-						if (d && d.index !== undefined && campusAdmissions[d.index] === campusMax) {
-							return '#3b82f6';
+			if (document.getElementById('campus-admissions-chart')) {
+				c3.generate({
+					bindto: '#campus-admissions-chart',
+					size: { height: 250 },
+					data: {
+						columns: [['Admissions'].concat(campusAdmissions)],
+						type: 'bar',
+						colors: { Admissions: '#12a0ff' },
+						color: function (color, d) {
+							if (d && d.index !== undefined && campusAdmissions[d.index] === campusMax) {
+								return '#3b82f6';
+							}
+							return color;
 						}
-						return color;
-					}
-				},
-				transition: { duration: 800 },
-				axis: {
-					x: {
-						type: 'category',
-						categories: campusCodes,
-						label: 'Campuses',
-						tick: { rotate: 0, multiline: false },
-						height: 40
 					},
-					y: {
-						label: 'Admissions this month',
-						min: 0,
-						padding: { top: 10, bottom: 0 },
-						tick: { values: campusTicks }
-					}
-				},
-				bar: { width: { ratio: 0.55 } },
-				legend: { show: false },
-				grid: { y: { show: true } },
-				padding: { right: 20 }
-			});
+					transition: { duration: 800 },
+					axis: {
+						x: {
+							type: 'category',
+							categories: campusCodes,
+							label: 'Campuses',
+							tick: { rotate: 0, multiline: false },
+							height: 40
+						},
+						y: {
+							label: 'Admissions this month',
+							min: 0,
+							padding: { top: 10, bottom: 0 },
+							tick: { values: campusTicks }
+						}
+					},
+					bar: { width: { ratio: 0.55 } },
+					legend: { show: false },
+					grid: { y: { show: true } },
+					padding: { right: 20 }
+				});
+			}
 
 			function drawChart() {
 				if (!(window.google && google.visualization)) {

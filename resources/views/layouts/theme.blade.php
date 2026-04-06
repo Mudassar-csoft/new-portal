@@ -274,16 +274,16 @@ padding: 11px 12px 6px 46px;
 /* =========================================================
    Sidebar Stage Pills
    ========================================================= */
-/* Module-specific pill tones */
-.side-menu .brown .stage-count { background-color: #c77d16; border-color: #c77d16; }
-.side-menu .purple .stage-count { background-color: #6f42c1; border-color: #6f42c1; }
-.side-menu .orange .stage-count { background-color: #ff9800; border-color: #ff9800; }
-.side-menu .magenta .stage-count { background-color: #e83e8c; border-color: #e83e8c; }
-.side-menu .blue .stage-count { background-color: #0088cc; border-color: #0088cc; }
-.side-menu .green .stage-count { background-color: #28a745; border-color: #28a745; }
-.side-menu .orange-red .stage-count { background-color: #ff5722; border-color: #ff5722; }
-.side-menu .teal .stage-count { background-color: #00897b; border-color: #00897b; }
-.side-menu .gold .stage-count { background-color: #d4a017; border-color: #d4a017; }
+/* Per-item pill tones */
+.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #1296eb; border-color: #1296eb; }
+.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #45c156; border-color: #45c156; }
+.side-menu li ul li:nth-child(9n+5) .stage-count { background-color: #36c86b; border-color: #36c86b; }
+.side-menu li ul li:nth-child(9n+6) .stage-count { background-color: #25344a; border-color: #25344a; }
+.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
+.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
+.side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
 
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
