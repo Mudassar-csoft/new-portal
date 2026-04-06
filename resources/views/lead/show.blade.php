@@ -7,6 +7,9 @@
 		$stageKeys = array_keys($stages);
 		$currentIndex = array_search($currentStage, $stageKeys);
 		$progress = $currentIndex !== false && count($stageKeys) > 1 ? ($currentIndex / (count($stageKeys) - 1)) * 100 : 0;
+		$showLeadCompletionFields = $currentStage === 'new';
+		$leadDetails = $lead->details ?? [];
+		$defaultProbability = old('probability', $latestFollowup?->probability ?? 10);
 	@endphp
 
 	<div class="lead-show-shell">
@@ -21,9 +24,9 @@
 					@endif
 				</div>
 			</div>
-			<div class="lead-actions">
-				@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'leadId' => $lead->id])
-			</div>
+				<div class="lead-actions">
+					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead])
+				</div>
 		</div>
 
 		<div class="stage-bar">
@@ -70,15 +73,16 @@
 						data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}">
 						@csrf
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
-							<div class="form-row" style = "gap:18px;padding-left:15px">
+							<div class="form-row" style="gap:18px;padding-left:15px">
 								<div class="form-group custom-col-3 followup-toggle">
-									<label>Follow-Up Method</label>
-									<select class="form-control" name="method">
+									<label>Follow-Up Method *</label>
+									<select class="form-control" name="method" required>
 										<option value="">- Select -</option>
 										@foreach (['call', 'sms', 'email', 'whatsapp', 'walk-in'] as $method)
-											<option value="{{ $method }}">{{ ucfirst($method) }}</option>
+											<option value="{{ $method }}" @selected(old('method') === $method)>{{ ucfirst($method) }}</option>
 										@endforeach
 									</select>
+									<div class="field-error" data-error-for="method"></div>
 								</div>
 								<div class="form-group custom-col-3">
 									<label>Stage *</label>
@@ -91,69 +95,96 @@
 											@if ($key === 'new') @continue @endif
 											@if ($hideRegistered && $key === 'registered') @continue @endif
 											@if ($hideNotInteresting && $key === 'not_interesting') @continue @endif
-											<option value="{{ $key }}" {{ $key === ($currentStage === 'new' ? 'contacted' : $currentStage) ? 'selected' : '' }}>
+											<option value="{{ $key }}" @selected(old('stage', $currentStage === 'new' ? 'contacted' : $currentStage) === $key)>
 												{{ $label }}
 											</option>
 										@endforeach
 									</select>
+									<div class="field-error" data-error-for="stage"></div>
 								</div>
 								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="next-followup-wrap">
 									<label>Next Follow Up</label>
-									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date">
+									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date" value="{{ old('next_action_date') }}">
+									<div class="field-error" data-error-for="next_action_date"></div>
 								</div>
 								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="campus-wrap">
 									<label>Preferred Campus</label>
 									<select class="form-control" name="campus_id" id="campus_id">
 										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
 										@foreach ($campuses as $campus)
-											<option value="{{ $campus->id }}" {{ $campus->id === $lead->campus_id ? 'selected' : '' }}>
+											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $lead->campus_id) === (string) $campus->id)>
 												{{ $campus->name }} ({{ $campus->code ?? $campus->city ?? $campus->country }})
 											</option>
 										@endforeach
 									</select>
+									<div class="field-error" data-error-for="campus_id"></div>
 								</div>
 							</div>
-							<div class="form-row align-items-center" style = "gap:18px;padding-left:15px">
 
-    <!-- Probability -->
-    <div class="form-group custom-col-3  followup-toggle followup-hide-on-close" id="probability-wrap">
-        <label class="  required">Probability</label>
+							@if ($showLeadCompletionFields)
+								<div class="followup-extra-fields" id="lead-completion-fields">
+									<div class="followup-extra-title">Complete Lead Details</div>
+									<p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p>
+									<div class="form-row" style="gap:18px;padding-left:15px">
+										<div class="form-group custom-col-3 followup-toggle">
+											<label>Email Address</label>
+											<input type="email" class="form-control" name="email" value="{{ old('email', $lead->email) }}" placeholder="Enter email address">
+											<div class="field-error" data-error-for="email"></div>
+										</div>
+										<div class="form-group custom-col-3 followup-toggle">
+											<label>Area</label>
+											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area">
+											<div class="field-error" data-error-for="lead_details.area"></div>
+										</div>
+										<div class="form-group custom-col-3 followup-toggle">
+											<label>Gender</label>
+											<select class="form-control" name="lead_details[gender]">
+												<option value="">- Select -</option>
+												@foreach (['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $genderValue => $genderLabel)
+													<option value="{{ $genderValue }}" @selected(old('lead_details.gender', data_get($leadDetails, 'gender')) === $genderValue)>{{ $genderLabel }}</option>
+												@endforeach
+											</select>
+											<div class="field-error" data-error-for="lead_details.gender"></div>
+										</div>
+									</div>
+								</div>
+							@endif
 
-        <input type="range"
-               min="0"
-               max="100"
-               step="5"
-               id="probabilitySlider"
-               name="details[probability]"
-               value="{{ old('details.probability', 10) }}"
-               class="custom-range">
+							<div class="form-row align-items-center" style="gap:18px;padding-left:15px">
+								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="probability-wrap">
+									<label class="required">Probability</label>
+									<input type="range"
+										min="0"
+										max="100"
+										step="5"
+										id="probabilitySlider"
+										name="probability"
+										value="{{ $defaultProbability }}"
+										class="custom-range">
+									<div class="range-numbers pt-0 mt-1">
+										<span>0</span>
+										<span>10</span>
+										<span>20</span>
+										<span>40</span>
+										<span>60</span>
+										<span>80</span>
+										<span>100</span>
+									</div>
+									<div>
+										Selected: <span id="probabilityValue">{{ $defaultProbability }}%</span>
+									</div>
+									<div class="field-error" data-error-for="probability"></div>
+								</div>
 
-        <div class="range-numbers pt-0 mt-1">
-            <span>0</span>
-            <span>10</span>
-            <span>20</span>
-            <span>40</span>
-            <span>60</span>
-            <span>80</span>
-            <span>100</span>
-        </div>
+								<div class="form-group col-md-9 followup-toggle">
+									<label>Remarks</label>
+									<textarea class="form-control" name="note" rows="2"
+										placeholder="Add remarks for this follow-up"
+										style="width:92%">{{ old('note') }}</textarea>
+									<div class="field-error" data-error-for="note"></div>
+								</div>
+							</div>
 
-        <div class="">
-            Selected: <span id="probabilityValue">
-                {{ old('details.probability', 10) }}%
-            </span>
-        </div>
-    </div>
-
-    <!-- Remarks -->
-    <div class="form-group col-md-9 followup-toggle">
-        <label>Remarks</label>
-        <textarea class="form-control" name="note" rows="2"
-                  placeholder="Add remarks for this follow-up"
-				  style="width:92%"></textarea>
-    </div>
-
-</div>
 							<div class="alert alert-info d-none" id="registration-link">
 								Selecting <strong>Registered</strong>? Complete the registration form first.
 								<a href="{{ route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
@@ -162,7 +193,7 @@
 								Selecting <strong>Enrolled</strong>? Complete the admission form first.
 								<a href="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
 							</div>
-</div>
+
 							<div class="text-right p-1">
 								<button type="submit" class="btn btn-primary-outline">Save Follow-Up</button>
 								<button type="button" id="cancel-followup-btn" class="btn btn-danger-outline">Cancel Follow-Up</button>
@@ -238,7 +269,7 @@
 								<tr>
 									<th>Marketing Source</th>
 									<td>{{ $lead->marketing_source ?? '—' }}</td>
-									<th>Gender</th>
+										<th>Gender</th>
 									<td>{{ ucfirst(data_get($lead->details, 'gender', '—')) }}</td>
 									<th>Probability</th>
 									<td>{{ !is_null($latestFollowup?->probability) ? $latestFollowup->probability . '%' : '—' }}</td>
@@ -570,6 +601,44 @@
 			margin-bottom: 5px;
 		}
 
+		.followup-extra-fields {
+			margin: 8px 15px 12px;
+			padding: 12px 14px 2px;
+			border: 1px solid #d6e6f7;
+			border-radius: 8px;
+			background: #f8fbff;
+		}
+
+		.followup-extra-title {
+			font-weight: 700;
+			color: #0f3c6e;
+			margin-bottom: 4px;
+		}
+
+		.followup-extra-copy {
+			margin: 0 0 10px;
+			color: #5f6f7f;
+			line-height: 1.5;
+		}
+
+		.field-error {
+			display: none;
+			margin-top: 4px;
+			color: #e53935;
+			font-weight: 600;
+			font-size: 11px !important;
+		}
+
+		.field-error.has-error {
+			display: block;
+		}
+
+		.form-control.is-invalid,
+		.custom-range.is-invalid {
+			border-color: #e53935 !important;
+			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+		}
+
 		.tab {
    			 padding: 2px 16px !important;
 		}
@@ -636,15 +705,20 @@
 			color: #334155;
 		}
 
+		body.lead-modal-open {
+			overflow: hidden;
+		}
+
 		.lead-modal {
 			position: fixed;
 			inset: 0;
-			background: rgba(15, 23, 42, 0.55);
+			background: rgba(15, 23, 42, 0.6);
+			backdrop-filter: blur(4px);
 			display: none;
 			align-items: center;
 			justify-content: center;
 			z-index: 1055;
-			padding: 16px;
+			padding: 18px;
 		}
 
 		.lead-modal.show {
@@ -653,10 +727,11 @@
 
 		.lead-modal .modal-card {
 			background: #fff;
-			width: min(1100px, 96vw);
-			height: min(720px, 90vh);
-			border-radius: 12px;
-			box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+			width: min(1320px, 98vw);
+			height: min(900px, 94vh);
+			border-radius: 20px;
+			border: 1px solid rgba(255, 255, 255, 0.72);
+			box-shadow: 0 28px 80px rgba(15, 23, 42, 0.35);
 			display: flex;
 			flex-direction: column;
 			overflow: hidden;
@@ -666,22 +741,22 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 10px 16px;
+			padding: 14px 20px;
 			border-bottom: 1px solid #e2e8f0;
-			background: #f8fbff;
+			background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
 		}
 
 		.lead-modal .modal-title {
-			font-weight: 700;
+			font-weight: 800;
 			color: #0f3c6e;
 			margin: 0;
-			font-size: 16px;
+			font-size: 18px;
 		}
 
 		.lead-modal .modal-close {
 			border: 0;
 			background: transparent;
-			font-size: 22px;
+			font-size: 28px;
 			line-height: 1;
 			color: #5b6b80;
 			cursor: pointer;
@@ -691,6 +766,7 @@
 			flex: 1;
 			border: 0;
 			width: 100%;
+			background: #f3f8fd;
 		}
 
 		.custom-range {
@@ -743,7 +819,7 @@
 }
 
 
-input[name="details[probability]"] + .small {
+input[name="probability"] + .small {
     margin-top: 0px;
     font-size: 12px;
 }
@@ -767,263 +843,407 @@ input[name="details[probability]"] + .small {
 
 @push('scripts')
 	<script>
-(function () {
+	(function () {
+		const $ = (selector, parent = document) => parent.querySelector(selector);
+		const $$ = (selector, parent = document) => parent.querySelectorAll(selector);
 
-    /* ===============================
-       Helpers
-    =============================== */
+		function showAlert(title, text, type) {
+			if (window.swal) {
+				swal({ title, text, type });
+				return;
+			}
 
-    const $ = (selector, parent = document) => parent.querySelector(selector);
-    const $$ = (selector, parent = document) => parent.querySelectorAll(selector);
+			alert(text);
+		}
 
-    function normalize(value) {
-        return (value || '')
-            .toString()
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, '_');
-    }
+		function errorKeyToInputName(key) {
+			return key.replace(/\.(\w+)/g, '[$1]');
+		}
 
-    /* ===============================
-       Tabs
-    =============================== */
+		function findField(form, key) {
+			const inputName = errorKeyToInputName(key);
 
-    function initTabs() {
-        const tabs = $$('.lead-tabs .tab');
-        const contents = $$('.tab-content');
+			return Array.from(form.elements).find(function (element) {
+				return element.name === inputName;
+			}) || null;
+		}
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function () {
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.style.display = 'none');
+		function clearFollowupErrors(form) {
+			form.querySelectorAll('.field-error[data-error-for]').forEach(function (node) {
+				node.textContent = '';
+				node.classList.remove('has-error');
+			});
 
-                this.classList.add('active');
-                const target = this.dataset.target;
-                if (target) $(target).style.display = 'block';
-            });
-        });
-    }
+			form.querySelectorAll('.is-invalid').forEach(function (element) {
+				element.classList.remove('is-invalid');
+			});
+		}
 
-    /* ===============================
-       Probability Slider
-    =============================== */
+		function renderFollowupErrors(form, errors) {
+			clearFollowupErrors(form);
 
-    function initProbability() {
-        const range = $('#probability-range');
-        const label = $('#probability-value');
-        if (!range || !label) return;
+			Object.entries(errors || {}).forEach(function (entry) {
+				const key = entry[0];
+				const messages = entry[1];
+				const message = Array.isArray(messages) && messages.length ? messages[0] : 'Invalid value.';
+				const errorNode = form.querySelector('[data-error-for="' + key + '"]');
+				const field = findField(form, key);
 
-        const update = () => {
-            label.textContent = `Selected: ${range.value}%`;
-        };
+				if (errorNode) {
+					errorNode.textContent = message;
+					errorNode.classList.add('has-error');
+				}
 
-        range.addEventListener('input', update);
-        update();
-    }
+				if (field) {
+					field.classList.add('is-invalid');
+				}
+			});
 
-    /* ===============================
-       Followup Toggle
-    =============================== */
+			const card = $('#followup-form-card');
+			const toggleButton = $('#toggle-followup-form');
 
-    function initFollowupToggle() {
-        const btn = $('#toggle-followup-form');
-        const card = $('#followup-form-card');
-        if (!btn || !card) return;
+			if (card) {
+				card.style.display = 'block';
+			}
 
-        btn.addEventListener('click', () => {
-            const isOpen = card.style.display === 'block';
-            card.style.display = isOpen ? 'none' : 'block';
-            btn.textContent = isOpen ? 'Add Follow-Up' : 'Hide Follow-Up';
-        });
-    }
+			if (toggleButton) {
+				toggleButton.textContent = 'Hide Follow-Up';
+			}
+		}
 
-    /* ===============================
-       Followup Submit (AJAX)
-    =============================== */
+		function initTabs() {
+			const tabs = $$('.lead-tabs .tab');
+			const contents = $$('.tab-content');
 
-    function initFollowupSubmit() {
-        const form = $('#followup-form');
-        if (!form) return;
+			tabs.forEach(function (tab) {
+				tab.addEventListener('click', function () {
+					tabs.forEach(function (item) {
+						item.classList.remove('active');
+					});
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
+					contents.forEach(function (content) {
+						content.style.display = 'none';
+					});
 
-            const btn = form.querySelector('button[type="submit"]');
-            if (btn) btn.disabled = true;
+					this.classList.add('active');
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': form.querySelector('[name="_token"]')?.value || ''
-                    },
-                    credentials: 'same-origin',
-                    body: new FormData(form)
-                });
+					if (this.dataset.target) {
+						$(this.dataset.target).style.display = 'block';
+					}
+				});
+			});
+		}
 
-                if (response.status === 422) {
-                    const data = await response.json();
-                    throw new Error(data.message || 'Validation error.');
-                }
+		function initProbability() {
+			const range = $('#probabilitySlider');
+			const label = $('#probabilityValue');
 
-                if (!response.ok) throw new Error();
+			if (!range || !label) {
+				return;
+			}
 
-                showAlert('Success', 'Follow-up saved successfully.', 'success');
-                form.reset();
-                initProbability();
-                refreshFollowupHistory();
+			const update = function () {
+				const value = range.value;
+				const percent = ((value - range.min) / (range.max - range.min)) * 100;
 
-            } catch (err) {
-                showAlert('Error', err.message || 'Unable to save follow-up.', 'error');
-            } finally {
-                if (btn) btn.disabled = false;
-            }
-        });
-    }
+				range.style.background = 'linear-gradient(to right, #1e88e5 0%, #1e88e5 ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)';
+				label.textContent = value + '%';
+			};
 
-    function showAlert(title, text, type) {
-        if (window.swal) {
-            swal({ title, text, type });
-        } else {
-            alert(text);
-        }
-    }
+			range.addEventListener('input', update);
+			update();
+		}
 
-    /* ===============================
-       Cancel Followup
-    =============================== */
+		function openLeadModal(url, title) {
+			const modal = $('#lead-form-modal');
+			const frame = $('#lead-form-modal-frame');
+			const titleNode = $('#lead-form-modal-title');
 
-   function initFollowupCancel() {
-    const btn = document.getElementById('cancel-followup-btn');
-    const form = document.getElementById('followup-form');
-    const card = document.getElementById('followup-form-card');
+			if (!modal || !frame) {
+				window.location.href = url;
+				return;
+			}
 
-    if (!btn || !form) return;
+			frame.src = url;
+			modal.classList.add('show');
+			modal.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('lead-modal-open');
 
-    btn.addEventListener('click', function () {
+			if (titleNode) {
+				titleNode.textContent = title;
+			}
+		}
 
-        form.reset();
+		function closeLeadModal() {
+			const modal = $('#lead-form-modal');
+			const frame = $('#lead-form-modal-frame');
 
-        // probability update
-        const range = document.getElementById('probability-range');
-        const label = document.getElementById('probability-value');
-        if (range && label) {
-            label.textContent = 'Selected: ' + range.value + '%';
-        }
+			if (!modal || !frame) {
+				return;
+			}
 
-        if (card) {
-            card.style.display = 'none';
-        }
+			frame.src = 'about:blank';
+			modal.classList.remove('show');
+			modal.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('lead-modal-open');
+		}
 
-        if (window.swal) {
-            swal({
-                title: 'Cancelled',
-                text: 'Follow-up cancelled successfully.',
-                type: 'success'
-            });
-        } else {
-            alert('Follow-up cancelled successfully.');
-        }
+		function initLeadModal() {
+			const modal = $('#lead-form-modal');
+			const closeButton = $('#lead-form-modal-close');
 
-    });
-}
+			if (!modal) {
+				return;
+			}
 
-    /* ===============================
-       Refresh History
-    =============================== */
+			if (closeButton) {
+				closeButton.addEventListener('click', closeLeadModal);
+			}
 
-    async function refreshFollowupHistory() {
-        const table = $('.followup-table');
-        if (!table) return;
+			modal.addEventListener('click', function (event) {
+				if (event.target === modal) {
+					closeLeadModal();
+				}
+			});
 
-        try {
-            const response = await fetch(window.location.href, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                credentials: 'same-origin'
-            });
+			document.addEventListener('keydown', function (event) {
+				if (event.key === 'Escape' && modal.classList.contains('show')) {
+					closeLeadModal();
+				}
+			});
 
-            const html = await response.text();
-            const doc = document.implementation.createHTMLDocument('');
-            doc.documentElement.innerHTML = html;
+			window.addEventListener('message', function (event) {
+				if (event.data && event.data.type === 'lead-modal-close') {
+					closeLeadModal();
 
-            const newBody = doc.querySelector('.followup-table tbody');
-            const oldBody = table.querySelector('tbody');
+					if (event.data.status) {
+						showAlert('Success', event.data.status, 'success');
+					}
 
-            if (newBody && oldBody) {
-                oldBody.innerHTML = newBody.innerHTML;
-            }
-        } catch (_) { }
-    }
+					if (event.data.reload) {
+						setTimeout(function () {
+							window.location.reload();
+						}, 500);
+					}
+				}
+			});
+		}
 
-    /* ===============================
-       Stage Progress Bar
-    =============================== */
+		function initActionModalLinks() {
+			document.addEventListener('click', function (event) {
+				const trigger = event.target.closest('.js-lead-modal-link');
 
-    function updateStageProgress() {
-        const bar = $('.stage-bar');
-        const progress = $('.stage-progress');
-        if (!bar || !progress) return;
+				if (!trigger) {
+					return;
+				}
 
-        const bullets = $$('.stage .bullet', bar);
-        if (!bullets.length) return;
+				const modalUrl = trigger.getAttribute('data-lead-modal-url');
+				const modalTitle = trigger.getAttribute('data-lead-modal-title') || 'Form';
 
-        const current =
-            $('.stage.current .bullet', bar) ||
-            $('.stage.active:last-child .bullet', bar) ||
-            bullets[0];
+				if (!modalUrl) {
+					return;
+				}
 
-        const barRect = bar.getBoundingClientRect();
-        const startRect = bullets[0].getBoundingClientRect();
-        const currentRect = current.getBoundingClientRect();
+				event.preventDefault();
+				openLeadModal(modalUrl, modalTitle);
+			});
+		}
 
-        const start = startRect.left + startRect.width / 2 - barRect.left;
-        const end = currentRect.left + currentRect.width / 2 - barRect.left;
+		window.handleFollowupStageChange = function (element) {
+			const stageField = $('#followup-stage');
+			const nextStage = String(element ? element.value : (stageField ? stageField.value : '')).trim().toLowerCase();
+			const form = $('#followup-form');
 
-        progress.style.left = start + 'px';
-        progress.style.width = Math.max(0, end - start) + 'px';
-    }
+			updateStageSpecificUI(nextStage);
 
-    function initStageProgress() {
-        updateStageProgress();
-        window.addEventListener('resize', () => {
-            setTimeout(updateStageProgress, 100);
-        });
-    }
+			if (!form) {
+				return;
+			}
 
-    /* ===============================
-       INIT ALL
-    =============================== */
+			if (nextStage === 'registered') {
+				openLeadModal(form.dataset.registrationUrl, 'Registration Form');
+			} else if (nextStage === 'enroll') {
+				openLeadModal(form.dataset.admissionUrl, 'Admission Form');
+			}
+		};
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initTabs();
-        initProbability();
-        initFollowupToggle();
-        initFollowupSubmit();
-        initFollowupCancel();
-        initStageProgress();
-    });
+		function updateStageSpecificUI(stageValue) {
+			const normalizedStage = String(stageValue || '').trim().toLowerCase();
+			const isNotInteresting = normalizedStage === 'not_interesting';
+			const isModalStage = normalizedStage === 'registered' || normalizedStage === 'enroll';
+			const useMinimalFields = isNotInteresting || isModalStage;
+			const registrationLink = $('#registration-link');
+			const admissionLink = $('#admission-link');
+			const completionFields = $('#lead-completion-fields');
 
-})();
-</script>
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
+			if (registrationLink) {
+				registrationLink.classList.toggle('d-none', normalizedStage !== 'registered');
+			}
 
-    const slider = document.getElementById("probabilitySlider");
-    const output = document.getElementById("probabilityValue");
+			if (admissionLink) {
+				admissionLink.classList.toggle('d-none', normalizedStage !== 'enroll');
+			}
 
-    function updateSlider() {
-        const value = slider.value;
-        const percent = (value - slider.min) / (slider.max - slider.min) * 100;
+			$$('.followup-hide-on-close').forEach(function (element) {
+				element.style.display = useMinimalFields ? 'none' : '';
+			});
 
-        slider.style.background =
-            `linear-gradient(to right, #1e88e5 0%, #1e88e5 ${percent}%, #ddd ${percent}%, #ddd 100%)`;
+			if (completionFields) {
+				completionFields.style.display = useMinimalFields ? 'none' : '';
+			}
+		}
 
-        output.textContent = value + "%";
-    }
+		function initFollowupStage() {
+			const stageField = $('#followup-stage');
 
-    updateSlider();
-    slider.addEventListener("input", updateSlider);
-});
-</script>
+			if (!stageField) {
+				return;
+			}
+
+			updateStageSpecificUI(stageField.value);
+		}
+
+		function initFollowupToggle() {
+			const button = $('#toggle-followup-form');
+			const card = $('#followup-form-card');
+
+			if (!button || !card) {
+				return;
+			}
+
+			button.addEventListener('click', function () {
+				const isOpen = card.style.display === 'block';
+
+				card.style.display = isOpen ? 'none' : 'block';
+				button.textContent = isOpen ? 'Add Follow-Up' : 'Hide Follow-Up';
+			});
+		}
+
+		function initFollowupSubmit() {
+			const form = $('#followup-form');
+
+			if (!form) {
+				return;
+			}
+
+			form.addEventListener('submit', async function (event) {
+				event.preventDefault();
+				clearFollowupErrors(form);
+
+				const button = form.querySelector('button[type="submit"]');
+
+				if (button) {
+					button.disabled = true;
+				}
+
+				try {
+					const response = await fetch(form.action, {
+						method: 'POST',
+						headers: {
+							'Accept': 'application/json',
+							'X-Requested-With': 'XMLHttpRequest',
+							'X-CSRF-TOKEN': form.querySelector('[name="_token"]')?.value || ''
+						},
+						credentials: 'same-origin',
+						body: new FormData(form)
+					});
+
+					if (response.status === 422) {
+						const data = await response.json();
+
+						renderFollowupErrors(form, data.errors || {});
+						showAlert('Error', data.message || 'Please fix the highlighted fields and try again.', 'error');
+						return;
+					}
+
+					if (!response.ok) {
+						throw new Error('Unable to save follow-up.');
+					}
+
+					showAlert('Success', 'Follow-up saved successfully.', 'success');
+					setTimeout(function () {
+						window.location.reload();
+					}, 900);
+				} catch (error) {
+					showAlert('Error', error.message || 'Unable to save follow-up.', 'error');
+				} finally {
+					if (button) {
+						button.disabled = false;
+					}
+				}
+			});
+		}
+
+		function initFollowupCancel() {
+			const button = $('#cancel-followup-btn');
+			const form = $('#followup-form');
+			const card = $('#followup-form-card');
+			const toggleButton = $('#toggle-followup-form');
+
+			if (!button || !form) {
+				return;
+			}
+
+			button.addEventListener('click', function () {
+				form.reset();
+				clearFollowupErrors(form);
+				initProbability();
+				initFollowupStage();
+
+				if (card) {
+					card.style.display = 'none';
+				}
+
+				if (toggleButton) {
+					toggleButton.textContent = 'Add Follow-Up';
+				}
+			});
+		}
+
+		function updateStageProgress() {
+			const bar = $('.stage-bar');
+			const progress = $('.stage-progress');
+
+			if (!bar || !progress) {
+				return;
+			}
+
+			const bullets = $$('.stage .bullet', bar);
+
+			if (!bullets.length) {
+				return;
+			}
+
+			const current = $('.stage.current .bullet', bar) || $('.stage.active:last-child .bullet', bar) || bullets[0];
+			const barRect = bar.getBoundingClientRect();
+			const startRect = bullets[0].getBoundingClientRect();
+			const currentRect = current.getBoundingClientRect();
+			const start = startRect.left + startRect.width / 2 - barRect.left;
+			const end = currentRect.left + currentRect.width / 2 - barRect.left;
+
+			progress.style.left = start + 'px';
+			progress.style.width = Math.max(0, end - start) + 'px';
+		}
+
+		function initStageProgress() {
+			updateStageProgress();
+
+			window.addEventListener('resize', function () {
+				setTimeout(updateStageProgress, 100);
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			initTabs();
+			initProbability();
+			initLeadModal();
+			initActionModalLinks();
+			initFollowupStage();
+			initFollowupToggle();
+			initFollowupSubmit();
+			initFollowupCancel();
+			initStageProgress();
+		});
+	})();
+	</script>
 @endpush

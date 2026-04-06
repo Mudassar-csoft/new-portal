@@ -1,4 +1,4 @@
-@extends('layouts.theme')
+@extends(request()->boolean('embed') ? 'layouts.embed' : 'layouts.theme')
 
 @section('title', 'Create New Registration')
 
@@ -7,8 +7,11 @@
 		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
 				<h3 class="reg-title">Create New Registration <small class="text-muted">(All fields marked with * are required)</small></h3>
-				<form method="POST" action="{{ route('registration.store') }}">
+				<form method="POST" action="{{ route('registration.store') }}" id="registration-form" class="registration-form">
 					@csrf
+					@if(request()->boolean('embed'))
+						<input type="hidden" name="embed" value="1">
+					@endif
 					@if(!empty($lead))
 						<input type="hidden" name="lead_id" value="{{ $lead->id }}">
 					@endif
@@ -221,19 +224,33 @@
 @push('styles')
 	<style>
 		.registration-shell {
-			padding: 8px 0 16px;
+			padding: 18px 0 24px;
 		}
 
 		.registration-card {
-			border: 1px solid #e6ecf2;
-			border-radius: 8px;
-			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+			border: 1px solid #e3edf7;
+			border-radius: 24px;
+			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+			overflow: hidden;
+			background: #fff;
+		}
+
+		.registration-card .card-body {
+			padding: 28px 30px 24px;
 		}
 
 		.reg-title {
-			margin-bottom: 16px;
-			font-weight: 700;
-			color: #2f3b52;
+			margin: 0 0 24px;
+			font-size: 33px;
+			font-weight: 800;
+			line-height: 1.15;
+			color: #183b68;
+		}
+
+		.reg-title small {
+			font-size: 18px;
+			font-weight: 500;
+			color: #70839a !important;
 		}
 
 		.required::after {
@@ -241,27 +258,139 @@
 			color: #e53935;
 		}
 
-		.gender-options input {
-			margin-right: 6px;
+		.registration-form .form-row {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+
+		.registration-form .form-row > [class*="col-"] {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		.registration-form .form-group {
+			margin-bottom: 18px;
+		}
+
+		.registration-form label,
+		.registration-form .form-label {
+			display: inline-block;
+			margin-bottom: 8px;
+			font-weight: 700;
+			color: #223a57;
+		}
+
+		.registration-form .form-control {
+			min-height: 46px;
+			border-radius: 12px;
+			border: 1px solid #d6e2f0;
+			padding: 10px 14px;
+			background: #fff;
+			box-shadow: none;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.registration-form textarea.form-control {
+			min-height: 92px;
+			resize: vertical;
+		}
+
+		.registration-form .form-control:focus {
+			border-color: #14a2f6;
+			box-shadow: 0 0 0 3px rgba(20, 162, 246, 0.12);
+		}
+
+		.registration-form .form-control[disabled],
+		.registration-form .form-control[readonly] {
+			background: #f4f8fc;
+			color: #5f7289;
+		}
+
+		.registration-form .form-control.is-invalid {
+			border-color: #e53935;
+			box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+		}
+
+		.registration-form .field-error {
+			margin-top: 6px;
+			font-size: 12px;
+			color: #dc3545;
+		}
+
+		.registration-form .form-group-radios {
+			min-height: 100%;
+			padding: 14px 16px;
+			border: 1px solid #d6e2f0;
+			border-radius: 16px;
+			background: #fbfdff;
+		}
+
+		.registration-form .form-group-radios.is-invalid {
+			border-color: #e53935;
+			box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+		}
+
+		.registration-form .form-group-radios .form-label {
+			margin-bottom: 12px;
+		}
+
+		.registration-form .form-group-radios .radio {
+			display: flex;
+			align-items: center;
+			margin-top: 10px;
+		}
+
+		.registration-form .form-group-radios .radio:first-of-type {
+			margin-top: 0;
+		}
+
+		.registration-form .form-group-radios input[type="radio"] {
+			margin-right: 8px;
+		}
+
+		.registration-form hr {
+			margin: 8px 0 22px;
+			border-top: 1px solid #e8eef5;
+		}
+
+		.embed-actions {
+			position: sticky;
+			bottom: 0;
+			z-index: 2;
+			display: flex;
+			justify-content: flex-end;
+			gap: 12px;
+			padding-top: 18px;
+			margin-top: 6px;
+			border-top: 1px solid #e8eef5;
+			background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
+		}
+
+		.embed-actions .btn {
+			min-width: 160px;
+			height: 44px;
+			border-radius: 12px;
+			font-weight: 700;
 		}
 
 		.embed-actions .btn-primary {
-			color: #0099f8 !important;
-			background: transparent;
-			border-color: #0099f8;
+			color: #fff !important;
+			background: linear-gradient(120deg, #0099f8, #17b3ff);
+			border-color: transparent;
+			box-shadow: 0 14px 28px rgba(0, 153, 248, 0.24);
 		}
 
 		.embed-actions .btn-primary:hover,
 		.embed-actions .btn-primary:focus {
 			color: #fff !important;
-			background: #0099f8;
-			border-color: #0099f8;
+			background: linear-gradient(120deg, #0088dd, #0ea4ef);
+			border-color: transparent;
 		}
 
 		.embed-actions .btn-outline-danger {
-			color: #dc3545 !important;
-			border-color: #dc3545;
-			background: transparent;
+			color: #d64545 !important;
+			border: 1px solid rgba(214, 69, 69, 0.32);
+			background: #fff;
 		}
 
 		.embed-actions .btn-outline-danger:hover,
@@ -271,62 +400,43 @@
 			border-color: #dc3545;
 		}
 
-		.btn-primary {
-			background: #0099f8;
-			border-color: #0099f8;
+		@media (max-width: 991px) {
+			.reg-title {
+				font-size: 28px;
+			}
+
+			.reg-title small {
+				display: block;
+				margin-top: 8px;
+			}
 		}
 
-		.btn-primary:hover,
-		.btn-primary:focus {
-			background: #0086d8;
-			border-color: #0086d8;
-		}
+		@media (max-width: 767px) {
+			.registration-card .card-body {
+				padding: 20px 18px 18px;
+			}
 
-		.btn-outline-danger:hover,
-		.btn-outline-danger:focus {
-			background: #dc3545;
-			border-color: #dc3545;
-			color: #fff;
-		}
-		/* FIX LEFT SPACING ON RESPONSIVE */
-@media (max-width: 992px) {
-    .registration-shell {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-}
+			.embed-actions {
+				flex-direction: column-reverse;
+			}
 
-@media (max-width: 576px) {
-    .registration-shell {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-}
+			.embed-actions .btn {
+				width: 100%;
+			}
+		}
 
 @if(request()->boolean('embed'))
-		.site-header,
-		.side-menu,
-		.taskbar,
-		.control-panel-container {
-			display: none !important;
-		}
-
-		.with-side-menu .page-content {
-			margin-left: 0 !important;
-			padding: 24px !important;
-		}
-
-		.page-content > .container-fluid {
-			max-width: 100% !important;
-			padding: 0 !important;
-		}
-
 		.registration-shell {
-			padding: 0 !important;
+			padding: 18px;
 		}
 
-		.embed-cancel {
-			display: inline-block;
+		.registration-card {
+			border-radius: 20px;
+			box-shadow: none;
+		}
+
+		.registration-card .card-body {
+			padding: 22px 22px 18px;
 		}
 @endif
 	</style>
@@ -373,11 +483,118 @@
 	@if(request()->boolean('embed'))
 	<script>
 		(function () {
-			document.querySelectorAll('.embed-cancel').forEach(function (btn) {
-				btn.addEventListener('click', function (event) {
+			function clearErrors(form) {
+				form.querySelectorAll('.field-error').forEach(function (node) {
+					node.textContent = '';
+				});
+
+				form.querySelectorAll('.is-invalid').forEach(function (field) {
+					field.classList.remove('is-invalid');
+				});
+			}
+
+			function renderErrors(form, errors) {
+				Object.entries(errors || {}).forEach(function (entry) {
+					var key = entry[0];
+					var messages = entry[1] || [];
+					var message = messages.length ? messages[0] : 'Invalid value.';
+					var field = form.querySelector('[name="' + key + '"]');
+
+					if (field) {
+						var formGroup = field.closest('.form-group');
+						var invalidTarget = field.type === 'radio'
+							? (formGroup ? formGroup.querySelector('.form-group-radios') : field)
+							: field;
+						var errorNode = formGroup ? formGroup.querySelector('.field-error') : null;
+
+						if (invalidTarget) {
+							invalidTarget.classList.add('is-invalid');
+						}
+
+						if (errorNode) {
+							errorNode.textContent = message;
+						}
+					}
+				});
+			}
+
+			document.addEventListener('DOMContentLoaded', function () {
+				var form = document.getElementById('registration-form');
+				var submitButton = form ? form.querySelector('button[type="submit"]') : null;
+
+				document.querySelectorAll('.embed-cancel').forEach(function (btn) {
+					btn.addEventListener('click', function (event) {
+						event.preventDefault();
+						if (window.parent) {
+							window.parent.postMessage({ type: 'lead-modal-close' }, '*');
+						}
+					});
+				});
+
+				if (!form) {
+					return;
+				}
+
+				form.addEventListener('submit', async function (event) {
 					event.preventDefault();
-					if (window.parent) {
-						window.parent.postMessage({ type: 'lead-modal-close' }, '*');
+					clearErrors(form);
+
+					if (submitButton) {
+						submitButton.disabled = true;
+					}
+
+					try {
+						var response = await fetch(form.action, {
+							method: 'POST',
+							headers: {
+								'Accept': 'application/json',
+								'X-Requested-With': 'XMLHttpRequest',
+								'X-CSRF-TOKEN': form.querySelector('[name="_token"]')?.value || ''
+							},
+							credentials: 'same-origin',
+							body: new FormData(form)
+						});
+
+						var contentType = response.headers.get('content-type') || '';
+						var data = contentType.indexOf('application/json') !== -1 ? await response.json() : {};
+
+						if (response.status === 422) {
+							renderErrors(form, data.errors || {});
+
+							if (window.swal) {
+								swal({
+									title: 'Error',
+									text: data.message || 'Please fix the highlighted fields and try again.',
+									type: 'error'
+								});
+							}
+
+							return;
+						}
+
+						if (!response.ok) {
+							throw new Error(data.message || 'Unable to save the registration right now.');
+						}
+
+						if (window.parent) {
+							window.parent.postMessage({
+								type: 'lead-modal-close',
+								reload: true,
+								status: data.status || 'Registration created successfully.'
+							}, '*');
+						}
+					} catch (error) {
+						if (window.swal) {
+							swal({
+								title: 'Error',
+								text: error.message || 'Unable to save the registration right now.',
+								type: 'error'
+							});
+						}
+					} finally {
+						if (submitButton) {
+							submitButton.disabled = false;
+						}
 					}
 				});
 			});

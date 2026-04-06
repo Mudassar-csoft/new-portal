@@ -4165,7 +4165,6 @@ video {
 
 .show-hide-sidebar {
     position: relative;
-    top: 5px;
     overflow: hidden;
     margin: 0;
     padding: 0;

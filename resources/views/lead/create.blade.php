@@ -7,6 +7,7 @@
 		$leadPrefill = $leadPrefill ?? [];
 		$prefillCountry = old('details.country', data_get($leadPrefill, 'details.country', 'Pakistan'));
 		$prefillCity = old('city', $leadPrefill['city'] ?? 'Faisalabad');
+		$selectedLeadType = old('type', data_get($leadPrefill, 'type', 'training'));
 	@endphp
 	<div class="lead-shell">
 		<div id="lead-loader" class="lead-loader">
@@ -27,10 +28,10 @@
 							</div>
 							<div class="text-right Traing-head-selector" style="width: 200px; text-align: left !important;">
 								<select id="leadTypeSelect" class="form-control lead-type-select">
-									<option value="training" selected>Trainings</option>
-									<option value="certification">Certification Exam</option>
-									<option value="coworking">Coworking Space</option>
-									<option value="study_abroad">Study Abroad</option>
+									<option value="training" @selected($selectedLeadType === 'training')>Trainings</option>
+									<option value="certification" @selected($selectedLeadType === 'certification')>Certification Exam</option>
+									<option value="coworking" @selected($selectedLeadType === 'coworking')>Coworking Space</option>
+									<option value="study_abroad" @selected($selectedLeadType === 'study_abroad')>Study Abroad</option>
 								</select>
 							</div>
 						</div>
@@ -49,7 +50,7 @@
 					<form method="POST" action="{{ route('leads.store') }}">
 						@csrf
 						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
-						<input type="hidden" name="type" id="lead-type-field" value="training">
+						<input type="hidden" name="type" id="lead-type-field" value="{{ $selectedLeadType }}">
 						@include('lead.training')
 						@include('lead.certification')
 						@include('lead.coworking')
@@ -216,8 +217,15 @@
 		}
 
 		.form-control.is-invalid,
+		.form-select.is-invalid,
 		.form-control-range.is-invalid {
 			border-color: #e53935;
+			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+		}
+
+		.select2-container--default .select2-selection--single.is-invalid,
+		.training-course-select.is-invalid + .select2-container .select2-selection--single {
+			border-color: #e53935 !important;
 			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 		}
 
@@ -421,6 +429,18 @@
 			});
 		})();
 	</script>
+	@if($errors->any() && !session('error'))
+		<script>
+			(function () {
+				if (!window.swal) return;
+				swal({
+					title: 'Validation Error',
+					text: 'Please fix the highlighted fields below and try again.',
+					type: 'error'
+				});
+			})();
+		</script>
+	@endif
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {

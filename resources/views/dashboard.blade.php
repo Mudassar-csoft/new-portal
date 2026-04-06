@@ -165,13 +165,13 @@
 	    </div>
 <!--Current Month Charts-->
 	<div class="row pl-4 pr-3 tables-dashbord">
-		<div class="col-xl-6 pl-1  ml-1 mr-2 m-md-0 m-lg-0">
+		<div class="col-xl-12 pl-1  ml-1 mr-2 m-md-0 m-lg-0">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Current Month Leads</span>
+								<span class="month-chart-header-label">Current Month Leads & Admission</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
@@ -197,47 +197,13 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body">
-					<div id="leads-chart"></div>
+					<div id="lead-chart"></div>
 				</div>
 			</section>
 		</div>
-		<div class="col-xl-6 pl-2 pr-4">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300">
-				<header class="box-typical-header panel-heading month-chart-header">
-					<div class="month-chart-header-content">
-						<div class="month-chart-header-wrap">
-							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Current Month Admissions</span>
-							</h3>
-						</div>
-						<div class="month-chart-header-actions">
-							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit current month admissions title">
-								<i class="font-icon glyphicon glyphicon-pencil"></i>
-							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move current month admissions panel slightly">
-								<i class="glyphicon glyphicon-move"></i>
-							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh current month admissions chart">
-								<i class="font-icon font-icon-refresh"></i>
-							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="collapse" aria-label="Collapse current month admissions chart" aria-expanded="true">
-								<i class="font-icon font-icon-minus"></i>
-							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month admissions chart">
-								<i class="font-icon font-icon-expand"></i>
-							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close current month admissions chart">
-								<i class="font-icon font-icon-close"></i>
-							</button>
-						</div>
-					</div>
-				</header>
-				<div class="box-typical-body panel-body">
-					<div id="admissions-chart"></div>
-				</div>
-			</section>
-		</div>
+
 	</div>
+
 <!--Daily Activity-->
 	<div class="row dashboard-equal-row pl-4 pr-3 mt-4  tables-dashbord ">
 		<div class="col-xl-6 d-flex pl-1 ml-1 mr-2 m-md-0 m-lg-0">
@@ -1436,6 +1402,21 @@
 			updateIncomeHeadline();
 			// Reveal content once charts/data ready
 			$('body').addClass('dashboard-ready');
+			c3.generate({
+        bindto: '#lead-chart',
+        data: {
+            columns: [
+                ['Lead', 50, 200, 100, 400, 150, 250,100, 400, 150, 250],
+                ['Admission', 130, 100, 140, 200, 150, 50, 140, 200, 150, 50]
+            ],
+            type: 'bar'
+        },
+        bar: {
+            width: {
+                ratio: 0.5
+            }
+        }
+    });
 
 			c3.generate({
 				bindto: '#leads-chart',

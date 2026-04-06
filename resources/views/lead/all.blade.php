@@ -91,7 +91,7 @@
 										</td>
 										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
 										<td class="text-center action-cell">
-											@include('lead.partials.action', ['actionId' => $actionId, 'leadId' => $row->id])
+											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row])
 										</td>
 									</tr>
 								@empty
@@ -113,6 +113,16 @@
 					</div>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="lead-modal" id="lead-form-modal" aria-hidden="true">
+		<div class="modal-card" role="dialog" aria-modal="true">
+			<div class="modal-header">
+				<h5 class="modal-title" id="lead-form-modal-title">Form</h5>
+				<button type="button" class="modal-close" id="lead-form-modal-close" aria-label="Close">&times;</button>
+			</div>
+			<iframe id="lead-form-modal-frame" title="Lead Form"></iframe>
 		</div>
 	</div>
 @endsection
@@ -357,6 +367,70 @@
 	right: 100% !important;
 	transform: none !important;
 }
+
+		body.lead-modal-open {
+			overflow: hidden;
+		}
+
+		.lead-modal {
+			position: fixed;
+			inset: 0;
+			background: rgba(15, 23, 42, 0.6);
+			backdrop-filter: blur(4px);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			z-index: 1055;
+			padding: 18px;
+		}
+
+		.lead-modal.show {
+			display: flex;
+		}
+
+		.lead-modal .modal-card {
+			background: #fff;
+			width: min(1320px, 98vw);
+			height: min(900px, 94vh);
+			border-radius: 20px;
+			border: 1px solid rgba(255, 255, 255, 0.72);
+			box-shadow: 0 28px 80px rgba(15, 23, 42, 0.35);
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		.lead-modal .modal-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 14px 20px;
+			border-bottom: 1px solid #e2e8f0;
+			background: linear-gradient(180deg, #fbfdff 0%, #f3f8ff 100%);
+		}
+
+		.lead-modal .modal-title {
+			font-weight: 800;
+			color: #0f3c6e;
+			margin: 0;
+			font-size: 18px;
+		}
+
+		.lead-modal .modal-close {
+			border: 0;
+			background: transparent;
+			font-size: 28px;
+			line-height: 1;
+			color: #5b6b80;
+			cursor: pointer;
+		}
+
+		.lead-modal iframe {
+			flex: 1;
+			border: 0;
+			width: 100%;
+			background: #f3f8fd;
+		}
 		.table td{
 			padding:2px 2px;
 			height:38px;
@@ -380,6 +454,94 @@
 @push('scripts')
 	<script>
 		(function () {
+			function showAlert(title, text, type) {
+				if (window.swal) {
+					swal({ title: title, text: text, type: type });
+					return;
+				}
+
+				alert(text);
+			}
+
+			function openLeadModal(url, title) {
+				var modal = document.getElementById('lead-form-modal');
+				var frame = document.getElementById('lead-form-modal-frame');
+				var titleNode = document.getElementById('lead-form-modal-title');
+
+				if (!modal || !frame) {
+					window.location.href = url;
+					return;
+				}
+
+				frame.src = url;
+				modal.classList.add('show');
+				modal.setAttribute('aria-hidden', 'false');
+				document.body.classList.add('lead-modal-open');
+				if (titleNode) titleNode.textContent = title || 'Form';
+			}
+
+			function closeLeadModal() {
+				var modal = document.getElementById('lead-form-modal');
+				var frame = document.getElementById('lead-form-modal-frame');
+
+				if (!modal || !frame) return;
+
+				frame.src = 'about:blank';
+				modal.classList.remove('show');
+				modal.setAttribute('aria-hidden', 'true');
+				document.body.classList.remove('lead-modal-open');
+			}
+
+			function initLeadModal() {
+				var modal = document.getElementById('lead-form-modal');
+				var closeButton = document.getElementById('lead-form-modal-close');
+
+				if (!modal) return;
+
+				if (closeButton) {
+					closeButton.addEventListener('click', closeLeadModal);
+				}
+
+				modal.addEventListener('click', function (event) {
+					if (event.target === modal) {
+						closeLeadModal();
+					}
+				});
+
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape' && modal.classList.contains('show')) {
+						closeLeadModal();
+					}
+				});
+
+				document.addEventListener('click', function (event) {
+					var trigger = event.target.closest('.js-lead-modal-link');
+					if (!trigger) return;
+
+					var url = trigger.getAttribute('data-lead-modal-url');
+					if (!url) return;
+
+					event.preventDefault();
+					openLeadModal(url, trigger.getAttribute('data-lead-modal-title') || 'Form');
+				});
+
+				window.addEventListener('message', function (event) {
+					if (event.data && event.data.type === 'lead-modal-close') {
+						closeLeadModal();
+
+						if (event.data.status) {
+							showAlert('Success', event.data.status, 'success');
+						}
+
+						if (event.data.reload) {
+							setTimeout(function () {
+								window.location.reload();
+							}, 500);
+						}
+					}
+				});
+			}
+
 			function revealLeadPage() {
 				setTimeout(function () {
 					document.body.classList.add('leads-ready');
@@ -401,6 +563,7 @@
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
+				initLeadModal();
 				revealLeadPage();
 
 				var tabs = document.querySelectorAll('.follow-tab');
