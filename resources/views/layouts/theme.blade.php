@@ -88,6 +88,7 @@ hr {
 .fa-regular,
 .fa-solid,
 .fa-solid,
+.fa-brands,
 .far,
 .fa,
 .fas {
@@ -275,14 +276,14 @@ padding: 11px 12px 6px 46px;
    Sidebar Stage Pills
    ========================================================= */
 /* Per-item pill tones */
-.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #1296eb; border-color: #1296eb; }
-.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #45c156; border-color: #45c156; }
+.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #1296eb; border-color: #1296eb; }
+.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #45c156; border-color: #45c156; }
 .side-menu li ul li:nth-child(9n+5) .stage-count { background-color: #36c86b; border-color: #36c86b; }
 .side-menu li ul li:nth-child(9n+6) .stage-count { background-color: #25344a; border-color: #25344a; }
-.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
-.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
+.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
+.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
 .side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
 
 /* .site-header .site-header-collapsed .site-header-collapsed-in {

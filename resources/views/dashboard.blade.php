@@ -581,9 +581,15 @@
             width: 100%;
         }
         .month-chart-header-label {
+            margin: 0;
             display: inline-block;
+            padding: 0;
             min-width: 0;
             max-width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-top: 5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
