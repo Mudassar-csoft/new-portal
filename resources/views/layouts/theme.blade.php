@@ -115,11 +115,21 @@ text-align: left !important;
 text-align: left !important;
 	padding-left:2px !important;
 }
-
+ input:not([type="radio"]):not([type="checkbox"]):not([type="range"]) {
+   
+    min-height: 28px !important;
+    color: #343434;
+/* font-family: 'Proxima Nova', sans-serif; */
+line-height: 1.4;
+/* min-height:32px !important; */
+text-rendering: optimizeLegibility;
+-moz-osx-font-smoothing: grayscale;
+-webkit-font-smoothing: antialiased;
+}
 body,
 html,
 button,
-input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
+
 select {
 color: #343434;
 /* font-family: 'Proxima Nova', sans-serif; */
@@ -289,8 +299,8 @@ padding: 11px 12px 6px 46px;
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
 } */
-.control-panel .page-content {
-    padding-right: 62px;
+.control-panel:not(.dashboard-page) .page-content {
+    padding-right: 67px;
 }
 .with-side-menu .page-content {
     padding-left: 255px;
@@ -316,6 +326,7 @@ height: 28px;
     .site-header .dropdown.dropdown-notification .dropdown-menu-notif {
         right: 0 !important;
     }
+	
 }
 .site-header .user-greeting {
 margin-right: 10px;
@@ -1445,7 +1456,7 @@ width: 98%;
 max-width: 98%;
 margin-left: 8px;
 }
-
+}
 /* >= 1200px */
 @media (min-width: 1200px) {
 /* =========================================================
@@ -1477,8 +1488,8 @@ margin-left: 0;
 		/* =========================================================
    Global Page Spacing Overrides
    ========================================================= */
-		.control-panel .page-content {
-			padding-right: 67px !important;
+		.control-panel:not(.dashboard-page) .page-content {
+			padding-right: 57px !important;
 		}
 
 		.with-side-menu .page-content {
@@ -1548,7 +1559,10 @@ margin-left: 0;
 	</style>
 </head>
 
-<body class="with-side-menu control-panel control-panel-compact">
+@php
+	$isMainDashboardPage = request()->routeIs('dashboard') && in_array(optional(request()->route())->uri(), ['', '/'], true);
+@endphp
+<body class="with-side-menu control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }}">
 
 	@include('layouts.header')
 	@include('layouts.nav')

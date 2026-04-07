@@ -36,9 +36,7 @@
                     Course Interested
                 </label>
                 <select name="program_id"
-                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror" 
-                        
-                        required>
+                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror">
                     <option value="">-Select-</option>
                     @foreach ($programs as $program)
                         <option value="{{ $program->id }}"
@@ -113,8 +111,8 @@
     <div class="row mt-2" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark">
-                Email Address <span class="required-feild_symbol">*</span>
+            <label class="form-label small fw-semibold text-dark required">
+                Email Address
             </label>
             <input type="email"
                    name="email"
@@ -326,7 +324,9 @@
 .custom-range {
     width: 100%;
 }
-
+.control-panel .page-content {
+    padding-right: 54px !important;
+}
 .custom-range.is-invalid {
     box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 }

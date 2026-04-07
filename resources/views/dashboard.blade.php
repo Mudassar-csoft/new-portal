@@ -351,6 +351,14 @@
 @endsection
 
 @push('styles')
+	<style>
+		body.with-side-menu.control-panel .page-content {
+			padding-right: 67px !important;
+		}
+	</style>
+@endpush
+
+@push('styles')
 	<!-- <link rel="stylesheet" href="css/lib/lobipanel/lobipanel.min.css"> -->
 	<link rel="stylesheet" href="css/separate/vendor/lobipanel.min.css">
 	<link rel="stylesheet" href="css/lib/jqueryui/jquery-ui.min.css">

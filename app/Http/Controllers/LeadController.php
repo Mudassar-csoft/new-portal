@@ -111,7 +111,7 @@ class LeadController extends Controller
             'assigned_user_id' => ['nullable', 'exists:users,id'],
             'type' => ['nullable', 'string', 'max:50'],
             'name' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['nullable', Rule::requiredIf($isTraining), 'email', 'max:255'],
             'phone' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50', 'unique:leads,phone'],
             'city' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
             'origin' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],

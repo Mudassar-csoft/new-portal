@@ -73,9 +73,9 @@
 						data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}">
 						@csrf
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
-							<div class="form-row" style="gap:18px;padding-left:15px">
-								<div class="form-group custom-col-3 followup-toggle">
-									<label>Follow-Up Method *</label>
+							<div class="form-row" >
+								<div class="form-group col-lg-3 col-md-6 followup-toggle">
+									<label class="form-label">Follow-Up Method </label>
 									<select class="form-control" name="method" required>
 										<option value="">- Select -</option>
 										@foreach (['call', 'sms', 'email', 'whatsapp', 'walk-in'] as $method)
@@ -84,8 +84,8 @@
 									</select>
 									<div class="field-error" data-error-for="method"></div>
 								</div>
-								<div class="form-group custom-col-3">
-									<label>Stage *</label>
+								<div class="form-group col-lg-3 col-md-6">
+									<label class="form-label">Stage</label>
 									@php
 										$hideRegistered = $lead->status === 'not_interesting';
 										$hideNotInteresting = in_array($lead->status, ['registered', 'enrolled'], true);
@@ -102,13 +102,13 @@
 									</select>
 									<div class="field-error" data-error-for="stage"></div>
 								</div>
-								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="next-followup-wrap">
-									<label>Next Follow Up</label>
+								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="next-followup-wrap">
+									<label class="form-label">Next Follow Up</label>
 									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date" value="{{ old('next_action_date') }}">
 									<div class="field-error" data-error-for="next_action_date"></div>
 								</div>
-								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="campus-wrap">
-									<label>Preferred Campus</label>
+								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="campus-wrap">
+									<label class="form-label">Preferred Campus</label>
 									<select class="form-control" name="campus_id" id="campus_id">
 										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
 										@foreach ($campuses as $campus)
@@ -125,18 +125,18 @@
 								<div class="followup-extra-fields" id="lead-completion-fields">
 									<div class="followup-extra-title">Complete Lead Details</div>
 									<p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p>
-									<div class="form-row" style="gap:18px;padding-left:15px">
-										<div class="form-group custom-col-3 followup-toggle">
+									<div class="form-row" >
+										<div class="form-group col-lg-3 col-md-6 followup-toggle">
 											<label>Email Address</label>
 											<input type="email" class="form-control" name="email" value="{{ old('email', $lead->email) }}" placeholder="Enter email address">
 											<div class="field-error" data-error-for="email"></div>
 										</div>
-										<div class="form-group custom-col-3 followup-toggle">
-											<label>Area</label>
+										<div class="form-group col-lg-3 col-md-6 followup-toggle">
+											<label class="form-label">Area</label>
 											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area">
 											<div class="field-error" data-error-for="lead_details.area"></div>
 										</div>
-										<div class="form-group custom-col-3 followup-toggle">
+										<div class="form-group col-lg-3 col-md-6 followup-toggle">
 											<label>Gender</label>
 											<select class="form-control" name="lead_details[gender]">
 												<option value="">- Select -</option>
@@ -150,9 +150,9 @@
 								</div>
 							@endif
 
-							<div class="form-row align-items-center" style="gap:18px;padding-left:15px">
-								<div class="form-group custom-col-3 followup-toggle followup-hide-on-close" id="probability-wrap">
-									<label class="required">Probability</label>
+							<div class="form-row align-items-center">
+								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="probability-wrap">
+									<label class="form-label">Probability</label>
 									<input type="range"
 										min="0"
 										max="100"
@@ -161,9 +161,18 @@
 										name="probability"
 										value="{{ $defaultProbability }}"
 										class="custom-range">
+
+									<div class="range-scale" aria-hidden="true">
+										@for ($tick = 0; $tick <= 100; $tick += 5)
+											<span
+												class="range-tick {{ $tick % 20 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tick === 0 ? ' range-tick-start' : '' }}{{ $tick === 100 ? ' range-tick-end' : '' }}"
+												style="left: {{ $tick }}%;"
+											></span>
+										@endfor
+									</div>
+
 									<div class="range-numbers pt-0 mt-1">
 										<span>0</span>
-										<span>10</span>
 										<span>20</span>
 										<span>40</span>
 										<span>60</span>
@@ -177,10 +186,10 @@
 								</div>
 
 								<div class="form-group col-md-9 followup-toggle">
-									<label>Remarks</label>
+									<label class="form-label">Remarks</label>
 									<textarea class="form-control" name="note" rows="2"
 										placeholder="Add remarks for this follow-up"
-										style="width:92%">{{ old('note') }}</textarea>
+										style="width:100%; height:80px !important;" >{{ old('note') }}</textarea>
 									<div class="field-error" data-error-for="note"></div>
 								</div>
 							</div>
@@ -345,6 +354,8 @@
 	</div>
 @endsection
 
+
+
 @push('styles')
 	<style>
 		*{
@@ -353,6 +364,9 @@
 			margin: 0;
 			padding: 0;
         }
+		.control-panel .page-content {
+    padding-right: 57px !important;
+}
    .lead-show-shell {
     max-width: 1400px;
     margin: 0 auto;
@@ -772,7 +786,7 @@
 		.custom-range {
     -webkit-appearance: none;
     width: 100%;
-    height: 6px;
+    height: 6px !important;
     border-radius: 4px;
     background: #ddd;
     outline: none;
@@ -798,7 +812,7 @@
 }
 
 /* Firefox Thumb */
-.custom-range::-moz-range-thumb {
+		.custom-range::-moz-range-thumb {
     width: 22px;
     height: 22px;
     background: #1e88e5;
@@ -806,12 +820,48 @@
     border: 3px solid #fff;
     cursor: pointer;
 }
+	.range-scale {
+    position: relative;
+    width: calc(100% - 4px);
+    height: 12px;
+    margin: 1px 2px 0;
+}
+
+	.range-tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    border-radius: 999px;
+}
+
+	.range-tick-minor {
+    width: 1px;
+    height: 7px;
+    background: #d0d3d8;
+}
+
+	.range-tick-major {
+    width: 1px;
+    height: 10px;
+    background: #b8c1cb;
+}
+
+	.range-tick-start {
+    left: 0 !important;
+    transform: none;
+}
+
+	.range-tick-end {
+    left: 100% !important;
+    transform: translateX(-100%);
+}
 	.range-numbers {
     display: flex;
     justify-content: space-between;
+    width: calc(100% - 4px);
     font-size: 12px;
     color: #666;
-    margin-top: 8px;
+    margin: 1px 2px 0;
 }
 .range-numbers span{
     font-size:10px;
@@ -823,6 +873,7 @@ input[name="probability"] + .small {
     margin-top: 0px;
     font-size: 12px;
 }
+
 
 
 

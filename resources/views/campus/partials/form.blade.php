@@ -25,7 +25,7 @@
         <label class="form-label required">Display Title</label>
         <input type="text" name="title" class="form-control" value="{{ old('title', $campus->title) }}" placeholder="Optional public or short title">
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Status</label>
         <select class="form-control" name="status" required>
             @foreach($statusOptions as $key => $label)
@@ -50,19 +50,19 @@
 </div>
 
 <div class="form-row">
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Country</label>
         <select class="form-control" id="country-select" name="country" required>
             <option value="">Loading countries...</option>
         </select>
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">City</label>
         <select class="form-control" id="city-select" name="city" required>
             <option value="">Loading cities...</option>
         </select>
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">City Abbreviation</label>
         <input type="text" name="city_abbr" id="campus-city-abbr" class="form-control text-uppercase" value="{{ old('city_abbr', $campus->city_abbr) }}" placeholder="e.g. FSD" required>
     </div>
@@ -82,11 +82,11 @@
         <label class="form-label required">Campus Mobile Number</label>
         <input type="text" name="mobile" class="form-control" value="{{ old('mobile', $campus->mobile) }}" placeholder="Enter mobile number">
     </div>
-     <div class="form-group col-md-3">
+     <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Number of Labs</label>
         <input type="number" name="labs_count" class="form-control" min="0" value="{{ old('labs_count', $campus->labs_count) }}" placeholder="Enter number of labs">
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Royalty Rate (%)</label>
         <input type="number" step="0.01" min="0" name="royalty_rate" id="royalty-rate" class="form-control" value="{{ old('royalty_rate', $campus->royalty_rate) }}" placeholder="Franchise only">
         <!-- <small class="text-muted">Only used for franchise branches.</small> -->
