@@ -13234,7 +13234,7 @@ body {
     height: 40px;
     zoom: 1;
     color: #343434;
-    line-height: 40px
+    line-height: 37px
 }
 
 .site-header .site-logo:after,
@@ -16784,9 +16784,8 @@ html {
 }
 
 .show-hide-sidebar {
-    position: relative;
-    top: 3px;
-    overflow: hidden;
+      position: relative;
+      overflow: hidden;
     margin-left: 5px;
     padding: 0;
     width: 30px;
@@ -16954,4 +16953,3 @@ body.sidebar-hidden .side-menu-addl+.page-content {
         padding-right: 0
     }
 }
-

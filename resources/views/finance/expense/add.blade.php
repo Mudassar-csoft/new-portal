@@ -139,7 +139,6 @@
                 </form>
             </div>
         </section>
-
         <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
             <header class="box-typical-header panel-heading finance-header">
                 <h3 class="panel-title">Recent Expense Requests</h3>

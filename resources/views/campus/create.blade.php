@@ -14,7 +14,7 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('campus.store') }}">
-                    @csrf
+                    @csrf 
                     @include('campus.partials.form')
 
                     <div class="text-right mt-3 mb-2">

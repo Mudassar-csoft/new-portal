@@ -172,23 +172,21 @@
             
             <div class="dropdown dropdown-campus">
                           <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}">
-                            <i class="fa-solid fa-building"></i>
-                  <span class="notification-total-badge"></span>
-
+                            aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}">
+                            <img class="camppus-branch" src="img/campuses.webp" alt="campus">
                           </button>
                           <div class="dropdown-menu p-2 campus-dropdown-menu">
                             <!-- <input type="text" class="form-control mb-2" id="locationSearch" placeholder="Search Campus">
                             <div class="campus-dropdown-caption px-2 pb-2">
                               <span class="text-muted">Current:</span>
-                              <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Campuses' }}</strong>
+                              <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}</strong>
                             </div> -->
                             <a class="dropdown-item campus-dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
-                              <i class="fa-solid fa-building campus-item-icon"></i>All Campuses
+                              <img class="campus-item-icon" src="img/campuses.webp" alt="campus">All Branches
                             </a>
                             @foreach(($dashboardCampuses ?? collect()) as $campus)
                               <a class="dropdown-item campus-dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
-                                <i class="fa-solid fa-building campus-item-icon"></i>{{ $campus->code }}-{{ $campus->name }}
+                                <img class="campus-item-icon" src="img/campuses.webp" alt="campus">{{ $campus->code }}-{{ $campus->name }}
                               </a>
                             @endforeach
                           </div>
@@ -496,33 +494,46 @@
   /* margin-left: 12px; */
   float:left;
 }
-.site-header .site-header-collapsed .site-header-collapsed-in{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:29px;
-}
-.site-header .site-header-search-container{
-    order:1;
-    flex:0 0 220px;
-    width:220px;
-    margin-right:0;
-}
-.site-header .site-header-search-container .site-header-search{
-    width:100%;
-}
-.site-header .site-header-collapsed .add-lead{
-    order:2;
-    flex:0 0 auto;
-    margin-left:auto;
-}
-.site-header .site-header-collapsed .add-lead .btn{
-    white-space:nowrap;
-    height:30px !important;
-    min-height:30px !important;
-    line-height:28px !important;
-    padding-top:0 !important;
-    padding-bottom:0 !important;
+@media (min-width: 1057px) {
+    .site-header .site-header-collapsed .site-header-collapsed-in{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+        margin-top:-2px;
+    }
+    .site-header .site-header-search-container{
+        order:1;
+        flex:0 0 220px;
+        width:220px;
+        margin-right:0;
+    }
+    .site-header .site-header-search-container .site-header-search,
+    .site-header .site-header-collapsed .site-header-search.closed{
+        width:100% !important;
+        border-color:#c5d6de !important;
+    }
+    .site-header .site-header-collapsed .site-header-search .overlay,
+    .site-header .site-header-collapsed .site-header-search.closed .overlay{
+        display:none !important;
+    }
+    .site-header .site-header-collapsed .site-header-search input[type="text"],
+    .site-header .site-header-collapsed .site-header-search.closed input[type="text"]{
+        opacity:1 !important;
+    }
+    .site-header .site-header-collapsed .add-lead{
+        order:2;
+        flex:0 0 auto;
+        margin-left:auto;
+    }
+    .site-header .site-header-collapsed .add-lead .btn{
+        white-space:nowrap;
+        height:30px !important;
+        min-height:30px !important;
+        line-height:28px !important;
+        padding-top:0 !important;
+        padding-bottom:0 !important;
+    }
 }
 /* .site-header-search button{
 	    line-height: 22px !important;
@@ -540,6 +551,13 @@
 .site-header .dropdown-campus .dropdown-toggle i{
 	font-size: 16px !important;
     line-height: 1 !important;
+}
+.site-header .dropdown-campus .dropdown-toggle .camppus-branch{
+	display:block;
+	width:19px !important;
+	height:19px !important;
+	object-fit:contain;
+	margin:0 auto;
 }
 /* .font-icon-search{
 	    font-size: 18px !important;
@@ -607,24 +625,6 @@
   font-weight:500 !important;
   color: #adb7be;
 }
-.dropdown-toggle::after{
- display: inline-block;
-    width: 0;
-    height: 0;
-    margin-left: .255em;
-    vertical-align: .255em;
-    content: "";
-    border-top: .3em solid;
-    border-right: .3em solid transparent;
-    border-bottom: 0;
-    border-left: .3em solid transparent;
-}
-/* button.dropdown-toggle{
-  border: 2px solid #ddd;
-  color: white;
-; */
-
-
 .site-header .dropdown-campus .dropdown-toggle{
   height: 36px !important;
   width: 36px !important;
@@ -662,8 +662,64 @@ display: flex;
    
 }
 
-.site-header .site-header-content {
-	margin-left: -300px !important;
+@media (min-width: 1057px) {
+	.site-header > .container-fluid {
+		display: flex;
+		align-items: center;
+		gap: 3px;
+	}
+
+	.site-header .site-logo,
+	.site-header .show-hide-sidebar,
+	.site-header .hamburger {
+		flex: 0 0 auto;
+	}
+
+	.site-header .site-header-content {
+		float: none !important;
+		height: auto !important;
+		padding: 5px 0 !important;
+		width: auto !important;
+		flex: 1 1 auto;
+		min-width: 0;
+		margin-left: 0 !important;
+	}
+
+	.site-header .site-header-content .site-header-content-in {
+		margin-left: 0 !important;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		min-width: 0;
+	}
+
+	.site-header .site-header-shown {
+		float: none !important;
+		display: flex;
+		align-items: center;
+		gap: 0px;
+		flex: 0 0 auto;
+		order: 2;
+	}
+
+	.site-header .site-header-collapsed {
+		float: none !important;
+		width: auto !important;
+		margin-right: 0 !important;
+		flex: 1 1 auto;
+		order: 1;
+		min-width: 0;
+	}
+
+	.site-header .site-header-collapsed .site-header-collapsed-in {
+		margin-right: 0 !important;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 20px;
+		min-width: 0;
+	}
 }
 .dropdown-toggle::after {
     display: inline-block;
@@ -693,6 +749,7 @@ display: flex;
         flex-direction:column;
         align-items:stretch;
         gap:12px;
+        margin-top:-2px;
     }
     .site-header .site-header-search-container,
     .site-header .site-header-collapsed .add-lead{
@@ -783,7 +840,7 @@ display: flex;
     -moz-osx-font-smoothing: grayscale;
     vertical-align: middle;
     position: relative;
-    top: -.15em;
+    top: 0px;
 }
 .notif-accordion-toggle{
 	display: flex;
@@ -1053,7 +1110,15 @@ border:2px solid #ddd;
 
 
 
-.site-header .dropdown.dropdown-notification .dropdown-menu-notif,
+.site-header .dropdown.dropdown-notification .dropdown-menu-notif {
+	position: fixed !important;
+	top: 58px !important;
+	right: 12px !important;
+	left: auto !important;
+	transform: none !important;
+	z-index: 9999 !important;
+}
+
 .site-header .user-menu.dropdown .profile-dropdown {
 	position: absolute !important;
 	top: calc(100% - 2px) !important;
@@ -1141,7 +1206,10 @@ img.icon{
     .dropdown-menu-notif{
         width: calc(100vw - 24px);
     }
-    .site-header .dropdown.dropdown-notification .dropdown-menu-notif,
+    .site-header .dropdown.dropdown-notification .dropdown-menu-notif {
+        right: 12px !important;
+        top: 42px !important;
+    }
     .site-header .user-menu.dropdown .profile-dropdown {
         right: 12px !important;
     }

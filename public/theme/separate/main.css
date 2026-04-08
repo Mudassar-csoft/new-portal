@@ -11011,7 +11011,7 @@ body {
 .site-header .site-header-content {
   float: right;
   height: 40px;
-  padding: 5px 0;
+  padding: 4px 0;
   width: 100%;
   margin-left: -210px;
 }
@@ -14008,7 +14008,6 @@ html {
 }
 .show-hide-sidebar {
   position: relative;
-  top: 5px;
   overflow: hidden;
   margin: 0;
   padding: 0;

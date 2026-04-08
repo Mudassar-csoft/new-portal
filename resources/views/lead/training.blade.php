@@ -36,9 +36,7 @@
                     Course Interested
                 </label>
                 <select name="program_id"
-                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror" 
-                        
-                        required>
+                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror">
                     <option value="">-Select-</option>
                     @foreach ($programs as $program)
                         <option value="{{ $program->id }}"
@@ -113,8 +111,8 @@
     <div class="row mt-2" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark">
-                Email Address <span class="required-feild_symbol">*</span>
+            <label class="form-label small fw-semibold text-dark required">
+                Email Address
             </label>
             <input type="email"
                    name="email"
@@ -216,7 +214,7 @@
                 Gender <span class="required-feild_symbol">*</span>
             </label>
              <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
-                <div class="col-4 d-flex justify-content-center mb-1 mt-1">
+                <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center mt-0">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -326,7 +324,9 @@
 .custom-range {
     width: 100%;
 }
-
+.control-panel .page-content {
+    padding-right: 54px !important;
+}
 .custom-range.is-invalid {
     box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 }
@@ -403,7 +403,7 @@ slider.oninput = function () {
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" style="width:98.8%; margin-right:10px;" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" style="width:100%;" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror

@@ -548,7 +548,7 @@ body {
   height: 40px;
   zoom: 1;
   color: #343434;
-  line-height: 40px;
+  line-height: 37px;
 }
 .site-header .site-logo:before,
 .site-header .site-logo:after {
@@ -582,7 +582,7 @@ body {
 .site-header .site-header-content {
   float: right;
   height: 40px;
-  padding: 5px 0;
+  padding: 4px 0;
   width: 100%;
   margin-left: -210px;
 }

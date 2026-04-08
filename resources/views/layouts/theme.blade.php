@@ -88,6 +88,7 @@ hr {
 .fa-regular,
 .fa-solid,
 .fa-solid,
+.fa-brands,
 .far,
 .fa,
 .fas {
@@ -114,11 +115,21 @@ text-align: left !important;
 text-align: left !important;
 	padding-left:2px !important;
 }
-
+ input:not([type="radio"]):not([type="checkbox"]):not([type="range"]) {
+   
+    min-height: 28px !important;
+    color: #343434;
+/* font-family: 'Proxima Nova', sans-serif; */
+line-height: 1.4;
+/* min-height:32px !important; */
+text-rendering: optimizeLegibility;
+-moz-osx-font-smoothing: grayscale;
+-webkit-font-smoothing: antialiased;
+}
 body,
 html,
 button,
-input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
+
 select {
 color: #343434;
 /* font-family: 'Proxima Nova', sans-serif; */
@@ -268,33 +279,54 @@ border-color: #6c757d;
 
 .side-menu-list a,
 .side-menu-list li > span {
-padding: 9px 12px 6px 46px;
+padding: 11px 12px 6px 46px;
 }
 
 /* =========================================================
    Sidebar Stage Pills
    ========================================================= */
-/* Module-specific pill tones */
-.side-menu .brown .stage-count { background-color: #c77d16; border-color: #c77d16; }
-.side-menu .purple .stage-count { background-color: #6f42c1; border-color: #6f42c1; }
-.side-menu .orange .stage-count { background-color: #ff9800; border-color: #ff9800; }
-.side-menu .magenta .stage-count { background-color: #e83e8c; border-color: #e83e8c; }
-.side-menu .blue .stage-count { background-color: #0088cc; border-color: #0088cc; }
-.side-menu .green .stage-count { background-color: #28a745; border-color: #28a745; }
-.side-menu .orange-red .stage-count { background-color: #ff5722; border-color: #ff5722; }
-.side-menu .teal .stage-count { background-color: #00897b; border-color: #00897b; }
-.side-menu .gold .stage-count { background-color: #d4a017; border-color: #d4a017; }
+/* Per-item pill tones */
+.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #1296eb; border-color: #1296eb; }
+.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
+.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #45c156; border-color: #45c156; }
+.side-menu li ul li:nth-child(9n+5) .stage-count { background-color: #36c86b; border-color: #36c86b; }
+.side-menu li ul li:nth-child(9n+6) .stage-count { background-color: #25344a; border-color: #25344a; }
+.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
+.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
+.side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
 
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
 } */
-
+.control-panel:not(.dashboard-page) .page-content {
+    padding-right: 67px;
+}
+.with-side-menu .page-content {
+    padding-left: 255px;
+}
+.page-content {
+    padding: 107px 15px 10px;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
 .site-header .dropdown .btn.dropdown-toggle {
 height: 28px;
 }
 .site-header .dropdown-menu-notif .dropdown-menu-notif-list {
     height: 150px;
     overflow: hidden;
+}
+.site-header .dropdown.dropdown-notification .dropdown-menu-notif {
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
+}
+@media (max-width: 760px) {
+    .site-header .dropdown.dropdown-notification .dropdown-menu-notif {
+        right: 0 !important;
+    }
+	
 }
 .site-header .user-greeting {
 margin-right: 10px;
@@ -1287,6 +1319,15 @@ margin-right: 0px !important;
 }
 
 }
+@media (max-width: 1056px) {
+	.site-header .hamburger {
+top: 0px;
+}
+.font-icon-menu-addl::before{
+	top: -6px !important;
+}
+}
+
 /* >= 768px */
 /* @media (min-width: 768px) {
 .form-row {
@@ -1415,7 +1456,7 @@ width: 98%;
 max-width: 98%;
 margin-left: 8px;
 }
-
+}
 /* >= 1200px */
 @media (min-width: 1200px) {
 /* =========================================================
@@ -1447,64 +1488,44 @@ margin-left: 0;
 		/* =========================================================
    Global Page Spacing Overrides
    ========================================================= */
-		:root {
-			--layout-header-height: 45px;
-			--layout-side-menu-width: 206px;
-			--layout-control-panel-width: 30px;
-			--layout-control-panel-open-width: 246px;
-			--layout-shell-gap: 20px;
-			--layout-container-gutter: 12px;
+		.control-panel:not(.dashboard-page) .page-content {
+			padding-right: 57px !important;
 		}
 
-		@media (min-width: 1200px) {
-			:root {
-				--layout-shell-gap: 24px;
-			}
+		.with-side-menu .page-content {
+			padding-left: 38px !important;
 		}
 
-		body.with-side-menu .page-content {
-			margin-left: 10px !important;
-			margin-top: 0 !important;
-			padding-top: calc(var(--layout-header-height) + var(--layout-shell-gap)) !important;
-			padding-right: calc(var(--layout-control-panel-width) + var(--layout-shell-gap)) !important;
-			padding-bottom: var(--layout-shell-gap) !important;
-			padding-left: calc(var(--layout-side-menu-width) + var(--layout-shell-gap)) !important;
-		}
-
-		body.control-panel.open.with-side-menu .page-content {
-			padding-right: calc(var(--layout-control-panel-open-width) + var(--layout-shell-gap)) !important;
+		.page-content {
+			padding: 83px 15px 10px !important;
+			-webkit-transition: all .2s ease-in-out;
+			transition: all .2s ease-in-out;
 		}
 
 		body.with-side-menu .page-content > .container-fluid {
 			max-width: 100% !important;
 			margin: 0 !important;
-			/* padding-left: var(--layout-container-gutter) !important; */
 			padding-right: 0 !important;
 			height: auto !important;
 		}
 
 		.menu-left-hidden .page-content,
 		body.sidebar-hidden .page-content {
-			padding-left: var(--layout-shell-gap) !important;
+			padding-left: 15px !important;
 		}
 
 		@media (max-width: 1056px) {
-			:root {
-				--layout-shell-gap: 10px;
-				--layout-container-gutter: 0px;
-			}
-
 			body.with-side-menu .page-content,
 			body.sidebar-hidden .page-content,
 			.menu-left-hidden .page-content {
-				padding-left: var(--layout-shell-gap) !important;
+				padding-left: 15px !important;
 			}
 
 			body.with-side-menu .page-content > .container-fluid,
 			body.sidebar-hidden .page-content > .container-fluid,
 			.menu-left-hidden .page-content > .container-fluid {
-				padding-left: var(--layout-container-gutter) !important;
-				padding-right: var(--layout-container-gutter) !important;
+				padding-left: 0 !important;
+				padding-right: 0 !important;
 			}
 
 			body.with-side-menu .page-content > .container-fluid > .container-fluid,
@@ -1516,19 +1537,11 @@ margin-left: 0;
 		}
 
 		@media (max-width: 767px) {
-			:root {
-				--layout-shell-gap: 10px;
-				--layout-container-gutter: 0px;
-			}
-
 			body.with-side-menu .page-content,
 			body.control-panel.open.with-side-menu .page-content,
 			body.sidebar-hidden.with-side-menu .page-content,
 			.menu-left-hidden .page-content {
-				padding-top: calc(var(--layout-header-height) + var(--layout-shell-gap)) !important;
-				padding-right: var(--layout-shell-gap) !important;
-				padding-bottom: var(--layout-shell-gap) !important;
-				padding-left: var(--layout-shell-gap) !important;
+				padding: 107px 15px 10px !important;
 				margin-top: 14px !important;
 			}
 			.chart-statistic-box .chart-container{
@@ -1546,7 +1559,10 @@ margin-left: 0;
 	</style>
 </head>
 
-<body class="with-side-menu control-panel control-panel-compact">
+@php
+	$isMainDashboardPage = request()->routeIs('dashboard') && in_array(optional(request()->route())->uri(), ['', '/'], true);
+@endphp
+<body class="with-side-menu control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }}">
 
 	@include('layouts.header')
 	@include('layouts.nav')

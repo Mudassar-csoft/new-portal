@@ -13197,7 +13197,7 @@ body {
     height: 40px;
     zoom: 1;
     color: #343434;
-    line-height: 40px
+    line-height: 37px
 }
 
 .site-header .site-logo:after,
@@ -16761,7 +16761,6 @@ html {
 
 .show-hide-sidebar {
     position: relative;
-    top: 5px;
     overflow: hidden;
     margin: 0;
     padding: 0;

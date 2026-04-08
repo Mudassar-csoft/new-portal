@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campus;
+use App\Models\Admission;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\Program;
@@ -39,6 +40,7 @@ class DashboardController extends Controller
 
         $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId);
         $dailyActivity = $this->buildDailyActivity($today, $selectedCampusId);
+        $admissionsActivity = $this->buildAdmissionsActivity($today, $selectedCampusId);
         $incomeRanges = $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId);
         $charts = $this->buildCharts($monthStart, $monthEnd, $selectedCampusId);
 
@@ -46,6 +48,7 @@ class DashboardController extends Controller
             'dashboard' => [
                 'stats' => $stats,
                 'dailyActivity' => $dailyActivity,
+                'admissionsActivity' => $admissionsActivity,
                 'incomeSummary' => [
                     'today' => $stats['todayCollectionRaw'],
                     'week' => $stats['weekCollectionRaw'],
@@ -91,6 +94,9 @@ class DashboardController extends Controller
                     'admissions' => 0,
                     'collection' => 0,
                 ],
+            ],
+            'admissionsActivity' => [
+                'rows' => [],
             ],
             'incomeSummary' => [
                 'today' => 0,
@@ -168,62 +174,139 @@ class DashboardController extends Controller
      */
     private function buildDailyActivity(Carbon $today, ?int $campusId = null): array
     {
-        $campuses = Campus::query()
-            ->when($campusId, fn ($q, $id) => $q->whereKey($id))
-            ->orderBy('name')
-            ->get(['id', 'code', 'name']);
-
-        $leadByCampus = Lead::query()
-            ->selectRaw('campus_id, COUNT(*) as aggregate')
+        $rows = Lead::query()
+            ->with('campus:id,code,name')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->whereDate('created_at', $today->toDateString())
-            ->groupBy('campus_id')
-            ->pluck('aggregate', 'campus_id');
+            ->latest('created_at')
+            ->latest('id')
+            ->limit(12)
+            ->get(['id', 'campus_id', 'name', 'phone', 'status', 'type', 'created_at'])
+            ->map(function (Lead $lead) use ($campusId) {
+                $campusLabel = optional($lead->campus)->code
+                    ?: optional($lead->campus)->name
+                    ?: 'Campus';
 
-        $followupByCampus = LeadFollowup::query()
-            ->selectRaw('campus_id, COUNT(*) as aggregate')
-            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereDate('created_at', $today->toDateString())
-            ->groupBy('campus_id')
-            ->pluck('aggregate', 'campus_id');
-
-        $admissionByCampus = DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->selectRaw('registrations.campus_id as campus_id, COUNT(*) as aggregate')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
-            ->whereDate('admissions.admission_date', $today->toDateString())
-            ->groupBy('registrations.campus_id')
-            ->pluck('aggregate', 'campus_id');
-
-        $collectionByCampus = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-                ->selectRaw('campus_id, SUM(COALESCE(net_payable, 0)) as aggregate')
-                ->groupBy('campus_id'),
-            $today->copy()->startOfDay(),
-            $today->copy()->endOfDay()
-        )->pluck('aggregate', 'campus_id');
-
-        $rows = $campuses->map(function (Campus $campus) use ($leadByCampus, $followupByCampus, $admissionByCampus, $collectionByCampus) {
-            return [
-                'campus' => $campus->code ?: $campus->name,
-                'leads' => (int) ($leadByCampus[$campus->id] ?? 0),
-                'followups' => (int) ($followupByCampus[$campus->id] ?? 0),
-                'admissions' => (int) ($admissionByCampus[$campus->id] ?? 0),
-                'collection' => (float) ($collectionByCampus[$campus->id] ?? 0),
-            ];
-        });
+                return [
+                    'status_label' => $this->formatLeadStatusLabel($lead->status),
+                    'status_tone' => $this->leadStatusTone($lead->status),
+                    'student_name' => $lead->name ?: 'N/A',
+                    'phone' => $lead->phone ?: 'N/A',
+                    'date_label' => $this->formatDashboardDate($lead->created_at),
+                    'campus' => $campusLabel,
+                    'show_campus' => !$campusId,
+                ];
+            });
 
         return [
             'rows' => $rows->values()->all(),
             'totals' => [
-                'leads' => (int) $rows->sum('leads'),
-                'followups' => (int) $rows->sum('followups'),
-                'admissions' => (int) $rows->sum('admissions'),
-                'collection' => (float) $rows->sum('collection'),
+                'leads' => (int) $rows->count(),
+                'followups' => 0,
+                'admissions' => 0,
+                'collection' => 0,
             ],
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildAdmissionsActivity(Carbon $today, ?int $campusId = null): array
+    {
+        $rows = Admission::query()
+            ->with('campus:id,code,name')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+            ->whereDate('admission_date', $today->toDateString())
+            ->latest('admission_date')
+            ->latest('id')
+            ->limit(12)
+            ->get(['id', 'campus_id', 'student_name', 'phone', 'student_status', 'admission_date'])
+            ->map(function (Admission $admission) use ($campusId) {
+                $campusLabel = optional($admission->campus)->code
+                    ?: optional($admission->campus)->name
+                    ?: 'Campus';
+
+                return [
+                    'status_label' => $this->formatAdmissionStatusLabel($admission->student_status),
+                    'status_tone' => $this->admissionStatusTone($admission->student_status),
+                    'student_name' => $admission->student_name ?: 'N/A',
+                    'phone' => $admission->phone ?: 'N/A',
+                    'date_label' => $this->formatDashboardDate($admission->admission_date),
+                    'campus' => $campusLabel,
+                    'show_campus' => !$campusId,
+                ];
+            });
+
+        return [
+            'rows' => $rows->values()->all(),
+        ];
+    }
+
+    private function formatLeadStatusLabel(?string $status): string
+    {
+        $status = (string) $status;
+
+        if ($status === '') {
+            return 'New';
+        }
+
+        return ucfirst(str_replace('_', ' ', $status));
+    }
+
+    private function leadStatusTone(?string $status): string
+    {
+        return match ((string) $status) {
+            'registered', 'enrolled' => 'success',
+            'contacted', 'new' => 'info',
+            'pending' => 'warning',
+            'transferred' => 'orange',
+            'not_interesting', 'not_interested', 'inactive' => 'muted',
+            default => 'primary',
+        };
+    }
+
+    private function formatAdmissionStatusLabel(?string $status): string
+    {
+        $status = (string) $status;
+
+        if ($status === '') {
+            return 'Enrolled';
+        }
+
+        return ucfirst(str_replace('_', ' ', $status));
+    }
+
+    private function admissionStatusTone(?string $status): string
+    {
+        return match ((string) $status) {
+            'enrolled' => 'success',
+            'concluded' => 'primary',
+            'frozen' => 'warning',
+            'suspended' => 'info',
+            'admission_cancelled', 'dropped' => 'danger',
+            'incomplete' => 'muted',
+            default => 'primary',
+        };
+    }
+
+    private function formatDashboardDate($timestamp): string
+    {
+        if (!$timestamp) {
+            return 'N/A';
+        }
+
+        $date = Carbon::parse($timestamp);
+
+        if ($date->isToday()) {
+            return 'Today ' . $date->format('H:i');
+        }
+
+        if ($date->isYesterday()) {
+            return 'Yesterday ' . $date->format('H:i');
+        }
+
+        return $date->format('d-M H:i');
     }
 
     /**

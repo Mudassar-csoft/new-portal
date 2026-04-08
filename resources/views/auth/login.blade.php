@@ -289,6 +289,11 @@
             margin-top:1rem;
             margin-left: 0px;
          }
+         .sign-box .btn.btn-rounded {
+    
+    padding: 10px !important;
+    margin-top:0px !important;
+}
     }
 
     </style>
@@ -327,7 +332,7 @@
                     <div class="sign-avatar">
                         <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
                     </div>
-                    <header class="sign-title">Welcome  career institue</header>
+                    <header class="sign-title">Welcome Back</header>
                     <div class="row">
 
                         <div class=" col-12">
@@ -349,7 +354,7 @@
                         <a href="#">Reset Password</a>
                     </div>
                 </div>
-                    <button type="submit" class="btn btn-rounded mt-3">Sign in</button>
+                    <button type="submit" class="btn btn-rounded mt-3 p-2">Sign in</button>
                     @if($errors->any())
                         <div class="sign-note secondary">
                             {{ $errors->first() }}
