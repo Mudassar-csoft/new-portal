@@ -219,11 +219,6 @@
             margin-top: 4px;
         }
 
-        .form-control.is-invalid {
-            border-color: #e53935;
-            box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
-        }
-
         .lead-transfer-form .form-row {
             margin-left: -10px;
             margin-right: -10px;

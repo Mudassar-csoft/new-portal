@@ -63,17 +63,17 @@
 									<label for="range-year">Yearly</label>
 								</div>
 							</div>
-							<table class="tbl-data ml-lg-3 ml-2">
+							<table class="tbl-data">
 								<tr>
-									<!-- <td class="collection-label" style = "font-size:14px;	">Today Collection</td> -->
+									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today Collection</td>
 									<td class="price color-purple collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<!-- <td class="collection-label" style = "font-size:14px;	">Weekly Collection</td> -->
+									<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly Collection</td>
 									<td class="price color-yellow collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
-									<!-- <td class="collection-label" style = "font-size:14px;	">Monthly Collection</td> -->
+									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly Collection</td>
 									<td class="price color-lime collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 								</tr>
 							</table>
@@ -119,10 +119,10 @@
 					<div class="col-md-6 ">
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
-								<button class="stat-eye" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1">***</div>
-								<div class="caption">
-									<div class="text">Total Leads</div>
+								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-mask-mode="icon"></div>
+								<div class="caption mt-3">
+									<div class="text ">Total Leads</div>
 								</div>
 							</div>
 						</article>
@@ -130,9 +130,9 @@
 					<div class="col-md-6 ">
 						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
-								<button class="stat-eye" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2">***</div>
-								<div class="caption">
+								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-mask-mode="icon"></div>
+								<div class="caption mt-3">
 									<div class="text">Current Students</div>
 								</div>
 							</div>
@@ -141,9 +141,9 @@
 					<div class="col-md-6 ">
 						<article class="statistic-box yellow">
 							<div class="stat-inner">
-								<button class="stat-eye" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3">***</div>
-								<div class="caption">
+								<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-mask-mode="icon"></div>
+								<div class="caption mt-3">
 									<div class="text">Current Month Collection</div>
 								</div>
 							</div>
@@ -151,10 +151,10 @@
 					</div><!--.col-->
 					<div class="col-md-6 ">
 						<article class="statistic-box green mr-1">
-							<div class="stat-inner">
-								<button class="stat-eye" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4">***</div>
-								<div class="caption">
+							<div class="stat-inner m">
+								<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-mask-mode="icon"></div>
+								<div class="caption mt-3 ">
 									<div class="text">Current Month Pending</div>
 								</div>
 							</div>
@@ -168,7 +168,7 @@
 <!--Current Month Charts-->
 	<div class="row pl-4 pr-3 tables-dashbord">
 		<div class="col-xl-12 pl-1  ml-1 mr-2 m-md-0 m-lg-0">
-			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300 ">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
@@ -382,12 +382,12 @@
 			margin: 8px 0 20px;
 		}
 		.chart-statistic-box {
-			border-radius: 4px;
+			border-radius: 8px;
 			overflow: hidden;
 		}
 		.chart-statistic-box .chart-container {
 			margin-left: 0;
-			border-radius: 4px;
+			border-radius: 8px;
 			overflow: hidden;
 		}
 		.chart-statistic-box .chart-txt {
@@ -396,8 +396,8 @@
     height: 314px;
     padding: 15px 20px;
     background: #304b58;
-    -webkit-border-radius: 4px 0 0 4px;
-    border-radius: 4px 0 0 4px;
+    -webkit-border-radius: 8px 0 0 8px;
+    border-radius: 8px 0 0 8px;
     color: #fff;
     position: relative;
     z-index: 5;
@@ -506,7 +506,7 @@
         }
  .statistic-box {
        -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: 8px;
     text-align: center;
     color: #fff;
     background: no-repeat 50% 50%;
@@ -533,8 +533,8 @@
 
         .statistic-box .stat-eye {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 12px;
+            top: 12px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: #fff;
@@ -545,10 +545,41 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            z-index: 2;
         }
 
         .statistic-box .stat-eye:hover {
             background: rgba(255, 255, 255, 0.35);
+        }
+
+        /* .statistic-box .stat-eye-inline {
+            left: auto;
+            right: 12px;
+            top: 12px;
+            transform: none;
+            width: 32px;
+            height: 32px;
+        } */
+
+		.statistic-box .stat-eye-inline {
+            left: 50%;
+            right: auto;
+            top: 22px;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+        }
+
+        .statistic-box .stat-eye-inline.is-revealed {
+            right: 12px;
+            top: 12px;
+            transform: none;
+            width: 32px;
+            height: 32px;
+        }
+
+        .stat-number[data-mask-mode="icon"] {
+            min-height: 44px;
         }
 
         .month-chart-card .panel-heading {
@@ -1392,14 +1423,25 @@
 			}
 
 			// Eye toggle for statistic boxes
-			$('.stat-number').text(maskedValue);
+			$('.stat-number').each(function () {
+				var stat = $(this);
+				var maskMode = stat.data('maskMode');
+				stat.data('hidden', true);
+				stat.text(maskMode === 'icon' ? '' : maskedValue);
+			});
 			$('.stat-eye').on('click', function (e) {
 				e.preventDefault();
-				var target = $(this).data('target');
+				var eye = $(this);
+				var target = eye.data('target');
 				var stat = $('.stat-number[data-target="' + target + '"]');
-				var hidden = stat.text() === maskedValue;
-				stat.text(hidden ? stat.data('value') : maskedValue);
-				$(this).find('i').toggleClass('fa-eye fa-eye-slash');
+				var hidden = stat.data('hidden') !== false;
+				var maskMode = stat.data('maskMode');
+				stat.text(hidden ? stat.data('value') : (maskMode === 'icon' ? '' : maskedValue));
+				stat.data('hidden', !hidden);
+				if (maskMode === 'icon') {
+					eye.toggleClass('is-revealed', hidden);
+				}
+				eye.find('i').toggleClass('fa-eye fa-eye-slash');
 			});
 
 			function toNumber(value) {

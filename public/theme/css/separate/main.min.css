@@ -5667,7 +5667,11 @@ label.error {
 .form-label {
     display: block;
     margin-bottom: 6px;
-    font-size: 1rem
+    margin-top: 6px;
+    font-size: 12.8px !important;
+    color: #343a40 !important;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
 .form-label .font-icon {
@@ -13216,7 +13220,6 @@ body {
     .site-header .site-logo img {
         height: auto;
         width: 35px;
-        top: 6px
     }
 }
 

@@ -146,7 +146,7 @@ text-rendering: optimizeLegibility;
 .table {
   width: 100%;
   max-width: 100%;
-  margin-left: 0.1875rem !important; 
+  /* margin-left: 0.1875rem !important;  */
 }
 
 .table th {
@@ -345,8 +345,8 @@ padding: 10px 16px !important;
    ========================================================= */
 .dataTables_wrapper {
   box-sizing: border-box;
-  padding-left: 3px !important;
-  padding-right: 12px !important;
+  /* padding-left: 3px !important;
+  padding-right: 12px !important; */
 }
 
 .dataTables_wrapper .dataTables_filter input,
@@ -381,8 +381,8 @@ padding-left: 10px !important;
     align-items: center;
     justify-content: space-between !important;
     /* gap: 488px !important; */
-    margin-bottom: 8px !important;
-	padding: 10px;
+    /* margin-bottom: 8px !important;
+	padding: 10px; */
 }
 .dataTables_wrapper .table-responsive {
 overflow-x: auto;
@@ -411,11 +411,15 @@ height: 26vh !important;
 }
 
 .follow-controls {
-padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 2px 12px 2px;
+    /* margin-left: 4px; */
 }
 
 .follow-footer {
-padding: 4px 12px !important;
+padding: 4px 2px !important;
 display: flex;
     align-items: baseline !important;
 }
@@ -462,14 +466,14 @@ margin: 0 !important;
    Forms
    ========================================================= */
 .form-label{
-/* display: block; */
     margin-bottom: 6px;
     margin-top: 6px;
-    font-size: 14px !important;
-   color: #343a40 !important;
+    font-size: 12.8px !important;
+    color: #343a40 !important;
     text-transform: uppercase;
-	font-weight:600;
+    font-weight: 600;
 }
+
 /* =========================================================
    Shared Form Rhythm
    Match the spacing pattern used in the training lead form
@@ -480,7 +484,7 @@ margin: 0 !important;
   --lead-form-row-gap: 8px;
   --lead-form-col-padding-x: 15px;
   --lead-form-group-margin: 6px;
-  --lead-form-control-height: 2.25rem;
+  --lead-form-control-height: 37px;
   --lead-form-control-padding-y: 0.375rem;
   --lead-form-control-padding-x: 0.625rem;
   --lead-form-textarea-min-height: 5rem;
@@ -575,7 +579,7 @@ form .select2-container--white .select2-selection--single .select2-selection__re
 
 form .select2-container--default .select2-selection--single .select2-selection__arrow,
 form .select2-container--white .select2-selection--single .select2-selection__arrow {
-  height: var(--lead-form-control-height) !important;
+  height: 37px !important;
 }
 
 form .select2-container--default .select2-selection--multiple .select2-selection__rendered,
@@ -595,15 +599,29 @@ form > .embed-actions {
   padding-right: calc(var(--lead-form-row-padding-x) + var(--lead-form-col-padding-x)) !important;
 }
 
-.required::after,
+form label.required::after,
 .required-feild_symbol {
+    content: ' *';
     color: red;
     font-size: 18px !important;
-	margin-left: 1px;
+	margin-left: 0;
+	line-height: 1;
+	flex: 0 0 auto;
+}
+.select2-container--arrow, .select2-selection__rendered{
+	border: solid 1px #d8e2e7;
+border-radius: .25rem;
+font-size: 16px !important;
+/* font-weight:600; */
+line-height: 35px !important;
+color: #343434;
+padding: 0 25px 0 1rem !important;
+height: 28px !important;
+min-height: 28px !important;
+background: #fff;
 }
 
-
-.select2-container--arrow .select2-selection--single .select2-selection__rendered,
+ .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--white .select2-selection--single .select2-selection__rendered {
 border: solid 1px #d8e2e7;
@@ -901,8 +919,8 @@ body, button, html, input, select {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			gap: 12px;
-			padding: 12px;
+			padding: 0px 2px 12px 2px;
+			/* margin-left: 4px; */
 		}
 
 		.follow-search {
@@ -1070,17 +1088,34 @@ font-size: 12px;
 margin-top: 6px;
 }
 
-.form-control.is-invalid,
-.form-control-range.is-invalid {
-border-color: #e53935;
-box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
+form .form-control.is-invalid,
+form .form-control:invalid,
+form .form-select.is-invalid,
+form .form-select:invalid,
+form .custom-select.is-invalid,
+form .custom-select:invalid,
+form .form-control-range.is-invalid,
+form .form-control-range:invalid,
+form .custom-range.is-invalid,
+form .custom-range:invalid,
+.was-validated form .form-control:invalid,
+.was-validated form .form-select:invalid,
+.was-validated form .custom-select:invalid,
+.was-validated form .custom-range:invalid {
+    border-color: #d8e2e7 !important;
+    box-shadow: none !important;
+    background-image: none !important;
 }
 
-.radio-group.is-invalid,
-.gender-options.is-invalid {
-border: 1px solid #e53935;
-border-radius: 6px;
-padding: 6px 10px;
+form .select2-container--default .select2-selection--single.is-invalid,
+form .select2-container--default .select2-selection--multiple.is-invalid,
+form .select2-container--white .select2-selection--single.is-invalid,
+form .select2-container--white .select2-selection--multiple.is-invalid,
+form .is-invalid + .select2-container .select2-selection--single,
+form .is-invalid + .select2-container .select2-selection--multiple {
+    border-color: #d8e2e7 !important;
+    box-shadow: none !important;
+    background-image: none !important;
 }
 
 .lead-form .form-check-input[type="radio"], .lead-form .form-check-input[type="checkbox"] {
@@ -1123,7 +1158,7 @@ transform: rotate(45deg);
     border: none !important;
     font-size: 16px !important;
     letter-spacing: 0.7px;
-    padding: 2px 50px 2px 10px !important;
+    padding: 5px 50px 2px 10px !important;
     font-weight: 500;
 }
 /* .btn.btn-primary:active, .btn.btn-primary:hover, button#lead-action-7, button#action-career-1, button#action-ahmed-khan-2, button#action-sara-iqbal-3, button#action-bilal-awan-4, button#action-areeba-fatima-6, button#action-zain-ali-5 {
@@ -1164,7 +1199,8 @@ button[id^="action-"].btn[aria-expanded="true"] {
 
 .box-typical.box-typical-dashboard .box-typical-body {
 overflow: hidden;
-    padding: 1px;
+    /* padding: 1px; */
+	margin:5px;
 }
 
 .box-typical.box-typical-dashboard {
@@ -1452,9 +1488,10 @@ padding-right: 5px;
    Tables
    ========================================================= */
 .table {
-width: 98%;
-max-width: 98%;
-margin-left: 8px;
+width: 100%;
+max-width: 100%;
+/* margin-left: 8px;%    .table {
+ */
 }
 }
 /* >= 1200px */
@@ -1549,10 +1586,10 @@ margin-left: 0;
 				gap:30px;
 			}
 			    .chart-statistic-box .chart-txt{
-					        border-radius: 4px 4px 4px 4px;
+					       border-radius: 8px 8px 8px 8px;
 				}
 				.chart-statistic-box .chart-container-in{
-					        border-radius: 4px 4px 4px 4px;
+					        border-radius: 8px 8px 8px 8px;
 
 				}
 		}
@@ -1717,6 +1754,7 @@ $(document).ready(function () {
 </script>
 		
 	@endif
+	@include('partials.inline_form_validation')
 	@stack('scripts')
 	
 </body>

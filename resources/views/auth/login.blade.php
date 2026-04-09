@@ -28,6 +28,13 @@
             overflow-y: hidden;
         }
 
+        .sign-box .form-control.is-invalid,
+        .sign-box .form-control:invalid {
+            border-color: #d8e2e7 !important;
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+
         .login-shell {
             position: relative;
             min-height: 100vh;
@@ -375,6 +382,7 @@
     <script src="{{ asset('theme/js/lib/bootstrap/bootstrap.min.js') }}"></script>
     <script src="{{ asset('theme/js/plugins.js') }}"></script>
     <script src="{{ asset('theme/js/app.js') }}"></script>
+    @include('partials.inline_form_validation')
     <script>
         (function () {
             var slider = document.getElementById('loginSlider');

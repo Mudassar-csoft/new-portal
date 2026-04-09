@@ -55,23 +55,10 @@
         
         <div class="col-md-6 col-lg-3 ">
             <label class="form-label text-dark fw-semibold small ">
-                Teaching Method <span class="required-feild_symbol">*</span>
+               Teaching Method <!--  <span class="required-feild_symbol">*</span> -->
             </label>
             <div class="row mt-2 choice-group @error('details.teaching_method') is-invalid @enderror">
-                <div class="col-4 d-flex justify-content-center mb-1">
-                    <div class="form-check d-flex align-items-center">
-                        <input class="form-check-input mt-0 mr-1"
-                            type="radio"
-                            id="teaching-method-online"
-                            name="details[teaching_method]"
-                            value="online"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'online')) === 'online')>
-                        <label class="form-check-label small mb-0"
-                            for="teaching-method-online">
-                            Online
-                        </label>
-                    </div>
-                </div>
+                
                 <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
@@ -79,10 +66,24 @@
                             id="teaching-method-campus"
                             name="details[teaching_method]"
                             value="campus"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'campus')>
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'campus')>
                         <label class="form-check-label small mb-0"
                             for="teaching-method-campus">
                             Campus
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="teaching-method-online"
+                            name="details[teaching_method]"
+                            value="online"
+                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'online')>
+                        <label class="form-check-label small mb-0"
+                            for="teaching-method-online">
+                            Online
                         </label>
                     </div>
                 </div>
@@ -125,7 +126,7 @@
         
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required"> Country </label>
+            <label class="form-label small fw-semibold text-dark"> Country </label>
             <select id="lead-country-select"
                     name="details[country]"
                     class="form-select form-select-sm @error('details.country') is-invalid @enderror">
@@ -135,7 +136,7 @@
             @enderror
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required"> City </label>
+            <label class="form-label small fw-semibold text-dark"> City </label>
             <select id="lead-city-select"
                     name="city"
                     class="form-select form-select-sm @error('city') is-invalid @enderror">
@@ -211,7 +212,8 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-lg-1">
             <label class="form-label text-dark fw-semibold small ">
-                Gender <span class="required-feild_symbol">*</span>
+                Gender 
+                <!-- <span class="required-feild_symbol">*</span> -->
             </label>
              <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
                 <div class="col-4 d-flex justify-content-center mb-1">
@@ -277,7 +279,7 @@
         </div>
 
 <div class="col-md-6 col-lg-3">
-    <label class="form-label small fw-semibold text-dark required">
+    <label class="form-label small fw-semibold text-dark">
         Probability
     </label>
 
@@ -293,16 +295,16 @@
 
     <!-- Scale -->
     <div class="range-scale" aria-hidden="true">
-        @for ($tick = 0; $tick <= 100; $tick += 5)
+        @for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
             <span
-                class="range-tick {{ $tick % 20 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tick === 0 ? ' range-tick-start' : '' }}{{ $tick === 100 ? ' range-tick-end' : '' }}"
-                style="left: {{ $tick }}%;"
+                class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
+                style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
             ></span>
         @endfor
     </div>
 
     <!-- Numbers -->
-    <div class="range-numbers text-muted">
+    <div class="range-numbers text-muted pt-0">
         <span>0</span>
         <span>20</span>
         <span>40</span>
@@ -342,28 +344,28 @@
 /* SCALE WITH BIG + SMALL TICKS */
 .range-scale {
     position: relative;
-    width: calc(100% - 4px);
+    width: calc(100% - 12px);
     height: 12px;
-    margin: 1px 2px 0;
+    margin: 1px 6px 0;
 }
 
 .range-tick {
     position: absolute;
-    top: 0;
+    top: -2;
     transform: translateX(-50%);
     border-radius: 999px;
 }
 
 .range-tick-minor {
     width: 1px;
-    height: 7px;
-    background: #d0d3d8;
+    height: 5px;
+    background: #dedfe0;
 }
 
 .range-tick-major {
     width: 1px;
     height: 10px;
-    background: #b8c1cb;
+    background: #dedfe0;
 }
 
 .range-tick-start {

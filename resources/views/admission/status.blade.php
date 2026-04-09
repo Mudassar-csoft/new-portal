@@ -166,10 +166,10 @@
 
 		.follow-controls {
 			display: flex;
-			align-items: baseline;
+			align-items: center;
 			justify-content: space-between;
-			gap: 12px;
-			margin-bottom: 12px;
+			padding: 0px 2px 12px 2px;
+			/* margin-left: 4px; */
 		}
 
 		.follow-search {

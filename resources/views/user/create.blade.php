@@ -19,7 +19,7 @@
 						<div class="section-title form-label">Access &amp; Roles</div>
 						<div class="form-row" >
 						<div class="form-group col-md-6">
-							<label class="form-label required">Campus</label>
+							<label class="form-label">Campus</label>
 								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
 									<option value="">Select campus</option>
 								@foreach($campuses as $campus)
@@ -31,7 +31,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-6">
-							<label class="form-label required">Roles</label>
+							<label class="form-label">Roles</label>
 								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
 								@foreach($roles as $role)
 									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
@@ -39,6 +39,9 @@
 							</select>
 							<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
 							@error('roles')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							@error('roles.*')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
@@ -49,14 +52,14 @@
 						<div class="form-row">
 						<div class="form-group col-md-6">
 							<label class="form-label required">Full Name</label>
-							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}">
+							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
 							@error('name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-6">
 							<label class="form-label required">Email</label>
-							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}">
+							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}" required>
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -76,7 +79,7 @@
 								<span>Password</span>
 							</label>
 							<div class="input-group">
-								<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
+								<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********" required>
 								<span class="input-group-btn">
 									<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
 										<i class="fa fa-eye"></i>
@@ -90,7 +93,7 @@
 						<div class="form-group col-md-6">
 							<label class="form-label required">Confirm Password</label>
 							<div class="input-group">
-								<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
+								<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********" required>
 								<span class="input-group-btn">
 									<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
 										<i class="fa fa-eye"></i>
@@ -233,7 +236,7 @@
 			color: #fff;
 		}
 		.select2-container--white .select2-selection--single .select2-selection__arrow {
-			height: 36px;
+			height: 28px;
 			right: 8px;
 			width: 18px;
 		}

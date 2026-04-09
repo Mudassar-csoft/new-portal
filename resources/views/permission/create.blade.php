@@ -3,18 +3,7 @@
 @section('title', 'Create Permission')
 
 @section('content')
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create Permission</title>
-
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
+<div class="permission-page">
     <style>
         /* ========== GLOBAL FIXES ========== */
         * {
@@ -87,9 +76,6 @@
             }
         }
     </style>
-</head>
-<body>
-
 <div class="container-fluid permission-wrapper">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10 col-sm-12">
@@ -122,6 +108,7 @@
                                     name="resource"
                                     placeholder="lead"
                                     value="{{ old('resource') }}"
+                                    required
                                 >
                                 @error('resource')
                                     <div class="field-error">{{ $message }}</div>
@@ -138,6 +125,7 @@
                                     name="action"
                                     placeholder="view"
                                     value="{{ old('action') }}"
+                                    required
                                 >
                                 @error('action')
                                     <div class="field-error">{{ $message }}</div>
@@ -163,9 +151,7 @@
                             <button type="submit" class="btn btn-inline btn-primary-outline">
                                 Create Permission
                             </button>
-                            <button type="button" class="btn btn-inline btn-danger-outline">
-                                Cancel
-                            </button>
+                            <a href="{{ route('permissions.index') }}" class="btn btn-inline btn-danger-outline">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -175,8 +161,7 @@
     </div>
 </div>
 
-</body>
-</html>
+</div>
 
 @endsection
 

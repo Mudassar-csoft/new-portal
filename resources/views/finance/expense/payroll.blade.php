@@ -160,6 +160,8 @@
       
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
+    /* padding: 1px; */
+    margin: 5px;
 }
 .box-typical.box-typical-dashboard{
     margin:0px 0px 5px !important;

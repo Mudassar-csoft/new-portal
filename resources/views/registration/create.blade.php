@@ -306,11 +306,6 @@
 			color: #5f7289;
 		}
 
-		.registration-form .form-control.is-invalid {
-			border-color: #e53935;
-			box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
-		}
-
 		.registration-form .field-error {
 			margin-top: 6px;
 			font-size: 12px;
@@ -323,11 +318,6 @@
 			border: 1px solid #d6e2f0;
 			border-radius: 16px;
 			background: #fbfdff;
-		}
-
-		.registration-form .form-group-radios.is-invalid {
-			border-color: #e53935;
-			box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
 		}
 
 		.registration-form .form-group-radios .form-label {

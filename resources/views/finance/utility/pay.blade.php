@@ -164,6 +164,8 @@
 }
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
+    /* padding: 1px; */
+    margin: 5px;
 }
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }

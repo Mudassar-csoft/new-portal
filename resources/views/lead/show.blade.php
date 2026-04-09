@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="tab-content" id="tab-followups" style="display: block;">
-			<div class="d-flex justify-content-end align-items-center mb-2 p-1">
+			<div class="d-flex justify-content-end align-items-center p-1">
 				
 				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
 				<button id="toggle-followup-form" class="btn btn-primary btn-sm" {{ $isClosed ? 'disabled' : '' }}>
@@ -75,7 +75,7 @@
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
 							<div class="form-row" >
 								<div class="form-group col-lg-3 col-md-6 followup-toggle">
-									<label class="form-label">Follow-Up Method </label>
+									<label class="form-label required">Follow-Up Method </label>
 									<select class="form-control" name="method" required>
 										<option value="">- Select -</option>
 										@foreach (['call', 'sms', 'email', 'whatsapp', 'walk-in'] as $method)
@@ -103,13 +103,13 @@
 									<div class="field-error" data-error-for="stage"></div>
 								</div>
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="next-followup-wrap">
-									<label class="form-label">Next Follow Up</label>
-									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date" value="{{ old('next_action_date') }}">
+									<label class="form-label required">Next Follow Up </label>
+									<input type="datetime-local" class="form-control" name="next_action_date" id="next_action_date" value="{{ old('next_action_date') }}" required>
 									<div class="field-error" data-error-for="next_action_date"></div>
 								</div>
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="campus-wrap">
-									<label class="form-label">Preferred Campus</label>
-									<select class="form-control" name="campus_id" id="campus_id">
+									<label class="form-label ">Preferred Campus</label>
+									<select class="form-control" name="campus_id" id="campus_id" required>
 										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
 										@foreach ($campuses as $campus)
 											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $lead->campus_id) === (string) $campus->id)>
@@ -132,8 +132,8 @@
 											<div class="field-error" data-error-for="email"></div>
 										</div>
 										<div class="form-group col-lg-3 col-md-6 followup-toggle">
-											<label class="form-label">Area</label>
-											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area">
+											<label class="form-label required">Area</label>
+											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area" required>
 											<div class="field-error" data-error-for="lead_details.area"></div>
 										</div>
 										<div class="form-group col-lg-3 col-md-6 followup-toggle">
@@ -152,7 +152,7 @@
 
 							<div class="form-row align-items-center">
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="probability-wrap">
-									<label class="form-label">Probability</label>
+									<label class="form-label">Probability </label>
 									<input type="range"
 										min="0"
 										max="100"
@@ -160,13 +160,14 @@
 										id="probabilitySlider"
 										name="probability"
 										value="{{ $defaultProbability }}"
-										class="custom-range">
+										class="custom-range"
+										required>
 
 									<div class="range-scale" aria-hidden="true">
-										@for ($tick = 0; $tick <= 100; $tick += 5)
+										@for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
 											<span
-												class="range-tick {{ $tick % 20 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tick === 0 ? ' range-tick-start' : '' }}{{ $tick === 100 ? ' range-tick-end' : '' }}"
-												style="left: {{ $tick }}%;"
+												class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
+												style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
 											></span>
 										@endfor
 									</div>
@@ -186,10 +187,11 @@
 								</div>
 
 								<div class="form-group col-md-9 followup-toggle">
-									<label class="form-label">Remarks</label>
+									<label class="form-label required">Remarks </label>
 									<textarea class="form-control" name="note" rows="2"
 										placeholder="Add remarks for this follow-up"
-										style="width:100%; height:80px !important;" >{{ old('note') }}</textarea>
+										style="width:100%; height:80px !important;"
+										required>{{ old('note') }}</textarea>
 									<div class="field-error" data-error-for="note"></div>
 								</div>
 							</div>
@@ -205,7 +207,7 @@
 
 							<div class="text-right p-1">
 								<button type="submit" class="btn btn-primary-outline">Save Follow-Up</button>
-								<button type="button" id="cancel-followup-btn" class="btn btn-danger-outline">Cancel Follow-Up</button>
+								<button type="button" id="cancel-followup-btn" class="btn btn-danger-outline">Cancel</button>
 							</div>
 						</fieldset>
 					</form>
@@ -386,6 +388,8 @@
 }
 		.box-typical.box-typical-dashboard .box-typical-body {
    			 overflow: hidden;
+			 /* padding: 1px; */
+			 margin: 5px;
 		}
 		.box-typical.box-typical-dashboard{
    			 margin:0px 0px 5px !important;
@@ -430,6 +434,7 @@
 			-moz-font-smoothing: antialiased;
 			-o-font-smoothing: antialiased;
 		}
+
         .col-md-3 {
 			flex: 0 0 200px !important;
 			max-width: 200px !important;
@@ -822,9 +827,9 @@
 }
 	.range-scale {
     position: relative;
-    width: calc(100% - 4px);
+    width: calc(100% - 12px);
     height: 12px;
-    margin: 1px 2px 0;
+    margin: 1px 6px 0;
 }
 
 	.range-tick {
@@ -836,7 +841,7 @@
 
 	.range-tick-minor {
     width: 1px;
-    height: 7px;
+    height: 5px;
     background: #d0d3d8;
 }
 
@@ -960,6 +965,44 @@ input[name="probability"] + .small {
 			if (toggleButton) {
 				toggleButton.textContent = 'Hide Follow-Up';
 			}
+		}
+
+		function renderFollowupClientErrors(form) {
+			const errors = {};
+			const fields = Array.from(form.elements).filter(function (field) {
+				return field.willValidate && !field.disabled;
+			});
+
+			fields.forEach(function (field) {
+				if (field.checkValidity()) {
+					return;
+				}
+
+				const key = field.name;
+				if (!key || errors[key]) {
+					return;
+				}
+
+				if (field.validity.valueMissing) {
+					errors[key] = ['This field is required.'];
+					return;
+				}
+
+				if (field.validity.typeMismatch) {
+					errors[key] = ['Please enter a valid value.'];
+					return;
+				}
+
+				errors[key] = [field.validationMessage || 'Please review this field.'];
+			});
+
+			if (!Object.keys(errors).length) {
+				return true;
+			}
+
+			renderFollowupErrors(form, errors);
+			showAlert('Error', 'Please fill the required fields.', 'error');
+			return false;
 		}
 
 		function initTabs() {
@@ -1180,6 +1223,10 @@ input[name="probability"] + .small {
 			form.addEventListener('submit', async function (event) {
 				event.preventDefault();
 				clearFollowupErrors(form);
+
+				if (!renderFollowupClientErrors(form)) {
+					return;
+				}
 
 				const button = form.querySelector('button[type="submit"]');
 

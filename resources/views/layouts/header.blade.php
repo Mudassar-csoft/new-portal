@@ -5,7 +5,7 @@
         <img class="hidden-lg-down" src="img/mobile-logo.webp" alt="Career-Institute"
         style="height: 31px; width: 31px;">
 				<img class="hidden-md-down" src="img/logo-career.webp" alt="Career-Institute"
-					style="height: 31px; width: 160px;">
+					style="height: 32px; width: 160px;">
 			</a>
 
 			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar">
@@ -567,22 +567,22 @@
 .site-header-search{
     display:flex !important;
     align-items:center !important;
-    height:30px !important;
+    height:34px !important;
     position:relative;
     padding-right:35px !important;
 }
 .site-header-search-input{
     display:block !important;
     width:100% !important;
-    height:28px !important;
+    height:32px !important;
     padding:0 0 0 14px !important;
     margin:0 !important;
     border:none !important;
     background:transparent !important;
-    line-height:28px !important;
+    line-height:32px !important;
 }
 .site-header-search-input::placeholder{
-    line-height:28px !important;
+    line-height:32px !important;
 }
 .site-header-search-btn{
     position:absolute !important;
@@ -593,10 +593,10 @@
     align-items:center !important;
     justify-content:center !important;
     width:35px !important;
-    height:28px !important;
+    height:32px !important;
     padding:0 !important;
     margin:0 !important;
-    line-height:28px !important;
+    line-height:32px !important;
 }
 .site-header-search-btn .font-icon-search{
     display:flex !important;

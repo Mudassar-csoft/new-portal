@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="form-label required" >Flags</label>
-                                    <div class="d-flex gap-3  mt-3">
+                                    <div class="d-flex gap-3  mt-2">
                                     <div class="d-flex align-items-center justify-center">    
                                     <input type="checkbox" name="is_night_shift" value="1">
                                         <label class="ml-1"> Night</label>

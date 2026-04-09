@@ -10,7 +10,7 @@
 					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0 form-label">User Login Logs</h3>
-							<span class="text-muted">Track user sign-ins and sign-outs.</span>
+							<!-- <span class="text-muted">Track user sign-ins and sign-outs.</span> -->
 						</div>
 					</header>
 					<div class="box-typical-body panel-body">
@@ -54,7 +54,7 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: 12px;
-			margin-bottom: 4px;
+			/* margin-bottom: 4px; */
 		}
 		.login-logs .dataTables_wrapper .follow-footer {
 			margin-top: 10px;

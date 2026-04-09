@@ -10949,7 +10949,7 @@ body {
   height: 80px;
   background: #fff;
   border-bottom: solid 1px #c5d6de;
-  padding: 20px 15px 0 0;
+  padding: 19px 15px 0 0;
   z-index: 80;
   /* ==========================================================================
 	  Notification & messages
@@ -11601,7 +11601,15 @@ body {
 }
 @media (max-width: 1056px) {
   .site-header {
-    padding-right: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: #fff;
+    border-bottom: solid 1px #c5d6de;
+    padding: 19px 15px 0 0;
+    z-index: 80;
   }
   .site-header .site-logo-text {
     display: none;
