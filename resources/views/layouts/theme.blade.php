@@ -376,7 +376,7 @@ div.dataTables_wrapper div.dataTables_filter input{
 .dataTables_length {
 padding-left: 10px !important;
 }
-.dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer {
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .dataTables_wrapper .follow-footer {
     display: flex;
     align-items: center;
     justify-content: space-between !important;
@@ -416,6 +416,328 @@ height: 26vh !important;
     justify-content: space-between;
     padding: 0px 2px 12px 2px;
     /* margin-left: 4px; */
+}
+
+.follow-controls.follow-controls--toolbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    padding: 0 2px 12px 2px !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+.dataTables_wrapper .follow-controls.follow-controls--toolbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 0 2px 12px 2px !important;
+    margin: 0 !important;
+}
+
+.follow-controls.follow-controls--toolbar .follow-controls-search-group {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 14px !important;
+    flex: 0 1 auto !important;
+    min-width: 280px !important;
+    margin-left: auto !important;
+}
+
+.dataTables_wrapper .follow-controls.follow-controls--toolbar .follow-controls-search-group {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 14px !important;
+    margin-left: auto !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_filter,
+.follow-controls.follow-controls--toolbar .follow-search {
+    position: relative !important;
+    margin: 0 !important;
+    float: none !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_filter label {
+    margin: 0;
+    width: 100%;
+    font-size: 0;
+    color: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_filter label::after {
+    display: none !important;
+    content: none !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_filter input,
+.follow-controls.follow-controls--toolbar .follow-search input {
+    width: 240px !important;
+    max-width: 100%;
+    height: 36px !important;
+    border-radius: 999px !important;
+    border: 1px solid #d7e5f1 !important;
+    background: #fff !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.02);
+    padding: 6px 18px !important;
+    font-size: 14px !important;
+    color: #6f8ca3 !important;
+    margin: 0 !important;
+    vertical-align: middle !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_filter input::placeholder,
+.follow-controls.follow-controls--toolbar .follow-search input::placeholder {
+    color: #8ca3b6;
+}
+
+.follow-controls.follow-controls--toolbar .follow-controls-tools {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    flex-wrap: nowrap !important;
+}
+
+.follow-toolbar-group {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+}
+
+.follow-toolbar-btn,
+.follow-toolbar-dropdown > .btn {
+    width: 32px;
+    min-width: 32px;
+    height: 32px !important;
+    min-height: 32px;
+    padding: 0 !important;
+    border-radius: 6px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #8da4b8 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+    overflow: visible !important;
+    text-indent: 0 !important;
+    white-space: nowrap !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+}
+
+.follow-toolbar-btn:hover,
+.follow-toolbar-btn:focus,
+.follow-toolbar-dropdown > .btn:hover,
+.follow-toolbar-dropdown > .btn:focus,
+.follow-toolbar-dropdown.open > .btn {
+    color: #587992 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+}
+
+.follow-toolbar-btn .glyphicon,
+.follow-toolbar-dropdown > .btn .glyphicon,
+.follow-toolbar-btn .font-icon,
+.follow-toolbar-dropdown > .btn .font-icon,
+.follow-toolbar-btn .fa,
+.follow-toolbar-dropdown > .btn .fa {
+    display: inline-block;
+    font-size: 18px !important;
+    line-height: 1;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: inherit !important;
+}
+
+.follow-toolbar-btn .fa,
+.follow-toolbar-dropdown > .btn .fa,
+.follow-toolbar-btn .fa::before,
+.follow-toolbar-dropdown > .btn .fa::before {
+    font-family: FontAwesome !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.follow-toolbar-btn .fa::before,
+.follow-toolbar-dropdown > .btn .fa::before,
+.follow-toolbar-btn .font-icon::before,
+.follow-toolbar-dropdown > .btn .font-icon::before,
+.follow-toolbar-btn .glyphicon::before,
+.follow-toolbar-dropdown > .btn .glyphicon::before {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: inherit !important;
+    text-indent: 0 !important;
+}
+
+.follow-toolbar-btn .font-icon::before,
+.follow-toolbar-dropdown > .btn .font-icon::before {
+    font-family: startui !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
+}
+
+.follow-toolbar-btn i,
+.follow-toolbar-dropdown > .btn i {
+    font-size: 15px !important;
+    line-height: 1;
+}
+
+.follow-toolbar-dropdown > .btn .caret {
+    margin-left: 0;
+    border-top-color: currentColor;
+}
+
+.follow-toolbar-dropdown > .btn.follow-toolbar-split .caret {
+    margin-top: 2px;
+}
+
+.follow-toolbar-dropdown .dropdown-menu {
+    min-width: 180px;
+    padding: 8px 0;
+    border-radius: 10px;
+    border: 1px solid #d7e5f1;
+    box-shadow: 0 12px 30px rgba(31, 60, 92, 0.12);
+}
+
+.follow-toolbar-dropdown .dropdown-menu > li > a,
+.follow-toolbar-dropdown .dropdown-menu > li > button,
+.follow-toolbar-dropdown .dropdown-menu .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 8px 14px;
+    color: #466277;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    font-size: 13px;
+}
+
+.follow-toolbar-dropdown .dropdown-menu > li > a:hover,
+.follow-toolbar-dropdown .dropdown-menu > li > button:hover,
+.follow-toolbar-dropdown .dropdown-menu .dropdown-item:hover {
+    background: #f2f8fc;
+    color: #24445b;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .checkbox {
+    margin: 0;
+    padding: 0;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 14px;
+    width: 100%;
+    cursor: pointer;
+    color: #466277;
+    font-size: 13px;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .checkbox label:hover {
+    background: #f2f8fc;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .checkbox input {
+    margin: 0;
+    position: static;
+}
+
+.follow-controls.follow-controls--toolbar .follow-search {
+    width: auto !important;
+}
+
+.follow-controls.follow-controls--toolbar .follow-search i {
+    display: none !important;
+}
+
+.follow-controls .select2-container {
+    min-height: 31px !important;
+}
+
+.follow-controls.follow-controls--toolbar > .dataTables_length,
+.follow-controls.follow-controls--toolbar > .follow-controls-length,
+.follow-controls.follow-controls--toolbar > .d-flex:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 auto !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_length,
+.follow-controls.follow-controls--toolbar .dataTables_filter {
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_length label,
+.follow-controls.follow-controls--toolbar .follow-controls-length label {
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 14px !important;
+    color: #343434 !important;
+}
+
+.follow-controls.follow-controls--toolbar .dataTables_length select {
+    height: 31px !important;
+    min-height: 31px !important;
+    padding: 4px 24px 4px 10px !important;
+    margin: 0 !important;
+}
+
+.follow-controls .select2-container .select2-selection--single {
+    height: 31px !important;
+    min-height: 31px !important;
+    border-radius: 6px !important;
+}
+
+.follow-controls .select2-container .select2-selection--single .select2-selection__rendered {
+    height: 31px !important;
+    min-height: 31px !important;
+    line-height: 31px !important;
+    padding-left: 10px !important;
+    padding-right: 28px !important;
+}
+
+.follow-controls .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 31px !important;
+    /* right: 6px !important; */
+}
+
+.follow-table-density-compact th,
+.follow-table-density-compact td {
+    padding-top: 0.12rem !important;
+    padding-bottom: 0.12rem !important;
 }
 
 .follow-footer {
@@ -895,7 +1217,7 @@ body, button, html, input, select {
 			position: relative;
 			border-bottom: 3px solid transparent;
 		}
-.student-directory .dataTables_wrapper .follow-controls, .student-directory .dataTables_wrapper .follow-footer{
+.student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .student-directory .dataTables_wrapper .follow-footer{
 	    align-items: flex-start !important;
 }
 		.follow-tab.active {
@@ -1288,7 +1610,7 @@ form > .embed-actions {
 	white-space: nowrap;
 }
 
-.dataTables_wrapper .follow-controls, .dataTables_wrapper .follow-footer{
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .dataTables_wrapper .follow-footer{
 	flex-direction:column;
 	align-items: flex-start;
 }
@@ -1707,6 +2029,305 @@ margin-left: 0;
 			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
 				$(this).removeClass('dropup dropdown-action-menu');
 				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
+			});
+
+			function getFollowTableContext($controls) {
+				var $wrapper = $controls.closest('.dataTables_wrapper');
+				var $table = $();
+				var api = null;
+
+				if ($wrapper.length) {
+					$table = $wrapper.find('table').first();
+					if ($table.length && $.fn.dataTable && $.fn.dataTable.isDataTable($table.get(0))) {
+						api = $table.DataTable();
+					}
+				} else {
+					$table = $controls.closest('.follow-body, .panel-body, .box-typical-body, .card-body, .table-responsive, .follow-shell')
+						.find('table')
+						.first();
+				}
+
+				return {
+					$wrapper: $wrapper,
+					$table: $table,
+					api: api
+				};
+			}
+
+			function getSearchBlock($controls) {
+				var $search = $controls.children('.dataTables_filter').first();
+				if ($search.length) {
+					return $search;
+				}
+
+				return $controls.children('.follow-search').first();
+			}
+
+			function getLengthControl($controls, $searchBlock) {
+				var $length = $controls.children('.dataTables_length').first();
+				if ($length.length) {
+					return $length;
+				}
+
+				return $controls.children().not($searchBlock).has('select').first();
+			}
+
+			function getColumnLabel($th, index) {
+				var text = $.trim($th.text());
+				return text || ('Column ' + (index + 1));
+			}
+
+			function setManualColumnVisibility($table, index, visible) {
+				var display = visible ? '' : 'none';
+				$table.find('tr').each(function () {
+					var $cells = $(this).children();
+					if ($cells.eq(index).length) {
+						$cells.eq(index).css('display', display);
+					}
+				});
+			}
+
+			function exportTableToCsv($table, filename) {
+				if (!$table.length) {
+					return;
+				}
+
+				var rows = [];
+				$table.find('tr:visible').each(function () {
+					var cells = [];
+					$(this).children(':visible').each(function () {
+						var value = $.trim($(this).text()).replace(/\s+/g, ' ');
+						cells.push('"' + value.replace(/"/g, '""') + '"');
+					});
+					if (cells.length) {
+						rows.push(cells.join(','));
+					}
+				});
+
+				if (!rows.length) {
+					return;
+				}
+
+				var blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+				var link = document.createElement('a');
+				link.href = URL.createObjectURL(blob);
+				link.download = filename || 'table-export.csv';
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+				URL.revokeObjectURL(link.href);
+			}
+
+			function copyTableToClipboard($table) {
+				if (!$table.length) {
+					return;
+				}
+
+				var lines = [];
+				$table.find('tr:visible').each(function () {
+					var values = [];
+					$(this).children(':visible').each(function () {
+						values.push($.trim($(this).text()).replace(/\s+/g, ' '));
+					});
+					if (values.length) {
+						lines.push(values.join('\t'));
+					}
+				});
+
+				var text = lines.join('\n');
+				if (!text) {
+					return;
+				}
+
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(text);
+					return;
+				}
+
+				var textarea = document.createElement('textarea');
+				textarea.value = text;
+				document.body.appendChild(textarea);
+				textarea.select();
+				document.execCommand('copy');
+				document.body.removeChild(textarea);
+			}
+
+			function buildColumnsDropdown($tools, context) {
+				if (!context.$table.length || context.$table.data('follow-columns-ready')) {
+					return;
+				}
+
+				var $headers = context.$table.find('thead th');
+				if (!$headers.length) {
+					return;
+				}
+
+				var $dropdown = $(
+					'<div class="follow-toolbar-dropdown dropdown">' +
+						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Columns">' +
+							'<span class="font-icon font-icon-list-rotate" aria-hidden="true"></span>' +
+							' <span class="caret"></span>' +
+						'</button>' +
+						'<ul class="dropdown-menu" role="menu"></ul>' +
+					'</div>'
+				);
+
+				$headers.each(function (index) {
+					var label = getColumnLabel($(this), index);
+					var checkboxId = 'follow-col-' + (context.$table.attr('id') || 'table') + '-' + index;
+					var $item = $(
+						'<li>' +
+							'<span class="checkbox">' +
+								'<label for="' + checkboxId + '">' +
+									'<input id="' + checkboxId + '" type="checkbox" checked="checked" data-index="' + index + '">' +
+									'<span>' + label + '</span>' +
+								'</label>' +
+							'</span>' +
+						'</li>'
+					);
+					$dropdown.find('.dropdown-menu').append($item);
+				});
+
+				$dropdown.on('click', 'label', function (event) {
+					event.stopPropagation();
+				});
+
+				$dropdown.on('change', 'input[type="checkbox"]', function () {
+					var index = Number($(this).attr('data-index'));
+					var visible = $(this).is(':checked');
+
+					if (context.api) {
+						context.api.column(index).visible(visible);
+						return;
+					}
+
+					setManualColumnVisibility(context.$table, index, visible);
+				});
+
+				context.$table.data('follow-columns-ready', true);
+				$tools.append($dropdown);
+			}
+
+			function buildExportDropdown($tools, context) {
+				if (!context.$table.length) {
+					return;
+				}
+
+				var filename = (context.$table.attr('id') || 'table') + '.csv';
+				var $dropdown = $(
+					'<div class="follow-toolbar-dropdown dropdown">' +
+						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Export">' +
+							'<span class="font-icon font-icon-arrow-square-down" aria-hidden="true"></span>' +
+							' <span class="caret"></span>' +
+						'</button>' +
+						'<ul class="dropdown-menu" role="menu">' +
+							'<li><button type="button" class="dropdown-item" data-export="copy">Copy</button></li>' +
+							'<li><button type="button" class="dropdown-item" data-export="csv">Download CSV</button></li>' +
+						'</ul>' +
+					'</div>'
+				);
+
+				$dropdown.on('click', '[data-export="copy"]', function () {
+					copyTableToClipboard(context.$table);
+				});
+
+				$dropdown.on('click', '[data-export="csv"]', function () {
+					exportTableToCsv(context.$table, filename);
+				});
+
+				$tools.append($dropdown);
+			}
+
+			function buildRefreshButton($tools, context, $searchInput) {
+				var $button = $(
+					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Refresh">' +
+						'<span class="fa fa-refresh" aria-hidden="true"></span>' +
+					'</button>'
+				);
+
+				$button.on('click', function () {
+					if (context.api && context.api.ajax && context.api.ajax.reload) {
+						context.api.ajax.reload(null, false);
+						return;
+					}
+
+					if ($searchInput && $searchInput.length) {
+						$searchInput.trigger('input').trigger('keyup');
+					}
+				});
+
+				$tools.append($button);
+			}
+
+			function buildDensityToggle($tools, context) {
+				if (!context.$table.length) {
+					return;
+				}
+
+				var $button = $(
+					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Toggle table density">' +
+						'<span class="fa fa-th-list" aria-hidden="true"></span>' +
+					'</button>'
+				);
+
+				$button.on('click', function () {
+					context.$table.toggleClass('follow-table-density-compact');
+					$(this).toggleClass('is-active');
+				});
+
+				$tools.append($button);
+			}
+
+			function enhanceFollowControls() {
+				$('.follow-controls').each(function () {
+					var $controls = $(this);
+					if ($controls.data('followToolbarReady')) {
+						return;
+					}
+
+					var context = getFollowTableContext($controls);
+					var $searchBlock = getSearchBlock($controls);
+					if (!$searchBlock.length) {
+						return;
+					}
+
+					var $searchInput = $searchBlock.find('input[type="search"], input[type="text"]').first();
+					var $searchGroup = $('<div class="follow-controls-search-group"></div>');
+					var $tools = $('<div class="follow-controls-tools"><div class="follow-toolbar-group"></div></div>');
+					var $group = $tools.find('.follow-toolbar-group');
+
+					if ($searchBlock.hasClass('dataTables_filter')) {
+						$searchBlock.find('label').contents().filter(function () {
+							return this.nodeType === 3;
+						}).remove();
+					}
+
+					$controls.addClass('follow-controls--toolbar');
+					$searchBlock.before($searchGroup);
+					var $lengthControl = getLengthControl($controls, $searchBlock);
+					if ($lengthControl.length) {
+						$controls.prepend($lengthControl);
+					}
+					$searchGroup.append($searchBlock);
+					$searchGroup.append($tools);
+					$controls.append($searchGroup);
+
+					buildRefreshButton($group, context, $searchInput);
+					buildDensityToggle($group, context);
+					buildColumnsDropdown($group, context);
+					buildExportDropdown($group, context);
+
+					if ($searchInput.length) {
+						$searchInput.attr('placeholder', 'Search');
+					}
+
+					$controls.data('followToolbarReady', true);
+				});
+			}
+
+			enhanceFollowControls();
+			$(document).on('init.dt draw.dt', function () {
+				enhanceFollowControls();
 			});
 		});
 	</script>

@@ -48,7 +48,7 @@
 		.login-logs .table-responsive {
 			overflow-x: visible;
 		}
-		.login-logs .dataTables_wrapper .follow-controls,
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
 		.login-logs .dataTables_wrapper .follow-footer {
 			display: flex;
 			align-items: center;
@@ -71,12 +71,12 @@
 			float: none !important;
 			text-align: inherit !important;
 		}
-		.login-logs .dataTables_filter label {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
 			position: relative;
 			margin: 0;
 			font-size: 0;
 		}
-		.login-logs .dataTables_filter label::after {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
 			content: "\f002";
 			font-family: FontAwesome;
 			position: absolute;
@@ -87,7 +87,7 @@
 			font-size: 12px;
 			pointer-events: none;
 		}
-		.login-logs .dataTables_filter input {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
 			margin-left: 0 !important;
 			border: 1px solid #d9e2ef;
 			border-radius: .25rem;
@@ -95,6 +95,16 @@
 			height: 32px;
 			width: 240px;
 			box-shadow: none;
+		}
+		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter label::after {
+			display: none !important;
+			content: none !important;
+		}
+		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
+			height: 36px !important;
+			width: 380px !important;
+			padding: 6px 18px !important;
+			border-radius: 999px !important;
 		}
 		#login-logs-table thead th {
 			background: #1fb2ff;

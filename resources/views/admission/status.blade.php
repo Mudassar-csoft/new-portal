@@ -111,7 +111,7 @@
 @push('styles')
 	<style>
 		.adm-status-shell {
-			padding: 0 6px 0 16px;
+			/* padding: 0 6px 0 16px; */
 		}
 
 		.follow-card {

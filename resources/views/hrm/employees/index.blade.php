@@ -59,7 +59,7 @@
                             </select>
                         </div>
                         <div>
-                        <div class="form-group col-md-6 col-lg-3 d-flex mt-4 pt-3">
+                        <div class="form-group col-md-6 col-lg-3 d-flex mt-3 pt-3">
                         <button type="submit" class="btn btn-inline btn-primary-outline p-2" >Filter</button>
                         <a href="{{ route('hrm.employees.index') }}" class="btn btn-inline btn-danger-outline p-2" >Reset</a>
                         </div>

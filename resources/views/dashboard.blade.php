@@ -167,7 +167,7 @@
 	    </div>
 <!--Current Month Charts-->
 	<div class="row pl-4 pr-3 tables-dashbord">
-		<div class="col-xl-12 pl-1  ml-1 mr-2 m-md-0 m-lg-0">
+		<div class="col-xl-12 pl-1 ml-1 mr-2 m-md-0 m-lg-0 current-month-chart-col">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300 ">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
@@ -897,6 +897,10 @@
 
         .daily-activity-card .panel-heading {
             border-top: 0;
+        }
+        .current-month-chart-col {
+            flex: 0 0 calc(100% - 8px);
+            max-width: calc(100% - 8px);
         }
         .daily-activity-card .panel-body {
             padding: 10px 14px;
