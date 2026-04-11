@@ -352,12 +352,6 @@
 			color: #5f7289;
 		}
 
-		.admission-form .form-control.is-invalid,
-		.admission-form .gender-options.is-invalid {
-			border-color: #e53935;
-			box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
-		}
-
 		.admission-form .field-error {
 			margin-top: 6px;
 			font-size: 12px;

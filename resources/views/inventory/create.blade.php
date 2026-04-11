@@ -14,20 +14,6 @@
         $selectedCondition = old('condition_status', $inventoryItem?->condition_status ?? 'good');
     @endphp
     <div class="inventory-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <section class="box-typical box-typical-dashboard panel panel-default inventory-card">
             <header class="box-typical-header panel-heading inventory-header">
                 <h3 class="panel-title">Inventory Management <span class="text-muted">|</span> {{ $pageHeading }}</h3>
@@ -42,7 +28,7 @@
                     <div class="form-row mt-2">
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Campus / Franchise</label>
-                            <select name="campus_id" class="form-control" required>
+                            <select name="campus_id" class="form-control @error('campus_id') is-invalid @enderror" required>
                                 <option value="">- Select Campus -</option>
                                 @foreach($campuses as $campus)
                                     <option value="{{ $campus->id }}" @selected($selectedCampus == $campus->id)>
@@ -50,10 +36,13 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('campus_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Inventory Category</label>
-                            <select name="category" class="form-control" required>
+                            <select name="category" class="form-control @error('category') is-invalid @enderror" required>
                                 <option value="">- Select Category -</option>
                                 @if($selectedCategory && !array_key_exists($selectedCategory, $categories))
                                     <option value="{{ $selectedCategory }}" selected>
@@ -64,61 +53,94 @@
                                     <option value="{{ $value }}" @selected($selectedCategory === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
+                            @error('category')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Item Name</label>
-                            <input type="text" name="item_name" class="form-control" value="{{ old('item_name', $inventoryItem?->item_name) }}" placeholder="Dell OptiPlex / Office Chair / A4 Paper" required>
+                            <input type="text" name="item_name" class="form-control @error('item_name') is-invalid @enderror" value="{{ old('item_name', $inventoryItem?->item_name) }}" placeholder="Dell OptiPlex / Office Chair / A4 Paper" required>
+                            @error('item_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Brand</label>
-                            <input type="text" name="brand" class="form-control" value="{{ old('brand', $inventoryItem?->brand) }}" placeholder="Dell / HP / Local">
+                            <label class="form-label">Brand</label>
+                            <input type="text" name="brand" class="form-control @error('brand') is-invalid @enderror" value="{{ old('brand', $inventoryItem?->brand) }}" placeholder="Dell / HP / Local">
+                            @error('brand')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Model No</label>
-                            <input type="text" name="model_no" class="form-control" value="{{ old('model_no', $inventoryItem?->model_no) }}" placeholder="Model / Part number">
+                            <label class="form-label">Model No</label>
+                            <input type="text" name="model_no" class="form-control @error('model_no') is-invalid @enderror" value="{{ old('model_no', $inventoryItem?->model_no) }}" placeholder="Model / Part number">
+                            @error('model_no')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Serial No</label>
-                            <input type="text" name="serial_no" class="form-control" value="{{ old('serial_no', $inventoryItem?->serial_no) }}" placeholder="Optional serial number">
+                            <label class="form-label">Serial No</label>
+                            <input type="text" name="serial_no" class="form-control @error('serial_no') is-invalid @enderror" value="{{ old('serial_no', $inventoryItem?->serial_no) }}" placeholder="Optional serial number">
+                            @error('serial_no')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Room / Location</label>
-                            <input type="text" name="room_location" class="form-control" value="{{ old('room_location', $inventoryItem?->room_location) }}" placeholder="Lab 1 / Store / Reception">
+                            <label class="form-label">Room / Location</label>
+                            <input type="text" name="room_location" class="form-control @error('room_location') is-invalid @enderror" value="{{ old('room_location', $inventoryItem?->room_location) }}" placeholder="Lab 1 / Store / Reception">
+                            @error('room_location')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Quantity</label>
-                            <input type="number" min="1" name="quantity" class="form-control" value="{{ old('quantity', $inventoryItem?->quantity ?? 1) }}" required>
+                            <input type="number" min="1" name="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', $inventoryItem?->quantity ?? 1) }}" required>
+                            @error('quantity')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Unit</label>
-                            <select name="unit" class="form-control" required>
+                            <select name="unit" class="form-control @error('unit') is-invalid @enderror" required>
                                 @foreach($units as $value => $label)
                                     <option value="{{ $value }}" @selected($selectedUnit === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
+                            @error('unit')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Minimum Stock Level</label>
-                            <input type="number" min="0" name="minimum_stock" class="form-control" value="{{ old('minimum_stock', $inventoryItem?->minimum_stock ?? 0) }}">
+                            <label class="form-label">Minimum Stock Level</label>
+                            <input type="number" min="0" name="minimum_stock" class="form-control @error('minimum_stock') is-invalid @enderror" value="{{ old('minimum_stock', $inventoryItem?->minimum_stock ?? 0) }}">
+                            @error('minimum_stock')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Condition</label>
-                            <select name="condition_status" class="form-control" required>
+                            <select name="condition_status" class="form-control @error('condition_status') is-invalid @enderror" required>
                                 @foreach($conditions as $value => $label)
                                     <option value="{{ $value }}" @selected($selectedCondition === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
+                            @error('condition_status')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Purchase Date</label>
-                            <input type="date" name="purchase_date" class="form-control" value="{{ old('purchase_date', optional($inventoryItem?->purchase_date)->format('Y-m-d')) }}">
+                            <label class="form-label">Purchase Date</label>
+                            <input type="date" name="purchase_date" class="form-control @error('purchase_date') is-invalid @enderror" value="{{ old('purchase_date', optional($inventoryItem?->purchase_date)->format('Y-m-d')) }}">
+                            @error('purchase_date')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -126,7 +148,10 @@
                         
                         <div class="form-group col-md-12">
                             <label class="form-label">Remarks</label>
-                            <textarea name="remarks" class="form-control inventory-remarks" rows="3" placeholder="Any note about condition, warranty, or assigned room">{{ old('remarks', $inventoryItem?->remarks) }}</textarea>
+                            <textarea name="remarks" class="form-control inventory-remarks @error('remarks') is-invalid @enderror" rows="3" placeholder="Any note about condition, warranty, or assigned room">{{ old('remarks', $inventoryItem?->remarks) }}</textarea>
+                            @error('remarks')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 

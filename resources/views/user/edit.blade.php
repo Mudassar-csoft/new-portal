@@ -20,22 +20,31 @@
 						<div class="section-title">Access &amp; Roles</div>
 						<div class="form-row">
 							<div class="form-group col-md-6">
-								<label class="form-label required">Campus</label>
-								<select name="campus_id" class="form-control select2 select2-white select2-user" style="width: 100%;" data-placeholder="Select campus">
+								<label class="form-label">Campus</label>
+								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
 									<option value="">Select campus</option>
 									@foreach($campuses as $campus)
 										<option value="{{ $campus->id }}" @selected(old('campus_id', $user->campus_id) == $campus->id)>{{ $campus->name }}</option>
 									@endforeach
 								</select>
+								@error('campus_id')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 							<div class="form-group col-md-6">
-								<label class="form-label required">Roles</label>
-								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles" multiple style="width: 100%;" data-placeholder="Select roles">
+								<label class="form-label">Roles</label>
+								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
 									@foreach($roles as $role)
 										<option value="{{ $role->id }}" @selected(collect(old('roles', $user->roles->pluck('id')->all()))->contains($role->id))>{{ $role->name }}</option>
 									@endforeach
 								</select>
 								<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
+								@error('roles')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+								@error('roles.*')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 						</div>
 					</div>
@@ -44,11 +53,17 @@
 						<div class="form-row">
 							<div class="form-group col-md-6">
 								<label class="form-label required">Full Name</label>
-								<input type="text" name="name" class="form-control" placeholder="Alex Morgan" value="{{ old('name', $user->name) }}">
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name', $user->name) }}" required>
+								@error('name')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 							<div class="form-group col-md-6">
 								<label class="form-label required">Email</label>
-								<input type="email" name="email" class="form-control" placeholder="alex@example.com" value="{{ old('email', $user->email) }}">
+								<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email', $user->email) }}" required>
+								@error('email')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 						</div>
 					</div>
@@ -61,29 +76,35 @@
 						</div>
 						<div class="form-row align-items-end">
 							<div class="form-group col-md-6">
-								<label>
+								<label class="form-label">
 									<span>Password</span>
 									<small class="text-muted">(leave blank to keep current)</small>
 								</label>
 								<div class="input-group">
-									<input type="password" name="password" id="password" class="form-control" placeholder="********">
+									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
 									<span class="input-group-btn">
 										<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
 											<i class="fa fa-eye"></i>
 										</button>
 									</span>
 								</div>
+								@error('password')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 							<div class="form-group col-md-6">
-								<label>Confirm Password</label>
+								<label class="form-label">Confirm Password</label>
 								<div class="input-group">
-									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="********">
+									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
 									<span class="input-group-btn">
 										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
 											<i class="fa fa-eye"></i>
 										</button>
 									</span>
 								</div>
+								@error('password_confirmation')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
 							</div>
 						</div>
 					</div>
@@ -213,7 +234,7 @@
 			color: #fff;
 		}
 		.select2-container--white .select2-selection--single .select2-selection__arrow {
-			height: 36px;
+			height: 28px;
 			right: 8px;
 			width: 18px;
 		}

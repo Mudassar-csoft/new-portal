@@ -19,21 +19,30 @@
 					<div class="form-row text-center">
 						<div class="form-group col-md-6">
 							<label class="required">Name</label>
-							<input type="text" name="name" class="form-control" value="{{ old('name', $role->name) }}" placeholder="Admin">
+							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $role->name) }}" placeholder="Admin" required>
+							@error('name')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 						<div class="form-group col-md-6">
 							<label>Slug</label>
-							<input type="text" name="slug" class="form-control" value="{{ old('slug', $role->slug) }}" placeholder="admin">
+							<input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $role->slug) }}" placeholder="admin">
 							<small class="text-muted">Auto from name if left blank.</small>
+							@error('slug')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 					<div class="form-group">
 						<label>Description</label>
-						<textarea name="description" class="form-control" rows="2" placeholder="Optional description">{{ old('description', $role->description) }}</textarea>
+						<textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description', $role->description) }}</textarea>
+						@error('description')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
 					</div>
 
 					<div class="form-group mt-3">
-						<label class="required d-block mb-2">Permissions</label>
+						<label class="d-block mb-2">Permissions</label>
 						<div class="permission-wrapper">
 							<div class="permission-grid">
 								@foreach($permissions as $resource => $perms)
@@ -49,6 +58,12 @@
 								@endforeach
 							</div>
 						</div>
+						@error('permissions')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
+						@error('permissions.*')
+							<div class="field-error">{{ $message }}</div>
+						@enderror
 					</div>
 
 					<div class="text-center mt-3">

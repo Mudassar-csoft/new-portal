@@ -33,7 +33,7 @@
 @push('styles')
     <style>
         .campus-form-shell {
-            padding: 10px;
+            /* padding: 10px; */
         }
 
         .campus-form-card {

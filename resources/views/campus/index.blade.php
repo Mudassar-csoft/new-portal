@@ -59,10 +59,6 @@
     @endphp
 
     <div class="campus-index-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-
         <div class="box-typical box-typical-dashboard panel panel-default campus-index-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>

@@ -21,17 +21,26 @@
 							<div class="form-row">
 								<div class="form-group col-md-6">
 									<label class="required">Resource</label>
-									<input type="text" name="resource" class="form-control" placeholder="lead" value="{{ old('resource', $permission->resource) }}">
+									<input type="text" name="resource" class="form-control @error('resource') is-invalid @enderror" placeholder="lead" value="{{ old('resource', $permission->resource) }}" required>
+									@error('resource')
+										<div class="field-error">{{ $message }}</div>
+									@enderror
 								</div>
 								<div class="form-group col-md-6">
 									<label class="required">Action</label>
-									<input type="text" name="action" class="form-control" placeholder="view" value="{{ old('action', $permission->action) }}">
+									<input type="text" name="action" class="form-control @error('action') is-invalid @enderror" placeholder="view" value="{{ old('action', $permission->action) }}" required>
+									@error('action')
+										<div class="field-error">{{ $message }}</div>
+									@enderror
 								</div>
 							</div>
 							<div class="form-row">
 								<div class="form-group col-md-12">
 									<label>Description</label>
-									<input type="text" name="description" class="form-control" placeholder="Optional description" value="{{ old('description', $permission->description) }}">
+									<input type="text" name="description" class="form-control @error('description') is-invalid @enderror" placeholder="Optional description" value="{{ old('description', $permission->description) }}">
+									@error('description')
+										<div class="field-error">{{ $message }}</div>
+									@enderror
 								</div>
 							</div>
 							<div class="text-right">

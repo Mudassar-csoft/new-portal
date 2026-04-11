@@ -83,7 +83,7 @@
                             <label class="form-label">Payment Terms</label>
                             <input type="text" name="payment_terms" class="form-control" value="{{ old('payment_terms') }}" placeholder="Due on receipt / Net 30">
                         </div>
-                        <div class="form-group custom-col-6">
+                        <div class="form-group col-md-6">
                             <label class="form-label">Address</label>
                             <input type="text" name="postal_address" class="form-control" value="{{ old('postal_address') }}">
                         </div>
@@ -129,18 +129,18 @@
                         </div>
                     </div>
 
-                    <div class="col-12 pr-1">
-        <label class="form-label small fw-semibold text-dark">
-            Remarks
-        </label>
-       <textarea name="remarks"
-    class="form-control form-control-sm @error('remarks') is-invalid @enderror"
-    rows="3"
-    placeholder="Remarks" style= "padding:10px; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
-        @error('remarks')
-            <div class="field-error">{{ $message }}</div>
-        @enderror
-    </div>
+                    <div class="col-md-12 pr-1 m-1">
+                        <label class="form-label small fw-semibold text-dark">
+                            Remarks
+                        </label>
+                       <textarea name="remarks"
+                          class="form-control form-control-sm @error('remarks') is-invalid @enderror"
+                          rows="3"
+                          placeholder="Remarks" style= " width:97.5%;padding:10px; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
+                        @error('remarks')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                     <div class="text-right" >
                         <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>

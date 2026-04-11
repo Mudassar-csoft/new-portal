@@ -17,7 +17,7 @@
                     @csrf
                     @include('program.partials.form')
 
-                    <div class="text-right mt-3">
+                    <div class="text-right mt-3 mb-2">
                         <button type="submit" class="btn btn-primary">Create Programme</button>
                     </div>
                 </form>
@@ -29,7 +29,7 @@
 @push('styles')
     <style>
         .program-form-shell {
-            padding: 10px;
+            /* padding: 10px; */
         }
 
         .program-form-card {
@@ -45,8 +45,9 @@
         .program-discount-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: left;
             gap: 12px;
+            padding: 10px 27px;
             margin-bottom: 14px;
         }
 

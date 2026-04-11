@@ -10,7 +10,7 @@
 					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0 form-label">User Login Logs</h3>
-							<span class="text-muted">Track user sign-ins and sign-outs.</span>
+							<!-- <span class="text-muted">Track user sign-ins and sign-outs.</span> -->
 						</div>
 					</header>
 					<div class="box-typical-body panel-body">
@@ -48,13 +48,13 @@
 		.login-logs .table-responsive {
 			overflow-x: visible;
 		}
-		.login-logs .dataTables_wrapper .follow-controls,
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
 		.login-logs .dataTables_wrapper .follow-footer {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			gap: 12px;
-			margin-bottom: 4px;
+			/* margin-bottom: 4px; */
 		}
 		.login-logs .dataTables_wrapper .follow-footer {
 			margin-top: 10px;
@@ -71,12 +71,12 @@
 			float: none !important;
 			text-align: inherit !important;
 		}
-		.login-logs .dataTables_filter label {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
 			position: relative;
 			margin: 0;
 			font-size: 0;
 		}
-		.login-logs .dataTables_filter label::after {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
 			content: "\f002";
 			font-family: FontAwesome;
 			position: absolute;
@@ -87,7 +87,7 @@
 			font-size: 12px;
 			pointer-events: none;
 		}
-		.login-logs .dataTables_filter input {
+		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
 			margin-left: 0 !important;
 			border: 1px solid #d9e2ef;
 			border-radius: .25rem;
@@ -95,6 +95,16 @@
 			height: 32px;
 			width: 240px;
 			box-shadow: none;
+		}
+		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter label::after {
+			display: none !important;
+			content: none !important;
+		}
+		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
+			height: 36px !important;
+			width: 380px !important;
+			padding: 6px 18px !important;
+			border-radius: 999px !important;
 		}
 		#login-logs-table thead th {
 			background: #1fb2ff;

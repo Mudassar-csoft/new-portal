@@ -3,9 +3,9 @@
 @section('title', $pageTitle)
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
+    <!-- <div class="container-fluid"> -->
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-12"> -->
                 <div class="box-typical box-typical-dashboard panel panel-default student-directory">
                     <header class="box-typical-header panel-heading d-flex justify-content-between">
                         <div>
@@ -35,9 +35,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+            <!-- </div> -->
+        <!-- </div> -->
+    <!-- </div> -->
 @endsection
 
 @push('styles')
@@ -126,13 +126,13 @@
             padding-top: 12px;
         }
 
-        .student-directory .dataTables_wrapper .dataTables_filter label {
+        .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
             margin: 3px;
             position: relative;
             font-size: 0;
         }
 
-        .student-directory .dataTables_wrapper .dataTables_filter label::after {
+        .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
             content: "\f002";
             font-family: FontAwesome;
             position: absolute;
@@ -144,7 +144,7 @@
             pointer-events: none;
         }
 
-        .student-directory .dataTables_wrapper .dataTables_filter input {
+        .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
             border: 1px solid #d9e2ef;
             border-radius: .25rem;
             padding: .25rem 32px .25rem .75rem;
@@ -153,13 +153,25 @@
             box-shadow: none;
         }
 
-        .student-directory .dataTables_wrapper .follow-controls,
+        .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
         .student-directory .dataTables_wrapper .follow-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-bottom: 12px;
+            /* margin-bottom: 12px; */
+        }
+
+        .student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter label::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        .student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
+            height: 28px !important;
+            width: 240px !important;
+            padding: 6px 18px !important;
+            border-radius: 999px !important;
         }
 
         .student-directory .dataTables_wrapper .follow-footer {

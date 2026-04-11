@@ -101,12 +101,20 @@
                             <label class="form-label required" >Transaction Image</label>
                             <input type="file" name="attachment" class="form-control-file">
                         </div>
-                        <div class="form-group col-md-6 col-lg-3">
-                            <label class="form-label required" >Remarks</label>
-                            <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}">
-                        </div>
+                        
                     </div>
-
+                    <div class="col-md-12 pr-1 m-1">
+                        <label class="form-label small fw-semibold text-dark">
+                            Remarks
+                        </label>
+                       <textarea name="remarks"
+                          class="form-control form-control-sm @error('remarks') is-invalid @enderror"
+                          rows="3"
+                          placeholder="Remarks" style= " width:97.5%;padding:10px; margin-bottom:7px;" >{{ old('remarks') }}</textarea>
+                        @error('remarks')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="text-right">
                         <button type="submit" class="btn btn-inline btn-primary-outline">Save Manual Invoice</button>
                     </div>

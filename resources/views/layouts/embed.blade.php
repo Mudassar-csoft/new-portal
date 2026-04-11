@@ -42,6 +42,33 @@
         body.crm-embed-body .panel {
             margin-bottom: 0;
         }
+
+        form .form-control.is-invalid,
+        form .form-control:invalid,
+        form .form-select.is-invalid,
+        form .form-select:invalid,
+        form .custom-select.is-invalid,
+        form .custom-select:invalid,
+        form .form-control-range.is-invalid,
+        form .form-control-range:invalid,
+        form .custom-range.is-invalid,
+        form .custom-range:invalid,
+        .was-validated form .form-control:invalid,
+        .was-validated form .form-select:invalid,
+        .was-validated form .custom-select:invalid,
+        .was-validated form .custom-range:invalid {
+            border-color: #d8e2e7 !important;
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+
+        form .is-invalid + .select2-container .select2-selection--single,
+        form .is-invalid + .select2-container .select2-selection--multiple {
+            border-color: #d8e2e7 !important;
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+
     </style>
 
     @stack('styles')
@@ -57,7 +84,7 @@
     <script src="js/lib/bootstrap-sweetalert/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="js/app.js"></script>
-
+    @include('partials.inline_form_validation')
     @stack('scripts')
 </body>
 </html>

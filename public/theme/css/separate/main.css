@@ -4574,7 +4574,11 @@ label.error {
 .form-label {
   display: block;
   margin-bottom: 6px;
-  font-size: 1rem;
+  margin-top: 6px;
+  font-size: 12.8px !important;
+  color: #343a40 !important;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 .form-label .font-icon {
   margin: 0 4px 0 0;
@@ -10991,7 +10995,6 @@ body {
   .site-header .site-logo img {
     height: auto;
     width: 35px;
-    top: 6px;
   }
 }
 .site-header .site-logo .site-logo-txt {
@@ -14000,32 +14003,32 @@ html {
 }
 .show-hide-sidebar {
   position: relative;
+  top: 1px !important;
   overflow: hidden;
-      margin-left: 8px !important;
-
+  margin: 0;
   padding: 0;
   width: 30px;
   height: 30px;
   font-size: 0;
   text-indent: -9999px;
   -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
   -webkit-border-radius: 0;
-          border-radius: 0;
+  border-radius: 0;
   border: none;
   cursor: pointer;
-  -webkit-transition: background 0.3s;
-  transition: background 0.3s;
-  background: none;
+  -webkit-transition: background .3s;
+  transition: background .3s;
+  background: 0 0;
 }
 .show-hide-sidebar span {
   margin: 0 4px;
   position: absolute;
   top: 50%;
-  margin-top: -1px;
+  margin-top: -2px;
   left: 0;
   right: 0;
   height: 3px;

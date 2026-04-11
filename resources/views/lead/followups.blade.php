@@ -98,7 +98,7 @@
 					</div>
 
 					<div class="follow-footer">
-						<div id="follow-count">Showing 1 to {{ count($followups) }} of {{ count($followups) }} entries</div>
+						<div id="follow-count">Showing 1 to {{ count($followups) }} of {{ count($followups) }} Entries</div>
 						<ul class="pagination pagination-sm mb-0">
 							<li class="page-item disabled"><span class="page-link">Previous</span></li>
 							<li class="page-item active"><span class="page-link">1</span></li>

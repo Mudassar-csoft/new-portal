@@ -440,7 +440,7 @@ body {
    ========================================================================== */
 .site-header-search {
   width: 100%;
-  height: 30px;
+  height: 34px;
   position: relative;
   padding: 0 35px 0 0;
   border: solid 1px #c5d6de;
@@ -458,7 +458,7 @@ body {
   padding: 0 0 0 14px;
   border: none;
   background: none;
-  line-height: 30px;
+  line-height: 34px;
   font-size: 0.875rem /*14/16*/;
   font-weight: 600;
   color: #343434;
@@ -544,7 +544,7 @@ body {
     height: 80px;
     background: #fff;
     border-bottom: solid 1px #c5d6de;
-    padding: 18px 15px 0 0;
+    padding: 19px 15px 0 0;
     z-index: 80;
 }
   /* ==========================================================================
@@ -594,13 +594,11 @@ body {
   float: left;
   height: 50px;
   position: relative;
-  top: 0px;
 }
 @media (max-width: 767px) {
   .site-header .site-logo img {
     height: auto;
     width: 35px;
-    top: 6px;
   }
 }
 .site-header .site-logo .site-logo-txt {
@@ -1197,7 +1195,15 @@ a, a:focus, a:hover {
 }
 @media (max-width: 1056px) {
   .site-header {
-    padding-right: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: #fff;
+    border-bottom: solid 1px #c5d6de;
+    padding: 19px 15px 0 0;
+    z-index: 80;
   }
   .site-header .site-logo-text {
     display: none;

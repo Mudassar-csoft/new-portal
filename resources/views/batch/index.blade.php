@@ -247,18 +247,18 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(31%, 1fr));
             gap: 14px;
-            margin-bottom: 18px;
+            margin-bo ttom: 18px;
         }
 
         .batch-scope-card {
             display: block;
-            /* height:25vh; */
+            height:25vh;
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
             padding-right: 10px;
-            /* background: #16b3fb; */
-            color: black;
+            background: #16b3fb;
+            color: white;
             text-decoration: none;
             text-align: center;
             transition: all .18s ease;
@@ -272,8 +272,8 @@
         }
 
         .batch-scope-card.is-active {
-            /* background: #078bec; */
-            /* border-color: #1fb2ff; */
+            background: #078bec;
+            border-color: #1fb2ff;
         }
 
         .batch-scope-card strong {

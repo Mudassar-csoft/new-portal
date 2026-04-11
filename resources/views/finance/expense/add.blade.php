@@ -34,7 +34,7 @@
             <header class="box-typical-header panel-heading finance-header">
                 <div>
                     <h3 class="panel-title">Expense Management <span class="text-muted">|</span> Add Expense Request</h3>
-                    <p class="text-muted mb-0">Select campus first, then choose expense type. Rent and utility bills auto-load their source records.</p>
+                    <!-- <p class="text-muted mb-0">Select campus first, then choose expense type. Rent and utility bills auto-load their source records.</p> -->
                 </div>
                 <div class="finance-header-actions">
                     <a href="{{ route('finance.rent.index') }}" class="btn btn-danger btn-sm">Building Rent Setup</a>

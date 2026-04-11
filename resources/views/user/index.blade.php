@@ -130,7 +130,7 @@
 		#users-table {
 			margin-top: 8px;
 		}
-		.dataTables_wrapper .follow-controls,
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
 		.dataTables_wrapper .follow-footer {
 			display: flex;
 			align-items: center;
@@ -153,12 +153,12 @@
 			float: none !important;
 			text-align: inherit !important;
 		}
-		.dataTables_wrapper .dataTables_filter label {
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
 			margin: 3px;;
 			position: relative;
 			font-size: 0;
 		}
-		.dataTables_wrapper .dataTables_filter label::after {
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
 			content: "\f002";
 			font-family: FontAwesome;
 			position: absolute;
@@ -169,7 +169,7 @@
 			font-size: 12px;
 			pointer-events: none;
 		}
-		.dataTables_wrapper .dataTables_filter input {
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
 			margin-left: 4 !important;
 			border: 1px solid #d9e2ef;
 			border-radius: .25rem;
@@ -178,10 +178,17 @@
 			width: 240px;
 			box-shadow: none;
 		}
-		#users-table_filter input {
-			height: 24px !important;
-			padding: 2px !important;
-			width:200px;
+		.dataTables_wrapper .follow-controls--toolbar .dataTables_filter label::after {
+			display: none !important;
+			content: none !important;
+		}
+		.dataTables_wrapper .follow-controls--toolbar .dataTables_filter input,
+		#users-table_filter.follow-controls--toolbar input,
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) #users-table_filter input {
+			height: 36px !important;
+			padding: 6px 18px !important;
+			width: 380px !important;
+			border-radius: 999px !important;
 		}
 		.dataTables_wrapper .dataTables_processing {
 			top: 50%;

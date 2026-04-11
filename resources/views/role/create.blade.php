@@ -20,7 +20,7 @@
 						<div class="form-row">
 							<div class="form-group col-md-6">
 								<label class="required form-label">Name</label>
-								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin">
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin" required>
 								@error('name')
 									<div class="field-error">{{ $message }}</div>
 								@enderror

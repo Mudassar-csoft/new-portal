@@ -13098,7 +13098,7 @@ body {
 
 .site-header-search {
     width: 100%;
-    height: 30px;
+    height: 34px;
     position: relative;
     padding: 0 35px 0 0;
     border: solid 1px #c5d6de;
@@ -13117,7 +13117,7 @@ body {
     padding: 0 0 0 14px;
     border: none;
     background: 0 0;
-    line-height: 30px;
+    line-height: 34px;
     font-size: .875rem;
     font-weight: 600;
     color: #343434;
@@ -13149,7 +13149,7 @@ body {
 }
 
 .site-header-search input[type=text]::placeholder {
-    line-height: 30px
+    line-height: 34px
 }
 
 .site-header-search button .font-icon-search {
@@ -13169,7 +13169,7 @@ body {
 
 .site-header-search button .font-icon-search:before {
     display: block;
-    line-height: 30px;
+    line-height: 34px;
     top: 0;
     vertical-align: baseline
 }
@@ -13214,7 +13214,7 @@ body {
     height: 80px;
     background: #fff;
     border-bottom: solid 1px #c5d6de;
-    padding: 20px 15px 0 0;
+    padding: 19px 15px 0 0;
     z-index: 80
 }
 
@@ -13956,7 +13956,15 @@ body {
 
 @media (max-width:1056px) {
     .site-header {
-        padding-right: 0
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background: #fff;
+        border-bottom: solid 1px #c5d6de;
+        padding: 19px 15px 0 0;
+        z-index: 80
     }
 
     .site-header .site-logo-text {
@@ -16784,41 +16792,42 @@ html {
 }
 
 .show-hide-sidebar {
-      position: relative;
-      overflow: hidden;
-    margin-left: 5px;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    font-size: 0;
-    text-indent: -9999px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    border: none;
-    cursor: pointer;
-    -webkit-transition: background .3s;
-    transition: background .3s;
-    background: 0 0
+  position: relative;
+  top: 1px !important;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  font-size: 0;
+  text-indent: -9999px;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  -webkit-border-radius: 0;
+          border-radius: 0;
+  border: none;
+  cursor: pointer;
+  -webkit-transition: background 0.3s;
+  transition: background 0.3s;
+  background: 0 0;
 }
 
 .show-hide-sidebar span {
-    margin: 0 4px;
-    position: absolute;
-    top: 50%;
-    margin-top: -1px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: #adb7be;
-    -webkit-transition: -webkit-transform .3s;
-    transition: -webkit-transform .3s;
-    transition: transform .3s;
-    transition: transform .3s, -webkit-transform .3s
+  margin: 0 4px;
+  position: absolute;
+  top: 50%;
+  margin-top: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #adb7be;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
 }
 
 .show-hide-sidebar span:after,
