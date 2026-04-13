@@ -86,8 +86,8 @@
 			overflow: visible;
 		}
 		.role-directory .dataTables_wrapper {
-			border-top: 1px solid #d9e2ef;
-			padding-top: 12px;
+			/* border-top: 1px solid #d9e2ef;
+			padding-top: 12px; */
 		}
 		.role-directory .dataTables_wrapper .dataTables_length,
 		.role-directory .dataTables_wrapper .dataTables_filter {

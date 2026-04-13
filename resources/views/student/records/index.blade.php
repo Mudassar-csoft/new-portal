@@ -122,8 +122,8 @@
         }
 
         .student-directory .dataTables_wrapper {
-            border-top: 1px solid #d9e2ef;
-            padding-top: 12px;
+            /* border-top: 1px solid #d9e2ef; */
+            /* padding-top: 12px; */
         }
 
         .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {

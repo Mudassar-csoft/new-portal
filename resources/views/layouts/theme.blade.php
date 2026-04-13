@@ -140,6 +140,12 @@ text-rendering: optimizeLegibility;
 -webkit-font-smoothing: antialiased;
 }
 
+textarea[name="remarks"],
+textarea[name$="[remarks]"] {
+  height: 100px !important;
+  min-height: 100px !important;
+}
+
 /* =========================================================
    Tables
    ========================================================= */
@@ -712,7 +718,7 @@ height: 26vh !important;
 .follow-controls.follow-controls--toolbar .dataTables_length select {
     height: 31px !important;
     min-height: 31px !important;
-    padding: 4px 24px 4px 10px !important;
+    padding: -3px 24px 4px 10px !important;
     margin: 0 !important;
 }
 
@@ -872,6 +878,14 @@ form textarea.form-control-sm {
   padding-bottom: 0.625rem !important;
   resize: vertical;
   line-height: 1.4 !important;
+}
+
+form textarea[name="remarks"].form-control,
+form textarea[name="remarks"].form-control-sm,
+form textarea[name$="[remarks]"].form-control,
+form textarea[name$="[remarks]"].form-control-sm {
+  min-height: 100px !important;
+  height: 100px !important;
 }
 
 form .field-error {

@@ -253,7 +253,7 @@
         .batch-scope-card {
             display: block;
             height:25vh;
-            border: 1px solid #dbe5f1;
+            border: 1px solid #00a8ff;
             border-radius: 12px;
             padding: 14px 16px;
             padding-right: 10px;
@@ -264,35 +264,48 @@
             transition: all .18s ease;
         }
 
+        .batch-scope-card,
+        .batch-scope-card strong,
+        .batch-scope-card:hover,
+        .batch-scope-card:hover strong,
+        .batch-scope-card:focus,
+        .batch-scope-card:focus strong {
+            color: #fff !important;
+        }
+
         .batch-scope-card:nth-child(5n + 1) {
             background: #f35f62;
+            border-color: #f35f62;
         }
 
         .batch-scope-card:nth-child(5n + 2) {
             background: #fdc518;
+            border-color: #fdc518;
         }
 
         .batch-scope-card:nth-child(5n + 3) {
             background: #975ce7;
+            border-color: #975ce7;
         }
 
         .batch-scope-card:nth-child(5n + 4) {
             background: #a2cf37;
+            border-color: #a2cf37;
         }
 
         .batch-scope-card:nth-child(5n + 5) {
             background: #00a8ff;
+            border-color: #00a8ff;
         }
 
         .batch-scope-card:hover,
         .batch-scope-card:focus {
             text-decoration: none;
-            border-color: #3ba8ff;
-            box-shadow: 0 8px 18px rgba(59, 168, 255, 0.12);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+            filter: brightness(1.02);
         }
 
         .batch-scope-card.is-active {
-            border-color: #1fb2ff;
             box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
             filter: brightness(0.94);
         }

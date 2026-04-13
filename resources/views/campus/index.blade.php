@@ -244,7 +244,7 @@
             display: block;
             grid-column: span 2;
             height:25vh;
-            border: 1px solid #dbe5f1;
+            border: 1px solid #00a8ff;
             border-radius: 12px;
             padding: 14px 16px;
             background: #00a8ff;
@@ -254,35 +254,48 @@
             transition: all .18s ease;
         }
 
+        .campus-scope-card,
+        .campus-scope-card strong,
+        .campus-scope-card:hover,
+        .campus-scope-card:hover strong,
+        .campus-scope-card:focus,
+        .campus-scope-card:focus strong {
+            color: #fff !important;
+        }
+
         .campus-scope-card:nth-child(5n + 1) {
             background: #f35f62;
+            border-color: #f35f62;
         }
 
         .campus-scope-card:nth-child(5n + 2) {
             background: #fdc518;
+            border-color: #fdc518;
         }
 
         .campus-scope-card:nth-child(5n + 3) {
             background: #975ce7;
+            border-color: #975ce7;
         }
 
         .campus-scope-card:nth-child(5n + 4) {
             background: #a2cf37;
+            border-color: #a2cf37;
         }
 
         .campus-scope-card:nth-child(5n + 5) {
             background: #00a8ff;
+            border-color: #00a8ff;
         }
 
         .campus-scope-card:hover,
         .campus-scope-card:focus {
             text-decoration: none;
-            border-color: #ef7c2e;
-            box-shadow: 0 8px 18px rgba(239, 124, 46, 0.12);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+            filter: brightness(1.02);
         }
 
         .campus-scope-card.is-active {
-            border-color: #ef7c2e;
             box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
             filter: brightness(0.94);
         }

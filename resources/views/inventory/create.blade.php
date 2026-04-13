@@ -13,7 +13,7 @@
         $selectedUnit = old('unit', $inventoryItem?->unit ?? 'pcs');
         $selectedCondition = old('condition_status', $inventoryItem?->condition_status ?? 'good');
     @endphp
-    <div class="inventory-shell">
+    <!-- <div class="inventory-shell"> -->
         <section class="box-typical box-typical-dashboard panel panel-default inventory-card">
             <header class="box-typical-header panel-heading inventory-header">
                 <h3 class="panel-title">Inventory Management <span class="text-muted">|</span> {{ $pageHeading }}</h3>
@@ -220,7 +220,7 @@
                 </div>
             </div>
         </section>
-    </div>
+    <!-- </div> -->
 @endsection
 
 @push('styles')
