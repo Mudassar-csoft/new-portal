@@ -352,9 +352,7 @@
 
 @push('styles')
 	<style>
-		body.with-side-menu.control-panel .page-content {
-			padding-right: 67px !important;
-		}
+		
 	</style>
 @endpush
 
@@ -366,11 +364,15 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
 	<style>
 		*{
+
 			font-size: 15px !important;	
+		}
+		body.with-side-menu.control-panel .page-content {
+			padding-right: 67px !important;
 		}
 		.box-typical.box-typical-dashboard {
 			margin: 1% 1px !important;
-			height: 318px;
+			height: 414px;
 		}
 		.chart-txt-top.pt-2 {
     font-size: 17px !important;
@@ -497,13 +499,21 @@
             display: none !important;
         }
 
-        .chart-caption {
+		.chart-caption {
             text-align: center;
             font-weight: 700;
             color: #fff;
             margin-top: 8px;
             padding-bottom: 6px;
         }
+
+		#lead-chart .c3-legend-item text {
+			font-size: 12px !important;
+		}
+
+		#lead-chart .c3-legend-item:last-child {
+			transform: translateX(12px);
+		}
  .statistic-box {
        -webkit-border-radius: 4px;
     border-radius: 8px;
@@ -571,6 +581,7 @@
         }
 
         .statistic-box .stat-eye-inline.is-revealed {
+            left: auto;
             right: 12px;
             top: 12px;
             transform: none;

@@ -187,11 +187,31 @@
             border: 1px solid #dbe5f1;
             border-radius: 12px;
             padding: 14px 16px;
-            background: #16b3fb;
+            background: #00a8ff;
             color: white;
             text-decoration: none;
             text-align:center;
             transition: all .18s ease;
+        }
+
+        .program-scope-card:nth-child(5n + 1) {
+            background: #f35f62;
+        }
+
+        .program-scope-card:nth-child(5n + 2) {
+            background: #fdc518;
+        }
+
+        .program-scope-card:nth-child(5n + 3) {
+            background: #975ce7;
+        }
+
+        .program-scope-card:nth-child(5n + 4) {
+            background: #a2cf37;
+        }
+
+        .program-scope-card:nth-child(5n + 5) {
+            background: #00a8ff;
         }
 
         .program-scope-card:hover,
@@ -202,8 +222,9 @@
         }
 
         .program-scope-card.is-active {
-            background: #078bec;
             border-color: #40b56c;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+            filter: brightness(0.94);
         }
 
         .program-scope-card strong {
@@ -213,7 +234,9 @@
         }
 
         .program-scope-label {
-            font-size: 12px;
+            font-size: 14px;
+            font-weight:600;
+            /* margin-top:15px; */
             text-transform: uppercase;
             letter-spacing: .04em;
             color: white;
@@ -271,6 +294,21 @@
         }
 
         @media (max-width: 767px) {
+            .program-scope-card {
+                display: flex;
+                min-height: 150px;
+                height: auto;
+                padding: 18px 16px;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .program-scope-card strong {
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
+
             .program-filter-actions {
                 width: 100%;
                 margin-left: 0;

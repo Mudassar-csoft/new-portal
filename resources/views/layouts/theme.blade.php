@@ -299,9 +299,7 @@ padding: 11px 12px 6px 46px;
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
 } */
-.control-panel:not(.dashboard-page) .page-content {
-    padding-right: 67px;
-}
+
 .with-side-menu .page-content {
     padding-left: 255px;
 }
@@ -339,6 +337,9 @@ align-items: center;
 .login-logs .box-typical-body {
 padding: 10px 16px !important;
 }
+/* body.with-side-menu.control-panel .page-content {
+    padding-right: 16px !important;
+} */
 
 /* =========================================================
    DataTables
@@ -1504,6 +1505,10 @@ button[id^="action-"].btn[aria-expanded="true"] {
     background-color:#00a8ff !important;
     border-color:#00a8ff !important;
 }
+
+		.control-panel:not(.dashboard-page) .page-content {
+    padding-right: 67px;
+}
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
@@ -1900,8 +1905,13 @@ margin-left: 0;
 			body.control-panel.open.with-side-menu .page-content,
 			body.sidebar-hidden.with-side-menu .page-content,
 			.menu-left-hidden .page-content {
-				padding: 107px 15px 10px !important;
+				padding: 82px 15px 10px !important;
 				margin-top: 14px !important;
+			}
+
+			body.with-side-menu.control-panel .page-content {
+				padding-left: 16px !important;
+				padding-right: 16px !important;
 			}
 			.chart-statistic-box .chart-container{
 				background-color:white;

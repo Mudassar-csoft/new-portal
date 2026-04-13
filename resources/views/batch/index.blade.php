@@ -257,11 +257,31 @@
             border-radius: 12px;
             padding: 14px 16px;
             padding-right: 10px;
-            background: #16b3fb;
+            background: #00a8ff;
             color: white;
             text-decoration: none;
             text-align: center;
             transition: all .18s ease;
+        }
+
+        .batch-scope-card:nth-child(5n + 1) {
+            background: #f35f62;
+        }
+
+        .batch-scope-card:nth-child(5n + 2) {
+            background: #fdc518;
+        }
+
+        .batch-scope-card:nth-child(5n + 3) {
+            background: #975ce7;
+        }
+
+        .batch-scope-card:nth-child(5n + 4) {
+            background: #a2cf37;
+        }
+
+        .batch-scope-card:nth-child(5n + 5) {
+            background: #00a8ff;
         }
 
         .batch-scope-card:hover,
@@ -272,8 +292,9 @@
         }
 
         .batch-scope-card.is-active {
-            background: #078bec;
             border-color: #1fb2ff;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+            filter: brightness(0.94);
         }
 
         .batch-scope-card strong {
@@ -283,7 +304,8 @@
         }
 
         .batch-scope-label {
-            font-size: 12px;
+            font-size: 14px;
+            font-weight:600;
             text-transform: uppercase;
             letter-spacing: .04em;
             color: white;
@@ -334,6 +356,21 @@
         }
 
         @media (max-width: 767px) {
+            .batch-scope-card {
+                display: flex;
+                min-height: 150px;
+                height: auto;
+                padding: 18px 16px;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .batch-scope-card strong {
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
+
             .batch-filter-actions {
                 width: 100%;
                 margin-left: 0;

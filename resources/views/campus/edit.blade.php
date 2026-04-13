@@ -33,7 +33,7 @@
 @push('styles')
     <style>
         .campus-form-shell {
-            /* padding: 10px; */
+            padding: 10px;
         }
 
         .campus-form-card {
@@ -48,6 +48,7 @@
 
         .campus-type-options {
             margin-top: 8px;
+            justify-content: space-between !important;
         }
 
         .campus-type-option {

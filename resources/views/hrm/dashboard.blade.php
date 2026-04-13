@@ -73,14 +73,15 @@
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
         }
         .hrm-stat .stat-label {
-                font-size: 12px;
+                font-size: 14px;
+                font-weight:600;
     text-transform: uppercase;
     opacity: .88;
     text-align: center;
     margin-top: 1rem;
         }
         .hrm-stat .stat-value {
-           margin-top: 6px;
+           margin-top: 25px;
     font-size: 24px; 
     color:white;
     text-align: center;
