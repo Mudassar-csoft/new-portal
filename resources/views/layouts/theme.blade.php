@@ -523,7 +523,7 @@ height: 26vh !important;
 
 .follow-toolbar-btn,
 .follow-toolbar-dropdown > .btn {
-    width: 32px;
+    width: 34px;
     min-width: 32px;
     height: 32px !important;
     min-height: 32px;
@@ -608,7 +608,7 @@ height: 26vh !important;
 
 .follow-toolbar-btn i,
 .follow-toolbar-dropdown > .btn i {
-    font-size: 15px !important;
+    font-size: 18px !important;
     line-height: 1;
 }
 
@@ -654,9 +654,14 @@ height: 26vh !important;
     padding: 0;
 }
 
+.follow-toolbar-dropdown .dropdown-menu .follow-column-option {
+    padding: 0;
+}
+
 .follow-toolbar-dropdown .dropdown-menu .checkbox label {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
     margin: 0;
     padding: 8px 14px;
@@ -673,6 +678,13 @@ height: 26vh !important;
 .follow-toolbar-dropdown .dropdown-menu .checkbox input {
     margin: 0;
     position: static;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .follow-column-option input[type="checkbox"] {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    accent-color: #00a8ff;
 }
 
 .follow-controls.follow-controls--toolbar .follow-search {
@@ -1025,7 +1037,7 @@ display: flex;
 justify-content: flex-start;
 width: max-content;
 max-width: 100%;
-margin-left: auto;
+/* margin-left: auto; */
 margin-right: auto;
 }
 
@@ -1545,7 +1557,7 @@ overflow: hidden;
 }
 
 .box-typical.box-typical-dashboard {
-margin:  5px !important;
+margin-bottom:  10px !important;
 }
 
 .box-typical.box-typical-dashboard .box-typical-header {
@@ -1660,6 +1672,39 @@ margin-right: 0px !important;
     gap: 14px;
     padding: 15px;
 }
+.student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input
+{
+    width: 94px !important;
+
+}
+.follow-controls.follow-controls--toolbar .dataTables_filter input,
+.follow-controls.follow-controls--toolbar .follow-search input {
+    width: 137px !important;
+}
+.dataTables_wrapper .follow-controls.follow-controls--toolbar .follow-controls-search-group,
+.follow-toolbar-group{  
+    gap: 3px !important;
+    
+    
+}
+.follow-controls.follow-controls--toolbar .follow-controls-search-group {
+	gap: 3px !important;
+}
+.student-summary-card strong {
+margin-top: -2px;
+
+}
+.program-discount-header, .box-typical.box-typical-dashboard .box-typical-header{
+	align-items: baseline;
+	padding: 10px;	
+}
+
+
+
+
+
+
+}
 
 @media (min-width: 768px) and (max-width: 991.98px) {
     [class*="summary-grid"],
@@ -1675,6 +1720,9 @@ margin-right: 0px !important;
     .inventory-summary {
         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
     }
+	.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
+          
+	margin-top: 5px !important;
 }
 .program-discount-header,
 .box-typical.box-typical-dashboard .box-typical-header{
@@ -1688,14 +1736,12 @@ margin-right: 0px !important;
 .kpi-label{
 	padding: 0px !important;
 	margin-top: 0px !important;
-
+	
 }
-.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
-          
-	margin-top: 5px !important;
 }
 
-}
+
+
 @media (max-width: 1056px) {
 	.site-header .hamburger {
 top: 0px;
@@ -2111,6 +2157,140 @@ margin-left: 0;
 				});
 			}
 
+			function storeInitialTableState(context) {
+				if (!context.$table.length || context.$table.data('followInitialState')) {
+					return;
+				}
+
+				var state = {
+					compact: context.$table.hasClass('follow-table-density-compact')
+				};
+
+				if (context.api) {
+					var order = context.api.order ? context.api.order() : [];
+					var columnVisibility = [];
+
+					if (context.api.columns) {
+						context.api.columns().every(function (index) {
+							columnVisibility[index] = this.visible();
+						});
+					}
+
+					state.order = $.isArray(order) ? order.slice() : [];
+					state.pageLength = context.api.page && context.api.page.len ? context.api.page.len() : null;
+					state.columnVisibility = columnVisibility;
+				} else {
+					state.columnVisibility = [];
+					context.$table.find('thead th').each(function (index) {
+						state.columnVisibility[index] = $(this).css('display') !== 'none';
+					});
+				}
+
+				context.$table.data('followInitialState', state);
+			}
+
+			function updateColumnDropdownState(context) {
+				if (!context.$table.length) {
+					return;
+				}
+
+				var $dropdown = context.$table.data('followColumnsDropdown');
+				if (!$dropdown || !$dropdown.length) {
+					return;
+				}
+
+				$dropdown.find('input[type="checkbox"]').each(function () {
+					var index = Number($(this).attr('data-index'));
+					var isVisible;
+
+					if (context.api) {
+						isVisible = context.api.column(index).visible();
+					} else {
+						var $header = context.$table.find('thead th').eq(index);
+						isVisible = $header.length ? $header.css('display') !== 'none' : true;
+					}
+
+					$(this).prop('checked', !!isVisible);
+				});
+			}
+
+			function resetTableState(context, $searchInput, $controls) {
+				if (!$controls || !$controls.length) {
+					$controls = context.$wrapper ? context.$wrapper.find('.follow-controls').first() : $();
+				}
+
+				var initialState = context.$table.data('followInitialState') || {};
+
+				if ($searchInput && $searchInput.length) {
+					$searchInput.val('');
+				}
+
+				if (context.api) {
+					if (context.api.search) {
+						context.api.search('');
+					}
+
+					if (context.api.columns) {
+						context.api.columns().search('');
+					}
+
+					if ($.isArray(initialState.columnVisibility)) {
+						$.each(initialState.columnVisibility, function (index, visible) {
+							context.api.column(index).visible(visible, false);
+						});
+					} else if (context.api.columns) {
+						context.api.columns().visible(true, false);
+					}
+
+					if ($.isArray(initialState.order) && initialState.order.length && context.api.order) {
+						context.api.order(initialState.order);
+					}
+
+					if (initialState.pageLength && context.api.page && context.api.page.len) {
+						context.api.page.len(initialState.pageLength);
+					}
+
+					context.$table.toggleClass('follow-table-density-compact', !!initialState.compact);
+
+					if ($controls && $controls.length) {
+						$controls.find('[aria-label="Toggle table density"]').toggleClass('is-active', !!initialState.compact);
+					}
+
+					context.api.draw(false);
+
+					if (context.api.page) {
+						context.api.page('first').draw('page');
+					}
+
+					if (context.api.ajax && context.api.ajax.reload) {
+						context.api.ajax.reload(null, false);
+					}
+				} else {
+					context.$table.removeClass('follow-table-density-compact');
+					context.$table.find('tbody tr').show();
+
+					if ($.isArray(initialState.columnVisibility)) {
+						$.each(initialState.columnVisibility, function (index, visible) {
+							setManualColumnVisibility(context.$table, index, visible !== false);
+						});
+					} else {
+						context.$table.find('tr').each(function () {
+							$(this).children().css('display', '');
+						});
+					}
+
+					if ($controls && $controls.length) {
+						$controls.find('[aria-label="Toggle table density"]').removeClass('is-active');
+					}
+
+					if ($searchInput && $searchInput.length) {
+						$searchInput.trigger('input').trigger('keyup').trigger('change');
+					}
+				}
+
+				updateColumnDropdownState(context);
+			}
+
 			function exportTableToCsv($table, filename) {
 				if (!$table.length) {
 					return;
@@ -2188,7 +2368,7 @@ margin-left: 0;
 
 				var $dropdown = $(
 					'<div class="follow-toolbar-dropdown dropdown">' +
-						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Columns">' +
+						'<button type="button" class="btn  dropdown-toggle" data-toggle="dropdown" aria-label="Columns">' +
 							'<span class="font-icon font-icon-list-rotate" aria-hidden="true"></span>' +
 							' <span class="caret"></span>' +
 						'</button>' +
@@ -2199,11 +2379,12 @@ margin-left: 0;
 				$headers.each(function (index) {
 					var label = getColumnLabel($(this), index);
 					var checkboxId = 'follow-col-' + (context.$table.attr('id') || 'table') + '-' + index;
+					var isVisible = context.api ? context.api.column(index).visible() : $(this).css('display') !== 'none';
 					var $item = $(
-						'<li>' +
+						'<li class="follow-column-option">' +
 							'<span class="checkbox">' +
 								'<label for="' + checkboxId + '">' +
-									'<input id="' + checkboxId + '" type="checkbox" checked="checked" data-index="' + index + '">' +
+									'<input id="' + checkboxId + '" type="checkbox" ' + (isVisible ? 'checked="checked"' : '') + ' data-index="' + index + '">' +
 									'<span>' + label + '</span>' +
 								'</label>' +
 							'</span>' +
@@ -2229,6 +2410,7 @@ margin-left: 0;
 				});
 
 				context.$table.data('follow-columns-ready', true);
+				context.$table.data('followColumnsDropdown', $dropdown);
 				$tools.append($dropdown);
 			}
 
@@ -2264,20 +2446,13 @@ margin-left: 0;
 
 			function buildRefreshButton($tools, context, $searchInput) {
 				var $button = $(
-					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Refresh">' +
+					'<button type="button" class="btn follow-toolbar-btn" aria-label="Refresh">' +
 						'<span class="fa fa-refresh" aria-hidden="true"></span>' +
 					'</button>'
 				);
 
 				$button.on('click', function () {
-					if (context.api && context.api.ajax && context.api.ajax.reload) {
-						context.api.ajax.reload(null, false);
-						return;
-					}
-
-					if ($searchInput && $searchInput.length) {
-						$searchInput.trigger('input').trigger('keyup');
-					}
+					resetTableState(context, $searchInput, $tools.closest('.follow-controls'));
 				});
 
 				$tools.append($button);
@@ -2289,7 +2464,7 @@ margin-left: 0;
 				}
 
 				var $button = $(
-					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Toggle table density">' +
+					'<button type="button" class="btn follow-toolbar-btn" aria-label="Toggle table density">' +
 						'<span class="fa fa-th-list" aria-hidden="true"></span>' +
 					'</button>'
 				);
@@ -2310,6 +2485,7 @@ margin-left: 0;
 					}
 
 					var context = getFollowTableContext($controls);
+					storeInitialTableState(context);
 					var $searchBlock = getSearchBlock($controls);
 					if (!$searchBlock.length) {
 						return;
@@ -2346,6 +2522,7 @@ margin-left: 0;
 					}
 
 					$controls.data('followToolbarReady', true);
+					updateColumnDropdownState(context);
 				});
 			}
 

@@ -274,9 +274,9 @@
 
 @push('styles')
     <style>
-        .student-attendance-shell {
+        /* .student-attendance-shell {
             padding: 10px;
-        }
+        } */
 
         .student-attendance-card {
             max-width: 1380px;

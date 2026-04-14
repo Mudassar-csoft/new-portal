@@ -257,7 +257,7 @@
 
 @push('styles')
     <style>
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .required::after { content: ' *'; color: #dc2626; }
         .hrm-table thead th { background: #0ea5e9; color: #fff; }
     </style>

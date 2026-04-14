@@ -1131,7 +1131,7 @@ border:2px solid #ddd;
 
 .site-header .dropdown.dropdown-notification .dropdown-menu-notif {
 	position: fixed !important;
-	top: 58px !important;
+	top: 80px !important;
 	right: 12px !important;
 	left: auto !important;
 	transform: none !important;

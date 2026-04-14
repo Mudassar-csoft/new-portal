@@ -80,7 +80,7 @@
 										<td>{{ $webLead->city ?: 'N/A' }}</td>
 										<td>{{ $webLead->interested_program ?: 'N/A' }}</td>
 										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td>
-										<td class="text-center action-cell">
+										<td class=" action-cell">
 											@include('web_leads.action', ['actionId' => $actionId, 'webLead' => $webLead])
 										</td>
 									</tr>

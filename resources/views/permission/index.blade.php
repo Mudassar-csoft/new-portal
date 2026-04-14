@@ -3,7 +3,7 @@
 @section('title', 'Permissions')
 
 @section('content')
-	<div class="container-fluid">
+	<!-- <div class="container-fluid"> -->
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default permission-directory">
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 @endsection
 
 @push('styles')

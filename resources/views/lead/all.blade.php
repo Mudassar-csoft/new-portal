@@ -61,7 +61,7 @@
 									<th>Contact No</th>
 									<th>Status</th>
 									<th>Interested Course</th>
-									<th class="text-center">Action</th>
+									<th class="text-left">Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -90,7 +90,7 @@
 											</span>
 										</td>
 										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
-										<td class="text-center action-cell">
+										<td class=" action-cell">
 											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row])
 										</td>
 									</tr>

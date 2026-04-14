@@ -86,7 +86,7 @@
 									<td>{{ $admDate }}</td>
 									<td>{{ $row->phone }}</td>
 									<td>{{ $row->city }}</td>
-									<td class="text-center action-cell">
+									<td class=" action-cell">
 										@include('admission.partials.action', ['actionId' => 'adm-action-' . $idx])
 									</td>
 								</tr>

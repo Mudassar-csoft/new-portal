@@ -88,7 +88,7 @@
 									<td>{{ $row->phone }}</td>
 									<td>{{ $row->fee }}</td>
 									<td>{{ $row->receipt_number }}</td>
-									<td class="text-center action-cell">
+									<td class=" action-cell">
 										@include('registration.partials.action', ['actionId' => 'reg-action-' . $idx])
 									</td>
 								</tr>
@@ -112,9 +112,9 @@
 
 @push('styles')
 	<style>
-		.reg-status-shell {
+		/* .reg-status-shell {
 			padding: 8px 0 16px;
-		}
+		} */
 
 		/* Reuse follow styles */
 		.follow-card {
