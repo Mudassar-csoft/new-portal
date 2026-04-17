@@ -247,6 +247,7 @@
         .finance-summary-row { margin: 2px 0 10px;padding:7px; }
         .income-summary-card {
             border-radius: 10px;
+            height:25vh;
             padding: 12px 14px;
             color: #fff;
             margin-bottom: 12px;
@@ -254,15 +255,17 @@
             min-height: 86px;
         }
         .income-summary-card .summary-label {
-           font-size: 12px;
+           font-size: 14px;
+           font-weight:600;
     text-transform: uppercase;
     opacity: .88;
     text-align: center;
     margin-top: 1rem;
         }
+       
         .income-summary-card .summary-value {
-            margin-top: 6px;
-    font-size: 24px;
+            margin-top: 30px;
+    font-size: 18px;
     text-align: center;
     font-weight: 700;
         }
@@ -276,5 +279,18 @@
             color: #334155;
             font-weight: 700;
         }
+
+
+
+
+
+         @media (max-width: 760px)  {
+            .income-summary-card .summary-label {
+              margin-top: 5px;
+            }
+         .income-summary-card .summary-value {
+            margin-top: 10px;  
+        }
+}
     </style>
 @endpush

@@ -122,7 +122,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="text ">Total Leads</div>
+									<div class="caption-text">Today Leads</div>
 								</div>
 							</div>
 						</article>
@@ -133,7 +133,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="text">Current Students</div>
+									<div class="caption-text">Current Students</div>
 								</div>
 							</div>
 						</article>
@@ -144,7 +144,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="text">Current Month Collection</div>
+									<div class="caption-text">{{ now()->format('F') }} Collection</div>
 								</div>
 							</div>
 						</article>
@@ -155,7 +155,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-mask-mode="icon"></div>
 								<div class="caption mt-3 ">
-									<div class="text">Current Month Pending</div>
+									<div class="caption-text">Pending Recovery</div>
 								</div>
 							</div>
 						</article>
@@ -499,7 +499,8 @@
             display: none !important;
         }
 
-		.chart-caption {
+		.chart-caption , .caption-text{
+			font-size: 17px !important;
             text-align: center;
             font-weight: 700;
             color: #fff;
@@ -530,7 +531,7 @@
         }
 .statistic-box .number, 
 .statistic-box .caption{
-    font-size:32px !important;
+    font-size:28px !important;
 
 }
 *{

@@ -54,7 +54,7 @@
         .hrm-dashboard-div{
             padding:14px !important;
         }
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-head {
             display: flex;
             justify-content: space-between;
@@ -67,25 +67,25 @@
             border-radius: 10px;
             height: 25vh;
             color: #fff;
-            
             padding: 14px;
             margin-bottom: 32px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+            min-height: 86px;
         }
         .hrm-stat .stat-label {
-                font-size: 14px;
-                font-weight:600;
-    text-transform: uppercase;
-    opacity: .88;
-    text-align: center;
-    margin-top: 1rem;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: .88;
+            text-align: center;
+            margin-top: 1rem;
         }
         .hrm-stat .stat-value {
-           margin-top: 25px;
-    font-size: 24px; 
-    color:white;
-    text-align: center;
-    font-weight: 700;
+            margin-top: 30px;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+            font-weight: 700;
         }
         .tone-total { background: #f35f62; }
         .tone-active { background: #fdc518; }
@@ -96,6 +96,13 @@
         .tone-payroll { background: #00a8ff; }
         .tone-notice { background: #f35f62; }
         .tone-doc { background: #34a853; }
+        @media (max-width: 760px)  {
+            .hrm-stat .stat-label {
+                margin-top: 5px;
+            }
+            .hrm-stat .stat-value {
+                margin-top: 10px;
+            }
+        }
     </style>
 @endpush
-

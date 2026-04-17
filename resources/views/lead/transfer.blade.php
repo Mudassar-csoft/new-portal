@@ -16,7 +16,7 @@
         <div id="lead-content" class="lead-content">
             <div class="box-typical box-typical-dashboard panel panel-default lead-create-card">
                 <header class="box-typical-header panel-heading lead-header">
-                    <h2 class="panel-title lead-title form-label">
+                    <h2 class="panel-title form-label">
                         Transfer Lead
                         <small class="text-muted ml-2">{{ $lead->name ?? 'Lead' }}</small>
                     </h2>
@@ -41,11 +41,11 @@
                             @endif
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label>Current Campus</label>
+                                    <label class="form-label">Current Campus</label>
                                     <input type="text" class="form-control" value="{{ $lead->campus->name ?? 'N/A' }}" disabled>
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label class="required">Transfer To</label>
+                                    <label class="form-label required">Transfer To</label>
                                     <select class="form-control @error('to_campus_id') is-invalid @enderror" name="to_campus_id" required>
                                         <option value="">- Select campus -</option>
                                         @foreach($campuses as $campus)
@@ -64,7 +64,7 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-12">
-                                    <label>Reason / Note</label>
+                                    <label class="form-label">Reason / Note</label>
                                     <textarea class="form-control @error('reason') is-invalid @enderror" name="reason" rows="4" placeholder="Why is this lead being transferred?">{{ old('reason') }}</textarea>
                                     @error('reason')
                                         <div class="field-error">{{ $message }}</div>
@@ -237,14 +237,14 @@
             display: inline-block;
             margin-bottom: 8px;
             font-weight: 700;
-            color: #223a57;
+            /* color: #223a57; */
         }
 
         .lead-transfer-form .form-control {
-            min-height: 46px;
-            border-radius: 12px;
+            min-height: 25px;
+            /* border-radius: 12px; */
             border: 1px solid #d6e2f0;
-            padding: 10px 14px;
+            padding: 6px 14px;
             background: #fff;
             box-shadow: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -271,11 +271,11 @@
             gap: 12px;
             padding-top: 18px;
             margin-top: 8px;
-            border-top: 1px solid #e8eef5;
+            /* border-top: 1px solid #e8eef5; */
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
         }
 
-        .form-actions .btn {
+        /* .form-actions .btn {
             min-width: 170px;
             height: 44px;
             border-radius: 12px;
@@ -307,7 +307,7 @@
             color: #fff;
             background: #dc3545;
             border-color: #dc3545;
-        }
+        } */
 
         @media (max-width: 767px) {
             .lead-shell {

@@ -23,7 +23,10 @@
 	<![endif]-->
 	<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 	<link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+	<link rel="preload" href="fonts/Proxima_Nova_Regular.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="fonts/Proxima_Nova_Semibold.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
 			<link rel="stylesheet" href="css/custom-responsive.css">
@@ -39,7 +42,15 @@
   margin: 0;
   padding: 0;
 }
+h1 { font-size: 30px !important; }
+h2 { font-size: 26px!important; }
+h3 { font-size: 22px !important; }
+h4 { font-size: 18px !important; }
+h5 { font-size: 16px !important; }
 
+p { font-size: 14px; }
+span { font-size: 13px; }
+small { font-size: 12px; }
 body,
 p,
 span,
@@ -243,65 +254,21 @@ padding: 0.8375rem 1.25rem;
 .my-3 {
 margin-bottom: 0 !important;
 }
-.side-menu-list {
-margin: -79px 0 20px;
-}
-
-.side-menu-list .lbl {
-font-size: 14.5px !important;
-font-weight: 600 !important;
-line-height: 1.3;
-}
-
-.side-menu .stage-link {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 8px;
-}
 .campus-title{
 	font-size: 22px !important;
 }
-.dataTables_wrapper .dataTables_filter label {
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
             position: relative;
             margin: 0;
             font-size: 0;
         }
-		.dataTables_filter label{
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label{
     font-size:0;
 }
 
-.dataTables_filter input{
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input{
     font-size:13px !important
 }
-.side-menu .stage-count {
-min-width: 32px;
-width: 80px;
-text-align: center;
-color: #fff;
-background-color: #6c757d;
-border-color: #6c757d;
-}
-
-.side-menu-list a,
-.side-menu-list li > span {
-padding: 11px 12px 6px 46px;
-}
-
-/* =========================================================
-   Sidebar Stage Pills
-   ========================================================= */
-/* Per-item pill tones */
-.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #1296eb; border-color: #1296eb; }
-.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #45c156; border-color: #45c156; }
-.side-menu li ul li:nth-child(9n+5) .stage-count { background-color: #36c86b; border-color: #36c86b; }
-.side-menu li ul li:nth-child(9n+6) .stage-count { background-color: #25344a; border-color: #25344a; }
-.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
-.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
-.side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
-
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
 } */
@@ -352,12 +319,11 @@ padding: 10px 16px !important;
    ========================================================= */
 .dataTables_wrapper {
   box-sizing: border-box;
-  /* padding-left: 3px !important;
-  padding-right: 12px !important; */
+  padding:10px;
 }
 
-.dataTables_wrapper .dataTables_filter input,
-.login-logs .dataTables_filter input {
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input,
+.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
   border: 1px solid #d9e2ef;
   border-radius: 0.3125rem !important; 
   padding: 0.0625rem 0.75rem !important; 
@@ -374,9 +340,9 @@ padding: 10px 16px !important;
 div.dataTables_wrapper div.dataTables_info {
 padding-top: 1em;
 }
-div.dataTables_wrapper div.dataTables_filter input{
+div.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) div.dataTables_filter input{
 	width:200px;
-}div.dataTables_wrapper div.dataTables_filter label {
+}div.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) div.dataTables_filter label {
     font-weight: 0px !important;
     white-space: nowrap;
     text-align: left;}
@@ -627,6 +593,10 @@ height: 26vh !important;
     border-radius: 10px;
     border: 1px solid #d7e5f1;
     box-shadow: 0 12px 30px rgba(31, 60, 92, 0.12);
+    left: -53px !important;
+    /* right: 25px !important; */
+    /* transform: none !important; */
+    margin-top: 6px !important;
 }
 
 .follow-toolbar-dropdown .dropdown-menu > li > a,
@@ -1255,6 +1225,7 @@ body, button, html, input, select {
 		}
 
 		.follow-tab .badge {
+			padding:4px 8px;
 			border-radius: 999px;
 			font-size: 11px;
 			line-height: 1;
@@ -1262,31 +1233,6 @@ body, button, html, input, select {
 
 		.follow-body {
 			padding: 16px;
-		}
-
-		.follow-controls {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0px 2px 12px 2px;
-			/* margin-left: 4px; */
-		}
-
-		.follow-search {
-			position: relative;
-			width: 240px;
-		}
-
-		.follow-search input {
-			padding-right: 32px;
-		}
-
-		.follow-search i {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			color: #9aa8b6;
 		}
 
 		.follow-table {
@@ -1320,7 +1266,7 @@ body, button, html, input, select {
 		}
 
 		.lead-link {
-			color: #0099f8;
+			color: #0082c6;
 			font-weight: 700;
 			text-decoration: none !important;
 		}
@@ -1677,19 +1623,6 @@ margin-right: 0px !important;
     width: 94px !important;
 
 }
-.follow-controls.follow-controls--toolbar .dataTables_filter input,
-.follow-controls.follow-controls--toolbar .follow-search input {
-    width: 137px !important;
-}
-.dataTables_wrapper .follow-controls.follow-controls--toolbar .follow-controls-search-group,
-.follow-toolbar-group{  
-    gap: 3px !important;
-    
-    
-}
-.follow-controls.follow-controls--toolbar .follow-controls-search-group {
-	gap: 3px !important;
-}
 .student-summary-card strong {
 margin-top: -2px;
 
@@ -1863,12 +1796,6 @@ padding: 100px 32px 32px;
 max-width: 1440px;
 padding-left: 7px;
 padding-right: 28px;
-}
-
-
-.side-menu-list a,
-.side-menu-list li > span {
-padding-right: 5px;
 }
 
 /* =========================================================

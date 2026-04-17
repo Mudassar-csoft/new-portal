@@ -4254,6 +4254,7 @@ video {
   src: url('../fonts/Proxima_Nova_Regular.eot') format('embedded-opentype'), url('../fonts/Proxima_Nova_Regular.woff2') format('woff2'), url('../fonts/Proxima_Nova_Regular.woff') format('woff'), url('../fonts/Proxima_Nova_Regular.ttf') format('truetype'), url('../fonts/Proxima_Nova_Regular.svg#Proxima_Nova_Regular') format('svg');
   font-style: normal;
   font-weight: 400;
+  font-display: block;
 }
 @font-face {
   font-family: 'Proxima Nova';
@@ -4282,6 +4283,7 @@ video {
   src: url('../fonts/Proxima_Nova_Semibold.eot') format('embedded-opentype'), url('../fonts/Proxima_Nova_Semibold.woff2') format('woff2'), url('../fonts/Proxima_Nova_Semibold.woff') format('woff'), url('../fonts/Proxima_Nova_Semibold.ttf') format('truetype'), url('../fonts/Proxima_Nova_Semibold.svg#Proxima_Nova_Semibold') format('svg');
   font-style: normal;
   font-weight: 600;
+  font-display: block;
 }
 @font-face {
   font-family: 'Proxima Nova';

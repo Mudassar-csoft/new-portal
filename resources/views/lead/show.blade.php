@@ -25,7 +25,7 @@
 				</div>
 			</div>
 				<div class="lead-actions">
-					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead])
+					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead, 'editOnly' => true])
 				</div>
 		</div>
 
@@ -124,20 +124,20 @@
 							@if ($showLeadCompletionFields)
 								<div class="followup-extra-fields" id="lead-completion-fields">
 									<div class="followup-extra-title">Complete Lead Details</div>
-									<p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p>
+									<!-- <p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p> -->
 									<div class="form-row" >
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
-											<label>Email Address</label>
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
+											<label class="form-label required">Email Address</label>
 											<input type="email" class="form-control" name="email" value="{{ old('email', $lead->email) }}" placeholder="Enter email address">
 											<div class="field-error" data-error-for="email"></div>
 										</div>
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
 											<label class="form-label required">Area</label>
 											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area" required>
 											<div class="field-error" data-error-for="lead_details.area"></div>
 										</div>
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
-											<label>Gender</label>
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
+											<label class="form-label required">Gender</label>
 											<select class="form-control" name="lead_details[gender]">
 												<option value="">- Select -</option>
 												@foreach (['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $genderValue => $genderLabel)
@@ -376,7 +376,7 @@
     background: #fff;
     border: 1px solid #dbe4ed;
     border-radius: 10px;
-	height:85vh !important
+	height:auto;
 }
 		 .followup-table-wrapper {
 	max-width: 1400px;

@@ -1,122 +1,140 @@
 <div class="lead-form" data-type="study_abroad">
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Full Name (As Per CNIC)</label>
-			<input type="text" class="form-control" placeholder="Enter Full Name">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Personal Contact Number</label>
-			<input type="tel" class="form-control" placeholder="0300 0000000">
-		</div>
-		<div class="form-group col-md-4">
-			<label>Email</label>
-			<input type="email" class="form-control" placeholder="Enter Email">
-		</div>
-	</div>
-	<div class="form-row">
-		<!-- <div class="form-group col-md-4">
-			<label class="required">Gender</label>
-			<div class="radio-group">
-				<label><input type="radio" name="gender_study" checked> Male</label>
-				<label><input type="radio" name="gender_study"> Female</label>
-				<label><input type="radio" name="gender_study"> Other</label>
-			</div>
-		</div> -->
-		<div class="form-group form-group-radios">
-    <label class="form-label" id="studyabroad-gender">
-        Gender <span class="color-red">*</span>
-    </label>
-
-    <div class="radio">
-        <input id="studyabroad-gender-male"
-               name="studyabroad[gender]"
-               data-validation="[NOTEMPTY]"
-               data-validation-group="studyabroad-gender"
-               data-validation-message="You must select a gender"
-               type="radio"
-               value="male">
-        <label for="studyabroad-gender-male">Male</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Full Name (As Per CNIC)</label>
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name') }}">
+            @error('name')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Personal Contact Number</label>
+            <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone') }}">
+            @error('phone')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email') }}">
+            @error('email')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="studyabroad-gender-female"
-               name="studyabroad[gender]"
-               data-validation-group="studyabroad-gender"
-               type="radio"
-               value="female">
-        <label for="studyabroad-gender-female">Female</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Gender</label>
+            <select name="details[gender]" class="form-control @error('details.gender') is-invalid @enderror">
+                <option value="">- Select -</option>
+                <option value="male" @selected(old('details.gender') === 'male')>Male</option>
+                <option value="female" @selected(old('details.gender') === 'female')>Female</option>
+                <option value="other" @selected(old('details.gender') === 'other')>Other</option>
+            </select>
+            @error('details.gender')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Current Education</label>
+            <input type="text" name="details[current_education]" class="form-control @error('details.current_education') is-invalid @enderror" placeholder="Current Education" value="{{ old('details.current_education') }}">
+            @error('details.current_education')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Preferred Study Program</label>
+            <input type="text" name="details[preferred_study_program]" class="form-control @error('details.preferred_study_program') is-invalid @enderror" placeholder="Preferred Program" value="{{ old('details.preferred_study_program') }}">
+            @error('details.preferred_study_program')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="studyabroad-gender-other"
-               name="studyabroad[gender]"
-               data-validation-group="studyabroad-gender"
-               type="radio"
-               value="other">
-        <label for="studyabroad-gender-other">Other</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Preferred Country</label>
+            <input type="text" name="details[preferred_country]" class="form-control @error('details.preferred_country') is-invalid @enderror" placeholder="Preferred Country" value="{{ old('details.preferred_country') }}">
+            @error('details.preferred_country')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label>Preferred University (Optional)</label>
+            <input type="text" name="details[preferred_university]" class="form-control @error('details.preferred_university') is-invalid @enderror" placeholder="Preferred University" value="{{ old('details.preferred_university') }}">
+            @error('details.preferred_university')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Marketing Source</label>
+            <select name="marketing_source" class="form-control @error('marketing_source') is-invalid @enderror">
+                <option value="">- Select -</option>
+                @foreach($marketingSources as $source)
+                    <option value="{{ $source }}" @selected(old('marketing_source') == $source)>{{ $source }}</option>
+                @endforeach
+            </select>
+            @error('marketing_source')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-</div>
- 
-		<div class="form-group col-md-4">
-			<label class="required">Current Education</label>
-			<input type="text" class="form-control" placeholder="Current Education">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Preferred Study Program</label>
-			<input type="text" class="form-control" placeholder="Preferred Program">
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Preferred Country</label>
-			<input type="text" class="form-control" placeholder="Preferred Country">
-		</div>
-		<div class="form-group col-md-4">
-			<label>Preferred University (Optional)</label>
-			<input type="text" class="form-control" placeholder="Preferred University">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Marketing Source</label>
-			<select class="form-control">
-				<option value="">- Select -</option>
-			</select>
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Origin</label>
-			<select class="form-control">
-				<option value="">- Select -</option>
-			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Country</label>
-			<input type="text" class="form-control" value="Pakistan">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">City</label>
-			<select class="form-control">
-				<option value="">Select a city</option>
-			</select>
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label>Area</label>
-			<input type="text" class="form-control" placeholder="Enter Area">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Next Follow-up</label>
-			<input type="datetime-local" class="form-control">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Probability</label>
-			<input type="range" min="0" max="100" step="5" class="form-control-range probability-range">
-			<div class="probability-display">Selected: <span>0%</span></div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="required">Remarks</label>
-		<textarea class="form-control" rows="3" placeholder="Remarks"></textarea>
-	</div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Origin</label>
+            <select name="origin" class="form-control @error('origin') is-invalid @enderror">
+                <option value="">- Select -</option>
+                @foreach($origins as $origin)
+                    <option value="{{ $origin }}" @selected(old('origin') == $origin)>{{ $origin }}</option>
+                @endforeach
+            </select>
+            @error('origin')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Country</label>
+            <input type="text" name="details[country]" class="form-control @error('details.country') is-invalid @enderror" value="{{ old('details.country', 'Pakistan') }}">
+            @error('details.country')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">City</label>
+            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="Enter City" value="{{ old('city') }}">
+            @error('city')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Area</label>
+            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Area" value="{{ old('details.area') }}">
+            @error('details.area')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Next Follow-up</label>
+            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
+            @error('details.next_followup_at')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Probability</label>
+            <input type="range" name="details[probability]" min="0" max="100" step="5" class="form-control-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
+            <div class="probability-display">Selected: <span>{{ old('details.probability', 0) }}%</span></div>
+            @error('details.probability')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="required">Remarks</label>
+        <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks') }}</textarea>
+        @error('details.remarks')
+            <div class="field-error">{{ $message }}</div>
+        @enderror
+    </div>
 </div>

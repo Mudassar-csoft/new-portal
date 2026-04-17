@@ -1,411 +1,347 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Career Institute - Sign In</title>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>Career Institute - Sign In</title>
 
-    <link href="{{ asset('theme/img/favicon.144x144.png') }}" rel="apple-touch-icon" type="image/png" sizes="144x144">
-    <link href="{{ asset('theme/img/favicon.114x114.png') }}" rel="apple-touch-icon" type="image/png" sizes="114x114">
-    <link href="{{ asset('theme/img/favicon.72x72.png') }}" rel="apple-touch-icon" type="image/png" sizes="72x72">
-    <link href="{{ asset('theme/img/favicon.57x57.png') }}" rel="apple-touch-icon" type="image/png">
-    <link href="{{ asset('theme/img/favicon.png') }}" rel="icon" type="image/png">
-    <link href="{{ asset('theme/img/favicon.ico') }}" rel="shortcut icon">
+	<link href="{{ asset('theme/img/favicon.144x144.png') }}" rel="apple-touch-icon" type="image/png" sizes="144x144">
+	<link href="{{ asset('theme/img/favicon.114x114.png') }}" rel="apple-touch-icon" type="image/png" sizes="114x114">
+	<link href="{{ asset('theme/img/favicon.72x72.png') }}" rel="apple-touch-icon" type="image/png" sizes="72x72">
+	<link href="{{ asset('theme/img/favicon.57x57.png') }}" rel="apple-touch-icon" type="image/png">
+	<link href="{{ asset('theme/img/favicon.png') }}" rel="icon" type="image/png">
+	<link href="{{ asset('theme/img/favicon.ico') }}" rel="shortcut icon">
 
-    <link rel="stylesheet" href="{{ asset('theme/separate/pages/login.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('theme/lib/font-awesome/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('theme/lib/bootstrap/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('theme/main.css') }}">
-    <style>
-        html, body {
-            height: 100%;
-        }
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: Arial, sans-serif;
+		}
 
-        body {
-            background: #f5f7fb;
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
+		body {
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 20px;
+			background: linear-gradient(135deg, #0a3d62, #0f766e);
+		}
 
-        .sign-box .form-control.is-invalid,
-        .sign-box .form-control:invalid {
-            border-color: #d8e2e7 !important;
-            box-shadow: none !important;
-            background-image: none !important;
-        }
+		.container {
+			width: 850px;
+			max-width: 100%;
+			min-height: 420px;
+			display: flex;
+			border-radius: 15px;
+			overflow: hidden;
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+			background: transparent;
+		}
 
-        .login-shell {
-            position: relative;
-            min-height: 100vh;
-            margin: 0;
-            align-items: center;
-            justify-content: center;
-        }
+		.left {
+			width: 50%;
+			padding: 25px 40px;
+			background: linear-gradient(135deg, #00b894, #00cec9);
+			color: #fff;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
 
-        .login-media {
-            
-            
-            min-height: 100vh;
-            overflow: hidden;
-            
-}
+		.logo {
+			height: 80px;
+			display: flex;
+			justify-content: center;
+			align-items: flex-start;
+		}
 
-        .media-glow {
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(600px 300px at 20% 20%, rgba(0, 122, 255, 0.35), transparent 60%),
-                radial-gradient(500px 300px at 80% 70%, rgba(0, 214, 155, 0.25), transparent 60%);
-            pointer-events: none;
-        }
+		.logo img {
+			height: 58px;
+			max-width: 100%;
+			object-fit: contain;
+		}
 
-        .login-slider {
-            position: absolute;
-            inset: 0;
-        }
+		.left h2 {
+			margin: 17px 0;
+			font-size: 22px;
+			text-align: center;
+		}
 
-        .slide {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            transition: opacity 1.2s ease-in-out;
-        }
+		.input-group {
+			margin-bottom: 15px;
+		}
 
-        .slide.is-active {
-            opacity: 1;
-        }
+		.input-group label {
+			font-size: 13px;
+			display: block;
+			margin-bottom: 5px;
+		}
 
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transform: scale(1.02);
-            transition: transform 6s ease;
-        }
+		.input-group input {
+			width: 100%;
+			padding: 10px;
+			border-radius: 8px;
+			border: none;
+			outline: none;
+			background: rgba(255, 255, 255, 0.3);
+			color: #fff;
+		}
 
-        .slide-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(140deg, rgba(6, 16, 28, 0.35), rgba(6, 16, 28, 0.15));
-        }
+		.input-group input::placeholder {
+			color: #eee;
+		}
 
-        .slider-caption {
-            position: absolute;
-            left: 40px;
-            bottom: 40px;
-            color: #fff;
-            max-width: 420px;
-        }
+		.input-group input.is-invalid {
+			box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+		}
 
-        .slider-caption h2 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: 0.2px;
-        }
+		.field-error {
+			margin-top: 6px;
+			font-size: 12px;
+			color: #fff6f6;
+		}
 
-        .slider-caption p {
-            font-size: 14px;
-            margin: 0;
-            color: rgba(255, 255, 255, 0.9);
-        }
+		.form-meta {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 20px;
+			font-size: 12px;
+		}
 
-        .slider-dots {
-            position: absolute;
-            right: 32px;
-            bottom: 32px;
-            display: flex;
-            gap: 8px;
-        }
+		.remember-me {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
 
-        .slider-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-        }
+		.remember-me input {
+			accent-color: #009e60;
+		}
 
-        .slider-dot.is-active {
-            background: #fff;
-        }
+		.forgot {
+			color: #fff;
+			text-decoration: none;
+			cursor: pointer;
+		}
 
-        .login-form-panel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-height: 100vh;
-            padding: 24px 16px;
-            pointer-events: none;
-        }
+		.forgot:hover {
+			text-decoration: underline;
+		}
 
-       .sign-box {
-    max-height: calc(100vh - 48px);
-    background: rgba(255, 255, 255, 0.78);
-    border: 0px;
-    box-shadow: 0 18px 50px rgba(15, 30, 70, 0.2);
-    border-radius: 16px;
-    width: 100%;
-    margin: 0 !important;
-    max-width: 420px;
-    padding: 24px 24px 30px;
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-    overflow-y: auto;
-}
-        .sign-box::before {
-           display:none;
-        }
+		button {
+			padding: 12px;
+			border: none;
+			border-radius: 8px;
+			background: #009e60;
+			color: white;
+			font-weight: bold;
+			cursor: pointer;
+			transition: 0.3s;
+		}
 
-        .sign-box .sign-avatar {
-            margin-bottom: 8px;
-            margin-top: 10%;
-        }
+		button:hover {
+			background: #007f4f;
+		}
 
-        .sign-box .form-control {
-            height: 44px;
-            border-radius: 10px;
-            border: 1px solid #dbe5f1;
-            padding-left: 14px;
-            margin-top:3%;
-        }
+		button[type="submit"] {
+			width: 100%;
+		}
 
-        .sign-box .form-control:focus {
-            border-color: #2b78ff;
-            box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.15);
-        }
+		.right {
+			width: 50%;
+			background: linear-gradient(135deg, #0a3d62, #1e5f74);
+			color: #fff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			padding: 20px;
+			overflow: hidden;
+		}
 
-        .sign-box .btn.btn-rounded {
-            width: 100%;
-            margin-top: 8px;
-            background: linear-gradient(120deg, #2b78ff, #00c2ff);
-            border: 0;
-            box-shadow: 0 12px 24px rgba(43, 120, 255, 0.3);
-        }
+		.right h1 {
+			position: absolute;
+			top: 97px;
+			font-size: 26px;
+			z-index: 2;
+		}
 
-        .sign-box .btn.btn-rounded:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 16px 28px rgba(43, 120, 255, 0.35);
-        }
+		.right::before {
+			content: "";
+			position: absolute;
+			top: 6px;
+			right: -8px;
+			width: 136px;
+			height: 136px;
+			background: url("{{ asset('theme/img/login/group.png') }}") no-repeat center / contain;
+			opacity: 0.8;
+			pointer-events: none;
+		}
 
-        .sign-note {
-            margin-top: 12px;
-        }
+		.right::after {
+			content: "";
+			position: absolute;
+			top: -34px;
+			right: -28px;
+			width: 240px;
+			height: 240px;
+			background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.34) 0%, rgba(210, 218, 226, 0.13) 34%, rgba(255, 255, 255, 0) 72%);
+			pointer-events: none;
+		}
 
-        .sign-note.secondary {
-            margin-top: 14px;
-            font-size: 12px;
-            color: #6b7a90;
-        }
+		.illustration img {
+			height: 160px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: 95px;
+			max-width: 100%;
+			object-fit: contain;
+		}
 
-        .trust-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 16px;
-            font-size: 11px;
-            color: #6b7a90;
-        }
+		.general-error {
+			margin-top: 16px;
+			font-size: 12px;
+			text-align: center;
+			color: #fff6f6;
+		}
 
-        .sign-box .checkbox label {
-            color: #4a5b73;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
+		@media (max-width: 768px) {
+			.container {
+				flex-direction: column;
+			}
 
-        .sign-box .checkbox label::before,
-        .sign-box .checkbox label::after {
-            display: none;
-            content: none;
-        }
+			.left,
+			.right {
+				width: 100%;
+			}
 
-        .sign-box .checkbox input[type="checkbox"] {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-            width: 0;
-            height: 0;
-            margin: 0;
-            padding: 0;
-            appearance: none;
-            -webkit-appearance: none;
-        }
+			.left {
+				padding: 24px 20px;
+			}
 
-        .sign-box .checkbox .custom-check {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            border: 2px solid #2b78ff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            transition: background 0.2s ease, border-color 0.2s ease;
-        }
+			.right {
+				min-height: 240px;
+			}
 
-        .sign-box .checkbox input[type="checkbox"]:checked + label .custom-check {
-            background: #2b78ff;
-            border-color: #2b78ff;
-        }
+			.right h1 {
+				top: 32px;
+			}
 
-        .sign-box .checkbox input[type="checkbox"]:checked + label .custom-check::after {
-            content: "";
-            width: 6px;
-            height: 10px;
-            border: solid #fff;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-            margin-top: -2px;
-        }
+			.illustration img {
+				margin-top: 54px;
+				height: 150px;
+			}
 
-        .slide.is-active img {
-            transform: scale(1.07);
-        }
-
-        
-    @media (max-width: 760px) {
-        body {
-            overflow-y: auto;
-        }
-
-        .login-shell {
-            min-height: 100svh;
-        }
-
-        .login-media,
-        .login-slider{
-            height:50vh;
-        }
-         .login-form-panel {
-            width: 100%;
-            min-height: 100svh;
-            padding: 20px 14px;
-         }
-         .sign-box {
-            width: 100%;
-            max-width: 420px;
-            max-height: none;
-         }
-         .sign-avatar{
-            margin-top: 5px !important;
-         }
-         .keep-me{
-            margin-top:1rem;
-            margin-left: 0px;
-         }
-         .sign-box .btn.btn-rounded {
-    
-    padding: 10px !important;
-    margin-top:0px !important;
-}
-    }
-
-    </style>
+			.form-meta {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+		}
+	</style>
 </head>
+
 <body>
-    <div class="login-shell row">
-        <!-- <div class="login-media col-md-8">
-            <div class="login-slider" id="loginSlider">
-                <div class="slide is-active">
-                    <img src="{{ asset('media/3.jpg') }}" alt="Career Institute">
-                    <div class="slide-overlay" aria-hidden="true"></div>
-                    <div class="slider-caption">
-                        <h2>Build a future-ready career</h2>
-                        <p>Hands-on training, industry mentors, and job-ready skills.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="{{ asset('media/4.jpg') }}" alt="Career Institute">
-                    <div class="slide-overlay" aria-hidden="true"></div>
-                    <div class="slider-caption">
-                        <h2>Learn from real projects</h2>
-                        <p>Practice with live assignments and industry-grade tools.</p>
-                    </div>
-                </div>
-                <div class="slider-dots">
-                    <span class="slider-dot is-active"></span>
-                    <span class="slider-dot"></span>
-                </div>
-            </div>
-            <div class="media-glow" aria-hidden="true"></div>
-           
-        </div> -->
-         <div class="login-form-panel mx-auto ">
-                <form class="sign-box" method="POST" action="{{ route('login.store') }}">
-                    @csrf
-                    <div class="sign-avatar">
-                        <img src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute Logo">
-                    </div>
-                    <header class="sign-title">Welcome Back</header>
-                    <div class="row">
+	<div class="container">
+		<div class="left">
+			<div class="logo">
+				<img src="{{ asset('theme/img/login/group-1015.png') }}" alt="Career Institute">
+			</div>
+			<h2>Login to your account</h2>
 
-                        <div class=" col-12">
-                            <input type="email" name="email" class="form-control" style="width: 100% !important;" placeholder="E-Mail" value="{{ old('email') }}" required>
-                        </div>
-                        <div class=" col-12">
-                            <input type="password" name="password" class="form-control" style="width: 100% !important;" placeholder="Password" required>
-                        </div>
-                    </div>
-                <div class="form-group keep-me">
-                    <div class="checkbox float-left mt-3">
-                        <input type="checkbox" id="signed-in" name="remember">
-                        <label for="signed-in">
-                            <span class="custom-check" aria-hidden="true"></span>
-                            Keep me signed in
-                        </label>
-                    </div>
-                    <div class="float-right reset mt-3">
-                        <a href="#">Reset Password</a>
-                    </div>
-                </div>
-                    <button type="submit" class="btn btn-rounded mt-3 p-2">Sign in</button>
-                    @if($errors->any())
-                        <div class="sign-note secondary">
-                            {{ $errors->first() }}
-                        </div>
-                    @endif
-                    <div class="trust-row mt-4">
-                        <span>Flexible timings</span>
-                        <span>Industry mentors</span>
-                        <span>Career support</span>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <script src="{{ asset('theme/js/lib/jquery/jquery-3.2.1.min.js') }}"></script>
-    <script src="{{ asset('theme/js/lib/popper/popper.min.js') }}"></script>
-    <script src="{{ asset('theme/js/lib/tether/tether.min.js') }}"></script>
-    <script src="{{ asset('theme/js/lib/bootstrap/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('theme/js/plugins.js') }}"></script>
-    <script src="{{ asset('theme/js/app.js') }}"></script>
-    @include('partials.inline_form_validation')
-    <script>
-        (function () {
-            var slider = document.getElementById('loginSlider');
-            if (!slider) {
-                return;
-            }
+			<form method="POST" action="{{ route('login.store') }}">
+				@csrf
 
-            var slides = slider.querySelectorAll('.slide');
-            var dots = slider.querySelectorAll('.slider-dot');
-            var index = 0;
+				<div class="input-group">
+					<label>Email</label>
+					<input
+						type="email"
+						name="email"
+						placeholder="Enter email"
+						value="{{ old('email') }}"
+						class="@error('email') is-invalid @enderror"
+						required
+					>
+					@error('email')
+						<div class="field-error">{{ $message }}</div>
+					@enderror
+				</div>
 
-            var showSlide = function (nextIndex) {
-                slides[index].classList.remove('is-active');
-                dots[index].classList.remove('is-active');
-                index = nextIndex;
-                slides[index].classList.add('is-active');
-                dots[index].classList.add('is-active');
-            };
+				<div class="input-group">
+					<label>Password</label>
+					<input
+						type="password"
+						name="password"
+						placeholder="Enter password"
+						class="@error('password') is-invalid @enderror"
+						required
+					>
+					@error('password')
+						<div class="field-error">{{ $message }}</div>
+					@enderror
+				</div>
 
-            setInterval(function () {
-                showSlide((index + 1) % slides.length);
-            }, 5000);
-        })();
-    </script>
+				<div class="form-meta">
+					<label class="remember-me">
+						<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+						<span>Keep me signed in</span>
+					</label>
+					<a class="forgot" href="#">Forgot Password?</a>
+				</div>
+
+				<button type="submit">Login</button>
+
+				@if($errors->any() && !$errors->has('email') && !$errors->has('password'))
+					<div class="general-error">{{ $errors->first() }}</div>
+				@endif
+			</form>
+		</div>
+
+		<div class="right">
+			<h1>Welcome Back</h1>
+			<div class="illustration">
+				<img src="{{ asset('theme/img/login/group-7.png') }}" alt="Welcome illustration">
+			</div>
+		</div>
+	</div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

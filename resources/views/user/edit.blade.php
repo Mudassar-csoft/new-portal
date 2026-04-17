@@ -78,7 +78,7 @@
 							<div class="form-group col-md-6">
 								<label class="form-label">
 									<span>Password</span>
-									<small class="text-muted">(leave blank to keep current)</small>
+									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
 								</label>
 								<div class="input-group">
 									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">

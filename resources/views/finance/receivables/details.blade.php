@@ -161,19 +161,21 @@
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            min-height: 86px;
         }
         .receivable-label {
-                font-size: 12px;
-    text-transform: uppercase;
-    opacity: .88;
-    text-align: center;
-    margin-top: 1rem;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: .88;
+            text-align: center;
+            margin-top: 1rem;
         }
         .receivable-value {
-           margin-top: 6px;
-    font-size: 24px;
-    text-align: center;
-    font-weight: 700;
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 700;
         }
         .tone-other {background: #f35f62;  }
         .tone-royalty { background: #fdc518; }
@@ -187,6 +189,14 @@
                 margin: auto;
     padding-top: 21px;
     justify-content: end;
+        }
+        @media (max-width: 760px)  {
+            .receivable-label {
+                margin-top: 5px;
+            }
+            .receivable-value {
+                margin-top: 10px;
+            }
         }
     </style>
 @endpush

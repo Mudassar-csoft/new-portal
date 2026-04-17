@@ -219,15 +219,15 @@
 
         .summary-tile strong {
             display: block;
-            font-size: 22px;
-            margin-top: 25px;
+            font-size: 18px;
+            margin-top: 30px;
         }
         .summary-label {
             display: block;
-            margin-bottom: 4px;
+            margin-top: 1rem;
             color: white;
             font-size: 14px;
-            font-weight:600;
+            font-weight: 600;
             text-transform: uppercase;
         }
         .inventory-filter-form {
@@ -258,6 +258,14 @@
         .stock-badge.low {
             background: #fff0ef;
             color: #d93025;
+        }
+        @media (max-width: 760px) {
+            .summary-tile strong {
+                margin-top: 10px;
+            }
+            .summary-label {
+                margin-top: 5px;
+            }
         }
         .inventory-pagination {
             margin-top: 12px;

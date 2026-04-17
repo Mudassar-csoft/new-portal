@@ -151,21 +151,24 @@
         .finance-summary-row { margin: 2px 0 10px; }
         .cash-card {
             border-radius: 10px;
-            padding: 45px 14px;
+            padding: 12px 14px;
             color: #fff;
             height: 25vh;
             text-align: center;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            min-height: 86px;
         }
         .cash-label {
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 600;
             text-transform: uppercase;
             opacity: 0.88;
+            margin-top: 1rem;
         }
         .cash-value {
-            margin-top: 6px;
-            font-size: 22px;
+            margin-top: 30px;
+            font-size: 18px;
             font-weight: 700;
         }
         .tone-income { background:  #f35f62}
@@ -176,6 +179,14 @@
             background: #eef2f7;
             color: #334155;
             font-weight: 700;
+        }
+        @media (max-width: 760px)  {
+            .cash-label {
+                margin-top: 5px;
+            }
+            .cash-value {
+                margin-top: 10px;
+            }
         }
     </style>
 @endpush

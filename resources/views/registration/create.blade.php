@@ -6,7 +6,9 @@
 	<div class="registration-shell">
 		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
-				<h3 class="reg-title">Create New Registration <small class="text-muted">(All fields marked with * are required)</small></h3>
+				<h3 class="panel-title">Create New Registration <small class="">(All fields marked with * are required)</small></h3>
+				<hr>
+				
 				<form method="POST" action="{{ route('registration.store') }}" id="registration-form" class="registration-form">
 					@csrf
 					@if(request()->boolean('embed'))
@@ -16,8 +18,8 @@
 						<input type="hidden" name="lead_id" value="{{ $lead->id }}">
 					@endif
 					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="required">Select Campus</label>
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Select Campus</label>
 							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
 								<option value="">- Select -</option>
 								@foreach($campuses ?? [] as $campus)
@@ -29,127 +31,166 @@
 							@error('campus_id')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Full Name (As Per CNIC)</label>
+						</div> -->
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Full Name (As Per CNIC)</label>
 							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" placeholder="Enter full name" value="{{ old('student_name', $lead->name ?? '') }}" required>
 							@error('student_name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Primary Contact Number</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Primary Contact Number</label>
 							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" placeholder="03XXXXXXXXX" value="{{ old('phone', $lead->phone ?? '') }}" required>
 							@error('phone')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="required">Guardian Name</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Guardian Name</label>
 							<input type="text" class="form-control" placeholder="Enter guardian name">
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Guardian Contact Number</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Guardian Contact Number</label>
 							<input type="text" class="form-control" placeholder="03XXXXXXXXX">
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">National Identity Card (CNIC)</label>
-							<input type="text" class="form-control" placeholder="Numbers only">
 						</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label>Passport Number (Optional)</label>
-							<input type="text" class="form-control" placeholder="Enter passport number">
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">National Identity Card (CNIC)</label>
+							<input type="text" class="form-control" placeholder="Numbers only">
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Email Address</label>
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label label-without-required">Passport Number (Optional)</label>
+							<input type="text" class="form-control" placeholder="Enter passport number">
+						</div> -->
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Email Address</label>
 							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" placeholder="Enter email address" value="{{ old('email', $lead->email ?? '') }}">
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Date of Birth</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Education</label>
+							<input type="text" class="form-control" placeholder="Enter recent completed degree">
+						</div>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Date of Birth</label>
 							<input type="date" class="form-control" placeholder="dd/mm/yyyy">
 						</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-4">
-								<div class="form-group form-group-radios">
-									<label class="form-label" id="signup_v2-gender">
-										Gender <span class="color-red">*</span>
-									</label>
-									<div class="radio">
-										<input id="signup_v2-gender-male"
+						
+						
+						
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Country</label>
+							<select class="form-control" id="reg-country-select"></select>
+						</div> -->
+						<div class="form-group col-md-6 col-lg-3 mb-lg-1">
+							<label class="form-label required">
+								Gender
+							</label>
+							<div class="row mt-2 choice-group">
+								<div class="col-4 d-flex justify-content-center mb-1">
+									<div class="form-check d-flex align-items-center mt-0">
+										<input class="form-check-input mt-0 mr-1"
+											   id="signup_v2-gender-male"
 											   name="signup_v2[gender]"
 											   data-validation="[NOTEMPTY]"
 											   data-validation-group="signup_v2-gender"
 											   data-validation-message="You must select a gender"
 											   type="radio"
-											   value="male">
-										<label for="signup_v2-gender-male">Male</label>
-									</div>
-									<div class="radio">
-										<input id="signup_v2-gender-female"
-											   name="signup_v2[gender]"
-											   data-validation-group="signup_v2-gender"
-											   type="radio"
-											   value="female">
-										<label for="signup_v2-gender-female">Female</label>
-									</div>
-									<div class="radio">
-										<input id="signup_v2-gender-other"
-											   name="signup_v2[gender]"
-											   data-validation-group="signup_v2-gender"
-											   type="radio"
-											   value="other">
-										<label for="signup_v2-gender-other">Other</label>
+											   value="male"
+											   {{ old('signup_v2.gender') === 'male' ? 'checked' : '' }}>
+										<label class="form-label small mb-0" for="signup_v2-gender-male">Male</label>
 									</div>
 								</div>
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Current Education Level</label>
-							<input type="text" class="form-control" placeholder="Enter recent completed degree">
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Country</label>
-							<select class="form-control" id="reg-country-select"></select>
+								<div class="col-4 d-flex justify-content-center mb-1">
+									<div class="form-check d-flex align-items-center">
+										<input class="form-check-input mt-0 mr-1"
+											   id="signup_v2-gender-female"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="female"
+											   {{ old('signup_v2.gender') === 'female' ? 'checked' : '' }}>
+										<label class="form-label small mb-0" for="signup_v2-gender-female">Female</label>
+									</div>
+								</div>
+								<div class="col-4 d-flex justify-content-center">
+									<div class="form-check d-flex align-items-center">
+										<input class="form-check-input mt-0 mr-1"
+											   id="signup_v2-gender-other"
+											   name="signup_v2[gender]"
+											   data-validation-group="signup_v2-gender"
+											   type="radio"
+											   value="other"
+											   {{ old('signup_v2.gender') === 'other' ? 'checked' : '' }}>
+										<label class="form-label small mb-0" for="signup_v2-gender-other">Other</label>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="required">City</label>
+						<div class="form-group col-12">
+						<label class="form-label required">Postal Address</label>
+						<textarea class="form-control" rows="2" placeholder="Enter complete postal address..."></textarea>
+					</div>
+</div>
+<div class="form-row">
+
+					<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Registration Number</label>
+							<input type="text" class="form-control" id="reg-number" value="{{ $preview['registration_number'] ?? '' }}" disabled>
+						</div>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Date of Registration</label>
+							<input type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" disabled>
+						</div>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Admission/Registration Fee</label>
+							<input type="number" step="0.01" class="form-control @error('fee') is-invalid @enderror" name="fee" value="2000" readonly>
+							@error('fee')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Receipt Number</label>
+							<input type="text" class="form-control" id="receipt-number" value="{{ $preview['receipt_number'] ?? '' }}" disabled>
+						</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">City</label>
 							<select class="form-control" id="reg-city-select">
 								<option>Loading...</option>
 							</select>
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Area</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Area</label>
 							<input type="text" class="form-control" placeholder="Enter area">
 						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Personal Contact Number</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Personal Contact Number</label>
 							<input type="text" class="form-control" placeholder="03XXXXXXXXX">
 						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="required">Postal Address</label>
-						<textarea class="form-control" rows="2" placeholder="Enter complete postal address..."></textarea>
-					</div>
-
-					<hr>
-
-					<div class="form-row">
-						<div class="form-group col-md-6">
-							<label class="required">Program</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label required">Program</label>
 							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
 								<option value="">- Select -</option>
 								@foreach($programs ?? [] as $program)
@@ -161,60 +202,55 @@
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
-						</div>
-						<div class="form-group col-md-6">
-							<label>Mode / Shift</label>
-							<input type="text" class="form-control" value="Aligned with lead selection" disabled>
-						</div>
-					</div>
+						</div> -->
+					<!-- </div> -->
 
-					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="required">Admission/Registration Fee</label>
-							<input type="number" step="0.01" class="form-control @error('fee') is-invalid @enderror" name="fee" value="2000" readonly>
-							@error('fee')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-4">
-							<label>Discount</label>
+					
+
+					<!-- <hr> -->
+
+				
+					<!-- <div class="form-row"> -->
+						
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label label-without-required">Mode / Shift</label>
+							<input type="text" class="form-control" value="Aligned with lead selection" disabled>
+						</div> -->
+						
+						<!-- <div class="form-group col-md-6 col-lg-3">
+							<label class="form-label label-without-required">Discount</label>
 							<input type="number" step="0.01" class="form-control @error('discount') is-invalid @enderror" name="discount" value="0" readonly>
 							@error('discount')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-						<div class="form-group col-md-4">
-							<label>Net Payable (After Discount)</label>
+						<div class="form-group col-md-6 col-lg-3">
+							<label class="form-label label-without-required">Net Payable (After Discount)</label>
 							<input type="text" class="form-control" id="net-payable" value="2000" readonly>
-						</div>
-					</div>
+						</div> -->
+					<!-- </div> -->
 
-					<hr>
+					<!-- <hr>
 
 					<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="required">Registration Number</label>
-							<input type="text" class="form-control" id="reg-number" value="{{ $preview['registration_number'] ?? '' }}" disabled>
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Date of Registration</label>
-							<input type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" disabled>
-						</div>
-						<div class="form-group col-md-4">
-							<label class="required">Receipt Number</label>
-							<input type="text" class="form-control" id="receipt-number" value="{{ $preview['receipt_number'] ?? '' }}" disabled>
+						
+						
+					</div> -->
+					<!-- <div class="form-row">
+					
+					</div> -->
+					<div class="form-row">
+						<div class="form-group col-12">
+							<label class="form-label label-without-required">Remarks</label>
+							<textarea class="form-control" rows="4" style="height:7rem !Important;" placeholder="Remarks"></textarea>
 						</div>
 					</div>
+					<div  class="form-actions mb-2 mt-3 text-right">
+							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Register Now</button>
 
-					<div class="form-group">
-						<label>Remarks</label>
-						<textarea class="form-control" rows="2" placeholder="Remarks"></textarea>
-					</div>
-
-					<div class="text-right embed-actions">
-						<button type="submit" class="btn btn-primary">Register Now</button>
-						<a href="{{ url()->previous() }}" class="btn btn-outline-danger ml-2 embed-cancel">Cancel</a>
-					</div>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; ">Cancel</a>
+						</div>
 				</form>
 			</div>
 		</div>
@@ -224,12 +260,12 @@
 @push('styles')
 	<style>
 		.registration-shell {
-			padding: 18px 0 24px;
+			/* padding: 18px 0 24px; */
 		}
 
 		.registration-card {
 			border: 1px solid #e3edf7;
-			border-radius: 24px;
+			/* border-radius: 24px; */
 			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 			overflow: hidden;
 			background: #fff;
@@ -253,7 +289,7 @@
 			color: #70839a !important;
 		}
 
-		.required::after {
+		.registration-form .required::after {
 			content: ' *';
 			color: #e53935;
 		}
@@ -274,10 +310,15 @@
 
 		.registration-form label,
 		.registration-form .form-label {
-			display: inline-block;
+			display: block;
+			min-height: 22px;
 			margin-bottom: 8px;
-			font-weight: 700;
+			font-weight: 600;
 			color: #223a57;
+		}
+
+		.registration-form .label-without-required {
+			padding-top: 0px;
 		}
 
 		.registration-form .form-control {
@@ -352,22 +393,19 @@
 			gap: 12px;
 			padding-top: 18px;
 			margin-top: 6px;
-			border-top: 1px solid #e8eef5;
+			/* border-top: 1px solid #e8eef5; */
 			background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
 		}
-
+/* 
 		.embed-actions .btn {
 			min-width: 160px;
 			height: 44px;
-			border-radius: 12px;
+		 border-radius: 12px;
 			font-weight: 700;
 		}
 
 		.embed-actions .btn-primary {
-			color: #fff !important;
-			background: linear-gradient(120deg, #0099f8, #17b3ff);
-			border-color: transparent;
-			box-shadow: 0 14px 28px rgba(0, 153, 248, 0.24);
+
 		}
 
 		.embed-actions .btn-primary:hover,
@@ -375,20 +413,20 @@
 			color: #fff !important;
 			background: linear-gradient(120deg, #0088dd, #0ea4ef);
 			border-color: transparent;
-		}
+		} */
 
-		.embed-actions .btn-outline-danger {
+		/* .embed-actions .btn-outline-danger {
 			color: #d64545 !important;
 			border: 1px solid rgba(214, 69, 69, 0.32);
 			background: #fff;
-		}
+		} */
 
-		.embed-actions .btn-outline-danger:hover,
+		/* .embed-actions .btn-outline-danger:hover,
 		.embed-actions .btn-outline-danger:focus {
 			color: #fff !important;
 			background: #dc3545;
 			border-color: #dc3545;
-		}
+		} */
 
 		@media (max-width: 991px) {
 			.reg-title {
@@ -409,15 +447,15 @@
 			.embed-actions {
 				flex-direction: column-reverse;
 			}
-
+/* 
 			.embed-actions .btn {
 				width: 100%;
-			}
+			} */
 		}
 
 @if(request()->boolean('embed'))
 		.registration-shell {
-			padding: 18px;
+			/* padding: 18px; */
 		}
 
 		.registration-card {

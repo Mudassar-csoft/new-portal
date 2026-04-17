@@ -261,23 +261,27 @@
 @push('styles')
     <style>
       
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .payroll-stat {
             border-radius: 10px;
-            padding: 45px 14px;
+            padding: 12px 14px;
             color: #fff;
             text-align: center;
             height: 25vh;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
+            min-height: 86px;
         }
-        .payroll-label { font-size: 14px; margin-top:5px; text-transform: uppercase; opacity: .88; font-weight: 700; }
-        .payroll-value { margin-top: 6px; font-size: 21px; font-weight: 700; }
+        .payroll-label { font-size: 14px; margin-top: 1rem; text-transform: uppercase; opacity: .88; font-weight: 600; }
+        .payroll-value { margin-top: 30px; font-size: 18px; font-weight: 700; }
         .tone-bank { background: #f35f62; }
         .tone-cash { background: #fdc518; }
         .tone-cheque { background: #a2cf37 }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }
+        @media (max-width: 760px)  {
+            .payroll-label { margin-top: 5px; }
+            .payroll-value { margin-top: 10px; }
+        }
     </style>
 @endpush
-

@@ -6,7 +6,8 @@
 	<div class="admission-shell">
 		<div class="admission-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
-				<h3 class="adm-title">Create New Admission <small class="text-muted">(All fields marked with * are required)</small></h3>
+				<h3 class="panel-title">Create New Admission <small class="">(All fields marked with * are required)</small></h3>
+			<hr>	
 				<form method="POST" action="{{ route('admission.store') }}" id="admission-form" class="admission-form">
 					@csrf
 					@if(request()->boolean('embed'))
@@ -17,7 +18,7 @@
 					@endif
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="required">Select Campus</label>
+							<label class="form-label required">Select Campus</label>
 							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
 								<option value="">- Select -</option>
 								@foreach($campuses ?? [] as $campus)
@@ -31,7 +32,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Select Program</label>
+							<label class="form-label required">Select Program</label>
 							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
 								<option value="">- Select -</option>
 								@foreach($programs ?? [] as $program)
@@ -45,7 +46,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Select Batch</label>
+							<label class="form-label required">Select Batch</label>
 							<select class="form-control @error('batch_id') is-invalid @enderror" name="batch_id" required>
 								<option value="">- Select -</option>
 								@foreach($batches ?? [] as $batch)
@@ -59,7 +60,7 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Student Name (As per CNIC)</label>
+							<label class="form-label required">Student Name (As per CNIC)</label>
 							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" value="{{ old('student_name', $lead->name ?? '') }}" placeholder="Enter full name" required>
 							@error('student_name')
 								<div class="field-error">{{ $message }}</div>
@@ -69,28 +70,28 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="required">Primary Contact Number</label>
+							<label class="form-label required">Primary Contact Number</label>
 							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $lead->phone ?? '') }}" placeholder="03XXXXXXXXX" required>
 							@error('phone')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Guardian Name</label>
+							<label class="form-label required">Guardian Name</label>
 							<input type="text" class="form-control @error('guardian_name') is-invalid @enderror" name="guardian_name" value="{{ old('guardian_name') }}" placeholder="Enter guardian name" required>
 							@error('guardian_name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Guardian Contact Number</label>
+							<label class="form-label required">Guardian Contact Number</label>
 							<input type="text" class="form-control @error('guardian_phone') is-invalid @enderror" name="guardian_phone" value="{{ old('guardian_phone') }}" placeholder="03XXXXXXXXX" required>
 							@error('guardian_phone')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">National Identity Card (CNIC)</label>
+							<label class="form-label required">National Identity Card (CNIC)</label>
 							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic') }}" placeholder="Numbers only" required>
 							@error('cnic')
 								<div class="field-error">{{ $message }}</div>
@@ -100,32 +101,69 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label>Email Address</label>
+							<label class="form-label">Email Address</label>
 							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $lead->email ?? '') }}" placeholder="Enter email address" required>
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Education</label>
+							<label class="form-label required">Education</label>
 							<input type="text" class="form-control @error('education') is-invalid @enderror" name="education" value="{{ old('education') }}" placeholder="Enter education" required>
 							@error('education')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Date of Birth</label>
+							<label class="form-label required">Date of Birth</label>
 							<input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" name="date_of_birth" value="{{ old('date_of_birth') }}" required>
 							@error('date_of_birth')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
+						
 						<div class="form-group col-md-3">
-							<label class="required">Gender</label>
-							<div class="mt-1 gender-options @error('gender') is-invalid @enderror">
-								<label class="mr-3"><input type="radio" name="gender" value="male" {{ old('gender', 'male') === 'male' ? 'checked' : '' }}> Male</label>
-								<label class="mr-3"><input type="radio" name="gender" value="female" {{ old('gender') === 'female' ? 'checked' : '' }}> Female</label>
-								<label><input type="radio" name="gender" value="other" {{ old('gender') === 'other' ? 'checked' : '' }}> Other</label>
+							<label class="form-label required">Gender</label>
+							<div class="row mt-2">
+								<div class="col-4 d-flex justify-content-center">
+									<div class="form-check d-flex align-items-center mt-0">
+										<input class="form-check-input mt-0 mr-1"
+											type="radio"
+											id="admission-gender-male"
+											name="gender"
+											value="male"
+											@checked(old('gender', 'male') === 'male')>
+										<label class="form-label small mb-0" for="admission-gender-male">
+											Male
+										</label>
+									</div>
+								</div>
+								<div class="col-4 d-flex justify-content-center">
+									<div class="form-check d-flex align-items-center">
+										<input class="form-check-input mt-0 mr-1"
+											type="radio"
+											id="admission-gender-female"
+											name="gender"
+											value="female"
+											@checked(old('gender') === 'female')>
+										<label class="form-label small mb-0" for="admission-gender-female">
+											Female
+										</label>
+									</div>
+								</div>
+								<div class="col-4 d-flex justify-content-center">
+									<div class="form-check d-flex align-items-center">
+										<input class="form-check-input mt-0 mr-1"
+											type="radio"
+											id="admission-gender-other"
+											name="gender"
+											value="other"
+											@checked(old('gender') === 'other')>
+										<label class="form-label small mb-0" for="admission-gender-other">
+											Other
+										</label>
+									</div>
+								</div>
 							</div>
 							@error('gender')
 								<div class="field-error">{{ $message }}</div>
@@ -133,66 +171,73 @@
 						</div>
 					</div>
 
+						<!-- <div class="form-row">
+							<div class="form-group col-md-3">
+								<label class="form-label required">Country</label>
+								<select class="form-control @error('country') is-invalid @enderror" id="adm-country-select" name="country" required></select>
+								@error('country')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							<div class="form-group col-md-3">
+								<label class="form-label required">City</label>
+								<select class="form-control @error('city') is-invalid @enderror" id="adm-city-select" name="city" required>
+									<option>Loading...</option>
+								</select>
+								@error('city')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							<div class="form-group col-md-3">
+								<label class="form-label required">Area</label>
+								<input type="text" class="form-control @error('area') is-invalid @enderror" name="area" value="{{ old('area') }}" placeholder="Enter area" required>
+								@error('area')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+						</div> -->
 					<div class="form-row">
-						<div class="form-group col-md-3">
-							<label class="required">Country</label>
-							<select class="form-control @error('country') is-invalid @enderror" id="adm-country-select" name="country" required></select>
-							@error('country')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-3">
-							<label class="required">City</label>
-							<select class="form-control @error('city') is-invalid @enderror" id="adm-city-select" name="city" required>
-								<option>Loading...</option>
-							</select>
-							@error('city')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-3">
-							<label class="required">Area</label>
-							<input type="text" class="form-control @error('area') is-invalid @enderror" name="area" value="{{ old('area') }}" placeholder="Enter area" required>
-							@error('area')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="required">Postal Address</label>
+					<div class="form-group col-12">
+						<label class="form-label required">Postal Address</label>
 						<textarea class="form-control @error('postal_address') is-invalid @enderror" name="postal_address" rows="2" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
 						@error('postal_address')
 							<div class="field-error">{{ $message }}</div>
 						@enderror
 					</div>
-
+					</div>
 					<div class="form-row">
-						<div class="form-group col-md-3">
+						<!-- <div class="form-group col-md-3">
 							<label>Passport Number (Optional)</label>
 							<input type="text" class="form-control @error('passport_number') is-invalid @enderror" name="passport_number" value="{{ old('passport_number') }}" placeholder="Enter passport number">
 							@error('passport_number')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
-						</div>
+						</div> -->
 						<div class="form-group col-md-3">
-							<label class="required">Registration Number</label>
+							<label class="form-label required">Registration Number</label>
 							<input type="text" class="form-control @error('registration_number') is-invalid @enderror" name="registration_number" value="{{ old('registration_number') }}" placeholder="Enter registration number" required>
 							@error('registration_number')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Roll Number</label>
+							<label class="form-label required">Roll Number</label>
 							<input type="text" class="form-control @error('roll_number') is-invalid @enderror" name="roll_number" value="{{ old('roll_number') }}" placeholder="Enter roll number" required>
 							@error('roll_number')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Date of Admission</label>
+							<label class="form-label required">Date of Admission</label>
 							<input type="date" class="form-control @error('admission_date') is-invalid @enderror" name="admission_date" value="{{ old('admission_date') }}" required>
 							@error('admission_date')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+						<div class="form-group col-md-3">
+							<label class="form-label required">Fee Package</label>
+							<input type="number" step="0.01" class="form-control @error('fee_package') is-invalid @enderror" name="fee_package" value="{{ old('fee_package') }}" required>
+							@error('fee_package')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
@@ -200,48 +245,65 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="required">Fee Package</label>
-							<input type="number" step="0.01" class="form-control @error('fee_package') is-invalid @enderror" name="fee_package" value="{{ old('fee_package') }}" required>
-							@error('fee_package')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-3">
-							<label class="required">Discount Amount</label>
+							<label class="form-label required">Discount Amount</label>
 							<input type="number" step="0.01" class="form-control @error('discount_amount') is-invalid @enderror" name="discount_amount" value="{{ old('discount_amount') }}" required>
 							@error('discount_amount')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Discount %</label>
+							<label class="form-label required">Discount %</label>
 							<input type="number" step="0.01" class="form-control @error('discount_percent') is-invalid @enderror" name="discount_percent" value="{{ old('discount_percent') }}" required>
 							@error('discount_percent')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="required">Discounted Fee</label>
+							<label class="form-label required">Discounted Fee</label>
 							<input type="number" step="0.01" class="form-control @error('discounted_fee') is-invalid @enderror" name="discounted_fee" value="{{ old('discounted_fee') }}" required>
 							@error('discounted_fee')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+						<div class="form-group col-md-3">
+							<label class="form-label required">Fee Type</label>
+							<div class="row mt-2  @error('fee_type') is-invalid @enderror">
+								<div class="col-6 d-flex justify-content-center mb-1">
+									<div class="form-check d-flex align-items-center mt-0">
+										<input class="form-check-input mt-0 mr-1"
+											type="radio"
+											id="admission-fee-type-full"
+											name="fee_type"
+											value="full"
+											@checked(old('fee_type', 'full') === 'full')>
+										<label class="form-label small mb-0" for="admission-fee-type-full">
+											Full Fee
+										</label>
+									</div>
+								</div>
+								<div class="col-6 d-flex justify-content-center mb-1">
+									<div class="form-check d-flex align-items-center mt-0">
+										<input class="form-check-input mt-0 mr-1"
+											type="radio"
+											id="admission-fee-type-installments"
+											name="fee_type"
+											value="installments"
+											@checked(old('fee_type') === 'installments')>
+										<label class="form-label small mb-0" for="admission-fee-type-installments">
+											Installments
+										</label>
+									</div>
+								</div>
+							</div>
+							@error('fee_type')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 					</div>
 
 					<div class="form-row">
-						<div class="form-group col-md-3">
-							<label class="required">Fee Type</label>
-							<div class="mt-1 gender-options @error('fee_type') is-invalid @enderror">
-								<label class="mr-3"><input type="radio" name="fee_type" value="full" {{ old('fee_type', 'full') === 'full' ? 'checked' : '' }}> Full Fee</label>
-								<label><input type="radio" name="fee_type" value="installments" {{ old('fee_type') === 'installments' ? 'checked' : '' }}> Installments</label>
-							</div>
-							@error('fee_type')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-9">
-							<label class="required">Remarks</label>
+						<div class="form-group col-12">
+							<label class="form-label required">Remarks</label>
 							<textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="2" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
 							@error('remarks')
 								<div class="field-error">{{ $message }}</div>
@@ -249,18 +311,20 @@
 						</div>
 					</div>
 
-					<div class="form-group">
-						<label class="required">Receipt Number</label>
+					<!-- <div class="form-group">
+						<label class="form-label required">Receipt Number</label>
 						<input type="text" class="form-control @error('receipt_number') is-invalid @enderror" name="receipt_number" value="{{ old('receipt_number') }}" placeholder="Enter receipt number" required>
 						@error('receipt_number')
 							<div class="field-error">{{ $message }}</div>
 						@enderror
-					</div>
+					</div> -->
 
-					<div class="text-right embed-actions">
-						<button type="submit" class="btn btn-primary">Admission Now</button>
-						<button type="button" class="btn btn-outline-danger ml-2 embed-cancel">Cancel</button>
-					</div>
+						<div  class="form-actions mb-2 mt-3 text-right">
+							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Admission Now</button>
+
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; ">Cancel</a>
+						</div>
 				</form>
 			</div>
 		</div>
@@ -270,12 +334,12 @@
 @push('styles')
 	<style>
 		.admission-shell {
-			padding: 18px 0 24px;
+			/* padding: 18px 0 24px; */
 		}
 
 		.admission-card {
 			border: 1px solid #e3edf7;
-			border-radius: 24px;
+			border-radius: 5px;
 			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 			overflow: hidden;
 			background: #fff;
@@ -358,29 +422,56 @@
 			color: #dc3545;
 		}
 
-		.admission-form .gender-options {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			gap: 14px;
-			min-height: 46px;
+		.admission-form .choice-group {
+			margin-left: 0;
+			margin-right: 0;
 			padding: 11px 14px;
 			border: 1px solid #d6e2f0;
 			border-radius: 12px;
 			background: #fbfdff;
+			min-height: 46px;
 		}
 
-		.admission-form .gender-options label {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-			margin: 0;
-			font-weight: 600;
+		.admission-form .choice-group.is-invalid {
+			border-color: #dc3545;
+		}
+
+		.admission-form .form-check-input[type="radio"] {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			width: 14px;
+			height: 14px !important;
+			border: 2px solid grey;
+			border-radius: 50%;
+			outline: none;
+			cursor: pointer;
+			position: relative;
+			background-color: #fff;
+			transition: background 0.2s, box-shadow 0.2s;
+		}
+
+		.admission-form .form-check-input[type="radio"]:checked {
+			border-color: #00a8ff;
+		}
+
+		.admission-form .form-check-input[type="radio"]:checked::before {
+			content: '';
+			position: absolute;
+			top: 2px;
+			left: 2px;
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background-color: #00a8ff;
+		}
+
+		.admission-form .form-check-label {
+			font-size: 0.75rem;
+			margin-bottom: 0;
+			cursor: pointer;
 			color: #42556d;
-		}
-
-		.admission-form .gender-options input[type="radio"] {
-			margin: 0;
+			font-weight: 600;
 		}
 
 		.embed-actions {

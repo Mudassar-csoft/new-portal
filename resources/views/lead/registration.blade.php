@@ -7,9 +7,10 @@
 		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
 				<h3 class="reg-title">Create New Registration <small class="text-muted">(All fields marked with * are required)</small></h3>
+				hr
 				<form>
 					<div class="form-row">
-						<div class="form-group col-md-4">
+						<!-- <div class="form-group col-md-4">
 							<label class="required">Select Campus</label>
 							<select class="form-control">
 								<option>- Select -</option>
@@ -18,7 +19,7 @@
 								<option>CIFSD04</option>
 								<option>CIFSD06</option>
 							</select>
-						</div>
+						</div> -->
 						<div class="form-group col-md-4">
 							<label class="required">Full Name (As Per CNIC)</label>
 							<input type="text" class="form-control" placeholder="Enter full name">
