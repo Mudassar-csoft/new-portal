@@ -78,6 +78,33 @@
         <label class="form-label required">End Time</label>
         <input type="time" class="form-control" name="end_time" value="{{ old('end_time', $batch->end_time ? \Carbon\Carbon::parse($batch->end_time)->format('H:i') : null) }}" required>
     </div>
+    <div class="col-md-6 col-lg-3 mb-lg-1">
+    <label class="form-label text-dark fw-semibold small required">
+        Select Batch
+    </label>
+
+    <div class="mt-2 @error('batch_id') is-invalid @enderror">
+        <select class="form-control"
+            name="batch_id"
+            required>
+            
+            <option value="">- Select -</option>
+
+            @foreach($batches ?? [] as $batch)
+                <option value="{{ $batch->id }}"
+                    {{ old('batch_id', data_get($leadPrefill, 'batch_id')) == $batch->id ? 'selected' : '' }}>
+                    
+                    {{ $batch->name ?? $batch->code }}
+                </option>
+            @endforeach
+
+        </select>
+    </div>
+
+    @error('batch_id')
+        <div class="field-error mt-1">{{ $message }}</div>
+    @enderror
+</div>
     <div class="form-group col-md-6 col-lg-3">
          <label class="form-label required d-block">Batch Session</label>
         <div class="d-flex">

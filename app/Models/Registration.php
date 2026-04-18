@@ -18,7 +18,16 @@ class Registration extends Model
         'receipt_number',
         'student_name',
         'phone',
+        'guardian_name',
+        'guardian_phone',
+        'cnic',
+        'passport_number',
         'email',
+        'education',
+        'date_of_birth',
+        'gender',
+        'address',
+        'remarks',
         'fee',
         'discount',
         'net_payable',
@@ -28,6 +37,7 @@ class Registration extends Model
 
     protected $casts = [
         'registered_at' => 'datetime',
+        'date_of_birth' => 'date',
     ];
 
     public function lead(): BelongsTo

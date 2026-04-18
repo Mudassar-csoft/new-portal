@@ -23,16 +23,56 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
-            <label class="required">Gender</label>
-            <select name="details[gender]" class="form-control @error('details.gender') is-invalid @enderror">
-                <option value="">- Select -</option>
-                <option value="male" @selected(old('details.gender') === 'male')>Male</option>
-                <option value="female" @selected(old('details.gender') === 'female')>Female</option>
-                <option value="other" @selected(old('details.gender') === 'other')>Other</option>
-            </select>
+        <div class="col-md-6 col-lg-3 mb-lg-1">
+            <label class="form-label text-dark fw-semibold small ">
+                Gender
+            </label>
+             <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
+                <div class="col-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center mt-0">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-male"
+                            name="details[gender]"
+                            value="male"
+                            @checked(old('details.gender', 'male') === 'male')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-male">
+                            Male
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4 d-flex justify-content-center">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-female"
+                            name="details[gender]"
+                            value="female"
+                            @checked(old('details.gender') === 'female')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-female">
+                            Female
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4 d-flex justify-content-center ">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-other"
+                            name="details[gender]"
+                            value="other"
+                            @checked(old('details.gender') === 'other')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-other">
+                            Other
+                        </label>
+                    </div>
+                </div>
+            </div>
             @error('details.gender')
-                <div class="field-error">{{ $message }}</div>
+                <div class="field-error mt-1">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group col-md-4">

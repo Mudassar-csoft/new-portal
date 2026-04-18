@@ -29,9 +29,9 @@
 							<li><a href="{{ route('leads.index') }}" class="stage-link"><span class="lbl">All Leads</span><span
 										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_all_leads'] ?? 0)) }}</span></a>
 							</li>
-							<li><a href="{{ route('web-leads.index') }}" class="stage-link"><span class="lbl">Web Leads</span><span
+							<!-- <li><a href="{{ route('web-leads.index') }}" class="stage-link"><span class="lbl">Web Leads</span><span
 										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_web_leads'] ?? 0)) }}</span></a>
-							</li>
+							</li> -->
 
 						</ul>
 					</li>
