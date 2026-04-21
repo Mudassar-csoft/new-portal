@@ -279,7 +279,7 @@
         } */
 
         .student-attendance-card {
-            max-width: 1380px;
+            /* max-width: 1380px; */
             margin: 0 auto;
         }
 

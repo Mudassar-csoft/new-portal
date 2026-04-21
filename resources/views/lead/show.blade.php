@@ -405,7 +405,7 @@
     padding-right: 57px !important;
 }
    .lead-show-shell {
-    max-width: 1400px;
+    /* max-width: 1400px; */
     margin: 0 auto;
     padding: 2%;
     background: #fff;
@@ -414,7 +414,7 @@
 	height:auto;
 }
 		 .followup-table-wrapper {
-	max-width: 1400px;
+	/* max-width: 1400px; */
     border: 1px solid #dbe4ed;
     border-radius: 6px;
     overflow-x: auto;
@@ -522,7 +522,7 @@
 			/* margin-top: 2px;    */
 		}
 		.lead-show-shell {
-			max-width: 1400px;
+			/* max-width: 1400px; */
 			margin: 0 auto;	
 			padding: 2%;
 			background: #fff;

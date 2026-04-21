@@ -169,7 +169,7 @@
         }
 
         .program-index-card {
-            max-width: 1450px;
+            /* max-width: 1450px; */
             margin: 0 auto;
         }
 

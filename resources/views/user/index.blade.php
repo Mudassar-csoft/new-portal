@@ -94,7 +94,7 @@
 			overflow: visible;
 		}
 		.user-directory {
-			max-width: 1400px;
+			/* max-width: 1400px; */
 			margin: 0 auto;
 		}
 		.user-directory,
@@ -105,7 +105,7 @@
 		/* .user-directory .dataTables_wrapper {
 			border-top: 1px solid #d9e2ef;
 			padding-top: 12px;
-		} */
+		} */s
 		.user-directory .dataTables_wrapper .dataTables_length,
 		.user-directory .dataTables_wrapper .dataTables_filter {
 			padding: 0 4px;

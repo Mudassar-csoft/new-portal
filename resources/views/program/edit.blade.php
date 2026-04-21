@@ -37,7 +37,7 @@
         }
 
         .program-form-card {
-            max-width: 1250px;
+            /* max-width: 1250px; */
             margin: 0 auto;
         }
 

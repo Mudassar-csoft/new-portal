@@ -1267,7 +1267,7 @@ body, button, html, input, select {
 
 		.lead-link {
 			color: #0082c6;
-			font-weight: 700;
+			/* font-weight: 600; */
 			text-decoration: none !important;
 		}
 
@@ -1298,7 +1298,8 @@ body, button, html, input, select {
 
 
 		.table-responsive {
-    overflow: visible !important;  
+    overflow-x: visible !important;  
+    /* overflow-y: scroll !important;   */
 }
 		.follow-card, .follow-body {
     overflow: visible !important;

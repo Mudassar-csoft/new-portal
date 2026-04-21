@@ -229,7 +229,7 @@
         } */
 
         .campus-index-card {
-            max-width: 1500px;
+            /* max-width: 1500px; */
             margin: 0 auto;
         }
 
