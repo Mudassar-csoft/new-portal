@@ -108,7 +108,7 @@
 								<div class="pr-md-2">
 									<div class="income-chart-stage">
 										<div id="chart_div" ></div>
-										<div id="chart_fallback" style="display:none; height:314px; style = "font-size:11px;"">
+										<div id="chart_fallback" style="display:none; height:314px; font-size:11px;">
 											<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
 												<defs>
 													<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">

@@ -554,8 +554,8 @@
 }
 .site-header .dropdown-campus .dropdown-toggle .camppus-branch{
 	display:block;
-	width:19px !important;
-	height:19px !important;
+	width:25px !important;
+	height:25px !important;
 	object-fit:contain;
 	margin:0 auto;
 }
@@ -1184,7 +1184,7 @@ border:2px solid #ddd;
 }
 .site-header .header-alarm i,
 .site-header .dropdown-campus .dropdown-toggle i{
-    font-size: 18px !important;
+    font-size: 22px !important;
 }
 .site-header .user-menu.dropdown .dropdown-toggle img{
     width: 32px;
