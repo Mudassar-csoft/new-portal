@@ -8,6 +8,7 @@
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
 		$admissionsActivity = $dashboard['admissionsActivity'] ?? [];
+		$dashboardGeneratedAt = $dashboard['generatedAt'] ?? now()->toIso8601String();
 		$dailyRows = $dailyActivity['rows'] ?? [];
 		$admissionRows = $admissionsActivity['rows'] ?? [];
 		$dailyTotals = $dailyActivity['totals'] ?? [
@@ -27,10 +28,18 @@
 			<p>Loading dashboard...</p>
 		</div>
 
-		<div id="dashboard-content " class="dashboard-content bg-white">
+		<div class="dashboard-content bg-white">
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
+		<div class="dashboard-live-bar">
+			<div class="dashboard-live-indicator">
+				<span class="dashboard-live-dot"></span>
+				<span>Live Data</span>
+			</div>
+			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 30 seconds</div>
+			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt }}">--</span></div>
+		</div>
 		<div class="row pl-3 pr-3">
 
 			<div class="col-xl-6 pl-0 ml-3 mr-2 m-md-0 m-lg-0 ">
@@ -39,7 +48,7 @@
 					<div class="chart-container row ">
 						<div class="chart-txt col-md-5 p-0 m-0 ">
 							<div class="chart-txt-top pt-3">
-								<p ><span class="unit"style="font-size:18px !important;">RS.</span><span class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+								<p ><span class="unit"style="font-size:18px !important;">RS.</span><span id="income-headline-value" class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
 								<p class="caption"style="font-size:18px !important;">Income</p>  
 							</div>
 							<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
@@ -66,15 +75,15 @@
 							<table class="tbl-data">
 								<tr>
 									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today Collection</td>
-									<td class="price color-purple collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+									<td class="price color-purple collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
 									<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly Collection</td>
-									<td class="price color-yellow collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+									<td class="price color-yellow collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 								</tr>
 								<tr>
 									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly Collection</td>
-									<td class="price color-lime collection-amount" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+									<td class="price color-lime collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 								</tr>
 							</table>
 						</div>
@@ -120,7 +129,7 @@
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-mask-mode="icon"></div>
+								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="totalLeads" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
 									<div class="text ">Total Leads</div>
 								</div>
@@ -131,7 +140,7 @@
 						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-mask-mode="icon"></div>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-stat-key="currentStudents" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
 									<div class="text">Current Students</div>
 								</div>
@@ -142,7 +151,7 @@
 						<article class="statistic-box yellow">
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-mask-mode="icon"></div>
+								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
 									<div class="text">Current Month Collection</div>
 								</div>
@@ -153,7 +162,7 @@
 						<article class="statistic-box green mr-1">
 							<div class="stat-inner m">
 								<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-mask-mode="icon"></div>
+								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-stat-key="currentMonthPending" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3 ">
 									<div class="text">Current Month Pending</div>
 								</div>
@@ -249,7 +258,7 @@
 								<th><div>Date</div></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="recent-leads-body">
 							@forelse($dailyRows as $row)
 								<tr>
 									<td>
@@ -268,7 +277,7 @@
 								</tr>
 							@empty
 								<tr>
-									<td colspan="4" class="daily-empty-state">No lead activity found for today.</td>
+									<td colspan="4" class="daily-empty-state">No lead activity available.</td>
 								</tr>
 							@endforelse
 						</tbody>
@@ -318,7 +327,7 @@
 								<th><div>Date</div></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="recent-admissions-body">
 							@forelse($admissionRows as $row)
 								<tr>
 									<td>
@@ -337,7 +346,7 @@
 								</tr>
 							@empty
 								<tr>
-									<td colspan="4" class="daily-empty-state">No admissions found for today.</td>
+									<td colspan="4" class="daily-empty-state">No admissions available.</td>
 								</tr>
 							@endforelse
 						</tbody>
@@ -862,10 +871,39 @@
             position: relative;
             min-height: 400px;
         }
-		
-		
-			
-		
+
+        .dashboard-live-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            padding: 6px 18px 14px;
+            color: #5b6b79;
+        }
+
+        .dashboard-live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #1c7c54;
+        }
+
+        .dashboard-live-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.14);
+            animation: dashboardPulse 1.8s ease-in-out infinite;
+        }
+
+        .dashboard-live-meta {
+            font-size: 13px !important;
+            font-weight: 500;
+        }
+
         body.dashboard-ready .dashboard-content {
 			opacity: 1;
             visibility: visible;
@@ -892,6 +930,17 @@
             }
             to {
                 transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dashboardPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.85);
+                opacity: 0.8;
             }
         }
 
@@ -1182,6 +1231,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js"></script>
 	<script>
+		var dashboardData = @json($dashboard ?? []);
+		var dashboardRefreshUrl = @json(route('dashboard.live-data', request()->query()));
 		var incomeRanges = @json($dashboard['incomeRanges'] ?? []);
 		var chartSeries = @json($dashboard['charts'] ?? []);
 		var defaultIncomeRanges = {
@@ -1194,8 +1245,11 @@
 
 		var currentIncomeRange = 'today';
 
-			$(document).ready(function () {
+		$(document).ready(function () {
 			var maskedValue = '***';
+			var refreshIntervalMs = 30000;
+			var refreshRequest = null;
+			var monthlyComparisonChart = null;
 			$('.panel').each(function () {
 				try {
 					$(this).lobiPanel({
@@ -1334,13 +1388,7 @@
 				}
 
 				if (action === 'refresh') {
-					button.addClass('is-spinning');
-					panel.addClass('panel-loading');
-					setTimeout(function () {
-						panel.removeClass('panel-loading');
-						button.removeClass('is-spinning');
-						$(window).trigger('resize');
-					}, 450);
+					refreshDashboard(panel, button);
 					return;
 				}
 
@@ -1416,7 +1464,12 @@
 			});
 			// Reflow chart when menu toggles to avoid leftover blank space
 			$('#show-hide-sidebar-toggle, .hamburger').on('click', function () {
-				setTimeout(drawChart, 200);
+				setTimeout(function () {
+					drawChart();
+					if (monthlyComparisonChart && typeof monthlyComparisonChart.flush === 'function') {
+						monthlyComparisonChart.flush();
+					}
+				}, 200);
 			});
 
 			if (window.google && google.charts) {
@@ -1454,7 +1507,58 @@
 			}
 
 			function formatAmount(value) {
-				return toNumber(value).toLocaleString();
+				return toNumber(value).toLocaleString(undefined, { maximumFractionDigits: 0 });
+			}
+
+			function formatCurrency(value) {
+				return 'RS. ' + formatAmount(value);
+			}
+
+			function escapeHtml(value) {
+				return $('<div />').text(value == null ? '' : String(value)).html();
+			}
+
+			function formatUpdatedAt(timestamp) {
+				var parsedDate = timestamp ? new Date(timestamp) : null;
+				if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
+					return 'just now';
+				}
+
+				return parsedDate.toLocaleString([], {
+					day: '2-digit',
+					month: 'short',
+					hour: '2-digit',
+					minute: '2-digit',
+					second: '2-digit'
+				});
+			}
+
+			function updateLiveStatus(text) {
+				$('#dashboard-live-status').text(text);
+			}
+
+			function updateLastUpdated(timestamp) {
+				$('#dashboard-last-updated')
+					.attr('data-timestamp', timestamp || '')
+					.text(formatUpdatedAt(timestamp));
+			}
+
+			function updateStatDisplay(stat) {
+				var hidden = stat.data('hidden') !== false;
+				var maskMode = stat.data('maskMode');
+				stat.text(hidden ? (maskMode === 'icon' ? '' : maskedValue) : (stat.data('value') || '0'));
+			}
+
+			function setStatValue(key, value, format) {
+				var stat = $('.stat-number[data-stat-key="' + key + '"]').first();
+				if (!stat.length) {
+					return;
+				}
+
+				var formattedValue = format === 'currency' ? formatCurrency(value) : formatAmount(value);
+				stat.attr('data-value', formattedValue);
+				stat.data('value', formattedValue);
+				updateStatDisplay(stat);
 			}
 
 			function buildTicks(maxValue, segments) {
@@ -1547,155 +1651,141 @@
 				rightAxis.show();
 			}
 
-			var leadCodes = (chartSeries.leads && chartSeries.leads.categories) ? chartSeries.leads.categories : ['No Data'];
-			var leadCounts = (chartSeries.leads && chartSeries.leads.counts) ? chartSeries.leads.counts.map(toNumber) : [0];
-			var admissionPrograms = (chartSeries.admissions && chartSeries.admissions.categories) ? chartSeries.admissions.categories : ['No Data'];
-			var admissionCounts = (chartSeries.admissions && chartSeries.admissions.counts) ? chartSeries.admissions.counts.map(toNumber) : [0];
-			var campusCodes = (chartSeries.campusAdmissions && chartSeries.campusAdmissions.categories) ? chartSeries.campusAdmissions.categories : ['No Data'];
-			var campusAdmissions = (chartSeries.campusAdmissions && chartSeries.campusAdmissions.counts) ? chartSeries.campusAdmissions.counts.map(toNumber) : [0];
-			var leadTicks = buildTicks(Math.max.apply(Math, leadCounts.concat([0])), 6);
-			var admissionTicks = buildTicks(Math.max.apply(Math, admissionCounts.concat([0])), 6);
-			var campusTicks = buildTicks(Math.max.apply(Math, campusAdmissions.concat([0])), 5);
-			var campusMax = Math.max.apply(Math, campusAdmissions);
+			function renderStats(payload) {
+				var stats = (payload || {}).stats || {};
+				setStatValue('totalLeads', stats.totalLeads || 0, 'number');
+				setStatValue('currentStudents', stats.currentStudents || 0, 'number');
+				setStatValue('currentMonthCollection', stats.currentMonthCollectionRaw || 0, 'currency');
+				setStatValue('currentMonthPending', stats.currentMonthPending || 0, 'number');
+			}
 
-			updateIncomeHeadline();
-			// Reveal content once charts/data ready
-			$('body').addClass('dashboard-ready');
-			c3.generate({
-        bindto: '#lead-chart',
-        data: {
-            columns: [
-                ['Lead', 50, 200, 100, 400, 150, 250,100, 400, 150, 250],
-                ['Admission', 130, 100, 140, 200, 150, 50, 140, 200, 150, 50]
-            ],
-            type: 'bar'
-        },
-        bar: {
-            width: {
-                ratio: 0.5
-            }
-        }
-    });
+			function renderIncomeSummary(payload) {
+				var summary = (payload || {}).incomeSummary || {};
+				$('[data-income-summary="today"]').text(formatCurrency(summary.today || 0));
+				$('[data-income-summary="week"]').text(formatCurrency(summary.week || 0));
+				$('[data-income-summary="month"]').text(formatCurrency(summary.month || 0));
+				updateIncomeHeadline();
+			}
 
-			c3.generate({
-				bindto: '#leads-chart',
-				size: { height: 250 },
-				data: {
-					columns: [['Leads'].concat(leadCounts)],
-					type: 'area-spline',
-					colors: { Leads: '#3b82f6' }
-				},
-				transition: {
-					duration: 800
-				},
-				axis: {
-					x: {
-						type: 'category',
-						categories: leadCodes,
-						tick: {
-							rotate: 0,
-							multiline: false
-						},
-						label: 'Course Codes',
-						height: 40
-					},
-					y: {
-						label: 'Number of Leads',
-						padding: { top: 10, bottom: 0 },
-						min: 0,
-						tick: {
-							values: leadTicks
-						}
-					}
-				},
-				bar: {
-					width: {
-						ratio: 0.6
-					}
-				},
-				legend: { show: false },
-				grid: { y: { show: true } },
-				padding: { right: 20 }
-			});
+			function buildActivityRows(rows, emptyMessage, defaultStatus) {
+				if (!Array.isArray(rows) || !rows.length) {
+					return '<tr><td colspan="4" class="daily-empty-state">' + escapeHtml(emptyMessage) + '</td></tr>';
+				}
 
-			c3.generate({
-				bindto: '#admissions-chart',
-				size: { height: 250 },
-				data: {
-					columns: [['Admissions'].concat(admissionCounts)],
-					type: 'area-spline',
-					colors: { Admissions: '#22c55e' }
-				},
-				transition: {
-					duration: 800
-				},
-				axis: {
-					x: {
-						type: 'category',
-						categories: admissionPrograms,
-						tick: {
-							rotate: 0,
-							multiline: false
-						},
-						label: 'Programs',
-						height: 40
-					},
-					y: {
-						label: 'Number of Admissions',
-						padding: { top: 10, bottom: 0 },
-						min: 0,
-						tick: {
-							values: admissionTicks
-						}
-					}
-				},
-				bar: {
-					width: {
-						ratio: 0.6
-					}
-				},
-				legend: { show: false },
-				grid: { y: { show: true } },
-				padding: { right: 20 }
-			});
+				return rows.map(function (row) {
+					var campusLine = row && row.show_campus ? '<div class="daily-student-campus">' + escapeHtml(row.campus || 'Campus') + '</div>' : '';
+					return '<tr><td><span class="daily-status-badge daily-status-badge--' + escapeHtml(row.status_tone || 'primary') + '">' + escapeHtml(row.status_label || defaultStatus) + '</span></td><td><div class="daily-student-name">' + escapeHtml(row.student_name || 'N/A') + '</div>' + campusLine + '</td><td class="daily-phone">' + escapeHtml(row.phone || 'N/A') + '</td><td class="daily-date">' + escapeHtml(row.date_label || 'N/A') + '</td></tr>';
+				}).join('');
+			}
 
-			if (document.getElementById('campus-admissions-chart')) {
-				c3.generate({
-					bindto: '#campus-admissions-chart',
-					size: { height: 250 },
+			function renderActivityTables(payload) {
+				var dailyActivity = (payload || {}).dailyActivity || {};
+				var admissionsActivity = (payload || {}).admissionsActivity || {};
+				$('#recent-leads-body').html(buildActivityRows(dailyActivity.rows || [], 'No lead activity available.', 'New'));
+				$('#recent-admissions-body').html(buildActivityRows(admissionsActivity.rows || [], 'No admissions available.', 'Enrolled'));
+			}
+
+			function buildComparisonChartData() {
+				var leadData = chartSeries.leads || {};
+				var admissionData = chartSeries.admissions || {};
+				var categories = [];
+				var leadMap = {};
+				var admissionMap = {};
+
+				(leadData.categories || []).forEach(function (category, index) {
+					category = category || 'No Data';
+					if (categories.indexOf(category) === -1) { categories.push(category); }
+					leadMap[category] = toNumber((leadData.counts || [])[index]);
+				});
+				(admissionData.categories || []).forEach(function (category, index) {
+					category = category || 'No Data';
+					if (categories.indexOf(category) === -1) { categories.push(category); }
+					admissionMap[category] = toNumber((admissionData.counts || [])[index]);
+				});
+
+				if (!categories.length) { categories = ['No Data']; }
+
+				var leadValues = categories.map(function (category) { return leadMap[category] || 0; });
+				var admissionValues = categories.map(function (category) { return admissionMap[category] || 0; });
+				if (!leadValues.some(Boolean) && !admissionValues.some(Boolean)) {
+					categories = ['No Data'];
+					leadValues = [0];
+					admissionValues = [0];
+				}
+
+				return { categories: categories, leadValues: leadValues, admissionValues: admissionValues };
+			}
+
+			function renderMonthlyComparisonChart() {
+				if (!(window.c3 && document.getElementById('lead-chart'))) { return; }
+
+				var comparison = buildComparisonChartData();
+				var tickValues = buildTicks(Math.max.apply(Math, comparison.leadValues.concat(comparison.admissionValues).concat([0])), 6);
+				if (monthlyComparisonChart) { monthlyComparisonChart.destroy(); }
+
+				monthlyComparisonChart = c3.generate({
+					bindto: '#lead-chart',
+					size: { height: 280 },
 					data: {
-						columns: [['Admissions'].concat(campusAdmissions)],
+						columns: [['Leads'].concat(comparison.leadValues), ['Admissions'].concat(comparison.admissionValues)],
 						type: 'bar',
-						colors: { Admissions: '#12a0ff' },
-						color: function (color, d) {
-							if (d && d.index !== undefined && campusAdmissions[d.index] === campusMax) {
-								return '#3b82f6';
-							}
-							return color;
-						}
+						colors: { Leads: '#3b82f6', Admissions: '#22c55e' }
 					},
-					transition: { duration: 800 },
+					transition: { duration: 500 },
 					axis: {
-						x: {
-							type: 'category',
-							categories: campusCodes,
-							label: 'Campuses',
-							tick: { rotate: 0, multiline: false },
-							height: 40
-						},
-						y: {
-							label: 'Admissions this month',
-							min: 0,
-							padding: { top: 10, bottom: 0 },
-							tick: { values: campusTicks }
-						}
+						x: { type: 'category', categories: comparison.categories, tick: { rotate: 0, multiline: false }, label: 'Programs', height: 40 },
+						y: { label: 'Current month count', padding: { top: 10, bottom: 0 }, min: 0, tick: { values: tickValues } }
 					},
 					bar: { width: { ratio: 0.55 } },
-					legend: { show: false },
 					grid: { y: { show: true } },
 					padding: { right: 20 }
 				});
 			}
+
+			function applyDashboardPayload(payload) {
+				dashboardData = payload || {};
+				incomeRanges = $.extend({}, defaultIncomeRanges, dashboardData.incomeRanges || {});
+				chartSeries = dashboardData.charts || {};
+				renderStats(dashboardData);
+				renderIncomeSummary(dashboardData);
+				renderActivityTables(dashboardData);
+				renderMonthlyComparisonChart();
+				updateLastUpdated(dashboardData.generatedAt || '');
+				updateIncomeHeadline();
+			}
+
+			function refreshDashboard(panel, button) {
+				if (refreshRequest) { return refreshRequest; }
+
+				panel = panel || $();
+				button = button || $();
+				updateLiveStatus('Refreshing live data...');
+				panel.addClass('panel-loading');
+				button.addClass('is-spinning');
+
+				refreshRequest = $.ajax({
+					url: dashboardRefreshUrl,
+					method: 'GET',
+					dataType: 'json',
+					cache: false,
+					headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+				}).done(function (response) {
+					applyDashboardPayload(response.dashboard || {});
+					updateLiveStatus('Auto refresh every 30 seconds');
+				}).fail(function () {
+					updateLiveStatus('Live update failed. Retrying on next cycle.');
+				}).always(function () {
+					panel.removeClass('panel-loading');
+					button.removeClass('is-spinning');
+					refreshRequest = null;
+					$(window).trigger('resize');
+				});
+
+				return refreshRequest;
+			}
+
+			applyDashboardPayload(dashboardData);
+			$('body').addClass('dashboard-ready');
 
 			function drawChart() {
 				if (!(window.google && google.visualization)) {
@@ -1790,9 +1880,17 @@
 				}
 			}
 
-			$(window).resize(function () {
+			window.setInterval(function () {
+				if (!document.hidden) {
+					refreshDashboard();
+				}
+			}, refreshIntervalMs);
+
+			$(window).on('resize', function () {
 				drawChart();
-				setTimeout(function () { }, 1000);
+				if (monthlyComparisonChart && typeof monthlyComparisonChart.flush === 'function') {
+					monthlyComparisonChart.flush();
+				}
 			});
 		});
 	</script>

@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Campus;
 use App\Models\Admission;
 use App\Models\Lead;
-use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\Registration;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -25,39 +25,16 @@ class DashboardController extends Controller
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'campus_type'])
             : null;
 
-        if (!$this->requiredTablesExist()) {
-            return view('dashboard', [
-                'dashboard' => $this->emptyPayload(),
-                'selectedCampus' => $selectedCampus,
-            ]);
-        }
-
-        $today = now()->startOfDay();
-        $monthStart = now()->startOfMonth();
-        $monthEnd = now()->endOfMonth();
-        $yearStart = now()->startOfYear();
-        $yearEnd = now()->endOfYear();
-
-        $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId);
-        $dailyActivity = $this->buildDailyActivity($today, $selectedCampusId);
-        $admissionsActivity = $this->buildAdmissionsActivity($today, $selectedCampusId);
-        $incomeRanges = $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId);
-        $charts = $this->buildCharts($monthStart, $monthEnd, $selectedCampusId);
-
         return view('dashboard', [
-            'dashboard' => [
-                'stats' => $stats,
-                'dailyActivity' => $dailyActivity,
-                'admissionsActivity' => $admissionsActivity,
-                'incomeSummary' => [
-                    'today' => $stats['todayCollectionRaw'],
-                    'week' => $stats['weekCollectionRaw'],
-                    'month' => $stats['currentMonthCollectionRaw'],
-                ],
-                'incomeRanges' => $incomeRanges,
-                'charts' => $charts,
-            ],
+            'dashboard' => $this->buildDashboardPayload($selectedCampusId),
             'selectedCampus' => $selectedCampus,
+        ]);
+    }
+
+    public function liveData(Request $request): JsonResponse
+    {
+        return response()->json([
+            'dashboard' => $this->buildDashboardPayload($this->resolveCampusId($request)),
         ]);
     }
 
@@ -69,6 +46,41 @@ class DashboardController extends Controller
             && Schema::hasTable('programs')
             && Schema::hasTable('registrations')
             && Schema::hasTable('admissions');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildDashboardPayload(?int $selectedCampusId = null): array
+    {
+        if (!$this->requiredTablesExist()) {
+            $payload = $this->emptyPayload();
+            $payload['generatedAt'] = now()->toIso8601String();
+
+            return $payload;
+        }
+
+        $today = now()->startOfDay();
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+        $yearStart = now()->startOfYear();
+        $yearEnd = now()->endOfYear();
+
+        $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId);
+
+        return [
+            'stats' => $stats,
+            'dailyActivity' => $this->buildDailyActivity($selectedCampusId),
+            'admissionsActivity' => $this->buildAdmissionsActivity($selectedCampusId),
+            'incomeSummary' => [
+                'today' => $stats['todayCollectionRaw'],
+                'week' => $stats['weekCollectionRaw'],
+                'month' => $stats['currentMonthCollectionRaw'],
+            ],
+            'incomeRanges' => $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId),
+            'charts' => $this->buildCharts($monthStart, $monthEnd, $selectedCampusId),
+            'generatedAt' => now()->toIso8601String(),
+        ];
     }
 
     /**
@@ -172,12 +184,11 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildDailyActivity(Carbon $today, ?int $campusId = null): array
+    private function buildDailyActivity(?int $campusId = null): array
     {
         $rows = Lead::query()
             ->with('campus:id,code,name')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereDate('created_at', $today->toDateString())
             ->latest('created_at')
             ->latest('id')
             ->limit(12)
@@ -212,12 +223,11 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildAdmissionsActivity(Carbon $today, ?int $campusId = null): array
+    private function buildAdmissionsActivity(?int $campusId = null): array
     {
         $rows = Admission::query()
             ->with('campus:id,code,name')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereDate('admission_date', $today->toDateString())
             ->latest('admission_date')
             ->latest('id')
             ->limit(12)
