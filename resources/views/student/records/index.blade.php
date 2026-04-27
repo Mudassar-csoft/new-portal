@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
         .student-directory {
-            max-width: 1450px;
+            /* max-width: 1450px; */
             margin: 0 auto;
             position: relative;
             overflow: visible;
@@ -122,8 +122,8 @@
         }
 
         .student-directory .dataTables_wrapper {
-            border-top: 1px solid #d9e2ef;
-            padding-top: 12px;
+            /* border-top: 1px solid #d9e2ef; */
+            /* padding-top: 12px; */
         }
 
         .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {

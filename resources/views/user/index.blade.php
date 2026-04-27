@@ -3,14 +3,14 @@
 @section('title', 'Users')
 
 @section('content')
-	<div class="container-fluid">
+	<!-- <div class="container-fluid"> -->
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default user-directory">
 					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title mb-0 form-label">User Directory</h3>
-							<small class="text-muted">Manage users, campuses, roles, and access.</small>
+							<!-- <small class="text-muted">Manage users, campuses, roles, and access.</small> -->
 						</div>
 						<div class="d-flex gap-2">
 							<a href="{{ route('users.create') }}" class="btn btn-primary">New User</a>
@@ -37,7 +37,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 @endsection
 
 @push('styles')
@@ -94,7 +94,7 @@
 			overflow: visible;
 		}
 		.user-directory {
-			max-width: 1400px;
+			/* max-width: 1400px; */
 			margin: 0 auto;
 		}
 		.user-directory,
@@ -102,10 +102,10 @@
 		.user-directory .panel {
 			overflow: visible;
 		}
-		.user-directory .dataTables_wrapper {
+		/* .user-directory .dataTables_wrapper {
 			border-top: 1px solid #d9e2ef;
 			padding-top: 12px;
-		}
+		} */s
 		.user-directory .dataTables_wrapper .dataTables_length,
 		.user-directory .dataTables_wrapper .dataTables_filter {
 			padding: 0 4px;

@@ -59,6 +59,10 @@
     @endphp
 
     <div class="campus-index-shell">
+        @if(session('status'))
+            <div class="alert alert-success">{{ session('status') }}</div>
+        @endif
+
         <div class="box-typical box-typical-dashboard panel panel-default campus-index-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
@@ -225,52 +229,94 @@
         } */
 
         .campus-index-card {
-            max-width: 1500px;
+            /* max-width: 1500px; */
             margin: 0 auto;
         }
 
         .campus-scope-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(31%, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 14px;
             margin-bottom: 18px;
         }
 
         .campus-scope-card {
             display: block;
-            border: 1px solid #dbe5f1;
+            grid-column: span 2;
+            height:25vh;
+            border: 1px solid #00a8ff;
             border-radius: 12px;
             padding: 14px 16px;
-            background: #fff8f3;
-            color: #334155;
+            background: #00a8ff;
+            color: white;
             text-align: center;
             text-decoration: none;
             transition: all .18s ease;
         }
 
+        .campus-scope-card,
+        .campus-scope-card strong,
+        .campus-scope-card:hover,
+        .campus-scope-card:hover strong,
+        .campus-scope-card:focus,
+        .campus-scope-card:focus strong {
+            color: #fff !important;
+        }
+
+        .campus-scope-card:nth-child(5n + 1) {
+            background: #f35f62;
+            border-color: #f35f62;
+        }
+
+        .campus-scope-card:nth-child(5n + 2) {
+            background: #fdc518;
+            border-color: #fdc518;
+        }
+
+        .campus-scope-card:nth-child(5n + 3) {
+            background: #975ce7;
+            border-color: #975ce7;
+        }
+
+        .campus-scope-card:nth-child(5n + 4) {
+            background: #a2cf37;
+            border-color: #a2cf37;
+        }
+
+        .campus-scope-card:nth-child(5n + 5) {
+            background: #00a8ff;
+            border-color: #00a8ff;
+        }
+
         .campus-scope-card:hover,
         .campus-scope-card:focus {
             text-decoration: none;
-            border-color: #ef7c2e;
-            box-shadow: 0 8px 18px rgba(239, 124, 46, 0.12);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+            filter: brightness(1.02);
         }
 
         .campus-scope-card.is-active {
-            background: #fff0e2;
-            border-color: #ef7c2e;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+            filter: brightness(0.94);
         }
 
         .campus-scope-card strong {
             display: block;
             font-size: 22px;
-            margin-top: 8px;
+            margin-top: 25px;
         }
 
         .campus-scope-label {
-            font-size: 12px;
+            font-size: 14px;
+            font-weight:600;
             text-transform: uppercase;
             letter-spacing: .04em;
-            color: #64748b;
+            color: white;
+        }
+
+        .campus-scope-card:nth-last-child(2):nth-child(3n + 1),
+        .campus-scope-card:nth-last-child(2):nth-child(3n + 1) + .campus-scope-card {
+            grid-column: span 3;
         }
 
         .campus-filter-form {
@@ -317,6 +363,28 @@
         }
 
         @media (max-width: 767px) {
+            .campus-scope-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campus-scope-card,
+            .campus-scope-card:nth-last-child(2):nth-child(3n + 1),
+            .campus-scope-card:nth-last-child(2):nth-child(3n + 1) + .campus-scope-card {
+                display: flex;
+                grid-column: span 1;
+                min-height: 150px;
+                height: auto;
+                padding: 18px 16px;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .campus-scope-card strong {
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
+
             .campus-filter-actions {
                 width: 100%;
                 margin-left: 0;

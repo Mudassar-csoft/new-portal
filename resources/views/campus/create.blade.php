@@ -14,7 +14,7 @@
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('campus.store') }}">
-                    @csrf 
+                    @csrf
                     @include('campus.partials.form')
 
                     <div class="text-right mt-3 mb-2">
@@ -33,7 +33,7 @@
         }
 
         .campus-form-card {
-            max-width: 1250px;
+            /* max-width: 1250px; */
             margin: 0 auto;
         }
 
@@ -60,7 +60,7 @@
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            width: 15px;
+            width: 14px;
             height: 14px !important;
             border: 2px solid grey;
             border-radius: 50%;
@@ -81,8 +81,8 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background-color: #00a8ff;
         }

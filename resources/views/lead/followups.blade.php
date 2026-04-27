@@ -88,7 +88,7 @@
 										</td>
 										<td>{{ $row->lead->program->title ?? $row->lead->program->name ?? '—' }}</td>
 										<td>{{ $row->campus->name ?? '—' }}</td>
-										<td class="text-center action-cell">
+										<td class=" action-cell">
 											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row->lead])
 										</td>
 									</tr>

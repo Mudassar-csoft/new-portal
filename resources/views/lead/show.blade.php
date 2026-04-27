@@ -25,7 +25,7 @@
 				</div>
 			</div>
 				<div class="lead-actions">
-					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead])
+					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead, 'editOnly' => true])
 				</div>
 		</div>
 
@@ -124,26 +124,61 @@
 							@if ($showLeadCompletionFields)
 								<div class="followup-extra-fields" id="lead-completion-fields">
 									<div class="followup-extra-title">Complete Lead Details</div>
-									<p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p>
+									<!-- <p class="followup-extra-copy">This lead is still new. Fill the missing profile details before the first proper follow-up.</p> -->
 									<div class="form-row" >
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
-											<label>Email Address</label>
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
+											<label class="form-label required">Email Address</label>
 											<input type="email" class="form-control" name="email" value="{{ old('email', $lead->email) }}" placeholder="Enter email address">
 											<div class="field-error" data-error-for="email"></div>
 										</div>
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
 											<label class="form-label required">Area</label>
 											<input type="text" class="form-control" name="lead_details[area]" value="{{ old('lead_details.area', data_get($leadDetails, 'area')) }}" placeholder="Enter area" required>
 											<div class="field-error" data-error-for="lead_details.area"></div>
 										</div>
-										<div class="form-group col-lg-3 col-md-6 followup-toggle">
-											<label>Gender</label>
-											<select class="form-control" name="lead_details[gender]">
-												<option value="">- Select -</option>
-												@foreach (['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $genderValue => $genderLabel)
-													<option value="{{ $genderValue }}" @selected(old('lead_details.gender', data_get($leadDetails, 'gender')) === $genderValue)>{{ $genderLabel }}</option>
-												@endforeach
-											</select>
+										<div class="form-group col-lg-4 col-md-6 followup-toggle">
+											<label class="form-label text-dark fw-semibold small">Gender</label>
+											<div class="row mt-2 choice-group">
+												<div class="col-4 d-flex justify-content-center mb-1">
+													<div class="form-check d-flex align-items-center mt-0">
+														<input class="form-check-input mt-0 mr-1"
+															type="radio"
+															id="lead-details-gender-male"
+															name="lead_details[gender]"
+															value="male"
+															@checked(old('lead_details.gender', data_get($leadDetails, 'gender', 'male')) === 'male')>
+														<label class="form-check-label small mb-0" for="lead-details-gender-male">
+															Male
+														</label>
+													</div>
+												</div>
+												<div class="col-4 d-flex justify-content-center">
+													<div class="form-check d-flex align-items-center">
+														<input class="form-check-input mt-0 mr-1"
+															type="radio"
+															id="lead-details-gender-female"
+															name="lead_details[gender]"
+															value="female"
+															@checked(old('lead_details.gender', data_get($leadDetails, 'gender')) === 'female')>
+														<label class="form-check-label small mb-0" for="lead-details-gender-female">
+															Female
+														</label>
+													</div>
+												</div>
+												<div class="col-4 d-flex justify-content-center ">
+													<div class="form-check d-flex align-items-center">
+														<input class="form-check-input mt-0 mr-1"
+															type="radio"
+															id="lead-details-gender-other"
+															name="lead_details[gender]"
+															value="other"
+															@checked(old('lead_details.gender', data_get($leadDetails, 'gender')) === 'other')>
+														<label class="form-check-label small mb-0" for="lead-details-gender-other">
+															Other
+														</label>
+													</div>
+												</div>
+											</div>
 											<div class="field-error" data-error-for="lead_details.gender"></div>
 										</div>
 									</div>
@@ -370,16 +405,16 @@
     padding-right: 57px !important;
 }
    .lead-show-shell {
-    max-width: 1400px;
+    /* max-width: 1400px; */
     margin: 0 auto;
     padding: 2%;
     background: #fff;
     border: 1px solid #dbe4ed;
     border-radius: 10px;
-	height:85vh !important
+	height:auto;
 }
 		 .followup-table-wrapper {
-	max-width: 1400px;
+	/* max-width: 1400px; */
     border: 1px solid #dbe4ed;
     border-radius: 6px;
     overflow-x: auto;
@@ -414,6 +449,50 @@
 			min-height: 32px;
 			background: #fff
 		}
+
+		.choice-group.is-invalid {
+			border: 1px solid #e53935;
+			border-radius: 6px;
+			margin-left: 0;
+			margin-right: 0;
+			padding: 4px 0;
+		}
+
+		.form-check-input[type="radio"] {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			width: 14px;
+			height: 14px !important;
+			border: 2px solid grey;
+			border-radius: 50%;
+			outline: none;
+			cursor: pointer;
+			position: relative;
+			background-color: #fff;
+			transition: background 0.2s, box-shadow 0.2s;
+		}
+
+		.form-check-input[type="radio"]:checked {
+			border-color: #00a8ff;
+		}
+
+		.form-check-input[type="radio"]:checked::before {
+			content: '';
+			position: absolute;
+			top: 2px;
+			left: 2px;
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			background-color: #00a8ff;
+		}
+
+		.form-check-label {
+			font-size: .75rem;
+			margin-bottom: 0;
+			cursor: pointer;
+		}
 		/* .form-label{
 			font-size: 11px;
 			font-weight: 600 ;
@@ -443,7 +522,7 @@
 			/* margin-top: 2px;    */
 		}
 		.lead-show-shell {
-			max-width: 1400px;
+			/* max-width: 1400px; */
 			margin: 0 auto;	
 			padding: 2%;
 			background: #fff;

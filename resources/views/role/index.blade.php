@@ -3,7 +3,7 @@
 @section('title', 'Roles')
 
 @section('content')
-	<div class="container-fluid">
+	<!-- <div class="container-fluid"> -->
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default role-directory">
@@ -37,7 +37,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 @endsection
 
 @push('styles')
@@ -86,8 +86,8 @@
 			overflow: visible;
 		}
 		.role-directory .dataTables_wrapper {
-			border-top: 1px solid #d9e2ef;
-			padding-top: 12px;
+			/* border-top: 1px solid #d9e2ef;
+			padding-top: 12px; */
 		}
 		.role-directory .dataTables_wrapper .dataTables_length,
 		.role-directory .dataTables_wrapper .dataTables_filter {

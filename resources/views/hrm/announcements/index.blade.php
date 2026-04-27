@@ -157,7 +157,7 @@
 @push('styles')
     <style>
      .col-md-6 col-lg-3 { flex: 0 0 26% !important; max-width: 28% !important; }
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }
     </style>

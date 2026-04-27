@@ -198,11 +198,18 @@
 .selection{
     height: 20px !important;
 }
+.hrm-shifts-page .select2-container--arrow,
+.hrm-shifts-page .select2-selection__rendered {
+    height: 35px !important;
+}
+.hrm-shifts-page .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    margin: 8px 5px 3px 5px;
+}
 .hrm-shifts-page form .form-row > .form-group.col-md-4{
     padding-left: 8px !important;
     padding-right: 8px !important;
 }
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .gap-3 { gap: 12px; }
     </style>

@@ -3,7 +3,7 @@
 @section('title', 'Login Logs')
 
 @section('content')
-	<div class="container-fluid">
+	<!-- <div class="container-fluid"> -->
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default login-logs">
@@ -34,7 +34,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 @endsection
 
 @push('styles')
@@ -102,7 +102,7 @@
 		}
 		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
 			height: 36px !important;
-			width: 380px !important;
+			width: 240px !important;
 			padding: 6px 18px !important;
 			border-radius: 999px !important;
 		}

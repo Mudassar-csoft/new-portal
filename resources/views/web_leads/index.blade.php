@@ -80,7 +80,7 @@
 										<td>{{ $webLead->city ?: 'N/A' }}</td>
 										<td>{{ $webLead->interested_program ?: 'N/A' }}</td>
 										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td>
-										<td class="text-center action-cell">
+										<td class=" action-cell">
 											@include('web_leads.action', ['actionId' => $actionId, 'webLead' => $webLead])
 										</td>
 									</tr>
@@ -215,105 +215,6 @@
 			}
 		}
 
-		.follow-card {
-			border: 1px solid #dbe4ed;
-			border-radius: 10px;
-			background: #fff;
-			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
-		}
-
-		.follow-tab-bar {
-			display: flex;
-			flex-wrap: wrap;
-			padding: 14px 18px 10px;
-			border-bottom: 3px solid #008efb;
-			background: #f6f8fb;
-			border-radius: 10px 10px 0 0;
-		}
-
-		.follow-tab {
-			display: inline-flex;
-			align-items: center;
-			gap: 4px;
-			padding: 8px 6px;
-			font-weight: 600;
-			color: #5f6f7f;
-			cursor: pointer;
-			position: relative;
-			border-bottom: 3px solid transparent;
-		}
-
-		.follow-tab.active {
-			color: #0f3c6e;
-			background-color: white;
-			border-radius: 5px;
-			border-bottom: 2px solid #008efb;
-		}
-
-		.follow-tab .badge {
-			border-radius: 999px;
-			font-size: 11px;
-			line-height: 1;
-		}
-
-		.follow-body {
-			padding: 16px;
-		}
-
-		.follow-controls {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0px 2px 12px 2px;
-			/* margin-left: 4px; */
-		}
-
-		.follow-search {
-			position: relative;
-			width: 240px;
-		}
-
-		.follow-search input {
-			padding-right: 32px;
-		}
-
-		.follow-search i {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			color: #9aa8b6;
-		}
-
-		.follow-table {
-			margin-bottom: 12px;
-			border: 1px solid #dbe4ed;
-			text-align: center;
-		}
-
-		.follow-table thead th {
-			background: #0099f8;
-			color: #fff;
-			font-weight: 700;
-			border-color: #0086d8;
-			vertical-align: middle;
-		}
-
-		.follow-table tbody td {
-			vertical-align: middle;
-			color: #334155;
-			background: #fdfefe;
-			border-color: #e6ecf2;
-		}
-
-		.follow-table tbody tr:nth-child(even) td {
-			background: #f8fbff;
-		}
-
-		.follow-table tbody tr:hover td {
-			background: #eef5ff;
-		}
-
 		.lead-link {
 			color: #0099f8;
 			font-weight: 700;
@@ -323,15 +224,6 @@
 		.lead-link:hover {
 			color: #0086d8;
 			text-decoration: none !important;
-		}
-
-		.follow-footer {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			font-size: 13px;
-			color: #54667a;
-			padding: 4px 4px 0;
 		}
 
 		.follow-table .action-cell {
@@ -344,10 +236,6 @@
 		}
 
 		.table-responsive {
-			overflow: visible !important;
-		}
-
-		.follow-card, .follow-body {
 			overflow: visible !important;
 		}
 

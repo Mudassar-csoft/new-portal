@@ -3,11 +3,11 @@
 @section('title', 'Permissions')
 
 @section('content')
-	<div class="container-fluid">
+	<!-- <div class="container-fluid"> -->
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box-typical box-typical-dashboard panel panel-default permission-directory">
-					<header class="class="box-typical-header panel-heading d-flex justify-content-between">
+					<header class="box-typical-header panel-heading d-flex justify-content-between">
 						<div>
 							<h3 class="panel-title form-label mb-0">Permissions</h3>
 							<!-- <small class="text-muted">Manage permission definitions.</small> -->
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 @endsection
 
 @push('styles')
@@ -75,10 +75,10 @@
 			padding: 10px;
 			overflow: visible;
 		}
-		.permission-directory .dataTables_wrapper {
+		/* .permission-directory .dataTables_wrapper {
 			border-top: 1px solid #d9e2ef;
 			padding-top: 6px;
-		}
+		} */
 		.permission-directory .dataTables_wrapper .dataTables_length,
 		.permission-directory .dataTables_wrapper .dataTables_filter {
 			padding: 0 4px;

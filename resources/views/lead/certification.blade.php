@@ -1,162 +1,199 @@
 <div class="lead-form" data-type="certification">
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Full Name (As Per CNIC)</label>
-			<input type="text" class="form-control" placeholder="Enter Full Name">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Personal Contact Number</label>
-			<input type="tel" class="form-control" placeholder="0300 0000000">
-		</div>
-		<div class="form-group col-md-4">
-			<label>Email</label>
-			<input type="email" class="form-control" placeholder="Enter Email">
-		</div>
-	</div>
-	<div class="form-row">
-	    	<div class="form-group form-group-radios">
-    <label class="form-label" id="certificate-gender">
-        Gender <span class="color-red">*</span>
-    </label>
-
-    <div class="radio">
-        <input id="certificate-gender-male"
-               name="certificate[gender]"
-               data-validation="[NOTEMPTY]"
-               data-validation-group="certificate-gender"
-               data-validation-message="You must select a gender"
-               type="radio"
-               value="male">
-        <label for="certificate-gender-male">Male</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Full Name (As Per CNIC)</label>
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name') }}">
+            @error('name')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Personal Contact Number</label>
+            <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone') }}">
+            @error('phone')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email') }}">
+            @error('email')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="certificate-gender-female"
-               name="certificate[gender]"
-               data-validation-group="certificate-gender"
-               type="radio"
-               value="female">
-        <label for="certificate-gender-female">Female</label>
+    <div class="form-row">
+        <div class="col-md-6 col-lg-3 mb-lg-1">
+            <label class="form-label text-dark fw-semibold small ">
+                Gender
+            </label>
+             <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
+                <div class="col-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center mt-0">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-male"
+                            name="details[gender]"
+                            value="male"
+                            @checked(old('details.gender', 'male') === 'male')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-male">
+                            Male
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4 d-flex justify-content-center">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-female"
+                            name="details[gender]"
+                            value="female"
+                            @checked(old('details.gender') === 'female')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-female">
+                            Female
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4 d-flex justify-content-center ">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            id="certification-gender-other"
+                            name="details[gender]"
+                            value="other"
+                            @checked(old('details.gender') === 'other')>
+                        <label class="form-check-label small mb-0"
+                            for="certification-gender-other">
+                            Other
+                        </label>
+                    </div>
+                </div>
+            </div>
+            @error('details.gender')
+                <div class="field-error mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Organization/Vendor</label>
+            <input type="text" name="details[organization]" class="form-control @error('details.organization') is-invalid @enderror" placeholder="Organization" value="{{ old('details.organization') }}">
+            @error('details.organization')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Certification Title</label>
+            <input type="text" name="details[certification_title]" class="form-control @error('details.certification_title') is-invalid @enderror" placeholder="Title" value="{{ old('details.certification_title') }}">
+            @error('details.certification_title')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="certificate-gender-other"
-               name="certificate[gender]"
-               data-validation-group="certificate-gender"
-               type="radio"
-               value="other">
-        <label for="certificate-gender-other">Other</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Exam Code</label>
+            <input type="text" name="details[exam_code]" class="form-control @error('details.exam_code') is-invalid @enderror" placeholder="Exam Code" value="{{ old('details.exam_code') }}">
+            @error('details.exam_code')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Teaching Method</label>
+            <select name="details[teaching_method]" class="form-control @error('details.teaching_method') is-invalid @enderror">
+                <option value="">- Select -</option>
+                <option value="online" @selected(old('details.teaching_method', 'online') === 'online')>Online</option>
+                <option value="campus" @selected(old('details.teaching_method') === 'campus')>On-Campus</option>
+                <option value="hybrid" @selected(old('details.teaching_method') === 'hybrid')>Hybrid</option>
+            </select>
+            @error('details.teaching_method')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Marketing Source</label>
+            <select name="marketing_source" class="form-control @error('marketing_source') is-invalid @enderror">
+                <option value="">- Select -</option>
+                @foreach($marketingSources as $source)
+                    <option value="{{ $source }}" @selected(old('marketing_source') == $source)>{{ $source }}</option>
+                @endforeach
+            </select>
+            @error('marketing_source')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-</div>
-
-		<div class="form-group col-md-4">
-			<label class="required">Organization/Vender</label>
-			<input type="text" class="form-control" placeholder="Organization">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Certification Title</label>
-			<input type="text" class="form-control" placeholder="Title">
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label>Exam Code</label>
-			<input type="text" class="form-control" placeholder="Exam Code">
-		</div>
-		<!-- <div class="form-group col-md-4">
-			<label class="required">Training &amp; Exam Booking</label>
-			<div class="radio-group">
-				<label><input type="radio" name="booking_cert" checked> Training</label>
-				<label><input type="radio" name="booking_cert"> Exam</label>
-				<label><input type="radio" name="booking_cert"> Both</label>
-			</div>
-		</div> -->
-		<div class="form-group form-group-radios">
-    <label class="form-label" id="training-teaching-method">
-        Teaching Method <span class="color-red">*</span>
-    </label>
-
-    <div class="radio">
-        <input id="training-teaching-method-online"
-               name="training[teaching_method]"
-               data-validation="[NOTEMPTY]"
-               data-validation-group="training-teaching-method"
-               data-validation-message="You must select a teaching method"
-               type="radio"
-               value="online"
-               checked>
-        <label for="training-teaching-method-online">Online</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label class="required">Origin</label>
+            <select name="origin" class="form-control @error('origin') is-invalid @enderror">
+                <option value="">- Select -</option>
+                @foreach($origins as $origin)
+                    <option value="{{ $origin }}" @selected(old('origin') == $origin)>{{ $origin }}</option>
+                @endforeach
+            </select>
+            @error('origin')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Country</label>
+            <input type="text" name="details[country]" class="form-control @error('details.country') is-invalid @enderror" value="{{ old('details.country', 'Pakistan') }}">
+            @error('details.country')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">City</label>
+            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="Enter City" value="{{ old('city') }}">
+            @error('city')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="training-teaching-method-oncampus"
-               name="training[teaching_method]"
-               data-validation-group="training-teaching-method"
-               type="radio"
-               value="on-campus">
-        <label for="training-teaching-method-oncampus">On-Campus</label>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Area</label>
+            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Area" value="{{ old('details.area') }}">
+            @error('details.area')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label>Preferred Campus</label>
+            <select name="campus_id" class="form-control @error('campus_id') is-invalid @enderror">
+                <option value="">- Select -</option>
+                @foreach($campuses as $campus)
+                    <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }} ({{ $campus->city }})</option>
+                @endforeach
+            </select>
+            @error('campus_id')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="form-group col-md-4">
+            <label class="required">Next Follow-up</label>
+            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
+            @error('details.next_followup_at')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-
-    <div class="radio">
-        <input id="training-teaching-method-hybrid"
-               name="training[teaching_method]"
-               data-validation-group="training-teaching-method"
-               type="radio"
-               value="hybrid">
-        <label for="training-teaching-method-hybrid">Hybrid</label>
+    <div class="form-row align-items-center">
+        <div class="form-group col-md-4">
+            <label class="required">Probability</label>
+            <input type="range" name="details[probability]" min="0" max="100" step="5" class="form-control-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
+            <div class="probability-display">Selected: <span>{{ old('details.probability', 0) }}%</span></div>
+            @error('details.probability')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
-</div>
-
-		<div class="form-group col-md-4">
-			<label class="required">Marketing Source</label>
-			<select class="form-control">
-				<option value="">- Select -</option>
-			</select>
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label class="required">Origin</label>
-			<select class="form-control">
-				<option value="">- Select -</option>
-			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Country</label>
-			<input type="text" class="form-control" value="Pakistan">
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">City</label>
-			<select class="form-control">
-				<option value="">Select a city</option>
-			</select>
-		</div>
-	</div>
-	<div class="form-row">
-		<div class="form-group col-md-4">
-			<label>Area</label>
-			<input type="text" class="form-control" placeholder="Enter Area">
-		</div>
-		<div class="form-group col-md-4">
-			<label>Preferred Campus</label>
-			<select class="form-control">
-				<option value="">-Select-</option>
-			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label class="required">Next Follow-up</label>
-			<input type="datetime-local" class="form-control">
-		</div>
-	</div>
-	<div class="form-row align-items-center">
-		<div class="form-group col-md-4">
-			<label class="required">Probability</label>
-			<input type="range" min="0" max="100" step="5" class="form-control-range probability-range">
-			<div class="probability-display">Selected: <span>0%</span></div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="required">Remarks</label>
-		<textarea class="form-control" rows="3" placeholder="Remarks"></textarea>
-	</div>
+    <div class="form-group">
+        <label class="required">Remarks</label>
+        <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks') }}</textarea>
+        @error('details.remarks')
+            <div class="field-error">{{ $message }}</div>
+        @enderror
+    </div>
 </div>

@@ -8,6 +8,7 @@ use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
 use App\Models\Program;
 use App\Models\WebLead;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -81,14 +82,12 @@ class LeadController extends Controller
         $programs = Program::orderBy('title')->get();
         $origins = ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
         $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'];
-
         return view('lead.create', compact('campuses', 'programs', 'origins', 'marketingSources', 'webLead', 'leadPrefill'));
     }
 
     public function store(Request $request): RedirectResponse
     {
         $webLead = null;
-
         if ($request->filled('web_lead_id')) {
             $webLead = WebLead::query()->find($request->integer('web_lead_id'));
 
@@ -103,34 +102,17 @@ class LeadController extends Controller
             }
         }
 
-        $isTraining = $request->input('type') === 'training';
-
-        $validated = $request->validate([
-            'web_lead_id' => ['nullable', 'exists:web_leads,id'],
-            'program_id' => ['nullable', Rule::requiredIf($isTraining), 'exists:programs,id'],
-            'assigned_user_id' => ['nullable', 'exists:users,id'],
-            'type' => ['nullable', 'string', 'max:50'],
-            'name' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'email' => ['nullable', Rule::requiredIf($isTraining), 'email', 'max:255'],
-            'phone' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50', 'unique:leads,phone'],
-            'city' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'origin' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'marketing_source' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'campus_id' => ['nullable', Rule::requiredIf($isTraining), 'exists:campuses,id'],
-            'details' => ['array'],
-            'details.country' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'details.area' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:255'],
-            'details.teaching_method' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50'],
-            'details.gender' => ['nullable', Rule::requiredIf($isTraining), 'string', 'max:50'],
-            'details.next_followup_at' => ['nullable', Rule::requiredIf($isTraining), 'date'],
-            'details.probability' => ['nullable', Rule::requiredIf($isTraining), 'integer', 'min:0', 'max:100'],
-            'details.remarks' => ['nullable', Rule::requiredIf($isTraining), 'string'],
-        ]);
+        $validated = $request->validate(
+            $this->leadStoreRules((string) $request->input('type')),
+            $this->leadStoreMessages(),
+            $this->leadStoreAttributes()
+        );
 
         try {
             $details = $validated['details'] ?? [];
             $initialProbability = $details['probability'] ?? null;
             $initialNext = $details['next_followup_at'] ?? null;
+            $initialNextDate = filled($initialNext) ? Carbon::createFromFormat('Y-m-d\TH:i', $initialNext)->toDateString() : null;
             $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
 
             $lead = Lead::create([
@@ -155,7 +137,7 @@ class LeadController extends Controller
                 'note' => 'Initial follow-up created automatically.',
                 'method' => null,
                 'probability' => $initialProbability,
-                'next_action_date' => $initialNext,
+                'next_action_date' => $initialNextDate,
                 'stage' => $initialStage,
                 'lead_status' => 'pending',
             ]);
@@ -492,9 +474,9 @@ class LeadController extends Controller
             'New' => 'badge-primary',
             'Contacted' => 'badge-success',
             'Need Analysis' => 'badge-warning',
-            'Branch Visited' => 'badge-default',
+            'Branch Visited' => 'badge-secondary',
             'Proposal or Negotiation' => 'badge-info',
-            'Not Interesting' => 'badge-default',
+            'Not Interesting' => 'badge-warning',
             'Registered' => 'badge-success',
             'Enrolled' => 'badge-success',
         ];
@@ -663,6 +645,117 @@ class LeadController extends Controller
                     ->orWhereRaw('LOWER(name) = ?', [$needle]);
             })
             ->value('id');
+    }
+
+    private function leadStoreRules(string $type): array
+    {
+        $rules = [
+            'web_lead_id' => ['nullable', 'exists:web_leads,id'],
+            'assigned_user_id' => ['nullable', 'exists:users,id'],
+            'type' => ['required', Rule::in(['training', 'certification', 'coworking', 'study_abroad'])],
+            'name' => ['required', 'string', 'min:3', 'max:100'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:leads,phone'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'origin' => ['required', 'string', 'max:255'],
+            'marketing_source' => ['required', 'string', 'max:255'],
+            'campus_id' => ['nullable', 'integer', 'exists:campuses,id'],
+            'program_id' => ['nullable', 'integer', 'exists:programs,id'],
+            'details' => ['nullable', 'array'],
+            'details.country' => ['nullable', 'string', 'max:255'],
+            'details.area' => ['nullable', 'string', 'min:2', 'max:255'],
+            'details.gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
+            'details.next_followup_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
+            'details.probability' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'details.remarks' => ['nullable', 'string', 'min:5', 'max:1000'],
+            'details.teaching_method' => ['nullable', Rule::in(['campus', 'online', 'hybrid'])],
+            'details.organization' => ['nullable', 'string', 'max:255'],
+            'details.certification_title' => ['nullable', 'string', 'max:255'],
+            'details.exam_code' => ['nullable', 'string', 'max:100'],
+            'details.business_name' => ['nullable', 'string', 'max:255'],
+            'details.space_required' => ['nullable', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
+            'details.preferred_location' => ['nullable', 'string', 'max:255'],
+            'details.current_education' => ['nullable', 'string', 'max:255'],
+            'details.preferred_study_program' => ['nullable', 'string', 'max:255'],
+            'details.preferred_country' => ['nullable', 'string', 'max:255'],
+            'details.preferred_university' => ['nullable', 'string', 'max:255'],
+        ];
+
+        return match ($type) {
+            'training' => array_merge($rules, [
+                'program_id' => ['required', 'integer', 'exists:programs,id'],
+                'email' => ['required', 'email', 'max:255'],
+                'campus_id' => ['required', 'integer', 'exists:campuses,id'],
+                'details.area' => ['required', 'string', 'min:2', 'max:255'],
+                'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
+                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+            ]),
+            'certification' => array_merge($rules, [
+                'city' => ['required', 'string', 'max:255'],
+                'details.country' => ['required', 'string', 'max:255'],
+                'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],
+                'details.teaching_method' => ['required', Rule::in(['campus', 'online', 'hybrid'])],
+                'details.organization' => ['required', 'string', 'max:255'],
+                'details.certification_title' => ['required', 'string', 'max:255'],
+                'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
+                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+            ]),
+            'coworking' => array_merge($rules, [
+                'city' => ['required', 'string', 'max:255'],
+                'details.country' => ['required', 'string', 'max:255'],
+                'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],
+                'details.business_name' => ['required', 'string', 'max:255'],
+                'details.space_required' => ['required', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
+                'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
+                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+            ]),
+            'study_abroad' => array_merge($rules, [
+                'city' => ['required', 'string', 'max:255'],
+                'details.country' => ['required', 'string', 'max:255'],
+                'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],
+                'details.current_education' => ['required', 'string', 'max:255'],
+                'details.preferred_study_program' => ['required', 'string', 'max:255'],
+                'details.preferred_country' => ['required', 'string', 'max:255'],
+                'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
+                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+            ]),
+            default => $rules,
+        };
+    }
+
+    private function leadStoreMessages(): array
+    {
+        return [
+            'phone.regex' => 'The phone number must be 11 digits, contain digits only, and start with 03.',
+        ];
+    }
+
+    private function leadStoreAttributes(): array
+    {
+        return [
+            'program_id' => 'course interested',
+            'campus_id' => 'preferred campus',
+            'details.country' => 'country',
+            'details.area' => 'area',
+            'details.gender' => 'gender',
+            'details.teaching_method' => 'teaching method',
+            'details.next_followup_at' => 'next follow up',
+            'details.probability' => 'probability',
+            'details.remarks' => 'remarks',
+            'details.organization' => 'organization/vendor',
+            'details.certification_title' => 'certification title',
+            'details.exam_code' => 'exam code',
+            'details.business_name' => 'business name',
+            'details.space_required' => 'space required',
+            'details.preferred_location' => 'preferred location',
+            'details.current_education' => 'current education',
+            'details.preferred_study_program' => 'preferred study program',
+            'details.preferred_country' => 'preferred country',
+            'details.preferred_university' => 'preferred university',
+        ];
     }
 
     private function normalizeWebLeadTeachingMethod(?string $value): ?string

@@ -175,22 +175,59 @@
         }
         .summary-tile {
             height: 25vh;
-            padding: 45px 14px;
+            padding: 14px 16px;
             text-align: center;
-            border: 1px solid #d8e2e7;
-            border-radius: 8px;
-            background: #16b3fb;
+            border: 1px solid #00a8ff;
+            border-radius: 12px;
+            background: #00a8ff;
             color: white;
         }
-        .summary-tile.warning {
-            background: #078bec;
-            border-color: #ffd79a;
+
+        .summary-tile,
+        .summary-tile strong,
+        .summary-tile:hover,
+        .summary-tile:hover strong,
+        .summary-tile:focus,
+        .summary-tile:focus strong {
+            color: #fff !important;
+        }
+
+        .summary-tile:nth-child(5n + 1) {
+            background: #f35f62;
+            border-color: #f35f62;
+        }
+
+        .summary-tile:nth-child(5n + 2) {
+            background: #fdc518;
+            border-color: #fdc518;
+        }
+
+        .summary-tile:nth-child(5n + 3) {
+            background: #975ce7;
+            border-color: #975ce7;
+        }
+
+        .summary-tile:nth-child(5n + 4) {
+            background: #a2cf37;
+            border-color: #a2cf37;
+        }
+
+        .summary-tile:nth-child(5n + 5) {
+            background: #00a8ff;
+            border-color: #00a8ff;
+        }
+
+        .summary-tile strong {
+            display: block;
+            font-size: 18px;
+            margin-top: 30px;
         }
         .summary-label {
             display: block;
-            margin-bottom: 4px;
+            margin-top: 1rem;
             color: white;
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 600;
             text-transform: uppercase;
         }
         .inventory-filter-form {
@@ -222,6 +259,14 @@
             background: #fff0ef;
             color: #d93025;
         }
+        @media (max-width: 760px) {
+            .summary-tile strong {
+                margin-top: 10px;
+            }
+            .summary-label {
+                margin-top: 5px;
+            }
+        }
         .inventory-pagination {
             margin-top: 12px;
         }
@@ -230,6 +275,23 @@
         }
         .inventory-action-dropdown .dropdown-menu {
             min-width: 140px;
+        }
+
+        @media (max-width: 767px) {
+            .summary-tile {
+                display: flex;
+                min-height: 150px;
+                height: auto;
+                padding: 18px 16px;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .summary-tile strong {
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
         }
     </style>
 @endpush

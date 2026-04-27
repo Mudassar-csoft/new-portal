@@ -132,16 +132,22 @@
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            min-height: 86px;
         }
-        .payable-label {   font-size: 12px;
-    text-transform: uppercase;
-    opacity: .88;
-    text-align: center;
-    margin-top: 1rem; }
-        .payable-value { margin-top: 6px;
-    font-size: 24px;
-    text-align: center;
-    font-weight: 700; }
+        .payable-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: .88;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .payable-value {
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
         .tone-pending { background: #f35f62; }
         .tone-approved { background: #fdc518; }
         .tone-total {  background:  #975ce7; }
@@ -149,6 +155,14 @@
             background: #eef2f7;
             color: #334155;
             font-weight: 700;
+        }
+        @media (max-width: 760px)  {
+            .payable-label {
+                margin-top: 5px;
+            }
+            .payable-value {
+                margin-top: 10px;
+            }
         }
     </style>
 @endpush

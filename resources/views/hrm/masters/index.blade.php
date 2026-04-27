@@ -176,7 +176,7 @@
                     <div class="box-typical-body panel-body">
                         <form method="POST" action="{{ route('hrm.masters.holidays.store') }}" class="mb-3">
                             @csrf
-                            <div class="form-row mt-3" style="gap:8px; padding-left:15px;">
+                            <div class="form-row mt-3" style="gap:10px; padding-left:15px;">
                                 <div class="form-group col-md-3 p-0">
                                     <select class="form-control" name="campus_id">
                                         <option value="">All Campuses</option>
@@ -230,9 +230,9 @@
     width:97%;
 }
 
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-shell form .form-row {
-            gap: 6px !important;
+            gap: 9px !important;
             padding-left: 8px !important;
             padding-right: 8px !important;
         }

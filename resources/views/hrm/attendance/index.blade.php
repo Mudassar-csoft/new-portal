@@ -268,7 +268,7 @@
 @push('styles')
     <style>
       
-        .hrm-shell { padding: 8px 0 16px; }
+        /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-table thead th { background: #eef2f7; color: #334155; }
         .hrm-box {
             border: 1px solid #e6ebf1;

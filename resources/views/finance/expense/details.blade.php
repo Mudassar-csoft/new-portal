@@ -62,8 +62,20 @@
                 </div>
             </div>
             @foreach($components as $component)
+                @php
+                    $toneClass = match (strtolower((string) ($component['label'] ?? ''))) {
+                        'rent' => 'tone-rent',
+                        'utility' => 'tone-utility',
+                        'marketing' => 'tone-marketing',
+                        'asset' => 'tone-asset',
+                        'payroll' => 'tone-payroll',
+                        'general' => 'tone-general',
+                        'reversed' => 'tone-reversed',
+                        default => 'tone-item',
+                    };
+                @endphp
                 <div class="col-lg-4 col-md-6">
-                    <div class="expense-card tone-item">
+                    <div class="expense-card {{ $toneClass }}">
                         <div class="expense-value">Rs. {{ number_format((float) ($component['amount'] ?? 0), 0) }}</div>
                         <div class="expense-label">{{ $component['label'] ?? 'Component' }}</div>
                     </div>
@@ -129,22 +141,43 @@
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            min-height: 86px;
         }
-        .expense-label { font-size: 12px;
-    text-transform: uppercase;
-    opacity: .88;
-    text-align: center;
-    margin-top: 1rem; }
-        .expense-value {  margin-top: 6px;
-    font-size: 24px;
-    text-align: center;
-    font-weight: 700;}
+        .expense-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: .88;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .expense-value {
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
         .tone-total { background: #f35f62; }
-        .tone-item { background: #00a8ff }
+        .tone-item { background: #00a8ff; }
+        .tone-rent { background: #fdc518; }
+        .tone-utility { background: #975ce7; }
+        .tone-marketing { background: #a2cf37; }
+        .tone-asset { background: #4285f4; }
+        .tone-payroll { background: #00a8ff; }
+        .tone-general { background: #f35f62; }
+        .tone-reversed { background: #975ce7; }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
             font-weight: 700;
+        }
+        @media (max-width: 760px)  {
+            .expense-label {
+                margin-top: 5px;
+            }
+            .expense-value {
+                margin-top: 10px;
+            }
         }
     </style>
 @endpush

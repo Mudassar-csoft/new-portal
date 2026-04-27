@@ -23,7 +23,10 @@
 	<![endif]-->
 	<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
 	<link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+	<link rel="preload" href="fonts/Proxima_Nova_Regular.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="fonts/Proxima_Nova_Semibold.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
 			<link rel="stylesheet" href="css/custom-responsive.css">
@@ -39,7 +42,15 @@
   margin: 0;
   padding: 0;
 }
+h1 { font-size: 30px !important; }
+h2 { font-size: 26px!important; }
+h3 { font-size: 22px !important; }
+h4 { font-size: 18px !important; }
+h5 { font-size: 16px !important; }
 
+p { font-size: 14px; }
+span { font-size: 13px; }
+small { font-size: 12px; }
 body,
 p,
 span,
@@ -140,6 +151,12 @@ text-rendering: optimizeLegibility;
 -webkit-font-smoothing: antialiased;
 }
 
+textarea[name="remarks"],
+textarea[name$="[remarks]"] {
+  height: 100px !important;
+  min-height: 100px !important;
+}
+
 /* =========================================================
    Tables
    ========================================================= */
@@ -237,71 +254,25 @@ padding: 0.8375rem 1.25rem;
 .my-3 {
 margin-bottom: 0 !important;
 }
-.side-menu-list {
-margin: -79px 0 20px;
-}
-
-.side-menu-list .lbl {
-font-size: 14.5px !important;
-font-weight: 600 !important;
-line-height: 1.3;
-}
-
-.side-menu .stage-link {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 8px;
-}
 .campus-title{
 	font-size: 22px !important;
 }
-.dataTables_wrapper .dataTables_filter label {
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
             position: relative;
             margin: 0;
             font-size: 0;
         }
-		.dataTables_filter label{
+		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label{
     font-size:0;
 }
 
-.dataTables_filter input{
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input{
     font-size:13px !important
 }
-.side-menu .stage-count {
-min-width: 32px;
-width: 80px;
-text-align: center;
-color: #fff;
-background-color: #6c757d;
-border-color: #6c757d;
-}
-
-.side-menu-list a,
-.side-menu-list li > span {
-padding: 11px 12px 6px 46px;
-}
-
-/* =========================================================
-   Sidebar Stage Pills
-   ========================================================= */
-/* Per-item pill tones */
-.side-menu li ul li:nth-child(9n+7) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+2) .stage-count { background-color: #1296eb; border-color: #1296eb; }
-.side-menu li ul li:nth-child(9n+3) .stage-count { background-color: #ff4b5c; border-color: #ff4b5c; }
-.side-menu li ul li:nth-child(9n+1) .stage-count { background-color: #45c156; border-color: #45c156; }
-.side-menu li ul li:nth-child(9n+5) .stage-count { background-color: #36c86b; border-color: #36c86b; }
-.side-menu li ul li:nth-child(9n+6) .stage-count { background-color: #25344a; border-color: #25344a; }
-.side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
-.side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
-.side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
-
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
 } */
-.control-panel:not(.dashboard-page) .page-content {
-    padding-right: 67px;
-}
+
 .with-side-menu .page-content {
     padding-left: 255px;
 }
@@ -339,18 +310,20 @@ align-items: center;
 .login-logs .box-typical-body {
 padding: 10px 16px !important;
 }
+/* body.with-side-menu.control-panel .page-content {
+    padding-right: 16px !important;
+} */
 
 /* =========================================================
    DataTables
    ========================================================= */
 .dataTables_wrapper {
   box-sizing: border-box;
-  /* padding-left: 3px !important;
-  padding-right: 12px !important; */
+  padding:10px;
 }
 
-.dataTables_wrapper .dataTables_filter input,
-.login-logs .dataTables_filter input {
+.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input,
+.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
   border: 1px solid #d9e2ef;
   border-radius: 0.3125rem !important; 
   padding: 0.0625rem 0.75rem !important; 
@@ -367,9 +340,9 @@ padding: 10px 16px !important;
 div.dataTables_wrapper div.dataTables_info {
 padding-top: 1em;
 }
-div.dataTables_wrapper div.dataTables_filter input{
+div.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) div.dataTables_filter input{
 	width:200px;
-}div.dataTables_wrapper div.dataTables_filter label {
+}div.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) div.dataTables_filter label {
     font-weight: 0px !important;
     white-space: nowrap;
     text-align: left;}
@@ -516,7 +489,7 @@ height: 26vh !important;
 
 .follow-toolbar-btn,
 .follow-toolbar-dropdown > .btn {
-    width: 32px;
+    width: 34px;
     min-width: 32px;
     height: 32px !important;
     min-height: 32px;
@@ -601,7 +574,7 @@ height: 26vh !important;
 
 .follow-toolbar-btn i,
 .follow-toolbar-dropdown > .btn i {
-    font-size: 15px !important;
+    font-size: 18px !important;
     line-height: 1;
 }
 
@@ -620,6 +593,10 @@ height: 26vh !important;
     border-radius: 10px;
     border: 1px solid #d7e5f1;
     box-shadow: 0 12px 30px rgba(31, 60, 92, 0.12);
+    left: -53px !important;
+    /* right: 25px !important; */
+    /* transform: none !important; */
+    margin-top: 6px !important;
 }
 
 .follow-toolbar-dropdown .dropdown-menu > li > a,
@@ -647,9 +624,14 @@ height: 26vh !important;
     padding: 0;
 }
 
+.follow-toolbar-dropdown .dropdown-menu .follow-column-option {
+    padding: 0;
+}
+
 .follow-toolbar-dropdown .dropdown-menu .checkbox label {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
     margin: 0;
     padding: 8px 14px;
@@ -666,6 +648,13 @@ height: 26vh !important;
 .follow-toolbar-dropdown .dropdown-menu .checkbox input {
     margin: 0;
     position: static;
+}
+
+.follow-toolbar-dropdown .dropdown-menu .follow-column-option input[type="checkbox"] {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    accent-color: #00a8ff;
 }
 
 .follow-controls.follow-controls--toolbar .follow-search {
@@ -711,7 +700,7 @@ height: 26vh !important;
 .follow-controls.follow-controls--toolbar .dataTables_length select {
     height: 31px !important;
     min-height: 31px !important;
-    padding: 4px 24px 4px 10px !important;
+    padding: -3px 24px 4px 10px !important;
     margin: 0 !important;
 }
 
@@ -873,6 +862,14 @@ form textarea.form-control-sm {
   line-height: 1.4 !important;
 }
 
+form textarea[name="remarks"].form-control,
+form textarea[name="remarks"].form-control-sm,
+form textarea[name$="[remarks]"].form-control,
+form textarea[name$="[remarks]"].form-control-sm {
+  min-height: 100px !important;
+  height: 100px !important;
+}
+
 form .field-error {
   margin-top: 4px !important;
 }
@@ -1010,7 +1007,7 @@ display: flex;
 justify-content: flex-start;
 width: max-content;
 max-width: 100%;
-margin-left: auto;
+/* margin-left: auto; */
 margin-right: auto;
 }
 
@@ -1228,6 +1225,7 @@ body, button, html, input, select {
 		}
 
 		.follow-tab .badge {
+			padding:4px 8px;
 			border-radius: 999px;
 			font-size: 11px;
 			line-height: 1;
@@ -1235,31 +1233,6 @@ body, button, html, input, select {
 
 		.follow-body {
 			padding: 16px;
-		}
-
-		.follow-controls {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0px 2px 12px 2px;
-			/* margin-left: 4px; */
-		}
-
-		.follow-search {
-			position: relative;
-			width: 240px;
-		}
-
-		.follow-search input {
-			padding-right: 32px;
-		}
-
-		.follow-search i {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			color: #9aa8b6;
 		}
 
 		.follow-table {
@@ -1293,8 +1266,8 @@ body, button, html, input, select {
 		}
 
 		.lead-link {
-			color: #0099f8;
-			font-weight: 700;
+			color: #0082c6;
+			/* font-weight: 600; */
 			text-decoration: none !important;
 		}
 
@@ -1325,7 +1298,8 @@ body, button, html, input, select {
 
 
 		.table-responsive {
-    overflow: visible !important;  
+    overflow-x: visible !important;  
+    /* overflow-y: scroll !important;   */
 }
 		.follow-card, .follow-body {
     overflow: visible !important;
@@ -1504,6 +1478,10 @@ button[id^="action-"].btn[aria-expanded="true"] {
     background-color:#00a8ff !important;
     border-color:#00a8ff !important;
 }
+
+		.control-panel:not(.dashboard-page) .page-content {
+    padding-right: 67px;
+}
 /* =========================================================
    Dashboard Cards/Charts
    ========================================================= */
@@ -1526,7 +1504,7 @@ overflow: hidden;
 }
 
 .box-typical.box-typical-dashboard {
-margin:  5px !important;
+margin-bottom:  10px !important;
 }
 
 .box-typical.box-typical-dashboard .box-typical-header {
@@ -1641,6 +1619,26 @@ margin-right: 0px !important;
     gap: 14px;
     padding: 15px;
 }
+.student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input
+{
+    width: 94px !important;
+
+}
+.student-summary-card strong {
+margin-top: -2px;
+
+}
+.program-discount-header, .box-typical.box-typical-dashboard .box-typical-header{
+	align-items: baseline;
+	padding: 10px;	
+}
+
+
+
+
+
+
+}
 
 @media (min-width: 768px) and (max-width: 991.98px) {
     [class*="summary-grid"],
@@ -1656,6 +1654,9 @@ margin-right: 0px !important;
     .inventory-summary {
         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
     }
+	.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
+          
+	margin-top: 5px !important;
 }
 .program-discount-header,
 .box-typical.box-typical-dashboard .box-typical-header{
@@ -1669,14 +1670,12 @@ margin-right: 0px !important;
 .kpi-label{
 	padding: 0px !important;
 	margin-top: 0px !important;
-
+	
 }
-.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
-          
-	margin-top: 5px !important;
 }
 
-}
+
+
 @media (max-width: 1056px) {
 	.site-header .hamburger {
 top: 0px;
@@ -1800,12 +1799,6 @@ padding-left: 7px;
 padding-right: 28px;
 }
 
-
-.side-menu-list a,
-.side-menu-list li > span {
-padding-right: 5px;
-}
-
 /* =========================================================
    Tables
    ========================================================= */
@@ -1900,8 +1893,13 @@ margin-left: 0;
 			body.control-panel.open.with-side-menu .page-content,
 			body.sidebar-hidden.with-side-menu .page-content,
 			.menu-left-hidden .page-content {
-				padding: 107px 15px 10px !important;
+				padding: 82px 15px 10px !important;
 				margin-top: 14px !important;
+			}
+
+			body.with-side-menu.control-panel .page-content {
+				padding-left: 16px !important;
+				padding-right: 16px !important;
 			}
 			.chart-statistic-box .chart-container{
 				background-color:white;
@@ -2087,6 +2085,140 @@ margin-left: 0;
 				});
 			}
 
+			function storeInitialTableState(context) {
+				if (!context.$table.length || context.$table.data('followInitialState')) {
+					return;
+				}
+
+				var state = {
+					compact: context.$table.hasClass('follow-table-density-compact')
+				};
+
+				if (context.api) {
+					var order = context.api.order ? context.api.order() : [];
+					var columnVisibility = [];
+
+					if (context.api.columns) {
+						context.api.columns().every(function (index) {
+							columnVisibility[index] = this.visible();
+						});
+					}
+
+					state.order = $.isArray(order) ? order.slice() : [];
+					state.pageLength = context.api.page && context.api.page.len ? context.api.page.len() : null;
+					state.columnVisibility = columnVisibility;
+				} else {
+					state.columnVisibility = [];
+					context.$table.find('thead th').each(function (index) {
+						state.columnVisibility[index] = $(this).css('display') !== 'none';
+					});
+				}
+
+				context.$table.data('followInitialState', state);
+			}
+
+			function updateColumnDropdownState(context) {
+				if (!context.$table.length) {
+					return;
+				}
+
+				var $dropdown = context.$table.data('followColumnsDropdown');
+				if (!$dropdown || !$dropdown.length) {
+					return;
+				}
+
+				$dropdown.find('input[type="checkbox"]').each(function () {
+					var index = Number($(this).attr('data-index'));
+					var isVisible;
+
+					if (context.api) {
+						isVisible = context.api.column(index).visible();
+					} else {
+						var $header = context.$table.find('thead th').eq(index);
+						isVisible = $header.length ? $header.css('display') !== 'none' : true;
+					}
+
+					$(this).prop('checked', !!isVisible);
+				});
+			}
+
+			function resetTableState(context, $searchInput, $controls) {
+				if (!$controls || !$controls.length) {
+					$controls = context.$wrapper ? context.$wrapper.find('.follow-controls').first() : $();
+				}
+
+				var initialState = context.$table.data('followInitialState') || {};
+
+				if ($searchInput && $searchInput.length) {
+					$searchInput.val('');
+				}
+
+				if (context.api) {
+					if (context.api.search) {
+						context.api.search('');
+					}
+
+					if (context.api.columns) {
+						context.api.columns().search('');
+					}
+
+					if ($.isArray(initialState.columnVisibility)) {
+						$.each(initialState.columnVisibility, function (index, visible) {
+							context.api.column(index).visible(visible, false);
+						});
+					} else if (context.api.columns) {
+						context.api.columns().visible(true, false);
+					}
+
+					if ($.isArray(initialState.order) && initialState.order.length && context.api.order) {
+						context.api.order(initialState.order);
+					}
+
+					if (initialState.pageLength && context.api.page && context.api.page.len) {
+						context.api.page.len(initialState.pageLength);
+					}
+
+					context.$table.toggleClass('follow-table-density-compact', !!initialState.compact);
+
+					if ($controls && $controls.length) {
+						$controls.find('[aria-label="Toggle table density"]').toggleClass('is-active', !!initialState.compact);
+					}
+
+					context.api.draw(false);
+
+					if (context.api.page) {
+						context.api.page('first').draw('page');
+					}
+
+					if (context.api.ajax && context.api.ajax.reload) {
+						context.api.ajax.reload(null, false);
+					}
+				} else {
+					context.$table.removeClass('follow-table-density-compact');
+					context.$table.find('tbody tr').show();
+
+					if ($.isArray(initialState.columnVisibility)) {
+						$.each(initialState.columnVisibility, function (index, visible) {
+							setManualColumnVisibility(context.$table, index, visible !== false);
+						});
+					} else {
+						context.$table.find('tr').each(function () {
+							$(this).children().css('display', '');
+						});
+					}
+
+					if ($controls && $controls.length) {
+						$controls.find('[aria-label="Toggle table density"]').removeClass('is-active');
+					}
+
+					if ($searchInput && $searchInput.length) {
+						$searchInput.trigger('input').trigger('keyup').trigger('change');
+					}
+				}
+
+				updateColumnDropdownState(context);
+			}
+
 			function exportTableToCsv($table, filename) {
 				if (!$table.length) {
 					return;
@@ -2164,7 +2296,7 @@ margin-left: 0;
 
 				var $dropdown = $(
 					'<div class="follow-toolbar-dropdown dropdown">' +
-						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Columns">' +
+						'<button type="button" class="btn  dropdown-toggle" data-toggle="dropdown" aria-label="Columns">' +
 							'<span class="font-icon font-icon-list-rotate" aria-hidden="true"></span>' +
 							' <span class="caret"></span>' +
 						'</button>' +
@@ -2175,11 +2307,12 @@ margin-left: 0;
 				$headers.each(function (index) {
 					var label = getColumnLabel($(this), index);
 					var checkboxId = 'follow-col-' + (context.$table.attr('id') || 'table') + '-' + index;
+					var isVisible = context.api ? context.api.column(index).visible() : $(this).css('display') !== 'none';
 					var $item = $(
-						'<li>' +
+						'<li class="follow-column-option">' +
 							'<span class="checkbox">' +
 								'<label for="' + checkboxId + '">' +
-									'<input id="' + checkboxId + '" type="checkbox" checked="checked" data-index="' + index + '">' +
+									'<input id="' + checkboxId + '" type="checkbox" ' + (isVisible ? 'checked="checked"' : '') + ' data-index="' + index + '">' +
 									'<span>' + label + '</span>' +
 								'</label>' +
 							'</span>' +
@@ -2205,6 +2338,7 @@ margin-left: 0;
 				});
 
 				context.$table.data('follow-columns-ready', true);
+				context.$table.data('followColumnsDropdown', $dropdown);
 				$tools.append($dropdown);
 			}
 
@@ -2240,20 +2374,13 @@ margin-left: 0;
 
 			function buildRefreshButton($tools, context, $searchInput) {
 				var $button = $(
-					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Refresh">' +
+					'<button type="button" class="btn follow-toolbar-btn" aria-label="Refresh">' +
 						'<span class="fa fa-refresh" aria-hidden="true"></span>' +
 					'</button>'
 				);
 
 				$button.on('click', function () {
-					if (context.api && context.api.ajax && context.api.ajax.reload) {
-						context.api.ajax.reload(null, false);
-						return;
-					}
-
-					if ($searchInput && $searchInput.length) {
-						$searchInput.trigger('input').trigger('keyup');
-					}
+					resetTableState(context, $searchInput, $tools.closest('.follow-controls'));
 				});
 
 				$tools.append($button);
@@ -2265,7 +2392,7 @@ margin-left: 0;
 				}
 
 				var $button = $(
-					'<button type="button" class="btn btn-default follow-toolbar-btn" aria-label="Toggle table density">' +
+					'<button type="button" class="btn follow-toolbar-btn" aria-label="Toggle table density">' +
 						'<span class="fa fa-th-list" aria-hidden="true"></span>' +
 					'</button>'
 				);
@@ -2286,6 +2413,7 @@ margin-left: 0;
 					}
 
 					var context = getFollowTableContext($controls);
+					storeInitialTableState(context);
 					var $searchBlock = getSearchBlock($controls);
 					if (!$searchBlock.length) {
 						return;
@@ -2322,6 +2450,7 @@ margin-left: 0;
 					}
 
 					$controls.data('followToolbarReady', true);
+					updateColumnDropdownState(context);
 				});
 			}
 

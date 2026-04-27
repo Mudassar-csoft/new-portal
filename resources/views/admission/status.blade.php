@@ -86,8 +86,12 @@
 									<td>{{ $admDate }}</td>
 									<td>{{ $row->phone }}</td>
 									<td>{{ $row->city }}</td>
-									<td class="text-center action-cell">
-										@include('admission.partials.action', ['actionId' => 'adm-action-' . $idx])
+									<td class=" action-cell">
+										@include('admission.partials.action', [
+											'actionId' => 'adm-action-' . $idx,
+											'admission' => $row,
+											'leadId' => $row->lead_id ?? null,
+										])
 									</td>
 								</tr>
 							@endforeach
@@ -114,109 +118,6 @@
 			/* padding: 0 6px 0 16px; */
 		}
 
-		.follow-card {
-			border: 1px solid #dbe4ed;
-			border-radius: 10px;
-			background: #fff;
-			box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
-		}
-
-		.follow-tab-bar {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			    padding: 14px 18px 10px;
-    border-bottom: 3px solid #008efb;
-   
-			background: #f6f8fb;
-			border-radius: 10px 10px 0 0;
-		}
-
-		.follow-tab {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-			padding: 8px 14px;
-			font-weight: 700;
-			color: #5f6f7f;
-			cursor: pointer;
-			position: relative;
-			text-align: center;
-
-			border-bottom: 3px solid transparent;
-		}
-
-		.follow-tab.active {
-			color: #0f3c6e;
-			background-color:white;	
-			border-radius: 5px;
-		border-bottom: 2px solid #008efb;
-		}
-
-		.follow-tab .badge {
-			padding: 6px 10px;
-			border-radius: 999px;
-			font-size: 1rem;
-			line-height: 1;
-		}
-
-		.follow-body {
-			padding: 16px;
-		}
-
-		.follow-controls {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0px 2px 12px 2px;
-			/* margin-left: 4px; */
-		}
-
-		.follow-search {
-			position: relative;
-			width: 240px;
-		}
-
-		.follow-search input {
-			padding-right: 32px;
-		}
-
-		.follow-search i {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
-			color: #9aa8b6;
-		}
-
-		.follow-table {
-			margin-bottom: 12px;
-			border: 1px solid #dbe4ed;
-		}
-
-		.follow-table thead th {
-			background: #0099f8;
-			color: #fff;
-			font-weight: 700;
-			border-color: #0086d8;
-			vertical-align: middle;
-		}
-
-		.follow-table tbody td {
-			vertical-align: middle;
-			color: #334155;
-			background: #fdfefe;
-			border-color: #e6ecf2;
-		}
-
-		.follow-table tbody tr:nth-child(even) td {
-			background: #f8fbff;
-		}
-
-		.follow-table tbody tr:hover td {
-			background: #eef5ff;
-		}
-
 		.action-cell {
 			min-width: 110px;
 			white-space: nowrap;
@@ -233,23 +134,15 @@
 		}
 
 		.admission-action-dropdown .dropdown-menu {
-			min-width: 180px;
+			min-width: 292px;
 			position: absolute !important;
-			top: 0 !important;
+			top: 100% !important;
 			left: auto !important;
-			right: 100% !important;
+			right: 0 !important;
+			margin-top: 6px !important;
 			margin-right: 0 !important;
 			transform: none !important;
 			z-index: 9999;
-		}
-
-		.follow-footer {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			font-size: 1rem;
-			color: #54667a;
-			padding: 4px 4px 0;
 		}
 
 		@media (max-width: 768px) {

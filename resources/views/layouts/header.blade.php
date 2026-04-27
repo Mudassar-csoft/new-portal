@@ -196,23 +196,23 @@
                         <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	                            <img src="img/avatar-2-64.png" alt="">
 	                        </button>
-                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notify">
+                          <div class="dropdown-menu dropdown-menu-right profile-dropdown" aria-labelledby="notify">
                             <div class="user-profile-section login-drop">
                               <div class="media mx-auto">
                                 <img src="data:image/jpeg;base64,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" alt="" class="img">
                                 <div class="media-body">
-                                  <h4>
+                                  <h3>
                                             @if(auth()->check())
                                         {{ auth()->user()->name }}
                                       @else
                                         Guest 
                                       @endif
-                                  </h4>
+                                  </h3>
                                 </div>
                               </div>
                             </div>
                             <div class="dp-main-menu ">
-                            <div class="dp-main-menu "style = "line-height: 20px;">
+                            <!-- <div class="dp-main-menu "style = "line-height: 20px;"> -->
                                 <a href="#" class="dropdown-item p-1 ml-2 m-1 login-dropdown-item">
                                   <i class="fas fa-user me-2 "></i> Profile
                                 </a>
@@ -223,7 +223,7 @@
                                   <i class="fas fa-sign-out-alt me-2"></i> Log Out
                                 </a>
                               </div>
-                            </div>
+                            <!-- </div> -->
                           </div>
                         </div>
                         <!-- <div class="dropdown dropdown-notification messages">
@@ -554,8 +554,8 @@
 }
 .site-header .dropdown-campus .dropdown-toggle .camppus-branch{
 	display:block;
-	width:19px !important;
-	height:19px !important;
+	width:25px !important;
+	height:25px !important;
 	object-fit:contain;
 	margin:0 auto;
 }
@@ -717,7 +717,7 @@ display: flex;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
-		gap: 20px;
+		gap: 12px;
 		min-width: 0;
 	}
 }
@@ -1014,6 +1014,25 @@ border:2px solid #ddd;
     
     width: 274px !important;
 }
+.site-header .user-menu.dropdown .profile-dropdown {
+    width: 274px !important;
+    min-width: 274px !important;
+    max-width: calc(100vw - 20px);
+}
+
+.site-header .user-menu.dropdown .profile-dropdown .dropdown-item,
+.site-header .user-menu.dropdown .profile-dropdown .login-dropdown-item {
+    display: block;
+    width: auto;
+    padding: 10px 12px !important;
+}
+
+.site-header .user-menu.dropdown .profile-dropdown .dp-main-menu {
+    padding: 0 2px 2px;
+}
+.dp-main-menu{
+  background-color: #f7f9fc;
+}
 .user-menu .nav-link{
     width: 42px;
     height: 42px;
@@ -1112,7 +1131,7 @@ border:2px solid #ddd;
 
 .site-header .dropdown.dropdown-notification .dropdown-menu-notif {
 	position: fixed !important;
-	top: 58px !important;
+	top: 80px !important;
 	right: 12px !important;
 	left: auto !important;
 	transform: none !important;
@@ -1128,7 +1147,8 @@ border:2px solid #ddd;
 }
 
 .site-header .user-menu.dropdown .profile-dropdown {
-	width: 285px;
+	width: 274px !important;
+	min-width: 274px !important;
 	max-width: calc(100vw - 20px);
 }
 .site-header .header-alarm,
@@ -1164,7 +1184,7 @@ border:2px solid #ddd;
 }
 .site-header .header-alarm i,
 .site-header .dropdown-campus .dropdown-toggle i{
-    font-size: 18px !important;
+    font-size: 22px !important;
 }
 .site-header .user-menu.dropdown .dropdown-toggle img{
     width: 32px;

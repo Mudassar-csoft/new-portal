@@ -27,8 +27,11 @@ class RegistrationController extends Controller
 
         $campuses = Campus::orderBy('name')->get();
         $programs = Program::orderBy('title')->get();
-
-        $preview = $lead && $lead->campus ? $this->previewNumbers($lead->campus->code) : ['registration_number' => '', 'receipt_number' => ''];
+        $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
+        $selectedCampus = $selectedCampusId > 0 ? $campuses->firstWhere('id', $selectedCampusId) : null;
+        $preview = $selectedCampus
+            ? $this->previewNumbers($selectedCampus->code)
+            : ['registration_number' => '', 'receipt_number' => ''];
 
         return view('registration.create', [
             'lead' => $lead,
@@ -40,16 +43,11 @@ class RegistrationController extends Controller
 
     public function store(Request $request): RedirectResponse|JsonResponse
     {
-        $validated = $request->validate([
-            'lead_id' => ['nullable', 'exists:leads,id'],
-            'campus_id' => ['required', 'exists:campuses,id'],
-            'program_id' => ['required', 'exists:programs,id'],
-            'student_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:50'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'fee' => ['nullable', 'numeric'],
-            'discount' => ['nullable', 'numeric'],
-        ]);
+        $validated = $request->validate(
+            $this->registrationRules(),
+            $this->registrationMessages(),
+            $this->registrationAttributes()
+        );
 
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
@@ -68,7 +66,16 @@ class RegistrationController extends Controller
                 'receipt_number' => $regNumbers['receipt_number'],
                 'student_name' => $validated['student_name'],
                 'phone' => $validated['phone'],
-                'email' => $validated['email'] ?? null,
+                'guardian_name' => $validated['guardian_name'],
+                'guardian_phone' => $validated['guardian_phone'],
+                'cnic' => $validated['cnic'],
+                'passport_number' => $validated['passport_number'] ?? null,
+                'email' => $validated['email'],
+                'education' => $validated['education'],
+                'date_of_birth' => $validated['date_of_birth'],
+                'gender' => $validated['gender'],
+                'address' => $validated['address'],
+                'remarks' => $validated['remarks'] ?? null,
                 'fee' => $fee,
                 'discount' => $discount,
                 'net_payable' => $net,
@@ -217,5 +224,54 @@ class RegistrationController extends Controller
         $next = str_pad((string)((int)$last + 1), $pad, '0', STR_PAD_LEFT);
         $parts[] = $next;
         return implode('-', $parts);
+    }
+
+    private function registrationRules(): array
+    {
+        return [
+            'lead_id' => ['nullable', 'exists:leads,id'],
+            'campus_id' => ['required', 'exists:campuses,id'],
+            'program_id' => ['required', 'exists:programs,id'],
+            'student_name' => ['required', 'string', 'min:3', 'max:255'],
+            'phone' => ['required', 'regex:/^03\d{9}$/'],
+            'guardian_name' => ['required', 'string', 'min:3', 'max:255'],
+            'guardian_phone' => ['required', 'regex:/^03\d{9}$/'],
+            'cnic' => ['required', 'regex:/^\d{13}$/'],
+            'passport_number' => ['nullable', 'string', 'min:5', 'max:50'],
+            'email' => ['required', 'email', 'max:255'],
+            'education' => ['required', 'string', 'max:255'],
+            'date_of_birth' => ['required', 'date', 'before:today'],
+            'gender' => ['required', 'in:male,female,other'],
+            'address' => ['required', 'string', 'min:10', 'max:1000'],
+            'remarks' => ['nullable', 'string', 'max:2000'],
+            'fee' => ['nullable', 'numeric', 'min:0'],
+        ];
+    }
+
+    private function registrationMessages(): array
+    {
+        return [
+            'phone.regex' => 'The primary contact number must be 11 digits and start with 03.',
+            'guardian_phone.regex' => 'The guardian contact number must be 11 digits and start with 03.',
+            'cnic.regex' => 'The CNIC must be exactly 13 digits.',
+            'date_of_birth.before' => 'The date of birth must be earlier than today.',
+        ];
+    }
+
+    private function registrationAttributes(): array
+    {
+        return [
+            'campus_id' => 'campus',
+            'program_id' => 'program',
+            'student_name' => 'full name',
+            'phone' => 'primary contact number',
+            'guardian_name' => 'guardian name',
+            'guardian_phone' => 'guardian contact number',
+            'cnic' => 'CNIC',
+            'passport_number' => 'passport number',
+            'date_of_birth' => 'date of birth',
+            'address' => 'postal address',
+            'remarks' => 'remarks',
+        ];
     }
 }

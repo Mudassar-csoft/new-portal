@@ -17,7 +17,7 @@
     $selectedCampus = $campuses->firstWhere('id', $filters['campus_id'] ?? null);
 @endphp
 
-<div class="finance-dashboard mt-2">
+<div class="finance-dashboard">
     @if(session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
@@ -25,7 +25,7 @@
     <div class="finance-header">
         <div>
             <h1 class="finance-title panel-title">{{ $pageTitle ?? 'Finance Dashboard' }}</h1>
-            <p class="finance-subtitle">Live finance summary by campus/franchise.</p>
+            <!-- <p class="finance-subtitle">Live finance summary by campus/franchise.</p> -->
         </div>
         <div class="finance-filter-summary-wrap">
             <div class="finance-filter-summary">
@@ -189,7 +189,7 @@
     margin-top: 1rem;
         }
         .kpi-value {
-           margin-top: 6px;
+           /* margin-top: 6px; */
     font-size: 24px;
     text-align: center;
     font-weight: 700;
@@ -296,7 +296,7 @@
             filter: brightness(1.02);
         }
         .finance-kpi .kpi-label { font-size: 12px; text-transform: uppercase; opacity: 0.88;  color:white;}
-        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 20px;color:white; }
+        .finance-kpi .kpi-value { font-size: 20px; font-weight: 700; margin-top: 40px;color:white; }
         .kpi-income { background: #f35f62; }
         .kpi-expense { background: #fdc518; }
         .kpi-payable { background:  #975ce7; }

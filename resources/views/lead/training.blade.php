@@ -405,7 +405,7 @@ slider.oninput = function () {
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" style="width:100%;" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="4" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -535,8 +535,8 @@ textarea.form-control-sm {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background-color: #00a8ff;
 }
@@ -627,9 +627,19 @@ textarea.form-control-sm {
     resize: vertical;
 }
 
+textarea[name="details[remarks]"].form-control-sm {
+    min-height: 100px !important;
+    height: 100px !important;
+}
+
 @media (max-width: 768px) {
     textarea.form-control-sm {
         min-height: 60px;
+    }
+
+    textarea[name="details[remarks]"].form-control-sm {
+        min-height: 100px !important;
+        height: 100px !important;
     }
     
     .radio-group{

@@ -274,12 +274,12 @@
 
 @push('styles')
     <style>
-        .student-attendance-shell {
+        /* .student-attendance-shell {
             padding: 10px;
-        }
+        } */
 
         .student-attendance-card {
-            max-width: 1380px;
+            /* max-width: 1380px; */
             margin: 0 auto;
         }
 
@@ -312,23 +312,24 @@
             text-align:center;
             height:25vh;
             color:white;
+            min-height: 86px;
         }
 
         .student-summary-card strong {
             display: block;
-            font-size: 22px;
+            font-size: 18px;
             line-height: 1.2;
-            margin-top: 8px;
+            margin-top: 30px;
             text-align:center;
-            margin-top:2rem;
         }
 
         .student-summary-label {
             color: white;
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .04em;
-
+            margin-top: 1rem;
         }
 
         .tone-green { background: #f35f62; }
@@ -356,6 +357,12 @@
         }
 
         @media (max-width: 767px) {
+            .student-summary-card strong {
+                margin-top: 10px;
+            }
+            .student-summary-label {
+                margin-top: 5px;
+            }
             .student-actions {
                 width: 100%;
                 margin-left: 0;

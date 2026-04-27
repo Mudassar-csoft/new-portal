@@ -72,6 +72,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'dailyActivity' => $this->buildDailyActivity($selectedCampusId),
             'admissionsActivity' => $this->buildAdmissionsActivity($selectedCampusId),
+            'monthlyAdmissionsInsight' => $this->buildMonthlyAdmissionsInsight($selectedCampusId),
             'incomeSummary' => [
                 'today' => $stats['todayCollectionRaw'],
                 'week' => $stats['weekCollectionRaw'],
@@ -92,6 +93,8 @@ class DashboardController extends Controller
             'stats' => [
                 'totalLeads' => 0,
                 'currentStudents' => 0,
+                'currentMonthAdmissions' => 0,
+                'previousMonthAdmissions' => 0,
                 'currentMonthCollection' => '0',
                 'currentMonthCollectionRaw' => 0,
                 'currentMonthPending' => 0,
@@ -126,6 +129,12 @@ class DashboardController extends Controller
                 'admissions' => ['categories' => ['No Data'], 'counts' => [0]],
                 'campusAdmissions' => ['categories' => ['No Data'], 'counts' => [0]],
             ],
+            'monthlyAdmissionsInsight' => [
+                'labels' => [],
+                'counts' => [],
+                'current' => 0,
+                'previous' => 0,
+            ],
         ];
     }
 
@@ -158,10 +167,24 @@ class DashboardController extends Controller
             $monthStart,
             $monthEnd
         )->sum('net_payable');
+        $previousMonthStart = $monthStart->copy()->subMonth()->startOfMonth();
+        $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
 
         $currentStudents = (int) DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+            ->count();
+
+        $currentMonthAdmissions = (int) DB::table('admissions')
+            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+            ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+            ->count();
+
+        $previousMonthAdmissions = (int) DB::table('admissions')
+            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
+            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+            ->whereBetween('admissions.admission_date', [$previousMonthStart->toDateString(), $previousMonthEnd->toDateString()])
             ->count();
 
         return [
@@ -169,6 +192,8 @@ class DashboardController extends Controller
                 ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->count(),
             'currentStudents' => $currentStudents,
+            'currentMonthAdmissions' => $currentMonthAdmissions,
+            'previousMonthAdmissions' => $previousMonthAdmissions,
             'currentMonthCollection' => number_format((float) $monthCollection, 0),
             'currentMonthCollectionRaw' => (float) $monthCollection,
             'currentMonthPending' => Lead::query()
@@ -530,6 +555,52 @@ class DashboardController extends Controller
                 'categories' => $campusCategories ?: ['No Data'],
                 'counts' => $campusCounts ?: [0],
             ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildMonthlyAdmissionsInsight(?int $campusId = null): array
+    {
+        $startMonth = now()->copy()->startOfMonth()->subMonths(11);
+        $endMonth = now()->copy()->endOfMonth();
+
+        $monthlyCounts = [];
+        foreach (range(0, 11) as $offset) {
+            $month = $startMonth->copy()->addMonths($offset);
+            $monthlyCounts[$month->format('Y-m')] = 0;
+        }
+
+        $rows = Admission::query()
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+            ->whereBetween('admission_date', [$startMonth->toDateString(), $endMonth->toDateString()])
+            ->get(['admission_date']);
+
+        foreach ($rows as $row) {
+            if (!$row->admission_date) {
+                continue;
+            }
+
+            $monthKey = Carbon::parse($row->admission_date)->format('Y-m');
+            if (array_key_exists($monthKey, $monthlyCounts)) {
+                $monthlyCounts[$monthKey]++;
+            }
+        }
+
+        $labels = [];
+        $counts = [];
+        foreach (array_keys($monthlyCounts) as $monthKey) {
+            $month = Carbon::createFromFormat('Y-m', $monthKey);
+            $labels[] = $month->format('M');
+            $counts[] = (int) $monthlyCounts[$monthKey];
+        }
+
+        return [
+            'labels' => $labels,
+            'counts' => $counts,
+            'current' => (int) ($counts[11] ?? 0),
+            'previous' => (int) ($counts[10] ?? 0),
         ];
     }
 

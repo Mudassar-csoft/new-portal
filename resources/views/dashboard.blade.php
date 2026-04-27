@@ -4,10 +4,27 @@
 
 @section('content')
 	@php
+		$user = auth()->user();
+		$roleSlugs = $user?->roles->pluck('slug')->filter()->map(fn ($slug) => strtolower((string) $slug))->values() ?? collect();
+		$roleNames = $user?->roles->pluck('name')->filter()->map(fn ($name) => strtolower((string) $name))->values() ?? collect();
+		$roleLabels = $roleSlugs->merge($roleNames)->unique()->values();
+		$hasAdminDashboardRole = $roleLabels->intersect(['owner', 'admin'])->isNotEmpty();
+		$hasAdmissionDashboardRole = $roleLabels->contains(fn ($role) => str_contains($role, 'admission'));
+		$hasRecipientDashboardRole = $roleLabels->contains(function ($role) {
+			return str_contains($role, 'recipient')
+				|| str_contains($role, 'receipient')
+				|| str_contains($role, 'receipt')
+				|| str_contains($role, 'reception');
+		});
+		$showIncomeChart = !$hasRecipientDashboardRole && !$hasAdmissionDashboardRole;
+		$showAdmissionProgressWidget = $hasAdmissionDashboardRole && !$hasAdminDashboardRole;
+		$showMonthCollectionCard = !$hasRecipientDashboardRole;
+		$showPendingRecoveryCard = !$hasRecipientDashboardRole;
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
 		$admissionsActivity = $dashboard['admissionsActivity'] ?? [];
+		$monthlyAdmissionsInsight = $dashboard['monthlyAdmissionsInsight'] ?? [];
 		$dashboardGeneratedAt = $dashboard['generatedAt'] ?? now()->toIso8601String();
 		$dailyRows = $dailyActivity['rows'] ?? [];
 		$admissionRows = $admissionsActivity['rows'] ?? [];
@@ -17,6 +34,14 @@
 			'admissions' => 0,
 			'collection' => 0,
 		];
+		$currentMonthAdmissions = (int) ($stats['currentMonthAdmissions'] ?? 0);
+		$previousMonthAdmissions = (int) ($stats['previousMonthAdmissions'] ?? 0);
+		$admissionProgressGoal = max($previousMonthAdmissions, $currentMonthAdmissions, 10);
+		$admissionProgressPercent = min(100, (int) round(($currentMonthAdmissions / max($admissionProgressGoal, 1)) * 100));
+		$monthlyAdmissionLabels = $monthlyAdmissionsInsight['labels'] ?? [];
+		$monthlyAdmissionCounts = collect($monthlyAdmissionsInsight['counts'] ?? [])->map(fn ($count) => (int) $count)->values();
+		$monthlyAdmissionMax = max(1, (int) $monthlyAdmissionCounts->max());
+		$admissionMonthDelta = $currentMonthAdmissions - $previousMonthAdmissions;
 	@endphp
 	<div class="dashboard-shell">
 		<div id="dashboard-loader" class="dashboard-loader">
@@ -42,133 +67,178 @@
 		</div>
 		<div class="row pl-3 pr-3">
 
+			@if($showIncomeChart || $showAdmissionProgressWidget)
 			<div class="col-xl-6 pl-0 ml-3 mr-2 m-md-0 m-lg-0 ">
-				<div class="chart-statistic-box">
-					
-					<div class="chart-container row ">
-						<div class="chart-txt col-md-5 p-0 m-0 ">
-							<div class="chart-txt-top pt-3">
-								<p ><span class="unit"style="font-size:18px !important;">RS.</span><span id="income-headline-value" class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-								<p class="caption"style="font-size:18px !important;">Income</p>  
-							</div>
-							<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
-								<div class="radio">
-									<input type="radio" name="income-range" id="range-today" value="today" checked>
-									<label for="range-today">Today</label>
+				@if($showIncomeChart)
+					<div class="chart-statistic-box">
+						<div class="chart-container row ">
+							<div class="chart-txt col-md-5 p-0 m-0 ">
+								<div class="chart-txt-top pt-3">
+									<p ><span class="unit"style="font-size:18px !important;">RS.</span><span id="income-headline-value" class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+									<p class="caption"style="font-size:18px !important;">Income</p>  
 								</div>
-								
-								<div class="radio">
-									<input type="radio" name="income-range" id="range-week" value="week">
-									<label for="range-week">Weekly</label>
-								</div>
-								
-								<div class="radio">
-									<input type="radio" name="income-range" id="range-month" value="month">
-									<label for="range-month">Monthly</label>
-								</div>
-							
-								<div class="radio">
-									<input type="radio" name="income-range" id="range-year" value="year">
-									<label for="range-year">Yearly</label>
-								</div>
-							</div>
-							<table class="tbl-data">
-								<tr>
-									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today Collection</td>
-									<td class="price color-purple collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
-								</tr>
-								<tr>
-									<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly Collection</td>
-									<td class="price color-yellow collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
-								</tr>
-								<tr>
-									<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly Collection</td>
-									<td class="price color-lime collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
-								</tr>
-							</table>
-						</div>
-						<div class="chart-container-in col-md-7  m-0 p-0 fs-1">
-							<div class="pr-md-2">
-								<div class="income-chart-stage">
-									<div id="chart_div" ></div>
-									<div id="chart_fallback" style="display:none; height:314px; style = "font-size:11px;"">
-										<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
-											<defs>
-												<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-													<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
-													<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
-												</linearGradient>
-											</defs>
-											<rect width="400" height="314" fill="url(#incomeGradient)" />
-											<polyline fill="none" stroke="#fff" stroke-width="4"
-												points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
-											<circle cx="20" cy="240" r="5" fill="#fff" />
-											<circle cx="80" cy="200" r="5" fill="#fff" />
-											<circle cx="140" cy="206" r="5" fill="#fff" />
-											<circle cx="200" cy="180" r="5" fill="#fff" />
-											<circle cx="260" cy="210" r="5" fill="#fff" />
-											<circle cx="320" cy="140" r="5" fill="#fff" />
-											<circle cx="380" cy="170" r="5" fill="#fff" />
-										</svg>
+								<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
+									<div class="radio">
+										<input type="radio" name="income-range" id="range-today" value="today" checked>
+										<label for="range-today">Today</label>
 									</div>
-									<div id="income-axis-top" class="income-axis income-axis-top"></div>
-									<div id="income-axis-right" class="income-axis income-axis-right"></div>
+									
+									<div class="radio">
+										<input type="radio" name="income-range" id="range-week" value="week">
+										<label for="range-week">Weekly</label>
+									</div>
+									
+									<div class="radio">
+										<input type="radio" name="income-range" id="range-month" value="month">
+										<label for="range-month">Monthly</label>
+									</div>
+								
+									<div class="radio">
+										<input type="radio" name="income-range" id="range-year" value="year">
+										<label for="range-year">Yearly</label>
+									</div>
 								</div>
-								<!-- <div class="chart-caption"></div> -->
-								<div class="chart-container-x"></div>
-								<div class="chart-container-y"></div>
+								<table class="tbl-data">
+									<tr>
+										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today Collection</td>
+										<td class="price color-purple collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+									</tr>
+									<tr>
+										<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly Collection</td>
+										<td class="price color-yellow collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+									</tr>
+									<tr>
+										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly Collection</td>
+										<td class="price color-lime collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+									</tr>
+								</table>
+							</div>
+							<div class="chart-container-in col-md-7  m-0 p-0 fs-1">
+								<div class="pr-md-2">
+									<div class="income-chart-stage">
+										<div id="chart_div" ></div>
+										<div id="chart_fallback" style="display:none; height:314px; font-size:11px;">
+											<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
+												<defs>
+													<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
+														<stop offset="0%" stop-color="#12a0ff" stop-opacity="1" />
+														<stop offset="100%" stop-color="#0a87e0" stop-opacity="1" />
+													</linearGradient>
+												</defs>
+												<rect width="400" height="314" fill="url(#incomeGradient)" />
+												<polyline fill="none" stroke="#fff" stroke-width="4"
+													points="20,240 80,200 140,206 200,180 260,210 320,140 380,170" />
+												<circle cx="20" cy="240" r="5" fill="#fff" />
+												<circle cx="80" cy="200" r="5" fill="#fff" />
+												<circle cx="140" cy="206" r="5" fill="#fff" />
+												<circle cx="200" cy="180" r="5" fill="#fff" />
+												<circle cx="260" cy="210" r="5" fill="#fff" />
+												<circle cx="320" cy="140" r="5" fill="#fff" />
+												<circle cx="380" cy="170" r="5" fill="#fff" />
+											</svg>
+										</div>
+										<div id="income-axis-top" class="income-axis income-axis-top"></div>
+										<div id="income-axis-right" class="income-axis income-axis-right"></div>
+									</div>
+									<div class="chart-container-x"></div>
+									<div class="chart-container-y"></div>
+								</div>
+							</div>
+						</div>
+					</div><!--.chart-statistic-box-->
+				@elseif($showAdmissionProgressWidget)
+					<div class="chart-statistic-box admission-progress-box">
+						<div class="admission-insight-card">
+							<div class="admission-insight-top">
+								<div class="admission-insight-main">
+									<div class="admission-insight-title">Current Month Admissions</div>
+									<div class="admission-insight-bars">
+										@foreach($monthlyAdmissionCounts as $index => $count)
+											@php
+												$barHeight = max(10, (int) round(($count / $monthlyAdmissionMax) * 82));
+												$barLabel = $monthlyAdmissionLabels[$index] ?? '';
+											@endphp
+											<div class="admission-insight-bar-group">
+												<div class="admission-insight-bar-track">
+													<div class="admission-insight-bar-fill" style="height: {{ $barHeight }}px;"></div>
+												</div>
+												<div class="admission-insight-bar-label">{{ $barLabel }}</div>
+											</div>
+										@endforeach
+									</div>
+								</div>
+								<div class="admission-insight-total">
+									<div class="admission-insight-total-value">+{{ number_format($currentMonthAdmissions) }}</div>
+									<div class="admission-insight-total-note">{{ now()->format('F Y') }}</div>
+								</div>
+							</div>
+							<div class="admission-insight-footer">
+								<div class="admission-insight-footer-block">
+									<div class="admission-insight-footer-label">Previous Month</div>
+									<div class="admission-insight-footer-value">{{ number_format($previousMonthAdmissions) }}</div>
+								</div>
+								<div class="admission-insight-footer-block">
+									<div class="admission-insight-footer-label">Monthly Change</div>
+									<div class="admission-insight-footer-value {{ $admissionMonthDelta >= 0 ? 'is-positive' : 'is-negative' }}">
+										{{ $admissionMonthDelta >= 0 ? '+' : '' }}{{ number_format($admissionMonthDelta) }}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-					
-				</div><!--.chart-statistic-box-->
+				@endif
 			</div>
-			<div class="col-xl-6 pr-4">
+			@endif
+			<div class="col-xl-{{ $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12' }} pr-4">
 				<div class="row">
-					<div class="col-md-6 ">
+					<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="totalLeads" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="text ">Total Leads</div>
+									<div class="caption-text">Today Leads</div>
 								</div>
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="col-md-6 ">
+					<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
 						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-stat-key="currentStudents" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="text">Current Students</div>
+									<div class="caption-text">Current Students</div>
 								</div>
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="col-md-6 ">
-						<article class="statistic-box yellow">
-							<div class="stat-inner">
-								<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
-								<div class="caption mt-3">
-									<div class="text">Current Month Collection</div>
+					@if($showMonthCollectionCard)
+						<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+							<article class="statistic-box yellow">
+								<div class="stat-inner">
+									<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
+									<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
+									<div class="caption mt-3">
+										<div class="caption-text">{{ now()->format('F') }} Collection</div>
+									</div>
 								</div>
-							</div>
-						</article>
-					</div><!--.col-->
-					<div class="col-md-6 ">
-						<article class="statistic-box green mr-1">
-							<div class="stat-inner m">
-								<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-stat-key="currentMonthPending" data-format="number" data-mask-mode="icon"></div>
-								<div class="caption mt-3 ">
-									<div class="text">Current Month Pending</div>
+							</article>
+						</div><!--.col-->
+					@endif
+					@if($showPendingRecoveryCard)
+						<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+							<article class="statistic-box green mr-1">
+								<div class="stat-inner m">
+									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
+									<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-stat-key="currentMonthPending" data-format="number" data-mask-mode="icon"></div>
+									<div class="caption mt-3 ">
+										<div class="caption-text">Pending Recovery</div>
+									</div>
 								</div>
-							</div>
-						</article>
-					</div><!--.col-->
+							</article>
+						</div><!--.col-->
+					@endif
 				</div><!--.row-->
 			</div><!--.col-->
 		
@@ -361,9 +431,7 @@
 
 @push('styles')
 	<style>
-		body.with-side-menu.control-panel .page-content {
-			padding-right: 67px !important;
-		}
+		
 	</style>
 @endpush
 
@@ -375,11 +443,15 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
 	<style>
 		*{
+
 			font-size: 15px !important;	
+		}
+		body.with-side-menu.control-panel .page-content {
+			padding-right: 67px !important;
 		}
 		.box-typical.box-typical-dashboard {
 			margin: 1% 1px !important;
-			height: 318px;
+			height: 414px;
 		}
 		.chart-txt-top.pt-2 {
     font-size: 17px !important;
@@ -488,6 +560,154 @@
 			padding-left: 12px;
 		}
 
+		.admission-progress-box {
+			border-radius: 12px;
+			overflow: hidden;
+			background: #ffffff;
+			min-height: 314px;
+			border: 1px solid #e5e5e5;
+			box-shadow: 0 14px 30px rgba(15, 23, 42, 0.02);
+		}
+
+		.admission-insight-card {
+			height: 100%;
+			min-height: 314px;
+			background: #ffffff;
+			color: #263748;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		.admission-insight-top {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 22px;
+			padding: 22px 24px 20px;
+		}
+
+		.admission-insight-main {
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
+		.admission-insight-title {
+			font-size: 20px !important;
+			font-weight: 700;
+			color: #243746;
+			text-align: left;
+			margin-bottom: 18px;
+		}
+
+		.admission-insight-bars {
+			display: flex;
+			align-items: flex-end;
+			gap: 18px;
+			min-height: 122px;
+		}
+
+		.admission-insight-bar-group {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.admission-insight-bar-track {
+			width: 24px;
+			height: 96px;
+			border-radius: 4px;
+			background: #e8edf5;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.admission-insight-bar-fill {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			border-radius: 4px 4px 0 0;
+			background: linear-gradient(180deg, #39bbff 0%, #00a8ff 100%);
+		}
+
+		.admission-insight-bar-label {
+			font-size: 13px !important;
+			font-weight: 600;
+			color: #31465a;
+		}
+
+		.admission-insight-total {
+			flex: 0 0 170px;
+			text-align: right;
+			padding-bottom: 6px;
+		}
+
+		.admission-insight-total-value {
+			font-size: 54px !important;
+			font-weight: 800;
+			line-height: 1;
+			color: #00a8ff;
+		}
+
+		.admission-insight-total-note {
+			font-size: 16px !important;
+			color: #31465a;
+			margin-top: 18px;
+		}
+
+		.admission-insight-footer {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			border-top: 1px solid #d8e1ec;
+			background: #fff;
+		}
+
+		.admission-insight-footer-block {
+			padding: 20px 24px;
+			text-align: left;
+		}
+
+		.admission-insight-footer-block + .admission-insight-footer-block {
+			border-left: 1px solid #d8e1ec;
+		}
+
+		.admission-insight-footer-label {
+			font-size: 15px !important;
+			font-weight: 700;
+			color: #2c3f50;
+			margin-bottom: 10px;
+		}
+
+		.admission-insight-footer-value {
+			font-size: 34px !important;
+			font-weight: 800;
+			line-height: 1;
+			color: #00a8ff;
+		}
+
+		.admission-insight-footer-value.is-positive {
+			color: #00a8ff;
+		}
+
+		.admission-insight-footer-value.is-negative {
+			color: #ef4444;
+		}
+
+		@media (max-width: 1199px) {
+			.admission-insight-top {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.admission-insight-total {
+				flex: 1 1 auto;
+				text-align: left;
+				padding-bottom: 0;
+			}
+		}
+
 		.chart-range .radio {
 			margin: 0;
 		}
@@ -506,13 +726,22 @@
             display: none !important;
         }
 
-        .chart-caption {
+		.chart-caption , .caption-text{
+			font-size: 17px !important;
             text-align: center;
             font-weight: 700;
             color: #fff;
             margin-top: 8px;
             padding-bottom: 6px;
         }
+
+		#lead-chart .c3-legend-item text {
+			font-size: 12px !important;
+		}
+
+		#lead-chart .c3-legend-item:last-child {
+			transform: translateX(12px);
+		}
  .statistic-box {
        -webkit-border-radius: 4px;
     border-radius: 8px;
@@ -529,7 +758,7 @@
         }
 .statistic-box .number, 
 .statistic-box .caption{
-    font-size:32px !important;
+    font-size:28px !important;
 
 }
 *{
@@ -580,6 +809,7 @@
         }
 
         .statistic-box .stat-eye-inline.is-revealed {
+            left: auto;
             right: 12px;
             top: 12px;
             transform: none;
@@ -1261,6 +1491,9 @@
 			});
 
 			function showChartFallback() {
+				if (!document.getElementById('chart_div') || !document.getElementById('chart_fallback')) {
+					return;
+				}
 				$('#chart_div').hide();
 				$('#chart_fallback').show();
 				clearIncomeAxisOverlay();
@@ -1458,25 +1691,25 @@
 				editButton.removeClass('is-active');
 			});
 
-			$('input[name="income-range"]').on('change', function () {
-				currentIncomeRange = $(this).val();
-				drawChart();
-			});
-			// Reflow chart when menu toggles to avoid leftover blank space
-			$('#show-hide-sidebar-toggle, .hamburger').on('click', function () {
-				setTimeout(function () {
-					drawChart();
-					if (monthlyComparisonChart && typeof monthlyComparisonChart.flush === 'function') {
-						monthlyComparisonChart.flush();
-					}
-				}, 200);
-			});
+			var hasIncomeChart = !!document.getElementById('chart_div');
 
-			if (window.google && google.charts) {
-				google.charts.load('current', { packages: ['corechart'] });
-				google.charts.setOnLoadCallback(drawChart);
-			} else {
-				showChartFallback();
+			if (hasIncomeChart) {
+				$('input[name="income-range"]').on('change', function () {
+					currentIncomeRange = $(this).val();
+					drawChart();
+				});
+
+				// Reflow chart when menu toggles to avoid leftover blank space
+				$('#show-hide-sidebar-toggle, .hamburger').on('click', function () {
+					setTimeout(drawChart, 200);
+				});
+
+				if (window.google && google.charts) {
+					google.charts.load('current', { packages: ['corechart'] });
+					google.charts.setOnLoadCallback(drawChart);
+				} else {
+					showChartFallback();
+				}
 			}
 
 			// Eye toggle for statistic boxes
@@ -1583,6 +1816,9 @@
 			}
 
 			function updateIncomeHeadline() {
+				if (!document.querySelector('.chart-txt-top .number')) {
+					return;
+				}
 				var range = incomeRanges[currentIncomeRange] || incomeRanges.today || { points: [] };
 				$('.chart-txt-top .number').text(formatAmount(rangeTotal(range)));
 			}
@@ -1788,6 +2024,10 @@
 			$('body').addClass('dashboard-ready');
 
 			function drawChart() {
+				if (!hasIncomeChart) {
+					return;
+				}
+
 				if (!(window.google && google.visualization)) {
 					showChartFallback();
 					return;
@@ -1887,7 +2127,9 @@
 			}, refreshIntervalMs);
 
 			$(window).on('resize', function () {
-				drawChart();
+				if (hasIncomeChart) {
+					drawChart();
+				}
 				if (monthlyComparisonChart && typeof monthlyComparisonChart.flush === 'function') {
 					monthlyComparisonChart.flush();
 				}
