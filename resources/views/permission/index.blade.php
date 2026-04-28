@@ -72,7 +72,7 @@
 			background-color: #f5f6ff;
 		}
 		.permission-directory .box-typical-body {
-			padding: 10px;
+			/* padding: 10px; */
 			overflow: visible;
 		}
 		/* .permission-directory .dataTables_wrapper {
@@ -149,7 +149,7 @@
 		.dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
 			height: 36px !important;
 			width: 380px !important;
-			padding: 6px 18px !important;
+			padding: 0px 18px !important;
 			border-radius: 999px !important;
 		}
 	</style>

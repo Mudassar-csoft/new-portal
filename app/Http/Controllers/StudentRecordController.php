@@ -17,7 +17,7 @@ class StudentRecordController extends Controller
         'frozen' => 'Frozen',
         'incomplete' => 'Incomplete',
         'suspended' => 'Suspended',
-        'admission_cancelled' => 'Admission Cancelled',
+        'admission_cancelled' => 'Cancelled',
         'dropped' => 'Dropped',
     ];
 
@@ -182,7 +182,7 @@ class StudentRecordController extends Controller
             ],
             'admission_cancelled' => [
                 'scope' => 'admission_cancelled',
-                'title' => 'Admission Cancelled',
+                'title' => 'Cancelled',
                 'description' => 'Students whose admissions have been cancelled.',
             ],
             'dropped' => [

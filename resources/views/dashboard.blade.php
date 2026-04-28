@@ -736,7 +736,7 @@
         }
 
 		#lead-chart .c3-legend-item text {
-			font-size: 12px !important;
+			font-size: 12px;
 		}
 
 		#lead-chart .c3-legend-item:last-child {
@@ -939,13 +939,17 @@
             margin-bottom: 15px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+	.month-chart-card .panel-body > .tbl-typical td {
+   
+			padding:5px !important;
+		}
 
         .month-chart-card .box-typical-body,
         .month-chart-card .panel-body {
             max-height: none !important;
             height: auto;
             overflow: hidden !important;
-            padding: 10px 14px;
+            padding: 0px;
         }
         .dashboard-equal-row > [class*="col-"] {
             display: flex;
@@ -1108,7 +1112,7 @@
             align-items: center;
             justify-content: flex-end;
             gap: 14px;
-            padding: 6px 18px 14px;
+            padding: 6px 31px 14px;
             color: #5b6b79;
         }
 
@@ -1182,7 +1186,7 @@
             max-width: calc(100% - 8px);
         }
         .daily-activity-card .panel-body {
-            padding: 10px 14px;
+            padding: 0px;
         }
         .daily-activity-card .tbl-typical {
             width: 100%;
@@ -1229,6 +1233,9 @@
         .daily-activity-table td:nth-child(2),
         .daily-activity-table th:nth-child(2) {
             text-align: left !important;
+        }
+        .daily-activity-table tbody tr td {
+            border-bottom: 1px solid #e6edf3 !important;
         }
         .daily-activity-table tbody tr:last-child td {
             border-bottom: 0;

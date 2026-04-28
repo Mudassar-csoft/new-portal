@@ -90,7 +90,7 @@
 			background-color: #f5f6ff;
 		}
 		.user-directory .box-typical-body {
-			padding: 16px;
+			/* padding: 16px; */
 			overflow: visible;
 		}
 		.user-directory {
@@ -186,7 +186,7 @@
 		#users-table_filter.follow-controls--toolbar input,
 		.dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) #users-table_filter input {
 			height: 36px !important;
-			padding: 6px 18px !important;
+			padding: 0px 18px !important;
 			width: 380px !important;
 			border-radius: 999px !important;
 		}

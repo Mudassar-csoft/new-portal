@@ -110,7 +110,7 @@
 	<style>
 		* {
 			font-family: 'Proxima Nova', sans-serif;
-			font-size: 12px !important;
+			font-size: 12px;
 			margin: 0;
 			padding: 0;
 		}

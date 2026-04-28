@@ -202,7 +202,7 @@
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_incomplete'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('student.records.index', ['scope' => 'suspended']) }}" class="stage-link"><span class="lbl">Suspended</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_suspended'] ?? 0)) }}</span></a></li>
-					<li><a href="{{ route('student.records.index', ['scope' => 'admission_cancelled']) }}" class="stage-link"><span class="lbl">Admission Cancelled</span><span
+					<li><a href="{{ route('student.records.index', ['scope' => 'admission_cancelled']) }}" class="stage-link"><span class="lbl">Cancelled</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_admission_cancelled'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('student.records.index', ['scope' => 'dropped']) }}" class="stage-link"><span class="lbl">Dropped</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_dropped'] ?? 0)) }}</span></a></li>

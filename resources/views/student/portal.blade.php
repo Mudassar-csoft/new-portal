@@ -18,7 +18,7 @@
     <style>
          * {
     font-family: 'Proxima Nova', sans-serif;
-    font-size: 12px !important;
+    font-size: 12px;
     margin: 0;
     padding: 0;
     
@@ -324,7 +324,7 @@
             'concluded' => 'Concluded Students',
             'incomplete' => 'Incomplete Students',
             'suspended' => 'Suspended Students',
-            'admission_cancelled' => 'Admission Cancelled',
+            'admission_cancelled' => 'Cancelled',
             'dropped' => 'Dropped Students',
             'all_students' => 'All Students',
             'alumni' => 'Alumni',
