@@ -191,7 +191,7 @@
 									<input type="range"
 										min="0"
 										max="100"
-										step="10"
+										step="5"
 										id="probabilitySlider"
 										name="probability"
 										value="{{ $defaultProbability }}"
@@ -209,15 +209,10 @@
 
 									<div class="range-numbers pt-0 mt-1">
 										<span>0</span>
-										<span>10</span>
 										<span>20</span>
-										<span>30</span>
 										<span>40</span>
-										<span>50</span>
 										<span>60</span>
-										<span>70</span>
 										<span>80</span>
-										<span>90</span>
 										<span>100</span>
 									</div>
 									<div>
@@ -945,26 +940,16 @@
     transform: translateX(-100%);
 }
 	.range-numbers {
-    display: grid;
-    grid-template-columns: repeat(11, minmax(0, 1fr));
-    align-items: center;
-    width: calc(100% - 12px);
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 4px);
     font-size: 12px;
     color: #666;
-    margin: 1px 6px 0;
+    margin: 1px 2px 0;
 }
 .range-numbers span{
-    display: block;
     font-size:10px;
-    text-align: center;
     margin-bottom: 3px ;
-}
-.range-numbers span:first-child {
-    text-align: left;
-}
-
-.range-numbers span:last-child {
-    text-align: right;
 }
 
 

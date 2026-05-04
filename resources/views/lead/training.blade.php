@@ -288,7 +288,7 @@
         name="details[probability]"
         min="0"
         max="100"
-        step="10"
+        step="5"
         id="probabilitySlider"
         value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
         class="custom-range @error('details.probability') is-invalid @enderror">
@@ -306,15 +306,10 @@
     <!-- Numbers -->
     <div class="range-numbers text-muted pt-0">
         <span>0</span>
-        <span>10</span>
         <span>20</span>
-        <span>30</span>
         <span>40</span>
-        <span>50</span>
         <span>60</span>
-        <span>70</span>
         <span>80</span>
-        <span>90</span>
         <span>100</span>
     </div>
 
@@ -385,11 +380,10 @@
 
 /* Numbers */
 .range-numbers {
-    display: grid;
-    grid-template-columns: repeat(11, minmax(0, 1fr));
-    align-items: center;
-    width: calc(100% - 12px);
-    margin: 1px 6px 0 !important;
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 4px);
+    margin: 1px 2px 0 !important;
 }
 
 /* JS */
@@ -593,13 +587,13 @@ textarea.form-control-sm {
 
 /* Numbers Below */
 .range-numbers {
-    display: grid;
-    grid-template-columns: repeat(11, minmax(0, 1fr));
-    width: calc(100% - 12px);
+    display: flex;
+    gap: 5%;
+    width: calc(100% - -2px);
     font-size:0.625rem;
-    margin: 0.5rem 6px 0;
+    margin: 0.5rem 2px 0;
     color: #666;
-    align-items: center;
+    
 }
 
 
@@ -621,19 +615,10 @@ input[name="details[probability]"] + .small {
     font-size: 12px;
 }
 .range-numbers span{
-    display:block;
     font-size:12px !important;
     font-weight:bold;
     color: #99a4ac;
-    text-align:center;
     margin-bottom: 3px ;
-}
-.range-numbers span:first-child {
-    text-align: left;
-}
-
-.range-numbers span:last-child {
-    text-align: right;
 }
 
 /* Textarea Responsive */

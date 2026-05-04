@@ -163,7 +163,7 @@
         </div>
         <div class="form-group col-md-4">
             <label class="required">Probability</label>
-            <input type="range" name="details[probability]" min="0" max="100" step="10" class="form-control-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
+            <input type="range" name="details[probability]" min="0" max="100" step="5" class="form-control-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
             <div class="probability-display">Selected: <span>{{ old('details.probability', 0) }}%</span></div>
             @error('details.probability')
                 <div class="field-error">{{ $message }}</div>
