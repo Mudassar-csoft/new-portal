@@ -161,7 +161,20 @@
         </div>
         <div class="form-group col-md-4">
             <label class="required">Probability</label>
-            <input type="range" name="details[probability]" min="0" max="100" step="5" class="form-control-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
+            <input type="range" name="details[probability]" min="0" max="100" step="5" class="custom-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
+            <div class="range-scale" aria-hidden="true">
+                @for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
+                    <span
+                        class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
+                        style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
+                    ></span>
+                @endfor
+            </div>
+            <div class="range-numbers text-muted pt-0">
+                @for ($label = 0; $label <= 100; $label += 10)
+                    <span>{{ $label }}</span>
+                @endfor
+            </div>
             <div class="probability-display">Selected: <span>{{ old('details.probability', 0) }}%</span></div>
             @error('details.probability')
                 <div class="field-error">{{ $message }}</div>

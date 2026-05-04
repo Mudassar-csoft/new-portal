@@ -397,7 +397,12 @@
 				document.querySelectorAll('.probability-range').forEach(function (range) {
 					var display = range.parentElement.querySelector('.probability-display span');
 					var update = function () {
-						if (display) display.textContent = range.value + '%';
+						var min = parseFloat(range.min || 0);
+						var max = parseFloat(range.max || 100);
+						var value = parseFloat(range.value || 0);
+						var percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
+						range.style.background = 'linear-gradient(to right, #1e88e5 0%, #1e88e5 ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)';
+						if (display) display.textContent = value + '%';
 					};
 					range.addEventListener('input', update);
 					update();

@@ -208,12 +208,9 @@
 									</div>
 
 									<div class="range-numbers pt-0 mt-1">
-										<span>0</span>
-										<span>20</span>
-										<span>40</span>
-										<span>60</span>
-										<span>80</span>
-										<span>100</span>
+										@for ($label = 0; $label <= 100; $label += 10)
+											<span>{{ $label }}</span>
+										@endfor
 									</div>
 									<div>
 										Selected: <span id="probabilityValue">{{ $defaultProbability }}%</span>
@@ -948,8 +945,18 @@
     margin: 1px 2px 0;
 }
 .range-numbers span{
+    flex: 1 1 0;
+    text-align: center;
     font-size:10px;
     margin-bottom: 3px ;
+}
+
+.range-numbers span:first-child {
+    text-align: left;
+}
+
+.range-numbers span:last-child {
+    text-align: right;
 }
 
 

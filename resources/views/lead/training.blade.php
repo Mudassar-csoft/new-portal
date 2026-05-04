@@ -291,7 +291,7 @@
         step="5"
         id="probabilitySlider"
         value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
-        class="custom-range @error('details.probability') is-invalid @enderror">
+        class="custom-range probability-range @error('details.probability') is-invalid @enderror">
 
     <!-- Scale -->
     <div class="range-scale" aria-hidden="true">
@@ -305,16 +305,13 @@
 
     <!-- Numbers -->
     <div class="range-numbers text-muted pt-0">
-        <span>0</span>
-        <span>20</span>
-        <span>40</span>
-        <span>60</span>
-        <span>80</span>
-        <span>100</span>
+        @for ($label = 0; $label <= 100; $label += 10)
+            <span>{{ $label }}</span>
+        @endfor
     </div>
 
     <!-- Selected -->
-    <div class="  ">
+    <div class="probability-display">
         Selected: <span id="probabilityValue">{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%</span>
     </div>
     @error('details.probability')
@@ -588,8 +585,9 @@ textarea.form-control-sm {
 /* Numbers Below */
 .range-numbers {
     display: flex;
-    gap: 5%;
-    width: calc(100% - -2px);
+    justify-content: space-between;
+    gap: 0;
+    width: calc(100% - 4px);
     font-size:0.625rem;
     margin: 0.5rem 2px 0;
     color: #666;
@@ -615,10 +613,20 @@ input[name="details[probability]"] + .small {
     font-size: 12px;
 }
 .range-numbers span{
+    flex: 1 1 0;
+    text-align: center;
     font-size:12px !important;
     font-weight:bold;
     color: #99a4ac;
     margin-bottom: 3px ;
+}
+
+.range-numbers span:first-child {
+    text-align: left;
+}
+
+.range-numbers span:last-child {
+    text-align: right;
 }
 
 /* Textarea Responsive */
