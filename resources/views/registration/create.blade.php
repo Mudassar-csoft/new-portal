@@ -11,7 +11,7 @@
 	<div class="registration-shell">
 		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
-				<h3 class="panel-title">Create New Registration <small class="">(All fields marked with * are required)</small></h3>
+				<h3 class="panel-title">Create New Registration <span class="">(All fields marked with * are required)</span></h3>
 				<hr>
 
 				<form method="POST" action="{{ route('registration.store') }}" id="registration-form" class="registration-form">
