@@ -239,7 +239,7 @@
                         $originDropdown.removeClass('show');
                         $originDropdown.children('.dropdown-toggle').attr('aria-expanded', 'false');
                     }
-
+ 
                     restoreStudentRecordsMenu($menu);
                 });
             }

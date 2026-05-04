@@ -983,6 +983,7 @@
         body.dashboard-panel-fullscreen-active {
             overflow: hidden;
         }
+
         .dashboard-content .box-typical.box-typical-full-screen {
             position: fixed !important;
             top: 10px !important;
@@ -1045,6 +1046,7 @@
             min-height: 100vh;
             width: 100%;
             overflow: hidden;
+			
 			font-size:10px;
 			margin: 1%;
         }
