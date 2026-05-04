@@ -308,7 +308,7 @@ align-items: center;
 }
 
 .login-logs .box-typical-body {
-padding: 10px 16px !important;
+/* padding: 10px 16px !important; */
 }
 /* body.with-side-menu.control-panel .page-content {
     padding-right: 16px !important;
@@ -334,7 +334,7 @@ padding: 10px 16px !important;
 }
 		#users-table_filter input {
 			height: 24px !important;
-			padding: 2px !important;
+			padding: 3px 15px !important;
 			width:200px;
 		}
 div.dataTables_wrapper div.dataTables_info {
@@ -459,7 +459,7 @@ height: 26vh !important;
     border: 1px solid #d7e5f1 !important;
     background: #fff !important;
     box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.02);
-    padding: 6px 18px !important;
+    padding: 0px 18px !important;
     font-size: 14px !important;
     color: #6f8ca3 !important;
     margin: 0 !important;

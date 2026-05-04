@@ -52,7 +52,7 @@
         }
 
         .student-directory .box-typical-body {
-            padding: 16px;
+            /* padding: 16px; */
             overflow: visible;
         }
 
@@ -170,7 +170,7 @@
         .student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
             height: 28px !important;
             width: 240px !important;
-            padding: 6px 18px !important;
+            padding: 3px 18px !important;
             border-radius: 999px !important;
         }
 
@@ -239,7 +239,7 @@
                         $originDropdown.removeClass('show');
                         $originDropdown.children('.dropdown-toggle').attr('aria-expanded', 'false');
                     }
-
+ 
                     restoreStudentRecordsMenu($menu);
                 });
             }

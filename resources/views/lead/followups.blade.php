@@ -34,8 +34,8 @@
 								<option>50</option>
 							</select>
 							<label class="">Entries</label>
-							</div>
-						<div class="follow-search">
+							</div> 
+						<div class= "follow-search">
 							<input type="text" id="follow-search" class="form-control form-control-sm" placeholder="Search...">
 							<i class="fa fa-search"></i>
 						</div>

@@ -42,7 +42,7 @@
 	<style>
 		
 		.login-logs .box-typical-body {
-			padding: 16px;
+			/* padding: 16px; */
 			overflow-x: hidden;
 		}
 		.login-logs .table-responsive {
@@ -103,7 +103,7 @@
 		.login-logs .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
 			height: 36px !important;
 			width: 240px !important;
-			padding: 6px 18px !important;
+			padding: 0px 18px !important;
 			border-radius: 999px !important;
 		}
 		#login-logs-table thead th {

@@ -309,6 +309,10 @@ class DashboardController extends Controller
             return 'Enrolled';
         }
 
+        if ($status === 'admission_cancelled') {
+            return 'Cancelled';
+        }
+
         return ucfirst(str_replace('_', ' ', $status));
     }
 
