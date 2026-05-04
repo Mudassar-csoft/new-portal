@@ -57,14 +57,14 @@
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="dashboard-live-bar">
+		<!-- <div class="dashboard-live-bar">
 			<div class="dashboard-live-indicator">
 				<span class="dashboard-live-dot"></span>
 				<span>Live Data</span>
 			</div>
 			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 30 seconds</div>
 			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt }}">--</span></div>
-		</div>
+		</div> -->
 		<div class="row pl-3 pr-3">
 
 			@if($showIncomeChart || $showAdmissionProgressWidget)
