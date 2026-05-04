@@ -6,7 +6,7 @@
 	<div class="admission-shell">
 		<div class="admission-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
-				<h3 class="panel-title">Create New Admission <small class="">(All fields marked with * are required)</small></h3>
+				<h3 class="panel-title">Create New Admission <span class="">(All fields marked with * are required)</span></h3>
 			<hr>	
 				<form method="POST" action="{{ route('admission.store') }}" id="admission-form" class="admission-form">
 					@csrf

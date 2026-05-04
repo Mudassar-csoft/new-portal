@@ -67,9 +67,9 @@
                             name="details[teaching_method]"
                             value="campus"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'campus')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-campus">
-                            Campus
+                            CAMPUS
                         </label>
                     </div>
                 </div>
@@ -81,9 +81,9 @@
                             name="details[teaching_method]"
                             value="online"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'online')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-online">
-                            Online
+                            ONLINE
                         </label>
                     </div>
                 </div>
@@ -95,9 +95,9 @@
                             name="details[teaching_method]"
                             value="hybrid"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-hybrid">
-                            Hybrid
+                            HYBRID
                         </label>
                     </div>
                 </div>
@@ -224,9 +224,9 @@
                             name="details[gender]"
                             value="male"
                             @checked(old('details.gender', data_get($leadPrefill, 'details.gender', 'male')) === 'male')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-male">
-                            Male
+                            MALE
                         </label>
                     </div>
                 </div>
@@ -238,9 +238,9 @@
                             name="details[gender]"
                             value="female"
                             @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'female')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-female">
-                            Female
+                            FEMALE
                         </label>
                     </div>
                 </div>
@@ -252,9 +252,9 @@
                             name="details[gender]"
                             value="other"
                             @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'other')>
-                        <label class="form-check-label small mb-0"
+                        <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-other">
-                            Other
+                            OTHER
                         </label>
                     </div>
                 </div>
@@ -539,7 +539,9 @@ textarea.form-control-sm {
 }
 
 .form-check-label {
-   font-size:.75rem;
+   font-size:12.8px;
+   font-weight:600;
+   color:#566a7f;
     margin-bottom: 0;
     cursor: pointer;
 }
