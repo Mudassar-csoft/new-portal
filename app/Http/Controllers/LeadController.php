@@ -172,7 +172,7 @@ class LeadController extends Controller
         $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'method' => ['required', 'string', 'max:50'],
-            'probability' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'probability' => ['required', 'integer', 'min:1', 'max:100'],
             'note' => ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in(['new', 'contacted', 'need_analysis', 'branch_visited', 'proposal_negotiation', 'not_interesting', 'registered', 'enroll'])],
@@ -185,7 +185,9 @@ class LeadController extends Controller
             $rules['lead_details.gender'] = ['nullable', Rule::in(['male', 'female', 'other'])];
         }
 
-        $validated = $request->validate($rules, [], [
+        $validated = $request->validate($rules, [
+            'probability.min' => 'The probability must be greater than 0%.',
+        ], [
             'method' => 'follow-up method',
             'note' => 'remarks',
         ]);
@@ -666,7 +668,7 @@ class LeadController extends Controller
             'details.area' => ['nullable', 'string', 'min:2', 'max:255'],
             'details.gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'details.next_followup_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
-            'details.probability' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'details.probability' => ['nullable', 'integer', 'min:1', 'max:100'],
             'details.remarks' => ['nullable', 'string', 'min:5', 'max:1000'],
             'details.teaching_method' => ['nullable', Rule::in(['campus', 'online', 'hybrid'])],
             'details.organization' => ['nullable', 'string', 'max:255'],
@@ -698,7 +700,7 @@ class LeadController extends Controller
                 'details.organization' => ['required', 'string', 'max:255'],
                 'details.certification_title' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
-                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
                 'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
             ]),
             'coworking' => array_merge($rules, [
@@ -708,7 +710,7 @@ class LeadController extends Controller
                 'details.business_name' => ['required', 'string', 'max:255'],
                 'details.space_required' => ['required', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
-                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
                 'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
             ]),
             'study_abroad' => array_merge($rules, [
@@ -719,7 +721,7 @@ class LeadController extends Controller
                 'details.preferred_study_program' => ['required', 'string', 'max:255'],
                 'details.preferred_country' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
-                'details.probability' => ['required', 'numeric', 'min:0', 'max:100'],
+                'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
                 'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
             ]),
             default => $rules,
@@ -730,6 +732,8 @@ class LeadController extends Controller
     {
         return [
             'phone.regex' => 'The phone number must be 11 digits, contain digits only, and start with 03.',
+            'details.probability.min' => 'The probability must be greater than 0%.',
+            'probability.min' => 'The probability must be greater than 0%.',
         ];
     }
 

@@ -7,7 +7,17 @@
 		$leadPrefill = $leadPrefill ?? [];
 		$prefillCountry = old('details.country', data_get($leadPrefill, 'details.country', 'Pakistan'));
 		$prefillCity = old('city', $leadPrefill['city'] ?? 'Faisalabad');
-		$selectedLeadType = old('type', data_get($leadPrefill, 'type', 'training'));
+		$selectedWebLeadId = request('web_lead') ?: ($webLead->id ?? null);
+		$leadTypeOptions = [
+			'training' => 'Training',
+			'coworking' => 'Coworking Space',
+			'study_abroad' => 'Study Abroad',
+			'certification' => 'Certification Exam',
+		];
+		$selectedLeadType = old('type', request('type', data_get($leadPrefill, 'type', 'training')));
+		if (!array_key_exists($selectedLeadType, $leadTypeOptions)) {
+			$selectedLeadType = 'training';
+		}
 	@endphp
 	<div class="lead-shell">
 		<div id="lead-loader" class="lead-loader">
@@ -27,11 +37,14 @@
 								<h2 class="panel-title lead-title ">Create New Lead <span class=" ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span></h2>
 							</div>
 							<div class="text-right Traing-head-selector" style="width: 200px; text-align: left !important;">
-								<select id="leadTypeSelect" class="form-control lead-type-select">
-									<option value="training" @selected($selectedLeadType === 'training')>Trainings</option>
-									<option value="certification" @selected($selectedLeadType === 'certification')>Certification Exam</option>
-									<option value="coworking" @selected($selectedLeadType === 'coworking')>Coworking Space</option>
-									<option value="study_abroad" @selected($selectedLeadType === 'study_abroad')>Study Abroad</option>
+								<select id="leadTypeSelect" class="form-control lead-type-select" onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }">
+									@foreach($leadTypeOptions as $leadTypeValue => $leadTypeLabel)
+										<option
+											value="{{ $leadTypeValue }}"
+											data-url="{{ route('leads.create', array_filter(['type' => $leadTypeValue, 'web_lead' => $selectedWebLeadId])) }}"
+											@selected($selectedLeadType === $leadTypeValue)
+										>{{ $leadTypeLabel }}</option>
+									@endforeach
 								</select>
 							</div>
 						</div>
@@ -51,10 +64,7 @@
 						@csrf
 						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
 						<input type="hidden" name="type" id="lead-type-field" value="{{ $selectedLeadType }}">
-						@include('lead.training')
-						@include('lead.certification')
-						@include('lead.coworking')
-						@include('lead.study_abroad')
+						@include('lead.' . $selectedLeadType)
 						<div class="form-actions mb-2 mt-3 text-right  mr-3">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
 							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Lead</button>
@@ -69,6 +79,7 @@
 @endsection
 
 @push('styles')
+	@include('lead.partials.probability_slider_assets')
 	<style>
 		.row{
 	padding:3px 10px;
@@ -387,26 +398,40 @@
 @push('scripts')
 	<script>
 		(function () {
-			function switchLeadForm(type) {
-				document.querySelectorAll('.lead-form').forEach(function (form) {
-					form.classList.toggle('active', form.getAttribute('data-type') === type);
-				});
-			}
-
 			function bindProbabilityDisplays() {
+				function syncProbabilityRange(range) {
+					var field = range.closest('.probability-field');
+					var display = field ? field.querySelector('.probability-display span') : null;
+					if (!field) return;
+
+					var min = parseFloat(range.min || 0);
+					var max = parseFloat(range.max || 100);
+					var value = parseFloat(range.value || 0);
+					var progress = max > min ? ((value - min) / (max - min)) * 100 : 0;
+
+					field.style.setProperty('--probability-progress', Math.max(0, Math.min(100, progress)) + '%');
+					if (display) display.textContent = value + '%';
+				}
+
+				function syncAllProbabilityRanges() {
+					document.querySelectorAll('.probability-range').forEach(function (range) {
+						syncProbabilityRange(range);
+					});
+				}
+
 				document.querySelectorAll('.probability-range').forEach(function (range) {
-					var display = range.parentElement.querySelector('.probability-display span');
 					var update = function () {
-						var min = parseFloat(range.min || 0);
-						var max = parseFloat(range.max || 100);
-						var value = parseFloat(range.value || 0);
-						var percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
-						range.style.background = 'linear-gradient(to right, #1e88e5 0%, #1e88e5 ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)';
-						if (display) display.textContent = value + '%';
+						syncProbabilityRange(range);
 					};
 					range.addEventListener('input', update);
 					update();
 				});
+
+				window.addEventListener('resize', function () {
+					syncAllProbabilityRanges();
+				});
+
+				return syncAllProbabilityRanges;
 			}
 
 			function revealLeadForm() {
@@ -417,19 +442,7 @@
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
-				var select = document.getElementById('leadTypeSelect');
-				var typeField = document.getElementById('lead-type-field');
-				if (select) {
-					switchLeadForm(select.value);
-				}
 				bindProbabilityDisplays();
-				if (select) {
-					select.addEventListener('change', function () {
-						switchLeadForm(this.value);
-						if (typeField) typeField.value = this.value;
-					});
-					if (typeField) typeField.value = select.value;
-				}
 				revealLeadForm();
 			});
 		})();
@@ -449,9 +462,20 @@
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			CountryCityLoader.init('lead-country-select', 'lead-city-select', {
-				country: @json($prefillCountry),
-				city: @json($prefillCity)
+			[
+				['lead-country-select', 'lead-city-select'],
+				['certification-country-select', 'certification-city-select'],
+				['coworking-country-select', 'coworking-city-select'],
+				['study-abroad-country-select', 'study-abroad-city-select']
+			].forEach(function (pair) {
+				if (!document.getElementById(pair[0]) || !document.getElementById(pair[1])) {
+					return;
+				}
+
+				CountryCityLoader.init(pair[0], pair[1], {
+					country: @json($prefillCountry),
+					city: @json($prefillCity)
+				});
 			});
 		});
 	</script>

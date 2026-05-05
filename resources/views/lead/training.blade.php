@@ -1,5 +1,10 @@
 
-<div class="lead-form active fs-6" data-type="training">
+@php
+    $trainingGender = ($selectedLeadType ?? 'training') === 'training'
+        ? old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))
+        : null;
+@endphp
+<div id="lead-form-training" class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
     <!-- ROW 1 -->
     <div class="row mt-1" >
@@ -202,7 +207,7 @@
                 @foreach($campuses as $campus)
                      <option value="{{ $campus->id }}"
                         @selected(old('campus_id', $leadPrefill['campus_id'] ?? null) == $campus->id)>
-                        {{ $campus->name }} ({{ $campus->city }})
+                        {{ $campus->title ?: $campus->name }} ({{ $campus->code ?: $campus->city ?: 'N/A' }})
                     </option>
                 @endforeach
             </select>
@@ -223,7 +228,7 @@
                             id="details-gender-male"
                             name="details[gender]"
                             value="male"
-                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender', 'male')) === 'male')>
+                            @checked($trainingGender === 'male')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-male">
                             MALE
@@ -237,7 +242,7 @@
                             id="details-gender-female"
                             name="details[gender]"
                             value="female"
-                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'female')>
+                            @checked($trainingGender === 'female')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-female">
                             FEMALE
@@ -251,7 +256,7 @@
                             id="details-gender-other"
                             name="details[gender]"
                             value="other"
-                            @checked(old('details.gender', data_get($leadPrefill, 'details.gender')) === 'other')>
+                            @checked($trainingGender === 'other')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-other">
                             OTHER
@@ -282,41 +287,13 @@
     <label class="form-label small fw-semibold text-dark">
         Probability
     </label>
-
-    <!-- Slider -->
-    <input type="range"
-        name="details[probability]"
-        min="0"
-        max="100"
-        step="5"
-        id="probabilitySlider"
-        value="{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}"
-        class="custom-range probability-range @error('details.probability') is-invalid @enderror">
-
-    <!-- Scale -->
-    <div class="range-scale" aria-hidden="true">
-        @for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
-            <span
-                class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
-                style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
-            ></span>
-        @endfor
-    </div>
-
-    <!-- Numbers -->
-    <div class="range-numbers text-muted pt-0">
-        @for ($label = 0; $label <= 100; $label += 10)
-            <span>{{ $label }}</span>
-        @endfor
-    </div>
-
-    <!-- Selected -->
-    <div class="probability-display">
-        Selected: <span id="probabilityValue">{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%</span>
-    </div>
-    @error('details.probability')
-        <div class="field-error">{{ $message }}</div>
-    @enderror
+    @include('lead.partials.probability_slider', [
+        'inputName' => 'details[probability]',
+        'inputId' => 'probabilitySlider',
+        'displayId' => 'probabilityValue',
+        'value' => old('details.probability', data_get($leadPrefill, 'details.probability', 0)),
+        'errorKey' => 'details.probability',
+    ])
 </div>
 
 <style>
@@ -385,15 +362,6 @@
 
 /* JS */
 </style>
-
-<script>
-const slider = document.getElementById("probabilitySlider");
-const output = document.getElementById("probabilityValue");
-
-slider.oninput = function () {
-    output.innerText = this.value + "%";
-};
-</script>
 
     </div>
     <!-- Remarks -->
@@ -669,29 +637,3 @@ gap:1.5rem;
 
 
 </style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const slider = document.getElementById("probabilitySlider");
-    const output = document.getElementById("probabilityValue");
-    if (!slider || !output) {
-        return;
-    }
-
-    function updateSlider() {
-        const value = slider.value;
-        const percent = (value - slider.min) / (slider.max - slider.min) * 100;
-
-        slider.style.background =
-            `linear-gradient(to right, #1e88e5 0%, #1e88e5 ${percent}%, #ddd ${percent}%, #ddd 100%)`;
-
-        output.textContent = value + "%";
-    }
-
-    updateSlider();
-    slider.addEventListener("input", updateSlider);
-});
-
-
-</script>

@@ -9,7 +9,7 @@
 		$progress = $currentIndex !== false && count($stageKeys) > 1 ? ($currentIndex / (count($stageKeys) - 1)) * 100 : 0;
 		$showLeadCompletionFields = $currentStage === 'new';
 		$leadDetails = $lead->details ?? [];
-		$defaultProbability = old('probability', $latestFollowup?->probability ?? 10);
+		$defaultProbability = old('probability', $latestFollowup?->probability ?? 0);
 	@endphp
 
 	<div class="lead-show-shell">
@@ -187,34 +187,14 @@
 
 							<div class="form-row align-items-center">
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="probability-wrap">
-									<label class="form-label">Probability </label>
-									<input type="range"
-										min="0"
-										max="100"
-										step="5"
-										id="probabilitySlider"
-										name="probability"
-										value="{{ $defaultProbability }}"
-										class="custom-range"
-										required>
-
-									<div class="range-scale" aria-hidden="true">
-										@for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
-											<span
-												class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
-												style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
-											></span>
-										@endfor
-									</div>
-
-									<div class="range-numbers pt-0 mt-1">
-										@for ($label = 0; $label <= 100; $label += 10)
-											<span>{{ $label }}</span>
-										@endfor
-									</div>
-									<div>
-										Selected: <span id="probabilityValue">{{ $defaultProbability }}%</span>
-									</div>
+									<label class="form-label small text-dark fw-semibold">Probability</label>
+									@include('lead.partials.probability_slider', [
+										'inputName' => 'probability',
+										'inputId' => 'probabilitySlider',
+										'displayId' => 'probabilityValue',
+										'value' => $defaultProbability,
+										'required' => true,
+									])
 									<div class="field-error" data-error-for="probability"></div>
 								</div>
 
@@ -391,6 +371,7 @@
 
 
 @push('styles')
+	@include('lead.partials.probability_slider_assets')
 	<style>
 		*{
 			font-family: 'Proxima Nova', sans-serif;
@@ -729,7 +710,7 @@
 		}
 
 		.form-control.is-invalid,
-		.custom-range.is-invalid {
+		.probability-input.is-invalid {
 			border-color: #e53935 !important;
 			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 		}
@@ -864,116 +845,66 @@
 			background: #f3f8fd;
 		}
 
-		.custom-range {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 6px !important;
-    border-radius: 4px;
-    background: #ddd;
-    outline: none;
-}
+		#probability-wrap .probability-field {
+			max-width: 100%;
+		}
 
-/* Webkit Track */
-.custom-range::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 4px;
-}
+		#probability-wrap .probability-shell {
+			padding-top: 4px;
+		}
 
-/* Webkit Thumb */
-.custom-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    background: #1e88e5;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 0 4px rgba(0,0,0,0.3);
-    cursor: pointer;
-    margin-top: -8px;
-}
+		#probability-wrap .probability-field .probability-input {
+			height: 16px !important;
+			min-height: 16px !important;
+		}
 
-/* Firefox Thumb */
-		.custom-range::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    background: #1e88e5;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    cursor: pointer;
-}
-	.range-scale {
-    position: relative;
-    width: calc(100% - 12px);
-    height: 12px;
-    margin: 1px 6px 0;
-}
+		#probability-wrap .probability-field .probability-input::-webkit-slider-runnable-track {
+			height: 7px;
+		}
 
-	.range-tick {
-    position: absolute;
-    top: 0;
-    transform: translateX(-50%);
-    border-radius: 999px;
-}
+		#probability-wrap .probability-field .probability-input::-webkit-slider-thumb {
+			width: 20px;
+			height: 20px;
+			margin-top: -6.5px;
+			border-width: 4px;
+		}
 
-	.range-tick-minor {
-    width: 1px;
-    height: 5px;
-    background: #d0d3d8;
-}
+		#probability-wrap .probability-field .probability-input::-moz-range-track,
+		#probability-wrap .probability-field .probability-input::-moz-range-progress {
+			height: 7px;
+		}
 
-	.range-tick-major {
-    width: 1px;
-    height: 10px;
-    background: #b8c1cb;
-}
+		#probability-wrap .probability-field .probability-input::-moz-range-thumb {
+			width: 12px;
+			height: 12px;
+			border-width: 4px;
+		}
 
-	.range-tick-start {
-    left: 0 !important;
-    transform: none;
-}
+		#probability-wrap .probability-ticks {
+			width: calc(100% - 8px);
+			margin: 0 4px;
+		}
 
-	.range-tick-end {
-    left: 100% !important;
-    transform: translateX(-100%);
-}
-	.range-numbers {
-    display: flex;
-    justify-content: space-between;
-    width: calc(100% - 4px);
-    font-size: 12px;
-    color: #666;
-    margin: 1px 2px 0;
-}
-.range-numbers span{
-    flex: 1 1 0;
-    text-align: center;
-    font-size:10px;
-    margin-bottom: 3px ;
-}
+		#probability-wrap .probability-ticks span {
+			height: 3px;
+		}
 
-.range-numbers span:first-child {
-    text-align: left;
-}
+		#probability-wrap .probability-ticks span.is-major {
+			height: 6px;
+		}
 
-.range-numbers span:last-child {
-    text-align: right;
-}
+		#probability-wrap .probability-scale {
+			margin-top: 4px;
+			font-size: 8px;
+			font-weight: 600;
+			letter-spacing: -0.15px;
+		}
 
-
-input[name="probability"] + .small {
-    margin-top: 0px;
-    font-size: 12px;
-}
-
-
-
-
-
-
-
-
-
-
+		#probability-wrap .probability-display {
+			margin-top: 6px;
+			padding: 3px 8px;
+			font-size: 9px;
+		}
 
 		@media (max-width: 991px) {
 			.stage-bar {
@@ -1117,20 +1048,26 @@ input[name="probability"] + .small {
 		function initProbability() {
 			const range = $('#probabilitySlider');
 			const label = $('#probabilityValue');
+			const field = range ? range.closest('.probability-field') : null;
 
 			if (!range || !label) {
 				return;
 			}
 
 			const update = function () {
-				const value = range.value;
-				const percent = ((value - range.min) / (range.max - range.min)) * 100;
+				const min = parseFloat(range.min || 0);
+				const max = parseFloat(range.max || 100);
+				const value = parseFloat(range.value || 0);
+				const progress = max > min ? ((value - min) / (max - min)) * 100 : 0;
 
-				range.style.background = 'linear-gradient(to right, #1e88e5 0%, #1e88e5 ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)';
+				if (field) {
+					field.style.setProperty('--probability-progress', Math.max(0, Math.min(100, progress)) + '%');
+				}
 				label.textContent = value + '%';
 			};
 
 			range.addEventListener('input', update);
+			window.addEventListener('resize', update);
 			update();
 		}
 
