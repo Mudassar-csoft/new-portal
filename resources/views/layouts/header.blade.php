@@ -29,6 +29,7 @@
                   @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
                   @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
                   @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
+                  @php($FeeAlert = $webLeadNotifications['Fee_Alert'] ?? collect())
 
                   <div class="notif-accordion">
                     <div class="notif-accordion-item notif-hover-card active">
@@ -150,6 +151,38 @@
                               </thead>
                               <tbody>
                                 @foreach ($brochureDownloads as $webLead)
+                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
+                                    <td>{{ $webLead->full_name }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-fee-alert" aria-expanded="false">
+                        <span>Fee Alert</span>
+                        <span class="count">{{ $webLeadNotificationCounts['Fee_Alert'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-fee-alert">
+                        @if ($FeeAlert->isEmpty())
+                          <div class="text-center p-4 text-muted">No Fee Alert notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($FeeAlert as $webLead)
                                   <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
                                     <td>{{ $webLead->full_name }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
