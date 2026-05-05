@@ -311,7 +311,7 @@
     </div>
 
     <!-- Selected -->
-    <div class="probability-display">
+    <div class="probability-display" style="font-size:16px;">
         Selected: <span id="probabilityValue">{{ old('details.probability', data_get($leadPrefill, 'details.probability', 10)) }}%</span>
     </div>
     @error('details.probability')
