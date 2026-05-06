@@ -5,6 +5,7 @@
     $selectedType = old('program_type', $program->program_type ?: 'certificate');
     $selectedStatus = old('status', $program->status ?: 'active');
     $discountRows = old('discounts', $discountRows ?? []);
+    $codeReadonly = (bool) ($codeReadonly ?? false);
 
     if ($selectedType && !$typeOptions->contains($selectedType)) {
         $typeOptions = $typeOptions->prepend($selectedType);
@@ -30,7 +31,7 @@
 @endif
 
 <div class="form-row mt-1">
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Programme Type</label>
         <select class="form-control" name="program_type" required>
             <option value="">- Select -</option>
@@ -39,41 +40,30 @@
             @endforeach
         </select>
     </div>
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Programme Title</label>
-        <input type="text" name="title" class="form-control" value="{{ old('title', $program->title ?? $program->name) }}" placeholder="Enter programme title" required>
+        <input type="text" name="title" id="program-title" class="form-control" value="{{ old('title', $program->title ?? $program->name) }}" placeholder="Enter programme title" required>
     </div>
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Fee</label>
         <input type="number" step="0.01" min="0" name="fee" class="form-control" value="{{ old('fee', $program->fee) }}" placeholder="Enter fee amount" required>
     </div>
-</div>
-<div class="form-row">
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Programme Code</label>
-        <input type="text" name="code" class="form-control text-uppercase" value="{{ old('code', $program->code) }}" placeholder="Enter course code" required>
+        <input type="text" name="code" id="program-code" class="form-control text-uppercase program-code-field" value="{{ old('code', $program->code) }}" placeholder="Auto code e.g. WD" required @if($codeReadonly) readonly aria-readonly="true" @endif>
         <!-- <small class="text-muted">Use a short unique code such as GD-01 or CIT.</small> -->
     </div>
-    <div class="form-group col-lg-4 col-md-6">
-        <label class="form-label">Discount Limit (%)</label>
-        <input type="number" step="0.01" min="0" max="100" name="discount_limit" class="form-control" value="{{ old('discount_limit', $program->discount_limit) }}" placeholder="Optional limit">
-        <!-- <small class="text-muted">Maximum allowed discount for this programme.</small> -->
-    </div>
-     <div class="form-group col-lg-4 col-md-6">
+</div>
+<div class="form-row">
+     <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Duration (Weeks)</label>
         <input type="number" min="1" name="duration_weeks" class="form-control" value="{{ old('duration_weeks', $program->duration_weeks) }}" placeholder="e.g. 12" required>
     </div>
-
-</div>
-<div class="form-row">
-    
-   
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Installments</label>
         <input type="number" min="1" max="36" name="installments" class="form-control" value="{{ old('installments', $program->installments ?: 1) }}" placeholder="e.g. 3" required>
     </div>
-    
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Status</label>
         <select name="status" class="form-control" required>
             @foreach($statusOptions as $key => $label)
@@ -81,9 +71,18 @@
             @endforeach
         </select>
     </div>
-    <div class="form-group col-lg-4 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required" >Upload Outline</label>
-        <input type="file" name="outline" class="form-control-file" accept=".pdf,.doc,.docx">
+        <label class="program-upload" for="program-outline-upload">
+            <input type="file" id="program-outline-upload" name="outline" accept=".pdf,.doc,.docx">
+            <span class="program-upload-icon" aria-hidden="true">
+                <i class="fa fa-cloud-upload"></i>
+            </span>
+            <span class="program-upload-copy">
+                <span class="program-upload-title" data-upload-label>Choose outline file</span>
+                <span class="program-upload-hint">PDF, DOC, DOCX up to 5 MB</span>
+            </span>
+        </label>
         <!-- <small class="text-muted d-block">Accepted files: PDF, DOC, DOCX up to 5 MB.</small> -->
         @if($program->outline_path)
             <div class="mt-2">
@@ -108,24 +107,12 @@
     @endif
 </div>
 
-<div class="form-group">
-   <label class="form-label required">Prerequisite</label>
-    <textarea class="form-control" name="prerequisite" rows="3" placeholder="Enter prerequisite or eligibility">{{ old('prerequisite', $program->prerequisite) }}</textarea>
-</div>
-
-<div class="form-group">
-   <label class="form-label required">Remarks</label>
-    <textarea class="form-control" name="remarks" rows="3" placeholder="Add admission notes, delivery detail, or management remarks">{{ old('remarks', $program->remarks) }}</textarea>
-</div>
-
-<hr>
-
 <div class="program-discount-header">
     <div>
-        <h4 class="mb-0">Campus Discount Setup</h4>
+        <h4 class="mb-0">Campus Discount</h4>
         <!-- <small class="text-muted">Set a global discount for all campuses or create separate campus-wise discounts.</small> -->
     </div>
-    <button type="button" class="btn btn-default" id="add-program-discount">Add Discount Row</button>
+    <button type="button" class="btn btn-default" id="add-program-discount">Add</button>
 </div>
 
 <div id="program-discount-rows" data-next-index="{{ count($discountRows) }}">
@@ -191,3 +178,15 @@
         </div>
     </div>
 </template>
+
+<hr>
+
+<div class="form-group">
+   <label class="form-label required">Prerequisite</label>
+    <textarea class="form-control" name="prerequisite" rows="3" placeholder="Enter prerequisite or eligibility">{{ old('prerequisite', $program->prerequisite) }}</textarea>
+</div>
+
+<div class="form-group">
+   <label class="form-label required">Remarks</label>
+    <textarea class="form-control" name="remarks" rows="3" placeholder="Add admission notes, delivery detail, or management remarks">{{ old('remarks', $program->remarks) }}</textarea>
+</div>

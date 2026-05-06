@@ -110,13 +110,7 @@
                                     </td>
                                     <td>{{ ucwords($program->program_type ?? 'n/a') }}</td>
                                     <td>{{ number_format((float) $program->fee, 2) }}</td>
-                                    <td>
-                                        {{ number_format((int) ($program->duration_weeks ?? 0)) }} weeks
-                                        @if($program->discount_limit !== null)
-                                            <br>
-                                            <span class="text-muted">Limit {{ rtrim(rtrim(number_format((float) $program->discount_limit, 2), '0'), '.') }}%</span>
-                                        @endif
-                                    </td>
+                                    <td>{{ number_format((int) ($program->duration_weeks ?? 0)) }} weeks</td>
                                     <td>{{ number_format((int) ($program->installments ?? 0)) }}</td>
                                     <td>{{ number_format((int) ($program->batches_count ?? 0)) }}</td>
                                     <td>{{ number_format((int) ($program->admissions_count ?? 0)) }}</td>
