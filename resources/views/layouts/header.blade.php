@@ -30,6 +30,7 @@
                   @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
                   @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
                   @php($FeeAlert = $webLeadNotifications['Fee_Alert'] ?? collect())
+                  @php($followupItems = $followupNotifications ?? collect())
 
                   <div class="notif-accordion">
                     <div class="notif-accordion-item notif-hover-card active">
@@ -187,6 +188,38 @@
                                     <td>{{ $webLead->full_name }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
+                        <span>Follow Up</span>
+                        <span class="count">{{ $followupNotificationCount ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-follow-up">
+                        @if ($followupItems->isEmpty())
+                          <div class="text-center p-4 text-muted">No Follow Up notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($followupItems as $followup)
+                                  <tr class="notification-clickable" data-href="{{ route('leads.show', $followup->lead_id) }}">
+                                    <td>{{ $followup->lead->name ?? 'N/A' }}</td>
+                                    <td>{{ optional($followup->next_action_date)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($followup->next_action_date)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>

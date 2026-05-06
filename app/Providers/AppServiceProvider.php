@@ -191,6 +191,8 @@ class AppServiceProvider extends ServiceProvider
             $webLeadSourceLabels = WebLead::sourceLabels();
             $webLeadNotificationCounts = array_fill_keys(array_keys($webLeadSourceLabels), 0);
             $webLeadNotifications = [];
+            $followupNotifications = collect();
+            $followupNotificationCount = 0;
             $dashboardCampuses = collect();
             $activeDashboardCampus = null;
             $activeDashboardCampusId = (int) session('dashboard_campus_id', 0);
@@ -230,6 +232,20 @@ class AppServiceProvider extends ServiceProvider
                             ->get();
                     }
                 }
+
+                if (Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
+                    $followupNotifications = LeadFollowup::with(['lead'])
+                        ->whereNotNull('next_action_date')
+                        ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                        ->orderBy('next_action_date')
+                        ->latest('id')
+                        ->get()
+                        ->unique('lead_id')
+                        ->values();
+
+                    $followupNotificationCount = $followupNotifications->count();
+                    $followupNotifications = $followupNotifications->take(5)->values();
+                }
             } catch (Throwable) {
                 // Keep empty notification data when the table is unavailable.
             }
@@ -239,6 +255,8 @@ class AppServiceProvider extends ServiceProvider
                 'webLeadNotificationCounts' => $webLeadNotificationCounts,
                 'webLeadNotifications' => $webLeadNotifications,
                 'webLeadNotificationTotal' => array_sum($webLeadNotificationCounts),
+                'followupNotifications' => $followupNotifications,
+                'followupNotificationCount' => $followupNotificationCount,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
             ]);
