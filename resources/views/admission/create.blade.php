@@ -32,11 +32,15 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
-							<label class="form-label required">Select Program</label>
-							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
-								<option value="">- Select -</option>
+							<label class="form-label required">Select Course</label>
+							<select class="form-control training-course-select @error('program_id') is-invalid @enderror" name="program_id" required>
+								<option value="">-Select-</option>
 								@foreach($programs ?? [] as $program)
-									<option value="{{ $program->id }}" {{ old('program_id', $lead->program_id ?? '') == $program->id ? 'selected' : '' }}>
+									<option value="{{ $program->id }}"
+										data-title="{{ $program->title ?? $program->name }}"
+										data-fee="{{ number_format($program->fee) }}"
+										data-duration="{{ $program->duration_weeks / 4 }}"
+										@selected(old('program_id', $lead->program_id ?? '') == $program->id)>
 										{{ $program->title ?? $program->name }}
 									</option>
 								@endforeach
@@ -124,8 +128,8 @@
 						
 						<div class="form-group col-md-3">
 							<label class="form-label required">Gender</label>
-							<div class="row mt-2">
-								<div class="col-4 d-flex justify-content-center">
+							<div class="row mt-1">
+								<div class="col-4 d-flex justify-content-center ">
 									<div class="form-check d-flex align-items-center mt-0">
 										<input class="form-check-input mt-0 mr-1"
 											type="radio"
@@ -133,7 +137,7 @@
 											name="gender"
 											value="male"
 											@checked(old('gender', 'male') === 'male')>
-										<label class="form-label small mb-0" for="admission-gender-male">
+										<label class="form-label small mb-0 mt-0" for="admission-gender-male">
 											Male
 										</label>
 									</div>
@@ -146,20 +150,20 @@
 											name="gender"
 											value="female"
 											@checked(old('gender') === 'female')>
-										<label class="form-label small mb-0" for="admission-gender-female">
+										<label class="form-label small mt-0 mb-0" for="admission-gender-female">
 											Female
 										</label>
 									</div>
 								</div>
 								<div class="col-4 d-flex justify-content-center">
 									<div class="form-check d-flex align-items-center">
-										<input class="form-check-input mt-0 mr-1"
+										<input class="form-check-input  mt-0 mr-1"
 											type="radio"
 											id="admission-gender-other"
 											name="gender"
 											value="other"
 											@checked(old('gender') === 'other')>
-										<label class="form-label small mb-0" for="admission-gender-other">
+										<label class="form-label small mt-0 mb-0" for="admission-gender-other">
 											Other
 										</label>
 									</div>
@@ -267,7 +271,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Fee Type</label>
-							<div class="row mt-2  @error('fee_type') is-invalid @enderror">
+							<div class="row mt-1  @error('fee_type') is-invalid @enderror">
 								<div class="col-6 d-flex justify-content-center mb-1">
 									<div class="form-check d-flex align-items-center mt-0">
 										<input class="form-check-input mt-0 mr-1"
@@ -276,7 +280,7 @@
 											name="fee_type"
 											value="full"
 											@checked(old('fee_type', 'full') === 'full')>
-										<label class="form-label small mb-0" for="admission-fee-type-full">
+										<label class="form-label small mt-0 mb-0" for="admission-fee-type-full">
 											Full Fee
 										</label>
 									</div>
@@ -289,7 +293,7 @@
 											name="fee_type"
 											value="installments"
 											@checked(old('fee_type') === 'installments')>
-										<label class="form-label small mb-0" for="admission-fee-type-installments">
+										<label class="form-label small mt-0 mb-0" for="admission-fee-type-installments">
 											Installments
 										</label>
 									</div>
@@ -386,8 +390,8 @@
 		.admission-form .form-label {
 			display: inline-block;
 			margin-bottom: 8px;
-			font-weight: 700;
-			color: #223a57;
+			font-weight: 600;
+			color: #223a57 ;
 		}
 
 		.admission-form .form-control {
@@ -420,6 +424,50 @@
 			margin-top: 6px;
 			font-size: 12px;
 			color: #dc3545;
+		}
+
+		.training-course-select {
+			width: 100%;
+			min-width: 0;
+			max-width: 100%;
+			display: block;
+		}
+
+		.training-course-select + .select2-container {
+			width: 100% !important;
+		}
+
+		.training-course-option {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			line-height: 1.25;
+		}
+
+		.training-course-option-line {
+			display: block;
+			white-space: normal;
+			margin-bottom: 0;
+		}
+
+		.training-course-option-line:last-child {
+			margin-bottom: 0;
+		}
+
+		.training-course-option-label {
+			font-weight: 700 !important;
+			color: #54667a;
+		}
+
+		.training-course-option-value {
+			color: #343434;
+			display: inline;
+			white-space: normal;
+		}
+
+		.select2-results__option--highlighted .training-course-option-label,
+		.select2-results__option--highlighted .training-course-option-value {
+			color: inherit;
 		}
 
 		.admission-form .choice-group {
@@ -572,6 +620,69 @@
 				city: @json(old('city', 'Faisalabad'))
 			});
 		});
+	</script>
+	<script>
+		(function () {
+			function escapeHtml(value) {
+				return String(value ?? '')
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#39;');
+			}
+
+			function formatTrainingCourseOption(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				if (!option) {
+					return state.text;
+				}
+
+				var title = option.getAttribute('data-title') || state.text || '';
+				var fee = option.getAttribute('data-fee') || '';
+				var duration = option.getAttribute('data-duration') || '';
+
+				return (
+					'<div class="training-course-option">' +
+						'<span class="training-course-option-line"> <span class="training-course-option-label">' + escapeHtml(title) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Fee:</span> <span class="training-course-option-value">' + escapeHtml(fee) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Duration:</span> <span class="training-course-option-value">' + escapeHtml(duration) + ' months</span></span>' +
+					'</div>'
+				);
+			}
+
+			function formatTrainingCourseSelection(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				return option ? (option.getAttribute('data-title') || state.text || '') : state.text;
+			}
+
+			$(function () {
+				if (!window.jQuery || !$.fn.select2) {
+					return;
+				}
+
+				$('.training-course-select').select2({
+					width: '100%',
+					templateResult: function (state) {
+						return $(formatTrainingCourseOption(state));
+					},
+					templateSelection: function (state) {
+						return formatTrainingCourseSelection(state);
+					},
+					escapeMarkup: function (markup) {
+						return markup;
+					}
+				});
+			});
+		})();
 	</script>
 	@if(request()->boolean('embed'))
 	<script>
