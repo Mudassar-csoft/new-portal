@@ -29,7 +29,7 @@
         </select>
     </div>
     <div class="form-group col-lg-3 col-md-6">
-        <label class="form-label required">Select Program</label>
+        <label class="form-label required">Select Course</label>
         <select class="form-control" name="program_id" id="batch-program" required>
             <option value="">- Select -</option>
             @foreach($programs as $program)
@@ -79,13 +79,22 @@
         <input type="time" class="form-control" name="end_time" value="{{ old('end_time', $batch->end_time ? \Carbon\Carbon::parse($batch->end_time)->format('H:i') : null) }}" required>
     </div>
     <div class="form-group col-md-6 col-lg-3">
-         <label class="form-label required d-block">Batch Session</label>
-        <div class="d-flex">
+        <label class="form-label required d-block">Batch Session</label>
+        <div class="row mt-2 choice-group">
             @foreach($sessionOptions as $key => $label)
-                <label class="form-label d-flex ">
-                    <input type="radio" name="session" value="{{ $key }}" @checked($selectedSession === $key)>
-                    <span>{{ $label }}</span>
-                </label>
+                <div class="col-4 d-flex justify-content-center mb-1">
+                    <div class="form-check d-flex align-items-center{{ $loop->first ? ' mt-0' : '' }}">
+                        <input class="form-check-input mt-0 mr-1"
+                            type="radio"
+                            name="session"
+                            id="batch-session-{{ $key }}"
+                            value="{{ $key }}"
+                            @checked($selectedSession === $key)>
+                        <label class="form-check-label small mb-0 mt-1" for="batch-session-{{ $key }}">
+                            {{ strtoupper($label) }}
+                        </label>
+                    </div>
+                </div>
             @endforeach
         </div>
     </div>

@@ -4,14 +4,14 @@
 
 @section('content')
 
-	<div class="batch-shell">
+	<!-- <div class="batch-shell">
 		<div class="batch-card box-typical box-typical-dashboard panel panel-default">
 			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Batches</h3>
-					<!-- <small class="text-muted">List of batches by campus and program.</small> -->
+					<small class="text-muted">List of batches by campus and program.</small> 
 				</div>
-				<a href="{{ route('batch.create') }}" class="btn btn-primary">New Batch</a>
+				 <a href="{{ route('batch.create') }}" class="btn btn-primary">New Batch</a> 
 			</header>
 			<div class="box-typical-body panel-body">
 				<div class="table-responsive">
@@ -68,7 +68,7 @@
 				@endif
 			</div>
 		</div>
-	</div>
+	</div> -->
     @php
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'session' => null, 'status' => null, 'search' => null];
         $scopeCards = $scopeCards ?? [];
@@ -88,16 +88,16 @@
         <div class="box-typical box-typical-dashboard panel panel-default batch-index-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
+                    <h3 class="panel-title mb-0">Batches</h3>
                     <small class="text-muted">{{ $pageDescription }}</small>
                 </div>
-                <div class="d-flex" style="gap:10px;">
+                <!-- <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.create') }}" class="btn btn-primary">Create Batch</a>
                     <a href="{{ route('batch.timetable.index') }}" class="btn btn-default">Manage Time Table</a>
-                </div>
+                </div> -->
             </header>
             <div class="box-typical-body panel-body">
-                <div class="batch-scope-grid p-2 ">
+                <!-- <div class="batch-scope-grid p-2 ">
                     @foreach($scopeCards as $card)
                         <a href="{{ route('batch.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="batch-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
@@ -105,7 +105,7 @@
                            <span class="batch-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
-                </div>
+                </div> -->
 
                 <form method="GET" action="{{ route('batch.index') }}" class="batch-filter-form ">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
@@ -170,12 +170,12 @@
                                 <th>Programme</th>
                                 <th>Campus</th>
                                 <th>Session</th>
-                                <th>Time</th>
+                                <!-- <th>Time</th>
                                 <th>Duration</th>
                                 <th>Instructor</th>
                                 <th>Lab</th>
                                 <th>Students</th>
-                                <th>Time Table</th>
+                                <th>Time Table</th> -->
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>

@@ -109,7 +109,7 @@
                     </div>
                 </form>
 
-                <div class="student-summary-grid">
+                <!-- <div class="student-summary-grid">
                     <div class="student-summary-card ">
                         <strong>{{ number_format((int) ($summary['total'] ?? 0)) }}</strong>
                         <span class="student-summary-label">Total Students</span>
@@ -134,7 +134,7 @@
                         <strong>{{ number_format((int) ($summary['absent'] ?? 0)) }}</strong>
                         <span class="student-summary-label">Absent</span>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover student-attendance-table">

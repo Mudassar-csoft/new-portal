@@ -4,16 +4,16 @@
 
 @section('content')
 
-	<div class="campus-shell">
+	<!-- <div class="campus-shell">
 		<div class="box-typical box-typical-dashboard panel panel-default campus-card">
-			<header class="box-typical-header panel-heading d-flex justify-content-between">
+			 <header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0">Campuses</h3>
-					<!-- <small class="text-muted">List of campuses.</small> -->
+				 <small class="text-muted">List of campuses.</small> -->
 				</div>
-				<a href="{{ route('campus.create') }}" class="btn btn-primary">New Campus</a>
-			</header>
-			<div class="box-typical-body panel-body">
+				<!-- <a href="{{ route('campus.create') }}" class="btn btn-primary">New Campus</a> -->
+			</header> 
+			<!-- <div class="box-typical-body panel-body">
 				<div class="table-responsive">
 					<table class="table table-hover">
 						<thead>
@@ -47,9 +47,9 @@
 						{{ $campuses->links() }}
 					</div>
 				@endif
-			</div>
+			</div> 
 		</div>
-	</div>
+	</div> -->
     @php
         $filters = $filters ?? ['scope' => 'all', 'campus_type' => null, 'status' => null, 'country' => null, 'city' => null, 'search' => null];
         $scopeCards = $scopeCards ?? [];
@@ -69,10 +69,10 @@
                     <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
                     <small class="text-muted">{{ $pageDescription }}</small>
                 </div>
-                <a href="{{ route('campus.create') }}" class="btn btn-primary">Create Campus / Franchise</a>
+                <!-- <a href="{{ route('campus.create') }}" class="btn btn-primary">Create Campus / Franchise</a> -->
             </header>
             <div class="box-typical-body panel-body">
-                <div class="campus-scope-grid p-2">
+                <!-- <div class="campus-scope-grid p-2">
                     @foreach($scopeCards as $card)
                         <a href="{{ route('campus.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="campus-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
@@ -80,7 +80,7 @@
                            <span class="campus-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
-                </div>
+                </div> -->
 
                 <form method="GET" action="{{ route('campus.index') }}" class="campus-filter-form">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
@@ -141,11 +141,11 @@
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Contact</th>
-                                <th>Labs</th>
+                                <!-- <th>Labs</th>
                                 <th>Batches</th>
                                 <th>Students</th>
                                 <th>Inventory</th>
-                                <th>Discounts</th>
+                                <th>Discounts</th> -->
                                 <th>Royalty</th>
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
@@ -156,21 +156,18 @@
                                 <tr>
                                     <td>{{ $campus->code }}</td>
                                     <td>
-                                        <strong>{{ $campus->title ?? $campus->name }}</strong>
+                                        <strong class="campus-table__title">{{ $campus->title ?? $campus->name }}</strong>
                                         @if($campus->title && $campus->title !== $campus->name)
-                                            <br>
-                                            <span class="text-muted">{{ $campus->name }}</span>
+                                            <span class="text-muted campus-table__meta campus-table__meta--tight">{{ $campus->name }}</span>
                                         @endif
                                         @if($campus->remarks)
-                                            <br>
-                                            <span class="text-muted">{{ \Illuminate\Support\Str::limit($campus->remarks, 70) }}</span>
+                                            <span class="text-muted campus-table__meta campus-table__meta--truncate" title="{{ $campus->remarks }}">{{ \Illuminate\Support\Str::limit($campus->remarks, 70) }}</span>
                                         @endif
                                     </td>
                                     <td>
-                                        {{ $campus->city ?: 'N/A' }}{{ $campus->country ? ', ' . $campus->country : '' }}
+                                        <span class="campus-table__title">{{ $campus->city ?: 'N/A' }}{{ $campus->country ? ', ' . $campus->country : '' }}</span>
                                         @if($campus->address)
-                                            <br>
-                                            <span class="text-muted">{{ \Illuminate\Support\Str::limit($campus->address, 70) }}</span>
+                                            <span class="text-muted campus-table__meta campus-table__meta--truncate" title="{{ $campus->address }}">{{ \Illuminate\Support\Str::limit($campus->address, 70) }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -179,17 +176,16 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $campus->campus_email ?: 'N/A' }}
+                                        <span class="campus-table__title">{{ $campus->campus_email ?: 'N/A' }}</span>
                                         @if($campus->mobile || $campus->landline)
-                                            <br>
-                                            <span class="text-muted">{{ $campus->mobile ?: $campus->landline }}</span>
+                                            <span class="text-muted campus-table__meta campus-table__meta--tight">{{ $campus->mobile ?: $campus->landline }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ number_format((int) ($campus->labs_count ?? 0)) }}</td>
+                                    <!-- <td>{{ number_format((int) ($campus->labs_count ?? 0)) }}</td>
                                     <td>{{ number_format((int) ($campus->batches_count ?? 0)) }}</td>
                                     <td>{{ number_format((int) ($campus->admissions_count ?? 0)) }}</td>
                                     <td>{{ number_format((int) ($campus->inventory_items_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($campus->program_discounts_count ?? 0)) }}</td>
+                                    <td>{{ number_format((int) ($campus->program_discounts_count ?? 0)) }}</td> -->
                                     <td>
                                         @if($campus->campus_type === 'franchise' && $campus->royalty_rate !== null)
                                             {{ rtrim(rtrim(number_format((float) $campus->royalty_rate, 2), '0'), '.') }}%
@@ -330,15 +326,15 @@
             align-items: end;
         }
 
-        .col-lg-3 col-md-6 {
+        /* .col-lg-3 .col-md-6 {
             flex: 1 1 180px;
             min-width: 180px;
         }
 
-        .col-lg-3 col-md-6-wide {
+        .col-lg-3 col-md-6- {
             flex: 2 1 300px;
             min-width: 280px;
-        }
+        } */
 
         .campus-filter-actions {
             display: flex;
@@ -355,7 +351,67 @@
 
         .campus-table td,
         .campus-table th {
-            vertical-align: middle;
+            vertical-align: middle !important;
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
+            line-height: 1.05 !important;
+            height: auto !important;
+        }
+
+        .campus-table tbody tr {
+            height: auto !important;
+        }
+
+        .campus-table td,
+        .campus-table td span,
+        .campus-table td strong,
+        .campus-table td .label,
+        .campus-table td .btn,
+        .campus-table td .text-muted {
+            font-size: 12px !important;
+            line-height: 1.05 !important;
+        }
+
+        .campus-table__title {
+            display: inline;
+            font-size: 12px !important;
+            line-height: 1.05 !important;
+            margin: 0 !important;
+        }
+
+        .campus-table__meta {
+            display: inline;
+            font-size: 11px !important;
+            line-height: 1.05 !important;
+            margin-top: 1px !important;
+        }
+
+        .campus-table__meta--tight {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        .campus-table__meta--truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 260px;
+        }
+
+        .campus-table td:last-child,
+        .campus-table th:last-child {
+            white-space: nowrap;
+            width: 1%;
+        }
+
+        .campus-table .dropdown-toggle {
+            height: 22px !important;
+            min-height: 22px !important;
+            padding: 1px 8px !important;
+            line-height: 1.1 !important;
+            font-size: 12px !important;
         }
 
         .campus-action-dropdown .dropdown-menu {
