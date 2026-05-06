@@ -1,4 +1,9 @@
-<div class="lead-form" data-type="certification">
+@php
+    $certificationGender = ($selectedLeadType ?? 'training') === 'certification'
+        ? old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))
+        : null;
+@endphp
+<div id="lead-form-certification" class="lead-form active" data-type="certification">
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
             <label class="required">Full Name (As Per CNIC)</label>
@@ -35,7 +40,7 @@
                             id="certification-gender-male"
                             name="details[gender]"
                             value="male"
-                            @checked(old('details.gender', 'male') === 'male')>
+                            @checked($certificationGender === 'male')>
                         <label class="form-check-label small mb-0"
                             for="certification-gender-male">
                             Male
@@ -49,7 +54,7 @@
                             id="certification-gender-female"
                             name="details[gender]"
                             value="female"
-                            @checked(old('details.gender') === 'female')>
+                            @checked($certificationGender === 'female')>
                         <label class="form-check-label small mb-0"
                             for="certification-gender-female">
                             Female
@@ -63,7 +68,7 @@
                             id="certification-gender-other"
                             name="details[gender]"
                             value="other"
-                            @checked(old('details.gender') === 'other')>
+                            @checked($certificationGender === 'other')>
                         <label class="form-check-label small mb-0"
                             for="certification-gender-other">
                             Other
@@ -138,14 +143,18 @@
         </div>
         <div class="form-group col-lg-3 col-md-6">
             <label class="required">Country</label>
-            <input type="text" name="details[country]" class="form-control @error('details.country') is-invalid @enderror" value="{{ old('details.country', 'Pakistan') }}">
+            <select id="certification-country-select" name="details[country]" class="form-control @error('details.country') is-invalid @enderror">
+                <option value="">Loading countries...</option>
+            </select>
             @error('details.country')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group col-lg-3 col-md-6">
             <label class="required">City</label>
-            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="Enter City" value="{{ old('city') }}">
+            <select id="certification-city-select" name="city" class="form-control @error('city') is-invalid @enderror">
+                <option value="">Loading cities...</option>
+            </select>
             @error('city')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -164,7 +173,7 @@
             <select name="campus_id" class="form-control @error('campus_id') is-invalid @enderror">
                 <option value="">- Select -</option>
                 @foreach($campuses as $campus)
-                    <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }} ({{ $campus->city }})</option>
+                    <option value="{{ $campus->id }}" @selected(old('campus_id', $leadPrefill['campus_id'] ?? null) == $campus->id)>{{ $campus->title ?: $campus->name }} ({{ $campus->code ?: $campus->city ?: 'N/A' }})</option>
                 @endforeach
             </select>
             @error('campus_id')
@@ -182,24 +191,11 @@
     <div class="form-row align-items-center">
         <div class="form-group col-lg-3 col-md-6">
             <label class="required">Probability</label>
-            <input type="range" name="details[probability]" min="0" max="100" step="5" class="custom-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
-            <div class="range-scale" aria-hidden="true">
-                @for ($tickIndex = 0; $tickIndex <= 30; $tickIndex++)
-                    <span
-                        class="range-tick {{ $tickIndex % 3 === 0 ? 'range-tick-major' : 'range-tick-minor' }}{{ $tickIndex === 0 ? ' range-tick-start' : '' }}{{ $tickIndex === 30 ? ' range-tick-end' : '' }}"
-                        style="left: {{ round(($tickIndex * 100) / 30, 2) }}%;"
-                    ></span>
-                @endfor
-            </div>
-            <div class="range-numbers text-muted pt-0">
-                @for ($label = 0; $label <= 100; $label += 10)
-                    <span>{{ $label }}</span>
-                @endfor
-            </div>
-            <div class="probability-display">Selected: <span>{{ old('details.probability', 0) }}%</span></div>
-            @error('details.probability')
-                <div class="field-error">{{ $message }}</div>
-            @enderror
+            @include('lead.partials.probability_slider', [
+                'inputName' => 'details[probability]',
+                'value' => old('details.probability', data_get($leadPrefill, 'details.probability', 0)),
+                'errorKey' => 'details.probability',
+            ])
         </div>
     </div>
     <div class="form-group">

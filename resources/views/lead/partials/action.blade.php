@@ -136,7 +136,7 @@
 					</a>
 				@endif
 			@endif
-			<a class="dropdown-item lead-action-item" href="#">
+			<a class="dropdown-item lead-action-item" href="{{ !empty($leadId) ? route('leads.show', $leadId) : '#' }}">
 				<span class="lead-action-icon lead-icon-black" aria-hidden="true">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
 						<path d="M22 16.92v2.58a1.5 1.5 0 0 1-1.64 1.5A18.35 18.35 0 0 1 3 3.64 1.5 1.5 0 0 1 4.49 2h2.59a1.5 1.5 0 0 1 1.49 1.28l.35 2.3a1.5 1.5 0 0 1-.43 1.32l-1.68 1.68a14.5 14.5 0 0 0 8.61 8.61l1.68-1.68a1.5 1.5 0 0 1 1.32-.43l2.3.35A1.5 1.5 0 0 1 22 16.92Z"/>
