@@ -65,7 +65,7 @@
 						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
 						<input type="hidden" name="type" id="lead-type-field" value="{{ $selectedLeadType }}">
 						@include('lead.' . $selectedLeadType)
-						<div class="form-actions mb-2 mt-3 text-right  mr-3">
+						<div class="form-actions mb-2 mt-3 text-right  mr-0">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
 							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Lead</button>
 

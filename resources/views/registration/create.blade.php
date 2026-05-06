@@ -38,11 +38,15 @@
 							@enderror
 						</div>
 						<div class="form-group col-md-6 col-lg-3">
-							<label class="form-label required">Program</label>
-							<select class="form-control @error('program_id') is-invalid @enderror" name="program_id" required>
-								<option value="">- Select -</option>
+							<label class="form-label required">Select Course</label>
+							<select class="form-control training-course-select @error('program_id') is-invalid @enderror" name="program_id" required>
+								<option value="">-Select-</option>
 								@foreach($programs ?? [] as $program)
-									<option value="{{ $program->id }}" {{ (string) $selectedProgramId === (string) $program->id ? 'selected' : '' }}>
+									<option value="{{ $program->id }}"
+										data-title="{{ $program->title ?? $program->name }}"
+										data-fee="{{ number_format($program->fee) }}"
+										data-duration="{{ $program->duration_weeks / 4 }}"
+										{{ (string) $selectedProgramId === (string) $program->id ? 'selected' : '' }}>
 										{{ $program->title ?? $program->name }}
 									</option>
 								@endforeach
@@ -314,6 +318,39 @@
 			color: #dc3545;
 		}
 
+		.training-course-select {
+			width: 100%;
+			min-width: 0;
+			max-width: 100%;
+			display: block;
+		}
+
+		.training-course-select + .select2-container {
+			width: 100% !important;
+		}
+
+		.training-course-option {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			line-height: 1.25;
+		}
+
+		.training-course-option-line {
+			display: block;
+			white-space: normal;
+			margin-bottom: 0;
+		}
+
+		.training-course-option-label {
+			font-weight: 600;
+			color: #183b68;
+		}
+
+		.training-course-option-value {
+			color: #5f6b7a;
+		}
+
 		.choice-group.is-invalid {
 			border: 1px solid #e53935;
 			border-radius: 6px;
@@ -450,6 +487,69 @@
 @endpush
 
 @push('scripts')
+	<script>
+		(function () {
+			function escapeHtml(value) {
+				return String(value ?? '')
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#039;');
+			}
+
+			function formatTrainingCourseOption(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				if (!option) {
+					return state.text;
+				}
+
+				var title = option.getAttribute('data-title') || state.text || '';
+				var fee = option.getAttribute('data-fee') || '';
+				var duration = option.getAttribute('data-duration') || '';
+
+				return (
+					'<div class="training-course-option">' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">' + escapeHtml(title) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Fee:</span> <span class="training-course-option-value">' + escapeHtml(fee) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">Duration:</span> <span class="training-course-option-value">' + escapeHtml(duration) + ' months</span></span>' +
+					'</div>'
+				);
+			}
+
+			function formatTrainingCourseSelection(state) {
+				if (!state.id) {
+					return state.text;
+				}
+
+				var option = state.element;
+				return option ? (option.getAttribute('data-title') || state.text || '') : state.text;
+			}
+
+			$(function () {
+				if (!window.jQuery || !$.fn.select2) {
+					return;
+				}
+
+				$('.training-course-select').select2({
+					width: '100%',
+					templateResult: function (state) {
+						return $(formatTrainingCourseOption(state));
+					},
+					templateSelection: function (state) {
+						return formatTrainingCourseSelection(state);
+					},
+					escapeMarkup: function (markup) {
+						return markup;
+					}
+				});
+			});
+		})();
+	</script>
 	<script>
 		(function() {
 			var campusSelect = document.querySelector('select[name="campus_id"]');
