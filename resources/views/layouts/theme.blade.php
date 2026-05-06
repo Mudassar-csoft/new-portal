@@ -55,9 +55,9 @@ body,
 p,
 
 label,
-input,
-textarea,
-select,
+
+
+
 button {
   font-size: 14px !important; 
   line-height: 1.5;
@@ -66,7 +66,10 @@ span{
 	font-size: 16px !important; 
   line-height: 1.5;
 }
-
+input,select,textarea{
+	font-size: 16px !important; 
+  line-height: 1.5;
+}
 button,
 .btn,
 a.btn,
@@ -113,7 +116,7 @@ font-family: "Font Awesome 6 Free" !important;
 	padding:0px !important;
 }
 .box-typical .panel-title{
-	font-size: 24px !important;
+	font-size: 26px !important;
   font-weight: 500 !important;
       text-wrap: auto;
 }
