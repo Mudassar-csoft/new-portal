@@ -1,20 +1,20 @@
 <div class="lead-form" data-type="certification">
     <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Full Name (As Per CNIC)</label>
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name') }}">
             @error('name')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Personal Contact Number</label>
             <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone') }}">
             @error('phone')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label>Email</label>
             <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email') }}">
             @error('email')
@@ -75,14 +75,14 @@
                 <div class="field-error mt-1">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Organization/Vendor</label>
             <input type="text" name="details[organization]" class="form-control @error('details.organization') is-invalid @enderror" placeholder="Organization" value="{{ old('details.organization') }}">
             @error('details.organization')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Certification Title</label>
             <input type="text" name="details[certification_title]" class="form-control @error('details.certification_title') is-invalid @enderror" placeholder="Title" value="{{ old('details.certification_title') }}">
             @error('details.certification_title')
@@ -91,14 +91,14 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label>Exam Code</label>
             <input type="text" name="details[exam_code]" class="form-control @error('details.exam_code') is-invalid @enderror" placeholder="Exam Code" value="{{ old('details.exam_code') }}">
             @error('details.exam_code')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Teaching Method</label>
             <select name="details[teaching_method]" class="form-control @error('details.teaching_method') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -110,7 +110,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Marketing Source</label>
             <select name="marketing_source" class="form-control @error('marketing_source') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -124,7 +124,7 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Origin</label>
             <select name="origin" class="form-control @error('origin') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -136,14 +136,14 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Country</label>
             <input type="text" name="details[country]" class="form-control @error('details.country') is-invalid @enderror" value="{{ old('details.country', 'Pakistan') }}">
             @error('details.country')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">City</label>
             <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" placeholder="Enter City" value="{{ old('city') }}">
             @error('city')
@@ -152,14 +152,14 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label>Area</label>
             <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Area" value="{{ old('details.area') }}">
             @error('details.area')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label>Preferred Campus</label>
             <select name="campus_id" class="form-control @error('campus_id') is-invalid @enderror">
                 <option value="">- Select -</option>
@@ -171,7 +171,7 @@
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Next Follow-up</label>
             <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
             @error('details.next_followup_at')
@@ -180,7 +180,7 @@
         </div>
     </div>
     <div class="form-row align-items-center">
-        <div class="form-group col-md-4">
+        <div class="form-group col-lg-3 col-md-6">
             <label class="required">Probability</label>
             <input type="range" name="details[probability]" min="0" max="100" step="5" class="custom-range probability-range @error('details.probability') is-invalid @enderror" value="{{ old('details.probability', 0) }}">
             <div class="range-scale" aria-hidden="true">
