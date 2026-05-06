@@ -786,7 +786,7 @@ margin: 0 !important;
 .form-label{
     margin-bottom: 6px;
     margin-top: 6px;
-    font-size: 12.8px !important;
+    font-size: 13.8px !important;
     color: #343a40 !important;
     text-transform: uppercase;
     font-weight: 600;
