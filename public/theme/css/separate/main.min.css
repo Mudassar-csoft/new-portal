@@ -16751,7 +16751,7 @@ html {
 .show-hide-sidebar {
     position: relative;
     overflow: hidden;
-    margin: 5px !important;
+    margin: 5px 0px!important;
     padding: 0;
     width: 30px;
     height: 30px;

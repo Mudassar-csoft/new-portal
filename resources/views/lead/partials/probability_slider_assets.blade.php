@@ -139,6 +139,7 @@
     .probability-scale span {
         flex: 1 1 0;
         text-align: center;
+        font-size: 11px !important;
         white-space: nowrap;
     }
 

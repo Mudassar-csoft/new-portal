@@ -169,6 +169,47 @@
     </div>
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
+            <label class="form-label" for="qualification">Academic Qualification</label>
+            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Academic Qualification" value="{{ old('details.area') }}">
+ 
+         </div>
+     
+         <div class="form-group col-lg-3 col-md-6">
+            <label class="form-label required">Degree Completion Date</label>
+            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
+            @error('')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+      
+
+      <!-- Academic Performance -->
+      <div class="form-group col-lg-3 col-md-6">
+        <label class="form-label" for="grades">Academic Grades/CGPA</label>
+        <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Grades/CGPA" value="{{ old('details.area') }}">
+
+      </div>
+
+      <!-- English Proficiency Tests -->
+      <div class="form-group col-lg-3 col-md-6">
+             <label class="form-label required">English Proficiency Test(s)</label>
+
+            <select 
+                name="details[english_tests][]" 
+                class="form-control @error('details.english_tests') is-invalid @enderror"
+                multiple
+            >
+                <option value="IELTS">IELTS</option>
+                <option value="TOEFL">TOEFL</option>
+                <option value="PTE">PTE</option>
+                <option value="Duolingo">Duolingo English Test</option>
+                <option value="Cambridge">Cambridge English Test</option>
+                <option value="None">Not Attempted Yet</option>
+            </select>
+
+        </div>
+
+        <!-- <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Current  School/Uni</label>
             <input type="text" name="details[current_education]" class="form-control @error('details.current_education') is-invalid @enderror" placeholder="Current Education" value="{{ old('details.current_education') }}">
             @error('details.current_education')
@@ -181,7 +222,7 @@
             @error('details.preferred_country')
                 <div class="field-error">{{ $message }}</div>
             @enderror
-        </div>
+        </div> -->
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Destination Country</label>
             <input type="text" name="details[preferred_country]" class="form-control @error('details.preferred_country') is-invalid @enderror" placeholder="Preferred Country" value="{{ old('details.preferred_country') }}">

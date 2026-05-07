@@ -5,7 +5,7 @@
         <img class="hidden-lg-down" src="img/mobile-logo.webp" alt="Career-Institute"
         style="height: 31px; width: 31px;">
 				<img class="hidden-md-down" src="img/logo-career.webp" alt="Career-Institute"
-					style="height: 32px; width: 160px;">
+					style="height: 35px; width: 200px;">
 			</a>
 
 			<button id="show-hide-sidebar-toggle" class="show-hide-sidebar">
@@ -526,7 +526,7 @@
 							</div>
                           <div class="dropdown add-lead">
                               <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	                                Add
+	                                Add New
 	                            </button>
 
                              <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
@@ -534,8 +534,8 @@
                     <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->
 
                     <a class="dropdown-item p-2 add-new-dropdown-item" href="{{ route('leads.create') }}">Lead</a>
-                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Admission</a>
                     <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Registration</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Admission</a>
 
                 </div>
             </div>
@@ -958,13 +958,13 @@ display: flex;
 	background: #f9fbfd;
 	z-index: 1;
 }
-.site-logo img{
+/* .site-logo img{
     transition:0.3s;
 }
 
 .site-logo img:hover{
     transform:scale(1.05);
-}
+} */
 .notification-table td,
 .notification-table th{
 	text-align:center !important;
@@ -1090,7 +1090,7 @@ border:2px solid #ddd;
 .site-header .user-menu.dropdown .profile-dropdown .login-dropdown-item {
     display: block;
     width: auto;
-    padding: 10px 12px !important;
+    padding: 4px 12px !important;
 }
 
 .site-header .user-menu.dropdown .profile-dropdown .dp-main-menu {
@@ -1165,7 +1165,7 @@ border:2px solid #ddd;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
 	border: 1px solid #e3eaf3;
 	margin-bottom:8px;
-	padding: 10px 12px !important;
+	padding: 4px 12px !important;
 	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
 }
 .add-new .dropdown-menu .dropdown-item:last-child{

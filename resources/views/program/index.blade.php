@@ -73,7 +73,7 @@
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Programme title, code, type, remarks, or discount campus">
                         </div>
                         <div class="form-group program-filter-actions">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary-outline">Filter</button>
                             <a href="{{ route('program.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
                         </div>
                     </div>

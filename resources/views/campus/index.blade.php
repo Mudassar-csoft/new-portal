@@ -126,7 +126,7 @@
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Campus name, code, city, contact, address, or remarks">
                         </div>
                         <div class="form-group campus-filter-actions">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary-outline">Filter</button>
                             <a href="{{ route('campus.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
                         </div>
                     </div>

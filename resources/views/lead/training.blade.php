@@ -74,7 +74,7 @@
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'campus')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-campus">
-                            CAMPUS
+                            Campus
                         </label>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'online')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-online">
-                            ONLINE
+                            Online
                         </label>
                     </div>
                 </div>
@@ -102,8 +102,7 @@
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="teaching-method-hybrid">
-                            HYBRID
-                        </label>
+Hybird                        </label>
                     </div>
                 </div>
             </div>
@@ -114,7 +113,7 @@
     </div>
         <!-- Program -->
     <!-- ROW 2 -->
-    <div class="row mt-2" >
+    <div class="row mt-1" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required">
@@ -164,7 +163,7 @@
         </div>
     </div>
     <!-- ROW 3 -->
-    <div class="row mt-2" style="align-items: flex-start !important;">
+    <div class="row mt-1" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3 mt-lg-1">
             <label class="form-label small fw-semibold text-dark required"> Marketing Source </label>
             <select name="marketing_source"
@@ -221,7 +220,7 @@
                 <!-- <span class="required-feild_symbol">*</span> -->
             </label>
              <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
-                <div class="col-4 d-flex justify-content-center mb-1">
+                <div class="col-4 d-flex justify-content-center mb-1 pl-0">
                     <div class="form-check d-flex align-items-center mt-0">
                         <input class="form-check-input mt-0 mr-1"
                             type="radio"
@@ -231,7 +230,7 @@
                             @checked($trainingGender === 'male')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-male">
-                            MALE
+                            Male
                         </label>
                     </div>
                 </div>
@@ -245,7 +244,7 @@
                             @checked($trainingGender === 'female')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-female">
-                            FEMALE
+                            Female
                         </label>
                     </div>
                 </div>
@@ -259,7 +258,7 @@
                             @checked($trainingGender === 'other')>
                         <label class="form-check-label small mb-0 mt-1"
                             for="details-gender-other">
-                            OTHER
+                            Other
                         </label>
                     </div>
                 </div>
@@ -271,7 +270,7 @@
     </div>
 
     <!-- Radio Section -->
-    <div class="row mt-2" style="align-items: flex-start !important;">
+    <div class="row mt-1" style="align-items: flex-start !important;">
         <div class="col-md-6 col-lg-3">
                 <label class="form-label small fw-semibold text-dark required">Next Follow Up </label>
                 <input type="datetime-local"
@@ -370,7 +369,7 @@
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="4" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -472,8 +471,8 @@ textarea.form-control-sm {
 /* ---------- Radio Buttons ---------- */
 
 .lead-form input[type="range"] {
-    min-height: 0 !important;
-    height: auto !important;
+    /* min-height: 0 !important;
+    height: auto !important; */
 }
 
 .form-check-input[type="radio"] {
@@ -481,7 +480,7 @@ textarea.form-control-sm {
     -moz-appearance: none;
     appearance: none;
     width: 14px;
-    height: 14px;
+    height: 13px !important;
     border: 2px solid grey;
     border-radius: 50%;
     outline: none;
@@ -500,14 +499,14 @@ textarea.form-control-sm {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 7px;
+    width: 6px;
     height: 7px;
     border-radius: 50%;
     background-color: #00a8ff;
 }
 
 .form-check-label {
-   font-size:12.8px;
+   font-size:13.8px !important;
    font-weight:600;
    color:#566a7f;
     margin-bottom: 0;
@@ -585,7 +584,7 @@ input[name="details[probability]"] + .small {
 .range-numbers span{
     flex: 1 1 0;
     text-align: center;
-    font-size:12px !important;
+    font-size: 12px !important;
     font-weight:bold;
     color: #99a4ac;
     margin-bottom: 3px ;
@@ -616,8 +615,8 @@ textarea[name="details[remarks]"].form-control-sm {
     }
 
     textarea[name="details[remarks]"].form-control-sm {
-        min-height: 100px !important;
-        height: 100px !important;
+        min-height: 100px ;
+        height: 100px ;
     }
     
     .radio-group{
