@@ -188,7 +188,7 @@
                                     <td>{{ $batch->program?->title ?? $batch->program?->name ?? 'N/A' }}</td>
                                     <td>{{ $batch->campus?->code ?? $batch->campus?->name ?? 'N/A' }}</td>
                                     <td>{{ ucfirst($batch->session ?? 'n/a') }}</td>
-                                    <td>
+                                    <!-- <td>
                                         @if($batch->start_time && $batch->end_time)
                                             {{ \Carbon\Carbon::parse($batch->start_time)->format('h:i A') }}
                                             <br>
@@ -207,7 +207,7 @@
                                     <td>{{ $batch->instructor ?: 'N/A' }}</td>
                                     <td>{{ $batch->lab ?: 'N/A' }}</td>
                                     <td>{{ number_format((int) ($batch->admissions_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($batch->timetables_count ?? 0)) }} slots</td>
+                                    <td>{{ number_format((int) ($batch->timetables_count ?? 0)) }} slots</td> -->
                                     <td><span class="label {{ $badgeClasses[$batch->status] ?? 'label-default' }}">{{ ucfirst($batch->status ?? 'active') }}</span></td>
                                     <td class="text-right">
                                         @include('batch.partials.action', ['actionId' => 'batch-action-' . $batch->id])

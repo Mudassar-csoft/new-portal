@@ -86,6 +86,7 @@
                     </div>
                         <div class="text-right">
                         <button class="btn btn-inline btn-primary-outline" type="submit">Submit Leave</button>
+                        <button class="btn btn-inline btn-danger-outline" type="submit">Cancel</button>
                     </div>
                 </form>
 
@@ -190,6 +191,7 @@
                     </div>
                         <div class="text-right">
                             <button class="btn btn-inline btn-primary-outline" type="submit">Save Balance</button>
+                            <button class="btn btn-inline btn-danger-outline" type="submit">Cancel</button>
                     </div>
                 </form>
 

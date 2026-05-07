@@ -198,7 +198,7 @@
                                             {{ ucfirst($campus->status ?? 'inactive') }}
                                         </span>
                                     </td>
-                                    <td class="text-right">
+                                    <td >
                                         @include('campus.partials.action', ['actionId' => 'campus-action-' . $campus->id])
                                     </td>
                                 </tr>

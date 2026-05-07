@@ -104,6 +104,7 @@
                     </div>
                     <div class="text-right">
                     <button class="btn btn-inline btn-primary-outline" type="submit">Save Announcement</button>
+                    <button class="btn btn-inline btn-danger-outline" type="submit">Cancel</button>
                </div>
                 </form>
 

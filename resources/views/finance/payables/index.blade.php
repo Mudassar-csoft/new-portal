@@ -33,7 +33,7 @@
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header d-flex">
                 <h3 class="panel-title">{{ (($filters['scope'] ?? '') === 'open') ? 'Open Payables' : 'Payables' }}</h3>
-                <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Add Expense</a>
+                <!-- <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Add Expense</a> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ route('finance.payables') }}">

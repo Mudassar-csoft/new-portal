@@ -73,11 +73,12 @@
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted">Hold Ctrl (Windows) to select multiple employees.</small>
+                        <!-- <small class="text-muted">Hold Ctrl (Windows) to select multiple employees.</small> -->
                     </div>
 
                     <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Generate Payroll Request</button>
+                        <button type="submit" class="btn btn-inline btn-primary-outline">Generate Payroll</button>
+                        <button type="submit" class="btn btn-inline btn-danger-outline">Cancel</button>
                     </div>
                 </form>
             </div>

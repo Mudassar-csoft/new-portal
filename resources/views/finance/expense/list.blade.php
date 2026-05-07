@@ -32,9 +32,9 @@
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
                 <h3 class="form-label panel-title">{{ $title ?? 'Expenses' }}</h3>
-                <div class="finance-actions">
+                <!-- <div class="finance-actions">
                     <a href="{{ route('finance.expense.add', ['category' => $category ?? 'general']) }}" class="btn btn-primary btn-sm">Add Expense</a>
-                </div>
+                </div> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ url()->current() }}">

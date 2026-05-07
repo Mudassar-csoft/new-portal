@@ -17,7 +17,7 @@
         <section class="box-typical box-typical-dashboard panel panel-default inventory-card">
             <header class="box-typical-header panel-heading inventory-header">
                 <h3 class="panel-title">Inventory Management <span class="text-muted">|</span> {{ $pageHeading }}</h3>
-                <a href="{{ route('inventory.index', array_filter(['campus_id' => $selectedCampus])) }}" class="btn btn-primary btn-sm">View Stock Register</a>
+                <!-- <a href="{{ route('inventory.index', array_filter(['campus_id' => $selectedCampus])) }}" class="btn btn-primary btn-sm">View Stock Register</a> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ $formAction }}">
@@ -157,6 +157,7 @@
 
                     <div class="text-right mt-4">
                         <button type="submit" class="btn btn-inline btn-primary-outline">{{ $submitLabel }}</button>
+                        <button type="submit" class="btn btn-inline btn-danger-outline">Cancel</button>
                     </div>
                 </form>
             </div>

@@ -1358,17 +1358,18 @@ select {
 			min-width: max-content;
 			height: 30px !important;
 			text-align: left !important;
-			vertical-align: top !important;
+			vertical-align: center !important;
 			padding-top: 0.25rem !important;
 			padding-right: 0.5rem !important;
 			padding-bottom: 0.25rem !important;
 			padding-left: 0.5rem !important;
 			line-height: 1.2 !important;
-			white-space: nowrap !important;
-			word-break: normal !important;
+			white-space: wrap !important;
+			/* word-break: break-word !important; */
+			
 		}
 
-		.page-content .table tr,
+		/* .page-content .table tr,
 		.page-content .dataTables_wrapper table.dataTable tr,
 		.page-content .bootstrap-table .table tr,
 		.page-content .fixed-table-body .table tr,
@@ -1376,16 +1377,6 @@ select {
 		.page-content .follow-table tr,
 		.page-content .program-table tr {
 			height: auto !important;
-		}
-
-		.page-content .table tbody tr,
-		.page-content .dataTables_wrapper table.dataTable tbody tr,
-		.page-content .bootstrap-table .table tbody tr,
-		.page-content .fixed-table-body .table tbody tr,
-		.page-content .tbl-typical tbody tr,
-		.page-content .follow-table tbody tr,
-		.page-content .program-table tbody tr {
-			min-height: 0 !important;
 		}
 
 		.page-content .table tbody td > .btn,
@@ -1402,7 +1393,7 @@ select {
 
 		.page-content .table thead th,
 		.page-content .table tbody td {
-			font-size: 13px !important;
+			font-size: 12px !important;
 			line-height: 1.15 !important;
 		}
 
@@ -1416,7 +1407,8 @@ select {
 		.page-content .fixed-table-body .table td > * {
 			align-items: flex-start !important;
 			text-align: left !important;
-		}
+			  
+		} */
 
 		.table a {
     border-bottom: none !important;

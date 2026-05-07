@@ -212,6 +212,7 @@
                     </div>
                     <div class = "text-right">
                         <button class="btn btn-inline btn-primary-outline  p-2 mr-4" type="submit">Submit Request</button>
+                        <button class="btn btn-inline btn-danger-outline  p-2 mr-4" type="submit">Cancel</button>
                     </div>
                 </form>
 

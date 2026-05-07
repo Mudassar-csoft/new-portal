@@ -12,9 +12,9 @@
 							<h3 class="panel-title mb-0 form-label">Roles</h3>
 							<!-- <small class="text-muted">Manage role definitions and attached permissions.</small> -->
 						</div>
-						<div class="d-flex gap-2">
+						<!-- <div class="d-flex gap-2">
 							<a href="{{ route('roles.create') }}" class="btn btn-primary">New Role</a>
-						</div>
+						</div> -->
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
