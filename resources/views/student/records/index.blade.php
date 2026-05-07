@@ -24,7 +24,7 @@
                                         <th>Registration No</th>
                                         <th>Campus</th>
                                         <th>Programme</th>
-                                        <th>Batch</th>
+                                        <!-- <th>Batch</th> -->
                                         <th>Admission Date</th>
                                         <th>Status</th>
                                         <th>Certificate</th>
@@ -209,7 +209,7 @@
                     { data: 'registration_number', name: 'registration_number' },
                     { data: 'campus_code', name: 'campus_code', orderable: false },
                     { data: 'program_name', name: 'program_name', orderable: false },
-                    { data: 'batch_name', name: 'batch_name', orderable: false },
+                   // { data: 'batch_name', name: 'batch_name', orderable: false },
                     { data: 'admission_date', name: 'admission_date' },
                     { data: 'status_badge', name: 'student_status', orderable: false, searchable: false },
                     { data: 'certificate_status', name: 'certificate_status', orderable: false, searchable: false },

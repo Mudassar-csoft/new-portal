@@ -182,7 +182,7 @@ height: auto !important;
 }
 .table td {
   height: auto !important;
-  font-size: 13px !important; 
+  font-size: 12px !important; 
 }
 
 .table a {
@@ -1705,7 +1705,7 @@ form > .embed-actions {
 
 .dataTables_wrapper table.dataTable th,
 .dataTables_wrapper table.dataTable td {
-	white-space: nowrap;
+	white-space: wrap;
 }
 
 .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .dataTables_wrapper .follow-footer{
