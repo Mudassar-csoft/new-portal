@@ -36,10 +36,10 @@
                     <h3 class="panel-title">Expense Management <span class="text-muted">|</span> Add Expense Request</h3>
                     <!-- <p class="text-muted mb-0">Select campus first, then choose expense type. Rent and utility bills auto-load their source records.</p> -->
                 </div>
-                <div class="finance-header-actions">
+                <!-- <div class="finance-header-actions">
                     <a href="{{ route('finance.rent.index') }}" class="btn btn-danger btn-sm">Building Rent Setup</a>
                     <a href="{{ route('finance.utility.bills') }}" class="btn btn-primary btn-sm">Add Utility Bill</a>
-                </div>
+                </div> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('finance.expense.store') }}" id="expenseRequestForm">
@@ -135,6 +135,7 @@
 
                     <div class="text-right">
                         <button type="submit" class="btn btn-inline btn-primary-outline" id="expenseSubmitBtn">Submit For Approval</button>
+                        <button type="submit" class="btn btn-inline btn-danger-outline" id="expenseSubmitBtn">Cancel</button>
                     </div>
                 </form>
             </div>

@@ -144,6 +144,7 @@
 
                     <div class="text-right" >
                         <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>
+                        <button type="submit" class="btn btn-inline btn-danger-outline">Cancel</button>
                     </div>
                 </form>
             </div>

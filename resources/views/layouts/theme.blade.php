@@ -177,14 +177,12 @@ textarea[name$="[remarks]"] {
   padding: 0.6875rem 0.3125rem 0.625rem !important;
 }
 .table th{
-height: 16px !important;
+height: auto !important;
 
 }
-.table td,
-.odd,
-.even {
-  height: 28px !important;
-  font-size: 13px !important; 
+.table td {
+  height: auto !important;
+  font-size: 12px !important; 
 }
 
 .table a {
@@ -194,9 +192,8 @@ border-bottom: 1px solid #e9ecef;
 .finance-shell { padding: 8px 0 16px; background-color:white;}
 .bootstrap-table .table td,
 .fixed-table-body .table td,
-.table td,
-tr {
-  height: 29px !important;
+.table td {
+  height: auto !important;
   padding: 0.1875rem 0.3125rem !important; /* 3px 5px */
   text-align: left !important;
 }
@@ -1098,7 +1095,21 @@ text-align: center !important;
     color: #343a40 !important;
 }
 
-body, button, html, input, select {
+body,
+html {
+    color: #343434;
+    font-family: 'Proxima Nova', sans-serif;
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    -o-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
     color: #343434;
     height: 37px !important;
     font-family: 'Proxima Nova', sans-serif;
@@ -1296,6 +1307,108 @@ body, button, html, input, select {
 			min-width: 110px;
 			white-space: nowrap;
 		}
+
+		.page-content .table thead th,
+		.page-content .dataTables_wrapper table.dataTable thead th,
+		.page-content .bootstrap-table .table thead th,
+		.page-content .fixed-table-body .table thead th,
+		.page-content .tbl-typical th,
+		.page-content .follow-table thead th,
+		.page-content .program-table thead th {
+			background: #00A8FF !important;
+			background-color: #00A8FF !important;
+			color: #fff !important;
+			border-color: #00A8FF !important;
+		}
+
+		.page-content .tbl-typical th > div::before {
+			background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.38) 77%, rgba(255, 255, 255, 0.38) 100%) !important;
+		}
+
+		.page-content .table,
+		.page-content .dataTables_wrapper table.dataTable,
+		.page-content .bootstrap-table .table,
+		.page-content .fixed-table-body .table,
+		.page-content .tbl-typical,
+		.page-content .follow-table,
+		.page-content .program-table {
+			width: max-content !important;
+			min-width: 100% !important;
+			max-width: none !important;
+			table-layout: auto !important;
+		}
+
+		.page-content .table thead th,
+		.page-content .table tbody td,
+		.page-content .table tfoot th,
+		.page-content .table tfoot td,
+		.page-content .dataTables_wrapper table.dataTable thead th,
+		.page-content .dataTables_wrapper table.dataTable tbody td,
+		.page-content .bootstrap-table .table thead th,
+		.page-content .bootstrap-table .table tbody td,
+		.page-content .fixed-table-body .table thead th,
+		.page-content .fixed-table-body .table tbody td,
+		.page-content .tbl-typical th,
+		.page-content .tbl-typical td,
+		.page-content .follow-table thead th,
+		.page-content .follow-table tbody td,
+		.page-content .program-table thead th,
+		.page-content .program-table tbody td {
+			width: auto !important;
+			min-width: max-content;
+			height: 30px !important;
+			text-align: left !important;
+			vertical-align: center !important;
+			padding-top: 0.25rem !important;
+			padding-right: 0.5rem !important;
+			padding-bottom: 0.25rem !important;
+			padding-left: 0.5rem !important;
+			line-height: 1.2 !important;
+			white-space: wrap !important;
+			/* word-break: break-word !important; */
+			
+		}
+
+		/* .page-content .table tr,
+		.page-content .dataTables_wrapper table.dataTable tr,
+		.page-content .bootstrap-table .table tr,
+		.page-content .fixed-table-body .table tr,
+		.page-content .tbl-typical tr,
+		.page-content .follow-table tr,
+		.page-content .program-table tr {
+			height: auto !important;
+		}
+
+		.page-content .table tbody td > .btn,
+		.page-content .table tbody td > button,
+		.page-content .table tbody td > input,
+		.page-content .table tbody td > select,
+		.page-content .dataTables_wrapper table.dataTable tbody td > .btn,
+		.page-content .dataTables_wrapper table.dataTable tbody td > button,
+		.page-content .dataTables_wrapper table.dataTable tbody td > input,
+		.page-content .dataTables_wrapper table.dataTable tbody td > select {
+			margin-top: 0 !important;
+			margin-bottom: 0 !important;
+		}
+
+		.page-content .table thead th,
+		.page-content .table tbody td {
+			font-size: 12px !important;
+			line-height: 1.15 !important;
+		}
+
+		.page-content .table th > *,
+		.page-content .table td > *,
+		.page-content .dataTables_wrapper table.dataTable th > *,
+		.page-content .dataTables_wrapper table.dataTable td > *,
+		.page-content .bootstrap-table .table th > *,
+		.page-content .bootstrap-table .table td > *,
+		.page-content .fixed-table-body .table th > *,
+		.page-content .fixed-table-body .table td > * {
+			align-items: flex-start !important;
+			text-align: left !important;
+			  
+		} */
 
 		.table a {
     border-bottom: none !important;
@@ -1592,7 +1705,7 @@ form > .embed-actions {
 
 .dataTables_wrapper table.dataTable th,
 .dataTables_wrapper table.dataTable td {
-	white-space: nowrap;
+	white-space: wrap;
 }
 
 .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .dataTables_wrapper .follow-footer{

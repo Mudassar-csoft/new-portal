@@ -11,10 +11,10 @@
         <section class="box-typical box-typical-dashboard panel panel-default inventory-card">
             <header class="box-typical-header panel-heading inventory-header">
                 <h3 class="panel-title">Inventory Management <span class="text-muted">|</span> Campus Stock Register</h3>
-                <a href="{{ route('inventory.create', array_filter(['campus_id' => $filters['campus_id']])) }}" class="btn btn-primary btn-sm">Feed Inventory</a>
+                <!-- <a href="{{ route('inventory.create', array_filter(['campus_id' => $filters['campus_id']])) }}" class="btn btn-primary btn-sm">Feed Inventory</a> -->
             </header>
             <div class="box-typical-body panel-body">
-                <div class="inventory-summary">
+                <!-- <div class="inventory-summary">
                     <div class="summary-tile">
                         <strong>{{ number_format($summary['records']) }}</strong>
                         <span class="summary-label">Records</span>
@@ -27,7 +27,7 @@
                         <strong>{{ number_format($summary['low_stock']) }}</strong>
                         <span class="summary-label">Low Stock Items</span>
                     </div>
-                </div>
+                </div> -->
 
                 <form method="GET" action="{{ route('inventory.index') }}" class="inventory-filter-form">
                     <div class="form-row mt-2">
@@ -73,10 +73,10 @@
                             <th>Code</th>
                             <th>Campus</th>
                             <th>Category</th>
-                            <th>Item Details</th>
+                            <!-- <th>Item Details</th>
                             <th>Qty</th>
                             <th>Location</th>
-                            <th>Condition</th>
+                            <th>Condition</th> -->
                             <th>Created</th>
                             @if($isAdmin)
                                 <th>Action</th>
@@ -95,7 +95,7 @@
                                     <div class="text-muted">{{ $item->campus->name ?? 'N/A' }}</div>
                                 </td>
                                 <td>{{ $item->categoryLabel() }}</td>
-                                <td>
+                                <!-- <td>
                                     <strong>{{ $item->item_name }}</strong>
                                     @if($item->brand || $item->model_no)
                                         <div class="text-muted">
@@ -118,7 +118,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $item->room_location ?: 'N/A' }}</td>
-                                <td>{{ ucfirst(str_replace('_', ' ', $item->condition_status)) }}</td>
+                                <td>{{ ucfirst(str_replace('_', ' ', $item->condition_status)) }}</td> -->
                                 <td>
                                     {{ optional($item->created_at)->format('d-M-Y') ?? 'N/A' }}
                                     @if($item->creator)

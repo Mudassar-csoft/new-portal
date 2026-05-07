@@ -15,6 +15,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- <a href="{{ route('program.index') }}" class="btn btn-default">Back to Programmes</a> -->
             </header>
             <div class="box-typical-body panel-body program-body">
                 <form method="POST" action="{{ route('program.store') }}" enctype="multipart/form-data">
@@ -152,11 +153,14 @@
             border: 1px solid #dbe5f1;
             border-radius: 6px;
             background: #f8fbff;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .program-discount-col {
             flex: 1 1 220px;
-            min-width: 190px;
+            min-width: 0;
         }
 
         .program-discount-action {

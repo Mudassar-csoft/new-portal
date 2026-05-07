@@ -159,7 +159,7 @@
                                 <div class="form-group col-md-12"><label class="form-label required" >Notes</label><input type="text" name="notes" class="form-control"></div>
                                 
                             </div>
-                            <div class="  payrol-button text-right" style="margin-right:27px;">
+                            <div class="  payrol-button text-right" >
                                     <button class="btn btn-inline btn-primary-outline" type="submit">Generate Payroll Run</button>
                                 </div>
                         </form>
@@ -178,7 +178,7 @@
                                                 @if($run->status !== 'closed')
                                                     <form method="POST" action="{{ route('hrm.payroll.runs.close', $run) }}">
                                                         @csrf
-                                                        <button class="btn btn-sm btn-outline-danger" type="submit">Close Month</button>
+                                                        <button class="btn btn-sm btn-outline-danger" type="submit">Close</button>
                                                     </form>
                                                 @else
                                                     <span class="text-success">Closed</span>

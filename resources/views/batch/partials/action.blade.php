@@ -8,10 +8,12 @@
     </button>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
         <a class="dropdown-item" href="{{ route('batch.edit', $batch) }}">
-            <i class="fa fa-pencil mr-2 text-info"></i>Edit Batch
+            <!-- <i class="fa fa-pencil mr-2 text-info"></i> -->
+            Edit 
         </a>
         <a class="dropdown-item" href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}">
-            <i class="fa fa-calendar mr-2 text-primary"></i>Manage Time Table
+            <!-- <i class="fa fa-calendar mr-2 text-primary"></i> -->
+            Manage Time Table
         </a>
     </div>
 </div>

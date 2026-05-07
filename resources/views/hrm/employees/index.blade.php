@@ -194,7 +194,8 @@
                         <input type="text" name="notes" class="form-control ">
                     </div>
                     <div class="text-right  mt-3 ml-0 pl-0">
-                    <button class="btn btn-inline btn-primary text-end" type="submit">Save Employee</button>
+                    <button class="btn btn-inline btn-primary-outline text-end" type="submit">Save Employee</button>
+                    <button class="btn btn-inline btn-danger-outline text-end" type="submit">Cancel</button>
                     </div>
                 </form>
 

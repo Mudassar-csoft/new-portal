@@ -11,13 +11,15 @@
     </button>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
         <a class="dropdown-item" href="{{ route('campus.edit', $campus) }}">
-            <i class="fa fa-pencil mr-2 text-info"></i>Edit Campus
+            <!-- <i class="fa fa-pencil mr-2 text-info"></i> -->
+            Edit 
         </a>
-        <a class="dropdown-item" href="{{ route('batch.index', ['campus_id' => $campus->id]) }}">
+        <!-- <a class="dropdown-item" href="{{ route('batch.index', ['campus_id' => $campus->id]) }}">
             <i class="fa fa-users mr-2 text-primary"></i>View Batches
-        </a>
+        </a> -->
         <a class="dropdown-item" href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}">
-            <i class="fa fa-archive mr-2 text-success"></i>View Inventory
+            <!-- <i class="fa fa-archive mr-2 text-success"></i> -->
+            Suspend
         </a>
     </div>
 </div>

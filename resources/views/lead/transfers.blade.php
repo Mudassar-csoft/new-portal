@@ -27,15 +27,15 @@
                                 <tr>
                                     <th class="text-left w-auto p-1">Sr#</th>
                                     <th class="text-left w-auto p-1">Lead</th>
-                                    <th class="text-left w-auto p-1">Phone</th>
-                                    <th class="text-left w-auto p-1">Program</th>
+                                    <!-- <th class="text-left w-auto p-1">Phone</th>
+                                    <th class="text-left w-auto p-1">Program</th> -->
                                     <th class="text-left w-auto p-1">From Campus</th>
                                     <th class="text-left w-auto p-1">To Campus</th>
                                     <th class="text-left w-auto p-1">Status</th>
                                     <th class="text-left w-auto p-1">Requested By</th>
-                                    <th class="text-left w-auto p-1">Requested At</th>
+                                    <!-- <th class="text-left w-auto p-1">Requested At</th> -->
                                     <th class="text-left w-auto p-1">Approved By</th>
-                                    <th class="text-left w-auto p-1">Approved At</th>
+                                    <!-- <th class="text-left w-auto p-1">Approved At</th> -->
                                     <th class="text-left w-auto p-1">Reason</th>
                                     <th class="text-left w-auto p-1">Action</th>
                                 </tr>
@@ -197,15 +197,15 @@ table#transfer-grid{
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'lead_name', name: 'lead_name' },
-                    { data: 'lead_phone', name: 'lead_phone' },
-                    { data: 'program', name: 'program', orderable: false, searchable: false },
+                    // { data: 'lead_phone', name: 'lead_phone' },
+                    // { data: 'program', name: 'program', orderable: false, searchable: false },
                     { data: 'from_campus', name: 'from_campus' },
                     { data: 'to_campus', name: 'to_campus' },
                     { data: 'status_badge', name: 'status', orderable: false, searchable: false },
                     { data: 'requested_by', name: 'requested_by', orderable: false, searchable: false },
-                    { data: 'created_at', name: 'created_at' },
+                    // { data: 'created_at', name: 'created_at' },
                     { data: 'approved_by', name: 'approved_by', orderable: false, searchable: false },
-                    { data: 'approved_at', name: 'approved_at', orderable: false, searchable: false },
+                    // { data: 'approved_at', name: 'approved_at', orderable: false, searchable: false },
                     { data: 'reason', name: 'reason' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false }
                 ]

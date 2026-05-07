@@ -10,16 +10,19 @@
                     <h3 class="panel-title mb-0">Create Campus / Franchise</h3>
                     <!-- <small class="text-muted">Add a new company-owned campus or franchise branch with code, contact, and royalty setup.</small> -->
                 </div>
-                <a href="{{ route('campus.index') }}" class="btn btn-outline-primary">Back to Campuses</a>
+                <!-- <a href="{{ route('campus.index') }}" class="btn btn-outline-primary">Back to Campuses</a> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('campus.store') }}">
                     @csrf
                     @include('campus.partials.form')
 
-                    <div class="text-right mt-3 mb-2">
-                        <button type="submit" class="btn btn-primary">Create Campus</button>
-                    </div>
+                     <div  class="form-actions mb-2 mt-3 text-right">
+							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Create Campus</button>
+
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; ">Cancel</a>
+						</div>
                 </form>
             </div>
         </div>

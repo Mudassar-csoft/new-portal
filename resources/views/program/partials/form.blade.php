@@ -112,7 +112,7 @@
         <h4 class="mb-0">Campus Discount</h4>
         <!-- <small class="text-muted">Set a global discount for all campuses or create separate campus-wise discounts.</small> -->
     </div>
-    <button type="button" class="btn btn-default" id="add-program-discount">Add</button>
+    <button type="button" class="btn btn-default " id="add-program-discount"><i class="fa-solid fa-plus text-white"></i></button>
 </div>
 
 <div id="program-discount-rows" data-next-index="{{ count($discountRows) }}">

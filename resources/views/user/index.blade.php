@@ -12,9 +12,9 @@
 							<h3 class="panel-title mb-0 form-label">User Directory</h3>
 							<!-- <small class="text-muted">Manage users, campuses, roles, and access.</small> -->
 						</div>
-						<div class="d-flex gap-2">
+						<!-- <div class="d-flex gap-2">
 							<a href="{{ route('users.create') }}" class="btn btn-primary">New User</a>
-						</div>
+						</div> -->
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">

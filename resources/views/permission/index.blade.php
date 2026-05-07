@@ -12,9 +12,9 @@
 							<h3 class="panel-title form-label mb-0">Permissions</h3>
 							<!-- <small class="text-muted">Manage permission definitions.</small> -->
 						</div>
-						<div class="d-flex gap-2">
+						<!-- <div class="d-flex gap-2">
 							<a href="{{ route('permissions.create') }}" class="btn btn-primary">New Permission</a>
-						</div>
+						</div> -->
 					</header>
 					<div class="box-typical-body panel-body">
 						<div class="table-responsive">
@@ -26,7 +26,7 @@
 										<th>Action</th>
 										<th>Slug</th>
 										<th>Date</th>
-										<th class="text-right">Actions</th>
+										<th>Actions</th>
 									</tr>
 								</thead>
 							</table>
@@ -151,6 +151,11 @@
 			width: 380px !important;
 			padding: 0px 18px !important;
 			border-radius: 999px !important;
+		}
+		select option {
+			height: 20px;
+			line-height: 20px;
+			padding: 2px 8px;
 		}
 	</style>
 @endpush

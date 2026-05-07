@@ -247,7 +247,7 @@
                                     <td>{{ $entry->instructor ?: ($entry->batch?->instructor ?? 'N/A') }}</td>
                                     <td>{{ $entry->topic ?: 'N/A' }}</td>
                                     <td><span class="label {{ $entry->status === 'active' ? 'label-success' : ($entry->status === 'inactive' ? 'label-default' : 'label-danger') }}">{{ ucfirst($entry->status) }}</span></td>
-                                    <td class="text-right">
+                                    <td>
                                         @include('batch.partials.timetable-action')
                                     </td>
                                 </tr>
