@@ -18,7 +18,6 @@ class Program extends Model
         'program_type',
         'fee',
         'duration_weeks',
-        'discount_limit',
         'installments',
         'outline_path',
         'prerequisite',

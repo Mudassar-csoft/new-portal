@@ -135,6 +135,14 @@ class ProgramController extends Controller
                 'inactive' => 'Inactive',
             ],
             'discountRows' => $discountRows,
+            'existingProgramCodes' => Program::query()
+                ->when($program->exists, fn (Builder $query) => $query->whereKeyNot($program->id))
+                ->pluck('code')
+                ->map(fn ($code) => Str::upper(trim((string) $code)))
+                ->filter()
+                ->values()
+                ->all(),
+            'codeReadonly' => ! $program->exists,
         ];
     }
 
@@ -146,7 +154,6 @@ class ProgramController extends Controller
             'code' => ['required', 'string', 'max:255', Rule::unique('programs', 'code')->ignore($program?->id)],
             'fee' => ['required', 'numeric', 'min:0'],
             'duration_weeks' => ['required', 'integer', 'min:1'],
-            'discount_limit' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'installments' => ['required', 'integer', 'min:1', 'max:36'],
             'outline' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
             'remove_outline' => ['nullable', 'boolean'],
@@ -186,7 +193,6 @@ class ProgramController extends Controller
             'code' => Str::upper(trim((string) $validated['code'])),
             'fee' => $validated['fee'],
             'duration_weeks' => $validated['duration_weeks'],
-            'discount_limit' => $validated['discount_limit'] ?? null,
             'installments' => $validated['installments'],
             'outline_path' => $outlinePath,
             'prerequisite' => $validated['prerequisite'] ?? null,
