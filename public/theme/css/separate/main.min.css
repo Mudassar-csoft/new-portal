@@ -13248,7 +13248,7 @@ body {
 
 .site-header .site-header-content .site-header-content-in:after,
 .site-header .site-header-content .site-header-content-in:before {
-    content: " ";
+    /* content: " "; */
     display: table
 }
 
@@ -16751,7 +16751,7 @@ html {
 .show-hide-sidebar {
     position: relative;
     overflow: hidden;
-    margin: 5px !important;
+    margin: 5px 0px!important;
     padding: 0;
     width: 30px;
     height: 30px;

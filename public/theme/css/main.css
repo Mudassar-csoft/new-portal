@@ -13284,7 +13284,7 @@ body {
 
 .site-header .site-header-content .site-header-content-in:after,
 .site-header .site-header-content .site-header-content-in:before {
-    content: " ";
+    /* content: " "; */
     display: table
 }
 

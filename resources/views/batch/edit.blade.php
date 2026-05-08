@@ -10,10 +10,10 @@
                     <h3 class="panel-title mb-0">Edit Batch</h3>
                     <!-- <small class="text-muted">Update batch timing, instructor, status, and session details.</small> -->
                 </div>
-                <div class="d-flex" style="gap:10px;">
+                <!-- <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
                     <a href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}" class="btn btn-primary">Batch Time Table</a>
-                </div>
+                </div> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="POST" action="{{ route('batch.update', $batch) }}">
@@ -22,7 +22,7 @@
                     @include('batch.partials.form')
 
                     <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary">Update Batch</button>
+                        <button type="submit" class="btn btn-primary-outline">Update Batch</button>
                     </div>
                 </form>
             </div>

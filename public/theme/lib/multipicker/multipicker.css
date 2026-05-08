@@ -96,7 +96,7 @@
 .checklist.vertical.small {
 	padding: 2px 3px;
 }
-.checklist.large > * {
+.checklist.large >  {
 	width: 45px;
 	padding: 12px 0px;
 	font-size: 15px;

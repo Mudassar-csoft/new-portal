@@ -252,16 +252,16 @@
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Current Month Leads & Admission</span>
+								<span class="month-chart-header-label">Current Month Leads / Admission</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit current month leads title">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit current month leads title">
 								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
 							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move current month leads panel slightly">
 								<i class="glyphicon glyphicon-move"></i>
-							</button>
+							</button> -->
 							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh current month leads chart">
 								<i class="font-icon font-icon-refresh"></i>
 							</button>
@@ -271,9 +271,9 @@
 							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize current month leads chart">
 								<i class="font-icon font-icon-expand"></i>
 							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close current month leads chart">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close current month leads chart">
 								<i class="font-icon font-icon-close"></i>
-							</button>
+							</button> -->
 						</div>
 					</div>
 				</header>
@@ -297,12 +297,12 @@
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit daily activity title">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit daily activity title">
 								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
 							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move daily activity panel slightly">
 								<i class="glyphicon glyphicon-move"></i>
-							</button>
+							</button> -->
 							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh daily activity">
 								<i class="font-icon font-icon-refresh"></i>
 							</button>
@@ -312,9 +312,9 @@
 							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize daily activity">
 								<i class="font-icon font-icon-expand"></i>
 							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close daily activity">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close daily activity">
 								<i class="font-icon font-icon-close"></i>
-							</button>
+							</button> -->
 						</div>
 					</div>
 				</header>
@@ -366,12 +366,12 @@
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
-							<button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit campus admissions comparison title">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="edit-title" aria-label="Edit campus admissions comparison title">
 								<i class="font-icon glyphicon glyphicon-pencil"></i>
 							</button>
 							<button type="button" class="action-btn dashboard-panel-action" data-action="offset" aria-label="Move campus admissions comparison panel slightly">
 								<i class="glyphicon glyphicon-move"></i>
-							</button>
+							</button> -->
 							<button type="button" class="action-btn dashboard-panel-action" data-action="refresh" aria-label="Refresh campus admissions comparison">
 								<i class="font-icon font-icon-refresh"></i>
 							</button>
@@ -381,9 +381,9 @@
 							<button type="button" class="action-btn dashboard-panel-action" data-action="fullscreen" aria-label="Maximize campus admissions comparison">
 								<i class="font-icon font-icon-expand"></i>
 							</button>
-							<button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close campus admissions comparison">
+							<!-- <button type="button" class="action-btn dashboard-panel-action" data-action="close" aria-label="Close campus admissions comparison">
 								<i class="font-icon font-icon-close"></i>
-							</button>
+							</button> -->
 						</div>
 					</div>
 				</header>
@@ -444,7 +444,7 @@
 	<style>
 		*{
 
-			font-size: 15px !important;	
+			font-size: 15px;	
 		}
 		body.with-side-menu.control-panel .page-content {
 			padding-right: 67px !important;
@@ -1244,8 +1244,8 @@
         }
         .daily-status-badge {
             display: inline-block;
-            min-width: 88px;
-            padding: 6px 14px;
+            min-width: 67px;
+            padding: 6px 7px;
             border-radius: 999px;
             color: #fff;
             font-size: 13px;
@@ -1276,7 +1276,7 @@
         }
         .daily-student-name {
             color: #304b58;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             text-align: left;
         }
@@ -1289,7 +1289,7 @@
         }
         .daily-phone,
         .daily-date {
-            font-size: 15px !important;
+            font-size: 13px !important;
             font-weight: 500;
         }
         .daily-empty-state {

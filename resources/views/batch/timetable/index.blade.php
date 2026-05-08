@@ -28,10 +28,10 @@
                     <h3 class="panel-title mb-0">Manage Time Table</h3>
                     <!-- <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small> -->
                 </div>
-                <div class="d-flex" style="gap:10px;">
+                <!-- <div class="d-flex" style="gap:10px;">
                     <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
                     <a href="{{ route('batch.create') }}" class="btn btn-primary">Create Batch</a>
-                </div>
+                </div> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('batch.timetable.index') }}" class="batch-filter-form">
@@ -93,8 +93,8 @@
                         </div>
                     </div>
                     <div class=" text-right">
-                        <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger">Reset</a>
+                        <button type="submit" class="btn btn-primary-outline">Filter</button>
+                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger-outline">Reset</a>
                     </div>
                 </form>
 
@@ -226,7 +226,7 @@
                                 <th>Time</th>
                                 <th>Room</th>
                                 <th>Instructor</th>
-                                <th>Topic</th>
+                                <th>Topic</th>  
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>

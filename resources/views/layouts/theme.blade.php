@@ -51,10 +51,6 @@ h5 { font-size: 16px !important; }
 p { font-size: 14px; }
 span { font-size: 13px; }
 small { font-size: 12px; }
-body,
-p,
-
-label,
 
 
 
@@ -63,7 +59,7 @@ button {
   line-height: 1.5;
 }
 span{
-	font-size: 16px !important; 
+	font-size: 14px ; 
   line-height: 1.5;
 }
 input,select,textarea{
@@ -182,7 +178,7 @@ height: auto !important;
 }
 .table td {
   height: auto !important;
-  font-size: 12px !important; 
+  font-size: 14px !important; 
 }
 
 .table a {
@@ -870,8 +866,8 @@ form textarea[name="remarks"].form-control,
 form textarea[name="remarks"].form-control-sm,
 form textarea[name$="[remarks]"].form-control,
 form textarea[name$="[remarks]"].form-control-sm {
-  min-height: 100px !important;
-  height: 100px !important;
+  min-height: 90px !important;
+  height: 90px !important;
 }
 
 form .field-error {
@@ -939,8 +935,8 @@ font-size: 16px !important;
 line-height: 35px !important;
 color: #343434;
 padding: 0 25px 0 1rem !important;
-height: 28px !important;
-min-height: 28px !important;
+height: 36px !important;
+min-height: 36px !important;
 background: #fff;
 }
 
@@ -1051,7 +1047,7 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table td > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu.dropdown-menu-upward {
-top: 0 !important;
+top: 23px !important;
 bottom: auto !important;
 left: auto !important;
 right: 100% !important;
@@ -1360,8 +1356,8 @@ select {
 			text-align: left !important;
 			vertical-align: center !important;
 			padding-top: 0.25rem !important;
-			padding-right: 0.5rem !important;
-			padding-bottom: 0.25rem !important;
+			padding-right: 4px !important;
+			padding-bottom: 4px !important;
 			padding-left: 0.5rem !important;
 			line-height: 1.2 !important;
 			white-space: wrap !important;
@@ -1532,6 +1528,41 @@ form .is-invalid + .select2-container .select2-selection--multiple {
     border-color: #d8e2e7 !important;
     box-shadow: none !important;
     background-image: none !important;
+}
+
+.lead-form input[type="range"] {
+    /* min-height: 0 !important;
+    height: auto !important; */
+}
+
+.form-check-input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 13px !important;
+    border: 2px solid grey;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.form-check-input[type="radio"]:checked {
+    border-color: #00a8ff;
+}
+
+.form-check-input[type="radio"]:checked::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 6px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #00a8ff;
 }
 
 .lead-form .form-check-input[type="radio"], .lead-form .form-check-input[type="checkbox"] {

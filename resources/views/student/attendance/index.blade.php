@@ -103,7 +103,7 @@
                             <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="Student name, roll number, or registration number">
                         </div>
                         <div class="form-group student-actions  mr-1">
-                            <button type="submit" class="btn btn-primary ">Filter</button>
+                            <button type="submit" class="btn btn-primary-outline ">Filter</button>
                             <a href="{{ route('student.attendance.index') }}" class="btn btn-danger-outline p-2">Reset</a>
                         </div>
                     </div>

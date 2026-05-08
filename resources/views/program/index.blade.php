@@ -23,10 +23,10 @@
                     <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
                     <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
                 </div>
-                <a href="{{ route('program.create') }}" class="btn btn-primary">Create Programme</a>
+                <!-- <a href="{{ route('program.create') }}" class="btn btn-primary">Create Programme</a> -->
             </header>
             <div class="box-typical-body panel-body">
-                <div class="program-scope-grid">
+                <!-- <div class="program-scope-grid">
                     @foreach($scopeCards as $card)
                         <a href="{{ route('program.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="program-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
@@ -34,7 +34,7 @@
                            <span class="program-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
-                </div>
+                </div> -->
 
                 <form method="GET" action="{{ route('program.index') }}" class="program-filter-form">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
@@ -73,8 +73,8 @@
                             <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Programme title, code, type, remarks, or discount campus">
                         </div>
                         <div class="form-group program-filter-actions">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('program.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                            <button type="submit" class="btn btn-primary-outline">Filter</button>
+                            <a href="{{ route('program.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger-outline">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -85,14 +85,14 @@
                             <tr>
                                 <th>Code</th>
                                 <th>Programme</th>
-                                <th>Type</th>
+                                <!-- <th>Type</th> -->
                                 <th>Fee</th>
                                 <th>Duration</th>
-                                <th>Installments</th>
-                                <th>Batches</th>
-                                <th>Students</th>
+                                <!-- <th>Installments</th> -->
+                                <!-- <th>Batches</th> -->
+                                <!-- <th>Students</th> -->
                                 <th>Discounts</th>
-                                <th>Outline</th>
+                                <!-- <th>Outline</th> -->
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>
@@ -108,12 +108,12 @@
                                             <span class="text-muted">{{ \Illuminate\Support\Str::limit($program->remarks, 80) }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ ucwords($program->program_type ?? 'n/a') }}</td>
+                                    <!-- <td>{{ ucwords($program->program_type ?? 'n/a') }}</td> -->
                                     <td>{{ number_format((float) $program->fee, 2) }}</td>
                                     <td>{{ number_format((int) ($program->duration_weeks ?? 0)) }} weeks</td>
-                                    <td>{{ number_format((int) ($program->installments ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($program->batches_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($program->admissions_count ?? 0)) }}</td>
+                                    <!-- <td>{{ number_format((int) ($program->installments ?? 0)) }}</td> -->
+                                    <!-- <td>{{ number_format((int) ($program->batches_count ?? 0)) }}</td> -->
+                                    <!-- <td>{{ number_format((int) ($program->admissions_count ?? 0)) }}</td> -->
                                     <td>
                                         @if($program->campusDiscounts->isEmpty())
                                             <span class="text-muted">No discounts</span>
@@ -129,13 +129,13 @@
                                             @endforeach
                                         @endif
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         @if($program->outline_path)
                                             <a href="{{ route('program.outline', $program) }}" class="btn btn-xs btn-default">Download</a>
                                         @else
                                             <span class="text-muted">None</span>
                                         @endif
-                                    </td>
+                                    </td> -->
                                     <td><span class="label {{ $badgeClasses[$program->status] ?? 'label-default' }}">{{ ucfirst($program->status ?? 'active') }}</span></td>
                                     <td class="text-right">
                                         @include('program.partials.action', ['actionId' => 'program-action-' . $program->id])

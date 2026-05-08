@@ -3532,11 +3532,13 @@ video {
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
+
+
 .show-hide-sidebar {
   position: relative;
   top: 1px !important;
   overflow: hidden;
-  margin: 0;
+  margin-left: 37px;
   padding: 0;
   width: 30px;
   height: 30px;

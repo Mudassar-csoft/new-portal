@@ -156,8 +156,8 @@
                         </div>
                     </div>
                     <div class="form-group batch-filter-actions ">
-                        <button type="submit" class="btn btn-outline-primary">Filter</button>
-                        <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                        <button type="submit" class="btn btn-primary-outline ">Filter</button>
+                        <a href="{{ route('batch.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger-outline">Reset</a>
                     </div>
                 </form>
 

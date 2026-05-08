@@ -138,7 +138,7 @@
 											   value="male"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'male' ? 'checked' : '' }}
 											   required>
-										<label class="form-label small mb-0" for="gender-male">Male</label>
+										<label class="form-check-label  mb-0" for="gender-male">Male</label>
 									</div>
 								</div>
 								<div class="col-4 d-flex justify-content-center mb-1">
@@ -149,7 +149,7 @@
 											   type="radio"
 											   value="female"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'female' ? 'checked' : '' }}>
-										<label class="form-label small mb-0" for="gender-female">Female</label>
+										<label class="form-check-label  mb-0" for="gender-female">Female</label>
 									</div>
 								</div>
 								<div class="col-4 d-flex justify-content-center">
@@ -160,7 +160,7 @@
 											   type="radio"
 											   value="other"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'other' ? 'checked' : '' }}>
-										<label class="form-label small mb-0" for="gender-other">Other</label>
+										<label class="form-label  mb-0" for="gender-other">Other</label>
 									</div>
 								</div>
 							</div>
