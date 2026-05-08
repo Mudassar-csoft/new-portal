@@ -9,12 +9,21 @@
 		$selectedProgramId = old('program_id', $lead->program_id ?? null);
 	@endphp
 	<div class="registration-shell">
-		<div class="registration-card box-typical box-typical-dashboard panel panel-default">
-			<div class="card-body">
-				<h3 class="panel-title">Create New Registration <span class="">(All fields marked with * are required)</span></h3>
-				<hr>
-
-				<form method="POST" action="{{ route('registration.store') }}" id="registration-form" class="registration-form">
+		<div class="registration-content">
+			<div class="registration-card box-typical box-typical-dashboard panel panel-default">
+				@unless(request()->boolean('embed'))
+					<header class="box-typical-header panel-heading registration-header">
+						<div class="tbl w-100">
+							<div class="tbl-row">
+								<div class="tbl-cell tbl-cell-title p-0 m-0">
+									<h2 class="panel-title registration-title">Create New Registration <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span></h2>
+								</div>
+							</div>
+						</div>
+					</header>
+				@endunless
+				<div class="box-typical-body panel-body registration-body">
+					<form method="POST" action="{{ route('registration.store') }}" id="registration-form" class="registration-form">
 					@csrf
 					@if(request()->boolean('embed'))
 						<input type="hidden" name="embed" value="1">
@@ -124,11 +133,11 @@
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-						<div class="col-md-6 col-lg-3 mb-lg-1">
-							<label class="form-label text-dark fw-semibold small">
+						<div class="col-md-6 col-lg-3 mb-lg-1 registration-gender-group">
+							<label class="form-label text-dark fw-semibold registration-gender-title">
 								Gender
 							</label>
-							<div class="row mt-2 choice-group @error('gender') is-invalid @enderror">
+							<div class="row mt-2 choice-group registration-gender-options @error('gender') is-invalid @enderror">
 								<div class="col-4 d-flex justify-content-center mb-1">
 									<div class="form-check d-flex align-items-center mt-0">
 										<input class="form-check-input mt-0 mr-1 @error('gender') is-invalid @enderror"
@@ -160,7 +169,7 @@
 											   type="radio"
 											   value="other"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'other' ? 'checked' : '' }}>
-										<label class="form-label  mb-0" for="gender-other">Other</label>
+										<label class="form-check-label mb-0" for="gender-other">Other</label>
 									</div>
 								</div>
 							</div>
@@ -175,7 +184,7 @@
 					<div class="form-row">
 						<div class="form-group col-12">
 							<label class="form-label required">Postal Address</label>
-							<textarea class="form-control @error('address') is-invalid @enderror" name="address" rows="2" placeholder="Enter complete postal address..." required>{{ old('address') }}</textarea>
+							<textarea class="form-control registration-textarea-address @error('address') is-invalid @enderror" name="address" rows="1" placeholder="Enter complete postal address..." required>{{ old('address') }}</textarea>
 							@error('address')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -206,52 +215,78 @@
 					<div class="form-row">
 						<div class="form-group col-12">
 							<label class="form-label label-without-required">Remarks</label>
-							<textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="4" style="height:7rem !Important;" placeholder="Remarks">{{ old('remarks') }}</textarea>
+							<textarea class="form-control registration-textarea-remarks @error('remarks') is-invalid @enderror" name="remarks" rows="2" placeholder="Remarks">{{ old('remarks') }}</textarea>
 							@error('remarks')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 					</div>
-					<div  class="form-actions mb-2 mt-3 text-right">
+					<div class="form-actions registration-actions mb-2 mt-3 text-right">
 						<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;">Register Now</button>
 						<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem;">Cancel</a>
 					</div>
 				</form>
+				</div>
 			</div>
 		</div>
 	</div>
 @endsection
 
-@push('styles')
+	@push('styles')
 	<style>
 		.registration-shell {
-			/* padding: 18px 0 24px; */
+			font-family: 'Proxima Nova', sans-serif;
+			position: relative;
+			min-height: 100vh;
+			width: 100%;
+			overflow: hidden;
+			padding: 0;
+			margin: 0;
+		}
+
+		.registration-content {
+			position: relative;
+			min-height: 400px;
 		}
 
 		.registration-card {
+			overflow: visible !important;
+			max-height: none !important;
 			border: 1px solid #e3edf7;
-			/* border-radius: 24px; */
 			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
-			overflow: hidden;
 			background: #fff;
 		}
 
-		.registration-card .card-body {
-			padding: 28px 30px 24px;
+		.registration-card .panel-heading {
+			padding: 10px 20px;
 		}
 
-		.reg-title {
-			margin: 0 0 24px;
-			font-size: 33px;
-			font-weight: 800;
-			line-height: 1.15;
-			color: #183b68;
+		.registration-card .panel-body {
+			max-height: none !important;
+			overflow: visible !important;
 		}
 
-		.reg-title small {
+		.registration-header {
+			border-bottom: 1px solid #e6eef3;
+			background: #fff;
+		}
+
+		.registration-title {
 			font-size: 18px;
 			font-weight: 500;
-			color: #70839a !important;
+			color: #25364a;
+			margin: 0;
+		}
+
+		.registration-title > span {
+			font-size: 14px;
+			font-weight: 400;
+			color: #5f7289;
+		}
+
+		.registration-body {
+			padding: 10px 10px 5px;
+			overflow: visible !important;
 		}
 
 		.registration-form .required::after {
@@ -301,6 +336,20 @@
 			resize: vertical;
 		}
 
+		.registration-form .registration-textarea-address {
+			min-height: 54px !important;
+			height: 54px !important;
+			max-height: 54px !important;
+			resize: none;
+		}
+
+		.registration-form .registration-textarea-remarks {
+			min-height: 54px !important;
+			height: 54px !important;
+			max-height: 54px !important;
+			resize: none;
+		}
+
 		.registration-form .form-control:focus {
 			border-color: #14a2f6;
 			box-shadow: 0 0 0 3px rgba(20, 162, 246, 0.12);
@@ -316,6 +365,10 @@
 			margin-top: 6px;
 			font-size: 12px;
 			color: #dc3545;
+		}
+
+		.registration-actions {
+			padding: 0 10px 4px;
 		}
 
 		.training-course-select {
@@ -359,6 +412,39 @@
 			padding: 4px 0;
 		}
 
+		.registration-form .choice-group {
+			align-items: center;
+			padding-top: 4px;
+			padding-bottom: 2px;
+		}
+
+		.registration-form .choice-group .form-check {
+			gap: 6px;
+		}
+
+		.registration-gender-title {
+			font-size: 15px;
+			font-weight: 600;
+			margin-bottom: 10px;
+		}
+
+		.registration-gender-options {
+			margin-top: 0 !important;
+		}
+
+		.registration-gender-group .form-check-input[type="radio"] {
+			width: 17px;
+			height: 17px !important;
+			border-width: 2px;
+		}
+
+		.registration-gender-group .form-check-input[type="radio"]:checked::before {
+			top: 3px;
+			left: 3px;
+			width: 7px;
+			height: 7px;
+		}
+
 		.form-check-input[type="radio"] {
 			-webkit-appearance: none;
 			-moz-appearance: none;
@@ -389,10 +475,13 @@
 			background-color: #00a8ff;
 		}
 
-		.form-check-label {
-			font-size: .75rem;
+		.registration-gender-group .form-check-label {
+			font-size: 15px !important;
 			margin-bottom: 0;
 			cursor: pointer;
+			font-weight: 600;
+			color: #223a57;
+			line-height: 1.2;
 		}
 
 		.registration-form hr {
@@ -444,20 +533,13 @@
 			border-color: #dc3545;
 		} */
 
-		@media (max-width: 991px) {
-			.reg-title {
-				font-size: 28px;
-			}
-
-			.reg-title small {
-				display: block;
-				margin-top: 8px;
-			}
-		}
-
 		@media (max-width: 767px) {
-			.registration-card .card-body {
-				padding: 20px 18px 18px;
+			.registration-card .panel-heading {
+				padding: 10px 14px;
+			}
+
+			.registration-body {
+				padding: 10px 8px 4px;
 			}
 
 			.embed-actions {
@@ -471,16 +553,21 @@
 
 @if(request()->boolean('embed'))
 		.registration-shell {
-			/* padding: 18px; */
+			padding: 0;
 		}
 
 		.registration-card {
-			border-radius: 20px;
+			border-radius: 0;
 			box-shadow: none;
+			border: 0;
 		}
 
-		.registration-card .card-body {
-			padding: 22px 22px 18px;
+		.registration-body {
+			padding: 12px 12px 6px;
+		}
+
+		.registration-header {
+			display: none;
 		}
 @endif
 	</style>

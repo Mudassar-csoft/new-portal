@@ -196,11 +196,14 @@
             @enderror
         </div>
         <div class="form-group col-lg-3 col-md-6">
-            <label class="form-label required">Probability</label>
+            <label class="form-label required">Probability: Selected <span id="probabilityValue">{{ (int) old('details.probability', data_get($leadPrefill, 'details.probability', 0)) }}%</span></label>
             @include('lead.partials.probability_slider', [
                 'inputName' => 'details[probability]',
+                'inputId' => 'probabilitySlider',
+                'displayId' => 'probabilityValue',
                 'value' => old('details.probability', data_get($leadPrefill, 'details.probability', 0)),
                 'errorKey' => 'details.probability',
+                'showDisplay' => false,
             ])
         </div>
     </div>

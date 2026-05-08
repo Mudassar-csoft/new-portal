@@ -8,6 +8,7 @@
     $step = $step ?? 5;
     $required = $required ?? false;
     $errorKey = $errorKey ?? null;
+    $showDisplay = $showDisplay ?? true;
     $numericValue = is_numeric($value) ? (float) $value : (float) $min;
     $numericValue = max((float) $min, min((float) $max, $numericValue));
     $progress = ((float) $max > (float) $min)
@@ -26,6 +27,7 @@
             value="{{ $numericValue }}"
             class="probability-input probability-range{{ $errorKey && $errors->has($errorKey) ? ' is-invalid' : '' }}"
             @if($inputId) id="{{ $inputId }}" @endif
+            @if($displayId) data-probability-display-id="{{ $displayId }}" @endif
             @if($required) required @endif
         >
 
@@ -42,9 +44,11 @@
         @endfor
     </div>
 
-    <div class="probability-display">
-        Selected: <span @if($displayId) id="{{ $displayId }}" @endif>{{ $numericValue }}%</span>
-    </div>
+    @if($showDisplay)
+        <div class="probability-display">
+            Probability: Selected <span @if($displayId) id="{{ $displayId }}" @endif>{{ $numericValue }}%</span>
+        </div>
+    @endif
 
     @if($errorKey && $errors->has($errorKey))
         <div class="field-error">{{ $errors->first($errorKey) }}</div>

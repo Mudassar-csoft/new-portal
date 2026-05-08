@@ -121,7 +121,7 @@ class DashboardController extends Controller
             'incomeRanges' => [
                 'today' => ['label' => 'Today income (hourly)', 'points' => [['08 AM', 0]], 'ticks' => [0, 10]],
                 'week' => ['label' => 'Week income (daily)', 'points' => [['Mon', 0]], 'ticks' => [0, 10]],
-                'month' => ['label' => 'Month income (weekly)', 'points' => [['Week 1', 0]], 'ticks' => [0, 10]],
+                'month' => ['label' => 'Month income (weekly)', 'points' => [['Week 1', 0], ['Week 2', 0], ['Week 3', 0], ['Week 4', 0]], 'ticks' => [0, 10]],
                 'year' => ['label' => 'Year income (monthly)', 'points' => [['Jan', 0]], 'ticks' => [0, 10]],
             ],
             'charts' => [
@@ -424,18 +424,19 @@ class DashboardController extends Controller
             $monthStart,
             $monthEnd
         )->get(['registered_at', 'created_at', 'net_payable']);
-        $weekCount = (int) ceil($monthEnd->day / 7);
-        $monthWeeklyTotals = [];
-        for ($i = 1; $i <= $weekCount; $i++) {
-            $monthWeeklyTotals['Week ' . $i] = 0.0;
-        }
+        $monthWeeklyTotals = [
+            'Week 1' => 0.0,
+            'Week 2' => 0.0,
+            'Week 3' => 0.0,
+            'Week 4' => 0.0,
+        ];
         foreach ($monthRows as $row) {
             $timestamp = $row->registered_at ?? $row->created_at;
             if (!$timestamp) {
                 continue;
             }
             $dayOfMonth = Carbon::parse($timestamp)->day;
-            $weekBucket = (int) ceil($dayOfMonth / 7);
+            $weekBucket = min(4, (int) ceil($dayOfMonth / 7));
             $monthWeeklyTotals['Week ' . $weekBucket] += (float) ($row->net_payable ?? 0);
         }
 

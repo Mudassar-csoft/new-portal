@@ -65,10 +65,10 @@
 			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 30 seconds</div>
 			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt }}">--</span></div>
 		</div> -->
-		<div class="row pl-3 pr-3">
+		<div id="dashboard-top-panels" class="row pl-3 pr-3 dashboard-top-panels">
 
 			@if($showIncomeChart || $showAdmissionProgressWidget)
-			<div class="col-xl-6 pl-0 ml-3 mr-2 m-md-0 m-lg-0 ">
+			<div id="dashboard-income-panel-column" class="col-xl-6 pl-0 ml-3 mr-2 m-md-0 m-lg-0 dashboard-income-panel-column">
 				@if($showIncomeChart)
 					<div class="chart-statistic-box">
 						<div class="chart-container row ">
@@ -189,8 +189,8 @@
 				@endif
 			</div>
 			@endif
-			<div class="col-xl-{{ $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12' }} pr-4">
-				<div class="row">
+			<div id="dashboard-stats-panel-column" class="col-xl-{{ $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12' }} pr-4 dashboard-stats-panel-column">
+				<div class="row dashboard-stats-cards-row">
 					<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
@@ -252,7 +252,7 @@
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Current Month Leads / Admission</span>
+								<span class="month-chart-header-label">Current Month Leads vs Admissions</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
@@ -560,6 +560,79 @@
 			padding-left: 12px;
 		}
 
+		.dashboard-top-panels > .dashboard-income-panel-column,
+		.dashboard-top-panels > .dashboard-stats-panel-column {
+			transition: flex-basis 0.25s ease, max-width 0.25s ease, margin 0.25s ease, padding 0.25s ease;
+		}
+
+		.dashboard-top-panels.is-year-expanded > .dashboard-income-panel-column,
+		.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
+			flex: 0 0 100% !important;
+			max-width: 100% !important;
+			width: 100% !important;
+		}
+
+		.dashboard-top-panels.is-year-expanded > .dashboard-income-panel-column {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+			padding-right: 24px !important;
+		}
+
+		.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
+			margin-top: 14px;
+			padding-right: 0 !important;
+		}
+
+		@media (min-width: 768px) {
+			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container {
+				display: flex;
+				flex-wrap: nowrap;
+			}
+
+			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-txt {
+				flex: 0 0 270px !important;
+				max-width: 270px !important;
+				width: 270px !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container-in {
+				flex: 1 1 auto !important;
+				max-width: calc(100% - 270px) !important;
+				width: calc(100% - 270px) !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container-in > div {
+				padding-left: 12px !important;
+				padding-right: 18px !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
+				padding-left: 12px !important;
+				padding-right: 24px !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row {
+				display: flex;
+				flex-wrap: nowrap;
+				gap: 18px;
+				margin-left: 0 !important;
+				margin-right: 0 !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row > [class*="col-"] {
+				flex: 1 1 0 !important;
+				max-width: none !important;
+				width: auto !important;
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+				margin-bottom: 0 !important;
+			}
+
+			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row .statistic-box {
+				margin: 0 !important;
+			}
+		}
+
 		.admission-progress-box {
 			border-radius: 12px;
 			overflow: hidden;
@@ -737,10 +810,59 @@
 
 		#lead-chart .c3-legend-item text {
 			font-size: 12px;
+			fill: #334155;
+			font-weight: 600;
 		}
 
 		#lead-chart .c3-legend-item:last-child {
-			transform: translateX(12px);
+			transform: none;
+		}
+
+		#lead-chart {
+			min-height: 320px;
+			padding: 18px 24px 8px;
+		}
+
+		#lead-chart .c3 svg {
+			font-family: 'Proxima Nova', sans-serif;
+		}
+
+		#lead-chart .c3-axis-x text,
+		#lead-chart .c3-axis-y text {
+			fill: #526273;
+			font-size: 12px;
+		}
+
+		#lead-chart .c3-axis path,
+		#lead-chart .c3-axis line {
+			stroke: #d7e0ea;
+		}
+
+		#lead-chart .c3-grid line {
+			stroke: #edf2f7;
+		}
+
+		#lead-chart .c3-chart-bars .c3-bar {
+			stroke-width: 0;
+		}
+
+		#lead-chart .c3-texts text {
+			fill: #1e293b;
+			font-size: 11px;
+			font-weight: 600;
+		}
+
+		.comparison-empty-state {
+			min-height: 280px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border: 1px dashed #d7e0ea;
+			border-radius: 14px;
+			background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
+			color: #64748b;
+			font-size: 15px;
+			font-weight: 600;
 		}
  .statistic-box {
        -webkit-border-radius: 4px;
@@ -822,10 +944,10 @@
         }
 
         .month-chart-card .panel-heading {
-            padding: 6px 12px;
+            padding: 4px 10px;
         }
         .month-chart-header {
-            padding: 14px 18px !important;
+            padding: 10px 16px !important;
             border-bottom: 1px solid #e6eef3;
             background: #fff;
         }
@@ -852,7 +974,7 @@
         }
         .month-chart-header-title {
             margin: 0;
-            font-size: 17px !important;
+            font-size: 15px !important;
             font-weight: 600 !important;
             color: #25364a;
             min-width: 0;
@@ -864,10 +986,10 @@
             padding: 0;
             min-width: 0;
             max-width: 100%;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            line-height: 1.4;
-            margin-top: 5px;
+            line-height: 1.25;
+            margin-top: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1477,7 +1599,7 @@
 		var defaultIncomeRanges = {
 			today: { label: 'Today income (hourly)', points: [['08 AM', 0]], ticks: [0, 10] },
 			week: { label: 'Week income (daily)', points: [['Mon', 0]], ticks: [0, 10] },
-			month: { label: 'Month income (weekly)', points: [['Week 1', 0]], ticks: [0, 10] },
+			month: { label: 'Month income (weekly)', points: [['Week 1', 0], ['Week 2', 0], ['Week 3', 0], ['Week 4', 0]], ticks: [0, 10] },
 			year: { label: 'Year income (monthly)', points: [['Jan', 0]], ticks: [0, 10] }
 		};
 		incomeRanges = Object.assign({}, defaultIncomeRanges, incomeRanges || {});
@@ -1701,17 +1823,50 @@
 			});
 
 			var hasIncomeChart = !!document.getElementById('chart_div');
+			var topPanels = $('#dashboard-top-panels');
+			var incomeLayoutRedrawTimer = null;
+			var scheduleChartDraw = window.requestAnimationFrame
+				? window.requestAnimationFrame.bind(window)
+				: function (callback) { return window.setTimeout(callback, 0); };
+
+			function syncIncomeLayout() {
+				if (!hasIncomeChart || !topPanels.length) {
+					return;
+				}
+
+				topPanels.toggleClass('is-year-expanded', currentIncomeRange === 'year');
+			}
+
+			function redrawIncomeChartAfterLayout() {
+				if (!hasIncomeChart) {
+					return;
+				}
+
+				scheduleChartDraw(drawChart);
+
+				if (incomeLayoutRedrawTimer) {
+					window.clearTimeout(incomeLayoutRedrawTimer);
+				}
+
+				incomeLayoutRedrawTimer = window.setTimeout(function () {
+					incomeLayoutRedrawTimer = null;
+					drawChart();
+				}, 320);
+			}
 
 			if (hasIncomeChart) {
 				$('input[name="income-range"]').on('change', function () {
 					currentIncomeRange = $(this).val();
-					drawChart();
+					syncIncomeLayout();
+					redrawIncomeChartAfterLayout();
 				});
 
 				// Reflow chart when menu toggles to avoid leftover blank space
 				$('#show-hide-sidebar-toggle, .hamburger').on('click', function () {
 					setTimeout(drawChart, 200);
 				});
+
+				syncIncomeLayout();
 
 				if (window.google && google.charts) {
 					google.charts.load('current', { packages: ['corechart'] });
@@ -1930,60 +2085,139 @@
 				$('#recent-admissions-body').html(buildActivityRows(admissionsActivity.rows || [], 'No admissions available.', 'Enrolled'));
 			}
 
+			function normalizeComparisonSeries(series) {
+				var categories = Array.isArray((series || {}).categories) ? series.categories : [];
+				var counts = Array.isArray((series || {}).counts) ? series.counts : [];
+				var normalized = categories.map(function (category, index) {
+					return {
+						label: $.trim(String(category || '')),
+						value: toNumber(counts[index])
+					};
+				});
+
+				var realItems = normalized.filter(function (item) {
+					return item.label && item.label.toLowerCase() !== 'no data';
+				});
+
+				return realItems.length ? realItems : normalized;
+			}
+
 			function buildComparisonChartData() {
-				var leadData = chartSeries.leads || {};
-				var admissionData = chartSeries.admissions || {};
+				var leadData = normalizeComparisonSeries(chartSeries.leads || {});
+				var admissionData = normalizeComparisonSeries(chartSeries.admissions || {});
 				var categories = [];
 				var leadMap = {};
 				var admissionMap = {};
+				var hasRealCategory = false;
 
-				(leadData.categories || []).forEach(function (category, index) {
-					category = category || 'No Data';
+				leadData.forEach(function (item) {
+					var category = item.label || 'No Data';
+					if (category.toLowerCase() !== 'no data') {
+						hasRealCategory = true;
+					}
 					if (categories.indexOf(category) === -1) { categories.push(category); }
-					leadMap[category] = toNumber((leadData.counts || [])[index]);
+					leadMap[category] = item.value;
 				});
-				(admissionData.categories || []).forEach(function (category, index) {
-					category = category || 'No Data';
+
+				admissionData.forEach(function (item) {
+					var category = item.label || 'No Data';
+					if (category.toLowerCase() !== 'no data') {
+						hasRealCategory = true;
+					}
 					if (categories.indexOf(category) === -1) { categories.push(category); }
-					admissionMap[category] = toNumber((admissionData.counts || [])[index]);
+					admissionMap[category] = item.value;
 				});
+
+				if (hasRealCategory) {
+					categories = categories.filter(function (category) {
+						return category.toLowerCase() !== 'no data';
+					});
+				}
 
 				if (!categories.length) { categories = ['No Data']; }
 
 				var leadValues = categories.map(function (category) { return leadMap[category] || 0; });
 				var admissionValues = categories.map(function (category) { return admissionMap[category] || 0; });
+				var isEmpty = !hasRealCategory || (!leadValues.some(Boolean) && !admissionValues.some(Boolean));
+
 				if (!leadValues.some(Boolean) && !admissionValues.some(Boolean)) {
 					categories = ['No Data'];
 					leadValues = [0];
 					admissionValues = [0];
 				}
 
-				return { categories: categories, leadValues: leadValues, admissionValues: admissionValues };
+				return {
+					categories: categories,
+					leadValues: leadValues,
+					admissionValues: admissionValues,
+					isEmpty: isEmpty
+				};
 			}
 
 			function renderMonthlyComparisonChart() {
 				if (!(window.c3 && document.getElementById('lead-chart'))) { return; }
 
 				var comparison = buildComparisonChartData();
+				var chartElement = $('#lead-chart');
 				var tickValues = buildTicks(Math.max.apply(Math, comparison.leadValues.concat(comparison.admissionValues).concat([0])), 6);
 				if (monthlyComparisonChart) { monthlyComparisonChart.destroy(); }
+				chartElement.empty();
+
+				if (comparison.isEmpty) {
+					chartElement.html('<div class="comparison-empty-state">No current month lead or admission data available.</div>');
+					return;
+				}
 
 				monthlyComparisonChart = c3.generate({
 					bindto: '#lead-chart',
-					size: { height: 280 },
+					size: { height: 320 },
 					data: {
 						columns: [['Leads'].concat(comparison.leadValues), ['Admissions'].concat(comparison.admissionValues)],
 						type: 'bar',
-						colors: { Leads: '#3b82f6', Admissions: '#22c55e' }
+						colors: { Leads: '#3b82f6', Admissions: '#22c55e' },
+						labels: {
+							format: function (value) {
+								return value > 0 ? String(value) : '';
+							}
+						}
+					},
+					legend: {
+						show: true,
+						position: 'right'
 					},
 					transition: { duration: 500 },
-					axis: {
-						x: { type: 'category', categories: comparison.categories, tick: { rotate: 0, multiline: false }, label: 'Programs', height: 40 },
-						y: { label: 'Current month count', padding: { top: 10, bottom: 0 }, min: 0, tick: { values: tickValues } }
+					tooltip: {
+						grouped: true
 					},
-					bar: { width: { ratio: 0.55 } },
+					axis: {
+						x: {
+							type: 'category',
+							categories: comparison.categories,
+							tick: {
+								rotate: 0,
+								multiline: false,
+								outer: false
+							},
+							height: 52
+						},
+						y: {
+							padding: { top: 12, bottom: 0 },
+							min: 0,
+							tick: {
+								values: tickValues,
+								format: function (value) {
+									return Number(value).toLocaleString();
+								}
+							}
+						}
+					},
+					bar: {
+						width: {
+							ratio: comparison.categories.length === 1 ? 0.28 : 0.48
+						}
+					},
 					grid: { y: { show: true } },
-					padding: { right: 20 }
+					padding: { top: 6, right: 12, bottom: 0, left: 8 }
 				});
 			}
 
@@ -2036,6 +2270,8 @@
 				if (!hasIncomeChart) {
 					return;
 				}
+
+				syncIncomeLayout();
 
 				if (!(window.google && google.visualization)) {
 					showChartFallback();

@@ -401,7 +401,8 @@
 			function bindProbabilityDisplays() {
 				function syncProbabilityRange(range) {
 					var field = range.closest('.probability-field');
-					var display = field ? field.querySelector('.probability-display span') : null;
+					var displayId = range.getAttribute('data-probability-display-id');
+					var display = displayId ? document.getElementById(displayId) : (field ? field.querySelector('.probability-display span') : null);
 					if (!field) return;
 
 					var min = parseFloat(range.min || 0);

@@ -190,8 +190,8 @@
 					<img class="font-icon-dashboard" src="img/navbarIcons/students.webp" alt="Dashboard">
 					<span class="lbl">Student Management</span></span>
 				<ul>
-					<li><a href="{{ route('student.attendance.index') }}" class="stage-link"><span class="lbl">Attendance</span><span
-								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_attendance'] ?? 0)) }}</span></a></li>
+					{{-- <li><a href="{{ route('student.attendance.index') }}" class="stage-link"><span class="lbl">Attendance</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_attendance'] ?? 0)) }}</span></a></li> --}}
 					<li><a href="{{ route('student.records.index', ['scope' => 'active']) }}" class="stage-link"><span class="lbl">Active</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['student_active'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('student.records.index', ['scope' => 'frozen']) }}" class="stage-link"><span class="lbl">Frozen</span><span
@@ -434,5 +434,4 @@
 
 
 	</style>
-
 
