@@ -226,7 +226,7 @@
                                 <th>Time</th>
                                 <th>Room</th>
                                 <th>Instructor</th>
-                                <th>Topic</th>
+                                <th>Topic</th>  
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>

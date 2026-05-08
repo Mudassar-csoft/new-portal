@@ -8,13 +8,16 @@
     </button>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="{{ $actionId }}">
         <a class="dropdown-item" href="{{ route('program.edit', $program) }}">
-            <i class="fa fa-pencil mr-2 text-info"></i>Edit Programme
+            <!-- <i class="fa fa-pencil mr-2 text-info"></i> -->
+            Edit
         </a>
         <a class="dropdown-item" href="{{ route('batch.index', ['program_id' => $program->id]) }}">
-            <i class="fa fa-users mr-2 text-primary"></i>View Batches
+            <!-- <i class="fa fa-users mr-2 text-primary"></i> -->
+            View Batches
         </a>
         <a class="dropdown-item" href="{{ route('batch.timetable.index', ['program_id' => $program->id]) }}">
-            <i class="fa fa-calendar mr-2 text-success"></i>View Time Table
+            <!-- <i class="fa fa-calendar mr-2 text-success"></i> -->
+            View Time Table
         </a>
         @if($program->outline_path)
             <a class="dropdown-item" href="{{ route('program.outline', $program) }}">

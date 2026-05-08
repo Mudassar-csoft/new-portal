@@ -85,14 +85,14 @@
                             <tr>
                                 <th>Code</th>
                                 <th>Programme</th>
-                                <th>Type</th>
+                                <!-- <th>Type</th> -->
                                 <th>Fee</th>
                                 <th>Duration</th>
-                                <th>Installments</th>
-                                <th>Batches</th>
-                                <th>Students</th>
+                                <!-- <th>Installments</th> -->
+                                <!-- <th>Batches</th> -->
+                                <!-- <th>Students</th> -->
                                 <th>Discounts</th>
-                                <th>Outline</th>
+                                <!-- <th>Outline</th> -->
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>
@@ -108,12 +108,12 @@
                                             <span class="text-muted">{{ \Illuminate\Support\Str::limit($program->remarks, 80) }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ ucwords($program->program_type ?? 'n/a') }}</td>
+                                    <!-- <td>{{ ucwords($program->program_type ?? 'n/a') }}</td> -->
                                     <td>{{ number_format((float) $program->fee, 2) }}</td>
                                     <td>{{ number_format((int) ($program->duration_weeks ?? 0)) }} weeks</td>
-                                    <td>{{ number_format((int) ($program->installments ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($program->batches_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($program->admissions_count ?? 0)) }}</td>
+                                    <!-- <td>{{ number_format((int) ($program->installments ?? 0)) }}</td> -->
+                                    <!-- <td>{{ number_format((int) ($program->batches_count ?? 0)) }}</td> -->
+                                    <!-- <td>{{ number_format((int) ($program->admissions_count ?? 0)) }}</td> -->
                                     <td>
                                         @if($program->campusDiscounts->isEmpty())
                                             <span class="text-muted">No discounts</span>
@@ -129,13 +129,13 @@
                                             @endforeach
                                         @endif
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         @if($program->outline_path)
                                             <a href="{{ route('program.outline', $program) }}" class="btn btn-xs btn-default">Download</a>
                                         @else
                                             <span class="text-muted">None</span>
                                         @endif
-                                    </td>
+                                    </td> -->
                                     <td><span class="label {{ $badgeClasses[$program->status] ?? 'label-default' }}">{{ ucfirst($program->status ?? 'active') }}</span></td>
                                     <td class="text-right">
                                         @include('program.partials.action', ['actionId' => 'program-action-' . $program->id])

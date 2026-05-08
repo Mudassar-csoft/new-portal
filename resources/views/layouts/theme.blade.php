@@ -178,7 +178,7 @@ height: auto !important;
 }
 .table td {
   height: auto !important;
-  font-size: 12px !important; 
+  font-size: 14px !important; 
 }
 
 .table a {

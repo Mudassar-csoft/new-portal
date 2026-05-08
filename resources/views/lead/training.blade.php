@@ -284,7 +284,7 @@ Hybird                        </label>
 
 <div class="col-md-6 col-lg-3">
     <label class="form-label small fw-semibold text-dark">
-        Probability
+        Probability 
     </label>
     @include('lead.partials.probability_slider', [
         'inputName' => 'details[probability]',
@@ -365,7 +365,7 @@ Hybird                        </label>
     </div>
     <!-- Remarks -->
     <div class="row mt-lg-1">
-        <div class="col-12">
+        <div class="col-12 pr-0" style="padding-right:0 !important;">
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>

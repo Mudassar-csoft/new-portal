@@ -368,7 +368,7 @@
         .campus-table td .label,
         .campus-table td .btn,
         .campus-table td .text-muted {
-            font-size: 12px !important;
+            font-size: 14px !important;
             line-height: 1.05 !important;
         }
 
