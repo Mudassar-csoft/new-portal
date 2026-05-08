@@ -935,8 +935,8 @@ font-size: 16px !important;
 line-height: 35px !important;
 color: #343434;
 padding: 0 25px 0 1rem !important;
-height: 28px !important;
-min-height: 28px !important;
+height: 36px !important;
+min-height: 36px !important;
 background: #fff;
 }
 
@@ -1047,7 +1047,7 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table td > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu.dropdown-menu-upward {
-top: 0 !important;
+top: 23px !important;
 bottom: auto !important;
 left: auto !important;
 right: 100% !important;

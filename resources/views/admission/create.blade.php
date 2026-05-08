@@ -47,7 +47,7 @@
 							</select>
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
-							@enderror
+							@enderrora
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Batch</label>
@@ -137,7 +137,7 @@
 											name="gender"
 											value="male"
 											@checked(old('gender', 'male') === 'male')>
-										<label class="form-label small mb-0 mt-0" for="admission-gender-male">
+										<label class="form-check-label  mb-0 mt-0" for="admission-gender-male">
 											Male
 										</label>
 									</div>
@@ -150,7 +150,7 @@
 											name="gender"
 											value="female"
 											@checked(old('gender') === 'female')>
-										<label class="form-label small mt-0 mb-0" for="admission-gender-female">
+										<label class="form-check-label  mt-0 mb-0" for="admission-gender-female">
 											Female
 										</label>
 									</div>
@@ -163,7 +163,7 @@
 											name="gender"
 											value="other"
 											@checked(old('gender') === 'other')>
-										<label class="form-label small mt-0 mb-0" for="admission-gender-other">
+										<label class="form-check-label  mt-0 mb-0" for="admission-gender-other">
 											Other
 										</label>
 									</div>

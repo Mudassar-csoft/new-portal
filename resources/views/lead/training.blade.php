@@ -7,7 +7,7 @@
 <div id="lead-form-training" class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
     <!-- ROW 1 -->
-    <div class="row mt-1" >
+    <div class="row" >
         <!-- Full Name -->
         <div class="col-md-6 col-lg-3">
             <label class="form-label small text-dark required">
@@ -72,7 +72,7 @@
                             name="details[teaching_method]"
                             value="campus"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'campus')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-campus">
                             Campus
                         </label>
@@ -86,7 +86,7 @@
                             name="details[teaching_method]"
                             value="online"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'online')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-online">
                             Online
                         </label>
@@ -100,7 +100,7 @@
                             name="details[teaching_method]"
                             value="hybrid"
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-hybrid">
 Hybird                        </label>
                     </div>
@@ -228,7 +228,7 @@ Hybird                        </label>
                             name="details[gender]"
                             value="male"
                             @checked($trainingGender === 'male')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-male">
                             Male
                         </label>
@@ -242,7 +242,7 @@ Hybird                        </label>
                             name="details[gender]"
                             value="female"
                             @checked($trainingGender === 'female')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-female">
                             Female
                         </label>
@@ -256,7 +256,7 @@ Hybird                        </label>
                             name="details[gender]"
                             value="other"
                             @checked($trainingGender === 'other')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-other">
                             Other
                         </label>

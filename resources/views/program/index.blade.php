@@ -23,10 +23,10 @@
                     <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
                     <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
                 </div>
-                <a href="{{ route('program.create') }}" class="btn btn-primary">Create Programme</a>
+                <!-- <a href="{{ route('program.create') }}" class="btn btn-primary">Create Programme</a> -->
             </header>
             <div class="box-typical-body panel-body">
-                <div class="program-scope-grid">
+                <!-- <div class="program-scope-grid">
                     @foreach($scopeCards as $card)
                         <a href="{{ route('program.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
                            class="program-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
@@ -34,7 +34,7 @@
                            <span class="program-scope-label">{{ $card['label'] }}</span>
                         </a>
                     @endforeach
-                </div>
+                </div> -->
 
                 <form method="GET" action="{{ route('program.index') }}" class="program-filter-form">
                     <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
@@ -74,7 +74,7 @@
                         </div>
                         <div class="form-group program-filter-actions">
                             <button type="submit" class="btn btn-primary-outline">Filter</button>
-                            <a href="{{ route('program.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                            <a href="{{ route('program.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger-outline">Reset</a>
                         </div>
                     </div>
                 </form>

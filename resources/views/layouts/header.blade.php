@@ -886,7 +886,7 @@ display: flex;
 	transition: background-color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .notif-accordion-item + .notif-accordion-item{
-	margin-top: 10px;
+	margin-top: 4px;
 }
 .notif-hover-card:hover{
 	background: #eef5ff;
@@ -1141,8 +1141,8 @@ border:2px solid #ddd;
 	border-radius:5%;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
 	border: 1px solid #e3eaf3;
-	margin-bottom:8px;
-	padding: 10px 12px !important;
+	margin-bottom:4px;
+	padding: 5px 12px !important;
 	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
 }
 .campus-dropdown-menu .dropdown-item:last-child{
@@ -1164,7 +1164,7 @@ border:2px solid #ddd;
 	border-radius:5%;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
 	border: 1px solid #e3eaf3;
-	margin-bottom:8px;
+	margin-bottom:4px;
 	padding: 4px 12px !important;
 	transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
 }

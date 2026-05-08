@@ -127,7 +127,7 @@
                         </div>
                         <div class="form-group campus-filter-actions">
                             <button type="submit" class="btn btn-primary-outline">Filter</button>
-                            <a href="{{ route('campus.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger">Reset</a>
+                            <a href="{{ route('campus.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger-outline">Reset</a>
                         </div>
                     </div>
                 </form>

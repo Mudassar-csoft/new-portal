@@ -143,7 +143,7 @@
                 </select>
             </div>
             <div class="program-discount-action">
-                <button type="button" class="btn btn-danger" data-remove-discount>Remove</button>
+                <button type="button" class="btn btn-danger-outline" data-remove-discount>Remove</button>
             </div>
         </div>
     @endforeach
@@ -174,7 +174,7 @@
             </select>
         </div>
         <div class="program-discount-action">
-            <button type="button" class="btn btn-danger" data-remove-discount>Remove</button>
+            <button type="button" class="btn btn-danger-outline" data-remove-discount>Remove</button>
         </div>
     </div>
 </template>

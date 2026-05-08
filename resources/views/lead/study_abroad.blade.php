@@ -40,9 +40,9 @@
                             name="details[gender]"
                             value="male"
                            @checked($studyAbroadGender === 'male')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-male">
-                            MALE
+                            Male
                         </label>
                     </div>
                 </div>
@@ -54,9 +54,9 @@
                             name="details[gender]"
                             value="female"
                             @checked($studyAbroadGender === 'female')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-female">
-                            FEMALE
+                            Female
                         </label>
                     </div>
                 </div>
@@ -68,9 +68,9 @@
                             name="details[gender]"
                             value="other"
                             @checked($studyAbroadGender === 'other')>
-                        <label class="form-check-label small mb-0 mt-1"
+                        <label class="form-check-label  mb-0 mt-1"
                             for="details-gender-other">
-                            OTHER
+                            Other
                         </label>
                     </div>
                 </div>
@@ -288,13 +288,13 @@
         </div>
     </div> -->
     <div class="form-row">
-    <div class="form-group col-12">
-        <label class="form-label required">Remarks</label>
-        <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks') }}</textarea>
-        @error('details.remarks')
-            <div class="field-error">{{ $message }}</div>
-        @enderror
-    </div>
+        <div class="form-group col-12">
+            <label class="form-label required">Remarks</label>
+            <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks') }}</textarea>
+            @error('details.remarks')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
 </div>
 
