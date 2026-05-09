@@ -257,14 +257,8 @@
 				<ul>
 					<li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_create'] ?? 0)) }}</span></a></li>
-					<li><a href="{{ route('campus.index', ['scope' => 'campuses']) }}" class="stage-link"><span class="lbl">All Campuses</span><span
-								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_company'] ?? 0)) }}</span></a></li>
-					<li><a href="{{ route('campus.index', ['scope' => 'franchise']) }}" class="stage-link"><span class="lbl">All Franchise</span><span
-								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_franchise'] ?? 0)) }}</span></a></li>
-					<li><a href="{{ route('campus.index', ['scope' => 'suspended_campuses']) }}" class="stage-link"><span class="lbl">Suspended Campuses</span><span
-								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_company'] ?? 0)) }}</span></a></li>
-					<li><a href="{{ route('campus.index', ['scope' => 'suspended_franchise']) }}" class="stage-link"><span class="lbl">Suspended Franchise</span><span
-								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_franchise'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index') }}" class="stage-link"><span class="lbl">All Campuses / Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_all'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="grey with-sub">
@@ -434,4 +428,3 @@
 
 
 	</style>
-

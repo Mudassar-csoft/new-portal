@@ -3,27 +3,29 @@
 @section('title', 'Create Campus / Franchise')
 
 @section('content')
-    <div class="campus-form-shell">
-        <div class="box-typical box-typical-dashboard panel panel-default campus-form-card">
-            <header class="box-typical-header panel-heading d-flex justify-content-between">
-                <div>
-                    <h3 class="panel-title mb-0">Create Campus / Franchise</h3>
-                    <!-- <small class="text-muted">Add a new company-owned campus or franchise branch with code, contact, and royalty setup.</small> -->
+    <div class="campus-shell">
+        <div class="campus-content">
+            <div class="box-typical box-typical-dashboard panel panel-default campus-create-card">
+                <header class="box-typical-header panel-heading campus-header">
+                    <div class="tbl w-100">
+                        <div class="tbl-row">
+                            <div class="tbl-cell tbl-cell-title p-0 m-0">
+                                <h2 class="panel-title campus-title">Create New Campus / Franchise <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="box-typical-body panel-body campus-body">
+                    <form method="POST" action="{{ route('campus.store') }}">
+                        @csrf
+                        @include('campus.partials.form')
+
+                        <div class="form-actions mb-2 mt-3 text-right">
+                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">Create Campus</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem;">Cancel</a>
+                        </div>
+                    </form>
                 </div>
-                <!-- <a href="{{ route('campus.index') }}" class="btn btn-outline-primary">Back to Campuses</a> -->
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('campus.store') }}">
-                    @csrf
-                    @include('campus.partials.form')
-
-                     <div  class="form-actions mb-2 mt-3 text-right">
-							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Create Campus</button>
-
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; ">Cancel</a>
-						</div>
-                </form>
             </div>
         </div>
     </div>
@@ -31,13 +33,55 @@
 
 @push('styles')
     <style>
-        .campus-form-shell {
-            /* padding: 10px; */
+        .campus-shell {
+            font-family: 'Proxima Nova', sans-serif;
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
         }
 
-        .campus-form-card {
-            /* max-width: 1250px; */
-            margin: 0 auto;
+        .campus-content {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .campus-create-card {
+            overflow: visible !important;
+            max-height: none !important;
+        }
+
+        .campus-create-card .panel-heading {
+            padding: 10px 20px;
+        }
+
+        .campus-create-card .panel-body {
+            max-height: none !important;
+            overflow: visible !important;
+        }
+
+        .campus-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .campus-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .campus-title > span {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .campus-body {
+            padding: 10px 10px 5px;
+            overflow: visible !important;
         }
 
         .required::after {
@@ -95,6 +139,14 @@
             margin-bottom: 0;
             cursor: pointer;
             color: #343434;
+        }
+
+        .campus-body .alert {
+            margin: 8px 12px 12px;
+        }
+
+        .campus-body textarea.form-control {
+            resize: vertical;
         }
     </style>
 @endpush
