@@ -465,7 +465,7 @@ class LeadController extends Controller
             'Contacted' => 'Contacted',
             'Need Analysis' => 'Need Analysis',
             'Branch Visited' => 'Branch Visited',
-            'Proposal or Negotiation' => 'Proposal or Negotiation',
+            'Negotiation' => 'Negotiation',
             'Not Interesting' => 'Not Interesting',
             'Registered' => 'Registered',
             'Enrolled' => 'Enrolled',

@@ -102,7 +102,8 @@
                             @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
                         <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-hybrid">
-Hybird                        </label>
+                            Hybird
+                        </label>
                     </div>
                 </div>
             </div>

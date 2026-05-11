@@ -48,15 +48,26 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-4">
-                            <label class="form-label">Programme</label>
-                            <select class="form-control" name="program_id">
-                                <option value="">All Programmes</option>
-                                @foreach($programs as $program)
-                                    <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                        {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                              <label class="form-label small required">
+                    Course Interested
+                </label>
+                <select name="program_id"
+                        class="form-select form-select-sm training-course-select @error('program_id') is-invalid @enderror">
+                    <option value="">-Select-</option>
+                    @foreach ($programs as $program)
+                        <option value="{{ $program->id }}"
+                            data-title="{{ $program->title ?? $program->name }}"
+                            data-fee="{{ number_format($program->fee) }}"
+                            data-duration="{{ $program->duration_weeks / 4 }}"
+                            @selected(old('program_id', $leadPrefill['program_id'] ?? null) == $program->id)>
+                            {{ $program->title ?? $program->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('program_id')
+                    <div class="field-error">{{ $message }}</div>
+                @enderror
+
                         </div>
                         <div class="form-group col-lg-4">
                             <label class="form-label">Batch</label>
