@@ -57,14 +57,17 @@
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<!-- <div class="dashboard-live-bar">
+		<div class="dashboard-live-bar">
 			<div class="dashboard-live-indicator">
 				<span class="dashboard-live-dot"></span>
 				<span>Live Data</span>
 			</div>
-			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 30 seconds</div>
-			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt }}">--</span></div>
-		</div> -->
+			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 15 seconds</div>
+			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt ?? '' }}">--</span></div>
+			<button type="button" id="dashboard-live-refresh" class="dashboard-live-refresh" aria-label="Refresh now">
+				<i class="fa fa-refresh"></i> Refresh
+			</button>
+		</div>
 		<div id="dashboard-top-panels" class="row pl-3 pr-3 dashboard-top-panels">
 
 			@if($showIncomeChart || $showAdmissionProgressWidget)
@@ -1245,6 +1248,34 @@
             font-weight: 500;
         }
 
+        .dashboard-live-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border: 1px solid #cfe0f5;
+            border-radius: 999px;
+            background: #eef5ff;
+            color: #0a6fd1;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.18s ease;
+        }
+
+        .dashboard-live-refresh:hover {
+            background: #d6eaff;
+        }
+
+        .dashboard-live-refresh.is-spinning i {
+            animation: dashboardRefreshSpin 0.8s linear infinite;
+        }
+
+        @keyframes dashboardRefreshSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         body.dashboard-ready .dashboard-content {
 			opacity: 1;
             visibility: visible;
@@ -1591,7 +1622,7 @@
 
 		$(document).ready(function () {
 			var maskedValue = '***';
-			var refreshIntervalMs = 30000;
+			var refreshIntervalMs = 15000;
 			var refreshRequest = null;
 			var monthlyComparisonChart = null;
 			$('.panel').each(function () {
@@ -2233,7 +2264,7 @@
 					headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
 				}).done(function (response) {
 					applyDashboardPayload(response.dashboard || {});
-					updateLiveStatus('Auto refresh every 30 seconds');
+					updateLiveStatus('Auto refresh every 15 seconds');
 				}).fail(function () {
 					updateLiveStatus('Live update failed. Retrying on next cycle.');
 				}).always(function () {
@@ -2248,6 +2279,11 @@
 
 			applyDashboardPayload(dashboardData);
 			$('body').addClass('dashboard-ready');
+
+			$('#dashboard-live-refresh').on('click', function () {
+				var btn = $(this);
+				refreshDashboard($(), btn);
+			});
 
 			function drawChart() {
 				if (!hasIncomeChart) {
