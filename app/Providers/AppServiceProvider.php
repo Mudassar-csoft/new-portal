@@ -65,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
                 'program_suspended' => 0,
                 'program_all' => 0,
                 'campus_create' => 0,
+                'campus_all' => 0,
                 'campus_company' => 0,
                 'campus_franchise' => 0,
                 'campus_suspended_company' => 0,
@@ -168,6 +169,7 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 if (Schema::hasTable('campuses')) {
+                    $sidebarCounts['campus_all'] = Campus::query()->count();
                     $sidebarCounts['campus_create'] = Campus::query()->count();
                     $sidebarCounts['campus_company'] = Campus::query()->where('campus_type', 'company')->count();
                     $sidebarCounts['campus_franchise'] = Campus::query()->where('campus_type', 'franchise')->count();

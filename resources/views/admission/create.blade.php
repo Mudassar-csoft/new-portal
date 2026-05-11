@@ -6,8 +6,10 @@
 	<div class="admission-shell">
 		<div class="admission-card box-typical box-typical-dashboard panel panel-default">
 			<div class="card-body">
-				<h3 class="panel-title">Create New Admission <span class="">(All fields marked with * are required)</span></h3>
-			<hr>	
+				@unless(request()->boolean('embed'))
+					<h3 class="panel-title">Create New Admission <span class="">(All fields marked with * are required)</span></h3>
+					<hr>
+				@endunless
 				<form method="POST" action="{{ route('admission.store') }}" id="admission-form" class="admission-form">
 					@csrf
 					@if(request()->boolean('embed'))
@@ -47,7 +49,7 @@
 							</select>
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
-							@enderrora
+							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Batch</label>
@@ -203,7 +205,7 @@
 					<div class="form-row">
 					<div class="form-group col-12">
 						<label class="form-label required">Postal Address</label>
-						<textarea class="form-control @error('postal_address') is-invalid @enderror" name="postal_address" rows="2" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
+						<textarea class="form-control admission-textarea-address @error('postal_address') is-invalid @enderror" name="postal_address" rows="1" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
 						@error('postal_address')
 							<div class="field-error">{{ $message }}</div>
 						@enderror
@@ -308,7 +310,7 @@
 					<div class="form-row">
 						<div class="form-group col-12">
 							<label class="form-label required">Remarks</label>
-							<textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="2" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
+							<textarea class="form-control admission-textarea-remarks @error('remarks') is-invalid @enderror" name="remarks" rows="1" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
 							@error('remarks')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -327,7 +329,7 @@
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
 							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Admission Now</button>
 
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; ">Cancel</a>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem; ">Cancel</a>
 						</div>
 				</form>
 			</div>
@@ -407,6 +409,20 @@
 		.admission-form textarea.form-control {
 			min-height: 92px;
 			resize: vertical;
+		}
+
+		.admission-form .admission-textarea-address {
+			min-height: 54px !important;
+			height: 54px !important;
+			max-height: 54px !important;
+			resize: none;
+		}
+
+		.admission-form .admission-textarea-remarks {
+			min-height: 54px !important;
+			height: 54px !important;
+			max-height: 54px !important;
+			resize: none;
 		}
 
 		.admission-form .form-control:focus {

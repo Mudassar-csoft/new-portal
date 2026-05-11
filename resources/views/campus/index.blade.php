@@ -1,450 +1,398 @@
 @extends('layouts.theme')
 
-@section('title', $pageTitle)
+@section('title', 'All Campuses / Franchise')
 
 @section('content')
-
-	<!-- <div class="campus-shell">
-		<div class="box-typical box-typical-dashboard panel panel-default campus-card">
-			 <header class="box-typical-header panel-heading d-flex justify-content-between">
-				<div>
-					<h3 class="panel-title mb-0">Campuses</h3>
-				 <small class="text-muted">List of campuses.</small> -->
-				</div>
-				<!-- <a href="{{ route('campus.create') }}" class="btn btn-primary">New Campus</a> -->
-			</header> 
-			<!-- <div class="box-typical-body panel-body">
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>Code</th>
-								<th>Title</th>
-								<th>City</th>
-								<th>Type</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							@forelse($campuses as $campus)
-								<tr>
-									<td>{{ $campus->code }}</td>
-									<td>{{ $campus->name }}</td>
-									<td>{{ $campus->city }}</td>
-									<td>{{ ucfirst($campus->campus_type) }}</td>
-									<td>{{ ucfirst($campus->status) }}</td>
-								</tr>
-							@empty
-								<tr>
-									<td colspan="5" class="text-center text-muted">No campuses found.</td>
-								</tr>
-							@endforelse
-						</tbody>
-					</table>
-				</div>
-				@if(method_exists($campuses, 'links'))
-					<div class="mt-3">
-						{{ $campuses->links() }}
-					</div>
-				@endif
-			</div> 
-		</div>
-	</div> -->
     @php
-        $filters = $filters ?? ['scope' => 'all', 'campus_type' => null, 'status' => null, 'country' => null, 'city' => null, 'search' => null];
-        $scopeCards = $scopeCards ?? [];
+        $scopeTabs = [
+            'all' => 'All Campuses / Franchise',
+            'campuses' => 'All Campuses',
+            'franchise' => 'All Franchise',
+            'suspended_campuses' => 'Suspended Campuses',
+            'suspended_franchise' => 'Suspended Franchise',
+        ];
+        $scopeCountMap = collect($scopeCards ?? [])->pluck('count', 'scope')->all();
+        $activeScope = $activeScope ?? 'all';
+        if (!array_key_exists($activeScope, $scopeTabs)) {
+            $activeScope = 'all';
+        }
         $typeLabels = $typeOptions ?? ['company' => 'Company Owned', 'franchise' => 'Franchise'];
         $typeBadgeClasses = ['company' => 'label-primary', 'franchise' => 'label-warning'];
         $statusBadgeClasses = ['active' => 'label-success', 'inactive' => 'label-default'];
     @endphp
 
-    <div class="campus-index-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+    <div class="lead-status-shell campus-status-shell">
+        <div id="follow-loader" class="follow-loader">
+            <div class="follow-spinner">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <p>Loading campuses...</p>
+        </div>
 
-        <div class="box-typical box-typical-dashboard panel panel-default campus-index-card">
-            <header class="box-typical-header panel-heading d-flex justify-content-between">
-                <div>
-                    <h3 class="panel-title mb-0">{{ $pageTitle }}</h3>
-                    <small class="text-muted">{{ $pageDescription }}</small>
-                </div>
-                <!-- <a href="{{ route('campus.create') }}" class="btn btn-primary">Create Campus / Franchise</a> -->
-            </header>
-            <div class="box-typical-body panel-body">
-                <!-- <div class="campus-scope-grid p-2">
-                    @foreach($scopeCards as $card)
-                        <a href="{{ route('campus.index', array_filter(array_merge(request()->except('page', 'scope'), ['scope' => $card['scope'] !== 'all' ? $card['scope'] : null]))) }}"
-                           class="campus-scope-card {{ ($filters['scope'] ?? 'all') === $card['scope'] ? 'is-active' : '' }}">
-                           <strong>{{ number_format((int) $card['count']) }}</strong>
-                           <span class="campus-scope-label">{{ $card['label'] }}</span>
-                        </a>
+        <div id="campus-status-content" class="follow-content campus-content">
+            <div class="follow-card box-typical box-typical-dashboard panel panel-default">
+                <div class="follow-tab-bar">
+                    @foreach ($scopeTabs as $scopeKey => $scopeLabel)
+                        <div class="follow-tab {{ $activeScope === $scopeKey ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
+                            <span class="label-text">{{ $scopeLabel }}</span>
+                            <span class="badge badge-secondary">{{ number_format((int) ($scopeCountMap[$scopeKey] ?? 0)) }}</span>
+                        </div>
                     @endforeach
-                </div> -->
+                </div>
 
-                <form method="GET" action="{{ route('campus.index') }}" class="campus-filter-form">
-                    <input type="hidden" name="scope" value="{{ $filters['scope'] ?? 'all' }}">
-                    <div class="form-row campus-filter-row">
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Campus Type</label>
-                            <select class="form-control" name="campus_type">
-                                <option value="">All Types</option>
-                                @foreach($typeLabels as $key => $label)
-                                    <option value="{{ $key }}" @selected(($filters['campus_type'] ?? '') === $key)>{{ $label }}</option>
-                                @endforeach
+                <div class="box-typical-body panel-body follow-body campus-body">
+                    @if(session('status'))
+                        <div class="alert alert-success mb-3">{{ session('status') }}</div>
+                    @endif
+
+                    <div class="follow-controls">
+                        <div class="d-flex campus-entries-control">
+                            <label>Show</label>
+                            <select id="campus-status-page-size" class="form-select form-select-sm">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">All</option>
                             </select>
+                            <label>Entries</label>
                         </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Status</label>
-                            <select class="form-control" name="status">
-                                <option value="">All Statuses</option>
-                                @foreach(['active' => 'Active', 'inactive' => 'Inactive'] as $key => $label)
-                                    <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Country</label>
-                            <select class="form-control" name="country">
-                                <option value="">All Countries</option>
-                                @foreach($countryOptions as $country)
-                                    <option value="{{ $country }}" @selected(($filters['country'] ?? '') === $country)>{{ $country }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">City</label>
-                            <select class="form-control" name="city">
-                                <option value="">All Cities</option>
-                                @foreach($cityOptions as $city)
-                                    <option value="{{ $city }}" @selected(($filters['city'] ?? '') === $city)>{{ $city }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-9">
-                            <label class="form-label">Search</label>
-                            <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Campus name, code, city, contact, address, or remarks">
-                        </div>
-                        <div class="form-group campus-filter-actions">
-                            <button type="submit" class="btn btn-primary-outline">Filter</button>
-                            <a href="{{ route('campus.index', array_filter(['scope' => ($filters['scope'] ?? 'all') !== 'all' ? $filters['scope'] : null])) }}" class="btn btn-danger-outline">Reset</a>
+                        <div class="follow-search">
+                            <input type="text" id="campus-status-search" class="form-control form-control-sm" placeholder="Search...">
+                            <i class="fa fa-search"></i>
                         </div>
                     </div>
-                </form>
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered campus-table">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Campus / Franchise</th>
-                                <th>Location</th>
-                                <th>Type</th>
-                                <th>Contact</th>
-                                <!-- <th>Labs</th>
-                                <th>Batches</th>
-                                <th>Students</th>
-                                <th>Inventory</th>
-                                <th>Discounts</th> -->
-                                <th>Royalty</th>
-                                <th>Status</th>
-                                <th class="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($campuses as $campus)
+                    <div class="table-responsive campus-table-wrap">
+                        <table class="table table-bordered follow-table campus-table" id="campus-status-table">
+                            <thead>
                                 <tr>
-                                    <td>{{ $campus->code }}</td>
-                                    <td>
-                                        <strong class="campus-table__title">{{ $campus->title ?? $campus->name }}</strong>
-                                        @if($campus->title && $campus->title !== $campus->name)
-                                            <span class="text-muted campus-table__meta campus-table__meta--tight">{{ $campus->name }}</span>
-                                        @endif
-                                        @if($campus->remarks)
-                                            <span class="text-muted campus-table__meta campus-table__meta--truncate" title="{{ $campus->remarks }}">{{ \Illuminate\Support\Str::limit($campus->remarks, 70) }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="campus-table__title">{{ $campus->city ?: 'N/A' }}{{ $campus->country ? ', ' . $campus->country : '' }}</span>
-                                        @if($campus->address)
-                                            <span class="text-muted campus-table__meta campus-table__meta--truncate" title="{{ $campus->address }}">{{ \Illuminate\Support\Str::limit($campus->address, 70) }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="label {{ $typeBadgeClasses[$campus->campus_type] ?? 'label-default' }}">
-                                            {{ $typeLabels[$campus->campus_type] ?? ucfirst((string) $campus->campus_type) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="campus-table__title">{{ $campus->campus_email ?: 'N/A' }}</span>
-                                        @if($campus->mobile || $campus->landline)
-                                            <span class="text-muted campus-table__meta campus-table__meta--tight">{{ $campus->mobile ?: $campus->landline }}</span>
-                                        @endif
-                                    </td>
-                                    <!-- <td>{{ number_format((int) ($campus->labs_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($campus->batches_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($campus->admissions_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($campus->inventory_items_count ?? 0)) }}</td>
-                                    <td>{{ number_format((int) ($campus->program_discounts_count ?? 0)) }}</td> -->
-                                    <td>
-                                        @if($campus->campus_type === 'franchise' && $campus->royalty_rate !== null)
-                                            {{ rtrim(rtrim(number_format((float) $campus->royalty_rate, 2), '0'), '.') }}%
-                                        @else
-                                            <span class="text-muted">N/A</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="label {{ $statusBadgeClasses[$campus->status] ?? 'label-default' }}">
-                                            {{ ucfirst($campus->status ?? 'inactive') }}
-                                        </span>
-                                    </td>
-                                    <td >
-                                        @include('campus.partials.action', ['actionId' => 'campus-action-' . $campus->id])
-                                    </td>
+                                    <th>Sr</th>
+                                    <th>Code</th>
+                                    <th>Campus / Franchise</th>
+                                    <th>Location</th>
+                                    <th>Type</th>
+                                    <th>Contact</th>
+                                    <th>Royalty</th>
+                                    <th>Status</th>
+                                    <th class="text-left">Action</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="13" class="text-center text-muted">No campuses found for the selected filters.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($campuses as $campus)
+                                    @php
+                                        $typeKey = (string) ($campus->campus_type ?? '');
+                                        $statusKey = (string) ($campus->status ?? 'inactive');
+                                    @endphp
+                                    <tr data-type="{{ $typeKey }}" data-status="{{ $statusKey }}">
+                                        <td class="text-center campus-row-index"></td>
+                                        <td>{{ $campus->code ?? 'N/A' }}</td>
+                                        <td>{{ $campus->title ?? $campus->name ?? 'N/A' }}</td>
+                                        <td>{{ $campus->city ?: 'N/A' }}{{ $campus->country ? ', ' . $campus->country : '' }}</td>
+                                        <td>
+                                            <span class="label {{ $typeBadgeClasses[$typeKey] ?? 'label-default' }}">
+                                                {{ $typeLabels[$typeKey] ?? ucfirst(str_replace('_', ' ', $typeKey)) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $campus->campus_email ?: ($campus->mobile ?: ($campus->landline ?: 'N/A')) }}</td>
+                                        <td>
+                                            @if($typeKey === 'franchise' && $campus->royalty_rate !== null)
+                                                {{ rtrim(rtrim(number_format((float) $campus->royalty_rate, 2), '0'), '.') }}%
+                                            @else
+                                                <span class="text-muted">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="label {{ $statusBadgeClasses[$statusKey] ?? 'label-default' }}">
+                                                {{ ucfirst($statusKey ?: 'inactive') }}
+                                            </span>
+                                        </td>
+                                        <td class="action-cell">
+                                            @include('campus.partials.action', ['actionId' => 'campus-action-' . $campus->id])
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="campus-empty-row">
+                                        <td colspan="9" class="text-center text-muted">No campuses found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="follow-footer campus-footer">
+                        <div id="campus-status-count">Showing 0 to 0 of 0 entries</div>
+                        <ul class="pagination pagination-sm mb-0" id="campus-status-pagination"></ul>
+                    </div>
                 </div>
-
-                {{ $campuses->links() }}
             </div>
         </div>
     </div>
-
 @endsection
 
 @push('styles')
     <style>
-        /* .campus-index-shell {
-            padding: 10px;
-        } */
-
-        .campus-index-card {
-            /* max-width: 1500px; */
-            margin: 0 auto;
+        .campus-status-shell {
+            position: relative;
         }
 
-        .campus-scope-grid {
-            display: grid;
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 18px;
+        .campus-content {
+            min-height: 400px;
         }
 
-        .campus-scope-card {
-            display: block;
-            grid-column: span 2;
-            height:25vh;
-            border: 1px solid #00a8ff;
-            border-radius: 12px;
-            padding: 14px 16px;
-            background: #00a8ff;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            transition: all .18s ease;
+        .campus-body {
+            padding: 16px;
         }
 
-        .campus-scope-card,
-        .campus-scope-card strong,
-        .campus-scope-card:hover,
-        .campus-scope-card:hover strong,
-        .campus-scope-card:focus,
-        .campus-scope-card:focus strong {
-            color: #fff !important;
+        .campus-entries-control {
+            gap: 8px;
+            align-items: center;
         }
 
-        .campus-scope-card:nth-child(5n + 1) {
-            background: #f35f62;
-            border-color: #f35f62;
+        .campus-entries-control label {
+            margin: 0;
         }
 
-        .campus-scope-card:nth-child(5n + 2) {
-            background: #fdc518;
-            border-color: #fdc518;
+        .campus-entries-control select {
+            width: 84px;
         }
 
-        .campus-scope-card:nth-child(5n + 3) {
-            background: #975ce7;
-            border-color: #975ce7;
+        .campus-status-shell .follow-search {
+            width: auto;
         }
 
-        .campus-scope-card:nth-child(5n + 4) {
-            background: #a2cf37;
-            border-color: #a2cf37;
+        .campus-table-wrap {
+            overflow: visible !important;
         }
 
-        .campus-scope-card:nth-child(5n + 5) {
-            background: #00a8ff;
-            border-color: #00a8ff;
-        }
-
-        .campus-scope-card:hover,
-        .campus-scope-card:focus {
-            text-decoration: none;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
-            filter: brightness(1.02);
-        }
-
-        .campus-scope-card.is-active {
-            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
-            filter: brightness(0.94);
-        }
-
-        .campus-scope-card strong {
-            display: block;
-            font-size: 22px;
-            margin-top: 25px;
-        }
-
-        .campus-scope-label {
-            font-size: 14px;
-            font-weight:600;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-            color: white;
-        }
-
-        .campus-scope-card:nth-last-child(2):nth-child(3n + 1),
-        .campus-scope-card:nth-last-child(2):nth-child(3n + 1) + .campus-scope-card {
-            grid-column: span 3;
-        }
-
-        .campus-filter-form {
-            margin-bottom: 18px;
-        }
-
-        .campus-filter-row {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            align-items: end;
-        }
-
-        /* .col-lg-3 .col-md-6 {
-            flex: 1 1 180px;
-            min-width: 180px;
-        }
-
-        .col-lg-3 col-md-6- {
-            flex: 2 1 300px;
-            min-width: 280px;
-        } */
-
-        .campus-filter-actions {
-            display: flex;
-            gap: 10px;
-            margin: auto;
-            margin-right: 15px;
-        }
-
-        .campus-table thead th {
-            background: #ef7c2e;
-            color: #fff;
-            border-color: #d86e28;
+        .campus-table .action-cell {
+            min-width: 110px;
+            white-space: nowrap;
         }
 
         .campus-table td,
         .campus-table th {
-            vertical-align: middle !important;
-            padding-top: 3px !important;
-            padding-bottom: 3px !important;
-            line-height: 1.05 !important;
-            height: auto !important;
+            white-space: nowrap !important;
         }
 
-        .campus-table tbody tr {
-            height: auto !important;
-        }
-
-        .campus-table td,
-        .campus-table td span,
-        .campus-table td strong,
-        .campus-table td .label,
-        .campus-table td .btn,
-        .campus-table td .text-muted {
-            font-size: 14px !important;
-            line-height: 1.05 !important;
-        }
-
-        .campus-table__title {
-            display: inline;
-            font-size: 12px !important;
-            line-height: 1.05 !important;
-            margin: 0 !important;
-        }
-
-        .campus-table__meta {
-            display: inline;
-            font-size: 11px !important;
-            line-height: 1.05 !important;
-            margin-top: 1px !important;
-        }
-
-        .campus-table__meta--tight {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 220px;
-        }
-
-        .campus-table__meta--truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 260px;
-        }
-
-        .campus-table td:last-child,
-        .campus-table th:last-child {
-            white-space: nowrap;
-            width: 1%;
-        }
-
-        .campus-table .dropdown-toggle {
-            height: 22px !important;
-            min-height: 22px !important;
-            padding: 1px 8px !important;
-            line-height: 1.1 !important;
-            font-size: 12px !important;
-        }
-
-        .campus-action-dropdown .dropdown-menu {
-            z-index: 1050;
+        .campus-footer #campus-status-count {
+            color: #54667a;
+            font-weight: 600;
         }
 
         @media (max-width: 767px) {
-            .campus-scope-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .campus-scope-card,
-            .campus-scope-card:nth-last-child(2):nth-child(3n + 1),
-            .campus-scope-card:nth-last-child(2):nth-child(3n + 1) + .campus-scope-card {
-                display: flex;
-                grid-column: span 1;
-                min-height: 150px;
-                height: auto;
-                padding: 18px 16px;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-            }
-
-            .campus-scope-card strong {
-                margin-top: 0;
-                margin-bottom: 8px;
-            }
-
-            .campus-filter-actions {
+            .campus-status-shell .follow-search {
                 width: 100%;
-                margin-left: 0;
             }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            function revealCampusPage() {
+                setTimeout(function () {
+                    document.body.classList.add('follow-ready');
+                }, 150);
+            }
+
+            function matchesScope(row, scope) {
+                var type = String(row.getAttribute('data-type') || '').toLowerCase();
+                var status = String(row.getAttribute('data-status') || '').toLowerCase();
+
+                switch (scope) {
+                    case 'campuses':
+                        return type === 'company';
+                    case 'franchise':
+                        return type === 'franchise';
+                    case 'suspended_campuses':
+                        return type === 'company' && status === 'inactive';
+                    case 'suspended_franchise':
+                        return type === 'franchise' && status === 'inactive';
+                    default:
+                        return true;
+                }
+            }
+
+            function updateScopeQuery(scope) {
+                var url = new URL(window.location.href);
+                if (scope === 'all') {
+                    url.searchParams.delete('scope');
+                } else {
+                    url.searchParams.set('scope', scope);
+                }
+                window.history.replaceState({}, '', url.toString());
+            }
+
+            function renderCampusPagination(totalPages, currentPage) {
+                var pagination = document.getElementById('campus-status-pagination');
+                if (!pagination) {
+                    return;
+                }
+
+                pagination.innerHTML = '';
+
+                function buildItem(label, page, disabled, active) {
+                    var item = document.createElement('li');
+                    item.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
+
+                    var link = document.createElement(disabled ? 'span' : 'button');
+                    link.className = 'page-link';
+                    link.textContent = label;
+
+                    if (!disabled) {
+                        link.type = 'button';
+                        link.addEventListener('click', function () {
+                            var table = document.getElementById('campus-status-table');
+                            if (table) {
+                                table.setAttribute('data-current-page', String(page));
+                            }
+                            renderCampusTable();
+                        });
+                    }
+
+                    item.appendChild(link);
+                    pagination.appendChild(item);
+                }
+
+                buildItem('Previous', currentPage - 1, currentPage <= 1, false);
+
+                for (var page = 1; page <= totalPages; page++) {
+                    buildItem(String(page), page, false, page === currentPage);
+                }
+
+                buildItem('Next', currentPage + 1, currentPage >= totalPages, false);
+            }
+
+            function renderCampusTable() {
+                var table = document.getElementById('campus-status-table');
+                if (!table) {
+                    return;
+                }
+
+                var activeTab = document.querySelector('.follow-tab.active');
+                var activeScope = activeTab ? activeTab.getAttribute('data-scope') : 'all';
+                var searchValue = String(document.getElementById('campus-status-search')?.value || '').toLowerCase();
+                var pageSizeValue = String(document.getElementById('campus-status-page-size')?.value || '10').toLowerCase();
+                var rows = Array.from(table.querySelectorAll('tbody tr:not(.campus-empty-row)'));
+                var filteredRows = rows.filter(function (row) {
+                    var matchesTab = matchesScope(row, activeScope);
+                    var matchesSearch = row.innerText.toLowerCase().indexOf(searchValue) !== -1;
+                    return matchesTab && matchesSearch;
+                });
+                var pageSize = pageSizeValue === 'all' ? filteredRows.length || 1 : parseInt(pageSizeValue, 10);
+                var currentPage = parseInt(table.getAttribute('data-current-page') || '1', 10);
+                var totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+
+                if (currentPage > totalPages) {
+                    currentPage = 1;
+                }
+
+                var startIndex = filteredRows.length ? ((currentPage - 1) * pageSize) : 0;
+                var endIndex = filteredRows.length ? Math.min(startIndex + pageSize, filteredRows.length) : 0;
+                var visibleRows = filteredRows.slice(startIndex, endIndex);
+                var countNode = document.getElementById('campus-status-count');
+                var emptyRow = table.querySelector('.campus-empty-row');
+
+                rows.forEach(function (row) {
+                    row.style.display = 'none';
+                });
+
+                visibleRows.forEach(function (row, index) {
+                    row.style.display = '';
+                    var indexCell = row.querySelector('.campus-row-index');
+                    if (indexCell) {
+                        indexCell.textContent = startIndex + index + 1;
+                    }
+                });
+
+                if (emptyRow) {
+                    emptyRow.style.display = filteredRows.length ? 'none' : '';
+                }
+
+                if (countNode) {
+                    countNode.textContent = 'Showing ' + (filteredRows.length ? (startIndex + 1) : 0) + ' to ' + endIndex + ' of ' + filteredRows.length + ' entries';
+                }
+
+                renderCampusPagination(totalPages, currentPage);
+                table.setAttribute('data-current-page', String(currentPage));
+            }
+
+            function initCampusTabs() {
+                var tabs = document.querySelectorAll('.follow-tab');
+                tabs.forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        tabs.forEach(function (item) {
+                            item.classList.remove('active');
+                        });
+
+                        this.classList.add('active');
+
+                        var table = document.getElementById('campus-status-table');
+                        if (table) {
+                            table.setAttribute('data-current-page', '1');
+                        }
+
+                        updateScopeQuery(this.getAttribute('data-scope') || 'all');
+                        renderCampusTable();
+                    });
+                });
+            }
+
+            function initCampusControls() {
+                var search = document.getElementById('campus-status-search');
+                var pageSize = document.getElementById('campus-status-page-size');
+                var table = document.getElementById('campus-status-table');
+
+                if (search) {
+                    search.addEventListener('input', function () {
+                        if (table) {
+                            table.setAttribute('data-current-page', '1');
+                        }
+                        renderCampusTable();
+                    });
+                }
+
+                if (pageSize) {
+                    pageSize.addEventListener('change', function () {
+                        if (table) {
+                            table.setAttribute('data-current-page', '1');
+                        }
+                        renderCampusTable();
+                    });
+                }
+            }
+
+            function initCampusActionMenus() {
+                var dropdownButtons = document.querySelectorAll('.follow-action-dropdown .dropdown-toggle');
+                dropdownButtons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        var wrapper = this.closest('.follow-action-dropdown');
+                        if (!wrapper) return;
+                        var menu = wrapper.querySelector('.dropdown-menu');
+                        if (!menu) return;
+
+                        menu.classList.remove('dropdown-menu-upward');
+                        var rect = wrapper.getBoundingClientRect();
+                        var approxMenuHeight = 220;
+                        var needsUpward = (window.innerHeight - rect.bottom) < approxMenuHeight;
+                        if (needsUpward) {
+                            menu.classList.add('dropdown-menu-upward');
+                        }
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                revealCampusPage();
+                initCampusTabs();
+                initCampusControls();
+                initCampusActionMenus();
+                renderCampusTable();
+            });
+        })();
+    </script>
 @endpush

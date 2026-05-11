@@ -17,6 +17,10 @@ class CampusController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
+        $allowedScopes = ['all', 'campuses', 'franchise', 'suspended_campuses', 'suspended_franchise'];
+        if (!in_array($scope, $allowedScopes, true)) {
+            $scope = 'all';
+        }
 
         $campuses = Campus::query()
             ->withCount([
@@ -24,43 +28,16 @@ class CampusController extends Controller
                 'admissions',
                 'inventoryItems',
                 'programDiscounts',
-            ]);
-
-        $this->applyScope($campuses, $scope);
-        $this->applyFilters($campuses, $request);
-
-        $campuses = $campuses
+            ])
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByRaw("CASE WHEN campus_type = 'company' THEN 0 ELSE 1 END")
             ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
+            ->get();
 
         return view('campus.index', [
             'campuses' => $campuses,
-            'filters' => [
-                'scope' => $scope,
-                'campus_type' => $request->input('campus_type'),
-                'status' => $request->input('status'),
-                'country' => $request->input('country'),
-                'city' => $request->input('city'),
-                'search' => $request->input('search'),
-            ],
-            'scopeCards' => $this->buildScopeCards($request),
-            'countryOptions' => Campus::query()
-                ->whereNotNull('country')
-                ->where('country', '!=', '')
-                ->orderBy('country')
-                ->distinct()
-                ->pluck('country')
-                ->all(),
-            'cityOptions' => Campus::query()
-                ->whereNotNull('city')
-                ->where('city', '!=', '')
-                ->orderBy('city')
-                ->distinct()
-                ->pluck('city')
-                ->all(),
+            'activeScope' => $scope,
+            'scopeCards' => $this->buildScopeCards(),
             'typeOptions' => $this->typeOptions(),
             'pageTitle' => $this->resolvePageTitle($scope),
             'pageDescription' => $this->resolvePageDescription($scope),
@@ -235,10 +212,10 @@ class CampusController extends Controller
         }
     }
 
-    private function buildScopeCards(Request $request): array
+    private function buildScopeCards(): array
     {
         $scopes = [
-            'all' => 'All Units',
+            'all' => 'All Campuses / Franchise',
             'campuses' => 'All Campuses',
             'franchise' => 'All Franchise',
             'suspended_campuses' => 'Suspended Campuses',
@@ -249,7 +226,6 @@ class CampusController extends Controller
 
         foreach ($scopes as $scope => $label) {
             $query = Campus::query();
-            $this->applyFilters($query, $request);
 
             if ($scope !== 'all') {
                 $this->applyScope($query, $scope);
@@ -272,7 +248,7 @@ class CampusController extends Controller
             'franchise' => 'All Franchise',
             'suspended_campuses' => 'Suspended Campuses',
             'suspended_franchise' => 'Suspended Franchise',
-            default => 'Campuses / Franchise',
+            default => 'All Campuses / Franchise',
         };
     }
 

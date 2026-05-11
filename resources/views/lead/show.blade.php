@@ -69,7 +69,7 @@
 						</div>
 					@endif
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
-						data-registration-url="{{ route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]) }}"
+						data-registration-url="{{ route('registration.create', ['lead_id' => $lead->id]) }}"
 						data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}">
 						@csrf
 						<fieldset {{ $isClosed ? 'disabled' : '' }}>
@@ -96,7 +96,7 @@
 											@if ($hideRegistered && $key === 'registered') @continue @endif
 											@if ($hideNotInteresting && $key === 'not_interesting') @continue @endif
 											<option value="{{ $key }}" @selected(old('stage', $currentStage === 'new' ? 'contacted' : $currentStage) === $key)>
-												{{ $label }}
+												{{ $key === 'registered' ? 'Register' : ($key === 'enroll' ? 'Enroll' : $label) }}
 											</option>
 										@endforeach
 									</select>
@@ -187,13 +187,14 @@
 
 							<div class="form-row align-items-center">
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="probability-wrap">
-									<label class="form-label small text-dark fw-semibold">Probability</label>
+									<label class="form-label small text-dark fw-semibold">Probability: Selected <span id="probabilityValue">{{ (int) $defaultProbability }}%</span></label>
 									@include('lead.partials.probability_slider', [
 										'inputName' => 'probability',
 										'inputId' => 'probabilitySlider',
 										'displayId' => 'probabilityValue',
 										'value' => $defaultProbability,
 										'required' => true,
+										'showDisplay' => false,
 									])
 									<div class="field-error" data-error-for="probability"></div>
 								</div>
@@ -209,12 +210,12 @@
 							</div>
 
 							<div class="alert alert-info d-none" id="registration-link">
-								Selecting <strong>Registered</strong>? Complete the registration form first.
-								<a href="{{ route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
+								Selecting <strong>Register</strong>? Complete the registration form first.
+								<a href="{{ route('registration.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
 							</div>
 							<div class="alert alert-info d-none" id="admission-link">
-								Selecting <strong>Enrolled</strong>? Complete the admission form first.
-								<a href="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
+								Selecting <strong>Enroll</strong>? Complete the admission form first.
+								<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
 							</div>
 
 							<div class="text-right p-1">
@@ -1177,10 +1178,8 @@
 				return;
 			}
 
-			if (nextStage === 'registered') {
-				openLeadModal(form.dataset.registrationUrl, 'Registration Form');
-			} else if (nextStage === 'enroll') {
-				openLeadModal(form.dataset.admissionUrl, 'Admission Form');
+			if (nextStage === 'enroll' && form.dataset.admissionUrl) {
+				openLeadModal(form.dataset.admissionUrl, 'Create New Admission (All fields marked with * are required)');
 			}
 		};
 

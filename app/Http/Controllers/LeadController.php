@@ -196,8 +196,8 @@ class LeadController extends Controller
             throw ValidationException::withMessages([
                 'stage' => [
                     $validated['stage'] === 'registered'
-                        ? 'Use the registration form popup to register this lead.'
-                        : 'Use the admission form popup to enroll this lead.',
+                        ? 'Use the registration form to register this lead.'
+                        : 'Use the admission form to enroll this lead.',
                 ],
             ]);
         }

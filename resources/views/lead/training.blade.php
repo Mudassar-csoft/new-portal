@@ -285,7 +285,7 @@
 
 <div class="col-md-6 col-lg-3">
     <label class="form-label small fw-semibold text-dark">
-        Probability 
+        Probability: Selected <span id="probabilityValue">{{ (int) old('details.probability', data_get($leadPrefill, 'details.probability', 0)) }}%</span>
     </label>
     @include('lead.partials.probability_slider', [
         'inputName' => 'details[probability]',
@@ -293,6 +293,7 @@
         'displayId' => 'probabilityValue',
         'value' => old('details.probability', data_get($leadPrefill, 'details.probability', 0)),
         'errorKey' => 'details.probability',
+        'showDisplay' => false,
     ])
 </div>
 

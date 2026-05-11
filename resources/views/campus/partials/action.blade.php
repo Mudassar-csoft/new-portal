@@ -1,11 +1,8 @@
- @extends('layouts.theme')
-
- 
- @php
+@php
     $actionId = $actionId ?? ('campus-action-' . $campus->id);
 @endphp
 
-<div class="dropdown campus-action-dropdown">
+<div class="dropdown follow-action-dropdown campus-action-dropdown">
     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Actions
     </button>
