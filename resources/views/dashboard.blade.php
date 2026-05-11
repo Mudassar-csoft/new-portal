@@ -57,17 +57,6 @@
 		<div class="row align-middle">
 
 		<div id="dashboard-content" class="dashboard-content">
-		<div class="dashboard-live-bar">
-			<div class="dashboard-live-indicator">
-				<span class="dashboard-live-dot"></span>
-				<span>Live Data</span>
-			</div>
-			<div id="dashboard-live-status" class="dashboard-live-meta">Auto refresh every 15 seconds</div>
-			<div class="dashboard-live-meta">Last updated <span id="dashboard-last-updated" data-timestamp="{{ $dashboardGeneratedAt ?? '' }}">--</span></div>
-			<button type="button" id="dashboard-live-refresh" class="dashboard-live-refresh" aria-label="Refresh now">
-				<i class="fa fa-refresh"></i> Refresh
-			</button>
-		</div>
 		<div id="dashboard-top-panels" class="row pl-3 pr-3 dashboard-top-panels">
 
 			@if($showIncomeChart || $showAdmissionProgressWidget)
