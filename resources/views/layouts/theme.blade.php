@@ -1351,7 +1351,7 @@ select {
 		.page-content .program-table thead th,
 		.page-content .program-table tbody td {
 			width: auto !important;
-			min-width: max-content;
+			max-width:300px !important;
 			height: 30px !important;
 			text-align: left !important;
 			vertical-align: center !important;
@@ -1361,7 +1361,7 @@ select {
 			padding-left: 0.5rem !important;
 			line-height: 1.2 !important;
 			white-space: wrap !important;
-			/* word-break: break-word !important; */
+			word-break: break-word !important;
 			
 		}
 
