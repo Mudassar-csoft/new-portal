@@ -912,29 +912,12 @@
             background: rgba(255, 255, 255, 0.35);
         }
 
-        /* .statistic-box .stat-eye-inline {
-            left: auto;
-            right: 12px;
-            top: 12px;
-            transform: none;
-            width: 32px;
-            height: 32px;
-        } */
-
-		.statistic-box .stat-eye-inline {
-            left: 50%;
-            right: auto;
-            top: 22px;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-        }
-
+        .statistic-box .stat-eye-inline,
         .statistic-box .stat-eye-inline.is-revealed {
-            left: auto;
-            right: 12px;
-            top: 12px;
-            transform: none;
+            left: auto !important;
+            right: 12px !important;
+            top: 12px !important;
+            transform: none !important;
             width: 32px;
             height: 32px;
         }
