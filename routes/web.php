@@ -78,5 +78,8 @@ Route::middleware('auth')->group(function () {
     // Certificate routes
     require __DIR__ . '/certificate.php';
 
+    // Profile routes (current user's own profile + password change)
+    require __DIR__ . '/profile.php';
+
     Route::get('/login-logs', [UserLoginLogController::class, 'index'])->name('login-logs.index');
 });

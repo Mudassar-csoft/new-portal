@@ -278,16 +278,18 @@
                               </div>
                             </div>
                             <div class="dp-main-menu ">
-                            <!-- <div class="dp-main-menu "style = "line-height: 20px;"> -->
-                                <a href="#" class="dropdown-item p-1 ml-2 m-1 login-dropdown-item">
+                                <a href="{{ route('profile.show') }}" class="dropdown-item p-1 ml-2 m-1 login-dropdown-item">
                                   <i class="fas fa-user me-2 "></i> Profile
                                 </a>
-                                <a href="#" class="dropdown-item ml-2 m-1 p-1 login-dropdown-item">
+                                <a href="{{ route('profile.change-password') }}" class="dropdown-item ml-2 m-1 p-1 login-dropdown-item">
                                   <i class="fas fa-key me-2"></i> Change Password
                                 </a>
-                                <a href="#" class="dropdown-item ml-2 m-1 text-danger login-dropdown-item">
-                                  <i class="fas fa-sign-out-alt me-2"></i> Log Out
-                                </a>
+                                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                  @csrf
+                                  <button type="submit" class="dropdown-item ml-2 m-1 text-danger login-dropdown-item" style="width: calc(100% - 16px); text-align: left; border: 1px solid #e3eaf3; background: white; cursor: pointer;">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Log Out
+                                  </button>
+                                </form>
                               </div>
                             <!-- </div> -->
                           </div>

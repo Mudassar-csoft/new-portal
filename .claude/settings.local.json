@@ -19,7 +19,8 @@
       "PowerShell(php artisan tinker --execute=\"echo 'SESSION_LIFETIME: ' . config\\('session.lifetime'\\) . PHP_EOL; echo 'SESSION_EXPIRE_ON_CLOSE: ' . var_export\\(config\\('session.expire_on_close'\\), true\\) . PHP_EOL; echo 'SESSION_DRIVER: ' . config\\('session.driver'\\) . PHP_EOL; echo 'SESSION_DOMAIN: ' . var_export\\(config\\('session.domain'\\), true\\) . PHP_EOL; echo 'SESSION_SECURE: ' . var_export\\(config\\('session.secure'\\), true\\) . PHP_EOL; echo 'SESSION_SAME_SITE: ' . var_export\\(config\\('session.same_site'\\), true\\) . PHP_EOL; echo 'APP_URL: ' . config\\('app.url'\\) . PHP_EOL;\")",
       "PowerShell(php artisan route:list 2>&1 | findstr \"create\")",
       "PowerShell(php artisan migrate --force 2>&1; php artisan db:seed --class=RolePermissionSeeder --force 2>&1; php artisan route:list 2>&1 | findstr certificate)",
-      "PowerShell(php artisan db:seed --class=DemoAcademicSeeder --force 2>&1; php artisan tinker --execute=\"echo 'admissions: ' . App\\\\Models\\\\Admission::count\\(\\) . PHP_EOL;\")"
+      "PowerShell(php artisan db:seed --class=DemoAcademicSeeder --force 2>&1; php artisan tinker --execute=\"echo 'admissions: ' . App\\\\Models\\\\Admission::count\\(\\) . PHP_EOL;\")",
+      "PowerShell(php artisan route:list --name=profile 2>&1; php artisan route:list --name=logout 2>&1)"
     ]
   }
 }
