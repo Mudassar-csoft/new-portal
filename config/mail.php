@@ -18,6 +18,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin OTP Recipient
+    |--------------------------------------------------------------------------
+    |
+    | Address that receives password-reset OTPs. The admin manually shares
+    | the OTP with the requesting user out-of-band.
+    |
+    */
+
+    'admin_otp_email' => env('ADMIN_OTP_EMAIL', 'adeelajavaid.50@gmail.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |

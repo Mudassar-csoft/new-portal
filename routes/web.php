@@ -1,13 +1,35 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\UserSetupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserLoginLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [LoginController::class, 'create'])->name('login');
-Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+Route::post('/login', [LoginController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+// Public password-reset flow (OTP routed to admin email)
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.forgot');
+Route::post('/forgot-password', [PasswordResetController::class, 'requestOtp'])
+    ->middleware('throttle:5,10')
+    ->name('password.request');
+Route::get('/reset-password', [PasswordResetController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
+    ->middleware('throttle:5,10')
+    ->name('password.reset');
+
+// Signed user-setup link (sent in welcome email)
+Route::get('/user/setup/{user}', [UserSetupController::class, 'show'])
+    ->middleware('signed')
+    ->name('users.setup.show');
+Route::post('/user/setup/{user}', [UserSetupController::class, 'store'])
+    ->middleware('signed')
+    ->name('users.setup.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])->name('dashboard.live-data');
@@ -52,6 +74,9 @@ Route::middleware('auth')->group(function () {
 
     // HRM routes
     require __DIR__ . '/hrm.php';
+
+    // Certificate routes
+    require __DIR__ . '/certificate.php';
 
     Route::get('/login-logs', [UserLoginLogController::class, 'index'])->name('login-logs.index');
 });

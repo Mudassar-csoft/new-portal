@@ -56,7 +56,7 @@
         <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $batch->instructor) }}" placeholder="Enter instructor name" required>
     </div>
     <div class="form-group col-lg-3 col-md-6">
-        <label class="form-label required">Lab / Room</label>
+        <label class="form-label">Lab / Room</label>
         <input type="text" class="form-control" name="lab" value="{{ old('lab', $batch->lab) }}" placeholder="e.g. Lab-A / Room 4">
     </div>
     <div class="form-group col-md-3">
@@ -64,7 +64,7 @@
         <input type="date" class="form-control" name="start_date" id="batch-start-date" value="{{ old('start_date', optional($batch->start_date)->format('Y-m-d')) }}" required>
     </div>
     <div class="form-group col-md-3">
-        <label class="form-label required">Expected Ending Date</label>
+        <label class="form-label">Expected Ending Date</label>
         <input type="date" class="form-control" name="end_date" value="{{ old('end_date', optional($batch->end_date)->format('Y-m-d')) }}">
     </div>
 </div>
@@ -112,6 +112,6 @@
 </div>
 
 <div class="form-group">
-    <label class="form-label required">Remarks</label>
+    <label class="form-label">Remarks</label>
     <textarea class="form-control" name="remarks" rows="3" placeholder="Optional notes, capacity, or schedule remarks">{{ old('remarks', $batch->remarks) }}</textarea>
 </div>

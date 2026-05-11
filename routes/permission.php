@@ -10,5 +10,5 @@ Route::prefix('permissions')->name('permissions.')->group(function () {
     Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->name('edit');
     Route::put('/{permission}', [PermissionController::class, 'update'])->name('update');
     Route::delete('/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
+    Route::patch('/{id}/restore', [PermissionController::class, 'restore'])->name('restore');
 });
-

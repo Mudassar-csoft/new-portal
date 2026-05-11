@@ -7,260 +7,295 @@
         $filters = $filters ?? ['campus_id' => null, 'program_id' => null, 'batch_id' => null, 'day_of_week' => null, 'status' => null, 'search' => null];
     @endphp
 
-    <div class="batch-timetable-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    <div class="lead-status-shell">
+        <div id="timetable-loader" class="follow-loader">
+            <div class="follow-spinner">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
-        @endif
+            <p>Loading time table...</p>
+        </div>
 
-        <div class="box-typical box-typical-dashboard panel panel-default batch-timetable-card">
-            <header class="box-typical-header panel-heading d-flex justify-content-between">
-                <div>
-                    <h3 class="panel-title mb-0">Manage Time Table</h3>
-                    <!-- <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small> -->
+        <div id="timetable-content" class="follow-content">
+            @if(session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <!-- <div class="d-flex" style="gap:10px;">
-                    <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
-                    <a href="{{ route('batch.create') }}" class="btn btn-primary">Create Batch</a>
-                </div> -->
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="GET" action="{{ route('batch.timetable.index') }}" class="batch-filter-form">
-                    <div class="form-row batch-filter-row">
-                        <div class="form-group col-lg-4">
-                            <label class="form-label">Campus</label>
-                            <select class="form-control" name="campus_id">
-                                <option value="">All Campuses</option>
-                                @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
-                                        {{ $campus->code }} - {{ $campus->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label class="form-label">Programme</label>
-                            <select class="form-control" name="program_id">
-                                <option value="">All Programmes</option>
-                                @foreach($programs as $program)
-                                    <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                        {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label class="form-label">Batch</label>
-                            <select class="form-control" name="batch_id">
-                                <option value="">All Batches</option>
-                                @foreach($batches as $batch)
-                                    <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
-                                        {{ $batch->code }} - {{ $batch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label class="form-label">Day</label>
-                            <select class="form-control" name="day_of_week">
-                                <option value="">All Days</option>
-                                @foreach($dayOptions as $key => $label)
-                                    <option value="{{ $key }}" @selected(($filters['day_of_week'] ?? '') === $key)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4">
-                            <label class="form-label">Status</label>
-                            <select class="form-control" name="status">
-                                <option value="">All Statuses</option>
-                                @foreach($statusOptions as $key => $label)
-                                    <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4 batch-filter-col-wide">
-                            <label class="form-label">Search</label>
-                            <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch, room, instructor, or topic">
-                        </div>
-                    </div>
-                    <div class=" text-right">
-                        <button type="submit" class="btn btn-primary-outline">Filter</button>
-                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger-outline">Reset</a>
-                    </div>
-                </form>
+            @endif
 
-                <div class="batch-timetable-layout">
-                    <div class="batch-timetable-form-wrap">
-                        <div class="batch-timetable-form-card">
-                            <h4 class="batch-subtitle">{{ $editingEntry ? 'Edit Time Table Slot' : 'Add Time Table Slot' }}</h4>
-                            <form method="POST" action="{{ $editingEntry ? route('batch.timetable.update', $editingEntry) : route('batch.timetable.store') }}">
-                                @csrf
-                                @if($editingEntry)
-                                    @method('PATCH')
-                                @endif
-
-                                <div class="form-group">
-                                    <label class="required">Batch</label>
-                                    <select class="form-control" name="batch_id" required>
-                                        <option value="">- Select Batch -</option>
-                                        @foreach($batches as $batch)
-                                            <option value="{{ $batch->id }}" @selected((string) old('batch_id', $editingEntry?->batch_id) === (string) $batch->id)>
-                                                {{ $batch->code }} - {{ $batch->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label class="required">Day</label>
-                                        <select class="form-control" name="day_of_week" required>
-                                            <option value="">- Select Day -</option>
-                                            @foreach($dayOptions as $key => $label)
-                                                <option value="{{ $key }}" @selected(old('day_of_week', $editingEntry?->day_of_week) === $key)>{{ $label }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="required">Status</label>
-                                        <select class="form-control" name="status" required>
-                                            @foreach($statusOptions as $key => $label)
-                                                <option value="{{ $key }}" @selected(old('status', $editingEntry?->status ?? 'active') === $key)>{{ $label }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label class="required">Start Time</label>
-                                        <input type="time" class="form-control" name="start_time" value="{{ old('start_time', $editingEntry?->start_time ? \Carbon\Carbon::parse($editingEntry->start_time)->format('H:i') : null) }}" required>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="required">End Time</label>
-                                        <input type="time" class="form-control" name="end_time" value="{{ old('end_time', $editingEntry?->end_time ? \Carbon\Carbon::parse($editingEntry->end_time)->format('H:i') : null) }}" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label>Lab / Room</label>
-                                        <input type="text" class="form-control" name="lab" value="{{ old('lab', $editingEntry?->lab) }}" placeholder="e.g. Lab-A">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Instructor</label>
-                                        <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $editingEntry?->instructor) }}" placeholder="Optional override">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Subject / Topic</label>
-                                    <input type="text" class="form-control" name="topic" value="{{ old('topic', $editingEntry?->topic) }}" placeholder="e.g. Adobe Illustrator">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Remarks</label>
-                                    <textarea class="form-control" name="remarks" rows="3" placeholder="Optional note">{{ old('remarks', $editingEntry?->remarks) }}</textarea>
-                                </div>
-
-                                <div class="d-flex justify-content-end" style="gap:10px;">
-                                    @if($editingEntry)
-                                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-default">Cancel Edit</a>
-                                    @endif
-                                    <button type="submit" class="btn btn-primary">{{ $editingEntry ? 'Update Slot' : 'Add Slot' }}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="batch-timetable-board-wrap">
-                        <div class="batch-timetable-board-card">
-                            <h4 class="batch-subtitle">Weekly Overview</h4>
-                            <div class="timetable-board-grid">
-                                @foreach($dayOptions as $dayKey => $dayLabel)
-                                    @php $dayEntries = $boardEntries->get($dayKey, collect()); @endphp
-                                    <div class="timetable-day-card">
-                                        <div class="timetable-day-head">
-                                            <strong>{{ $dayLabel }}</strong>
-                                            <span>{{ $dayEntries->count() }} slot{{ $dayEntries->count() === 1 ? '' : 's' }}</span>
-                                        </div>
-                                        <div class="timetable-day-body">
-                                            @forelse($dayEntries as $entry)
-                                                <div class="timetable-slot">
-                                                    <div class="slot-time">
-                                                        {{ \Carbon\Carbon::parse($entry->start_time)->format('h:i A') }}
-                                                        -
-                                                        {{ \Carbon\Carbon::parse($entry->end_time)->format('h:i A') }}
-                                                    </div>
-                                                    <div class="slot-title">{{ $entry->batch?->code ?? 'Batch' }}{{ $entry->topic ? ' | ' . $entry->topic : '' }}</div>
-                                                    <div class="slot-meta">{{ $entry->lab ?: 'No room' }}{{ $entry->instructor ? ' | ' . $entry->instructor : '' }}</div>
-                                                </div>
-                                            @empty
-                                                <div class="text-muted small">No slots configured.</div>
-                                            @endforelse
-                                        </div>
-                                    </div>
-                                @endforeach
+            <div class="follow-card box-typical box-typical-dashboard panel panel-default">
+                <header class="box-typical-header panel-heading lead-header">
+                    <div class="tbl w-100">
+                        <div class="tbl-row">
+                            <div class="tbl-cell tbl-cell-title p-0 m-0">
+                                <h2 class="panel-title lead-title">
+                                    Manage Time Table
+                                </h2>
                             </div>
                         </div>
                     </div>
-                </div>
+                </header>
 
-                <div class="table-responsive mt-4">
-                    <table class="table table-hover table-bordered batch-table">
-                        <thead>
-                            <tr>
-                                <th>Batch</th>
-                                <th>Programme</th>
-                                <th>Campus</th>
-                                <th>Day</th>
-                                <th>Time</th>
-                                <th>Room</th>
-                                <th>Instructor</th>
-                                <th>Topic</th>  
-                                <th>Status</th>
-                                <th class="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($entries as $entry)
-                                <tr>
-                                    <td>{{ $entry->batch?->code ?? 'N/A' }}<br><span class="text-muted">{{ $entry->batch?->name ?? '' }}</span></td>
-                                    <td>{{ $entry->batch?->program?->title ?? $entry->batch?->program?->name ?? 'N/A' }}</td>
-                                    <td>{{ $entry->batch?->campus?->code ?? $entry->batch?->campus?->name ?? 'N/A' }}</td>
-                                    <td>{{ $dayOptions[$entry->day_of_week] ?? ucfirst($entry->day_of_week) }}</td>
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($entry->start_time)->format('h:i A') }}
-                                        -
-                                        {{ \Carbon\Carbon::parse($entry->end_time)->format('h:i A') }}
-                                    </td>
-                                    <td>{{ $entry->lab ?: 'N/A' }}</td>
-                                    <td>{{ $entry->instructor ?: ($entry->batch?->instructor ?? 'N/A') }}</td>
-                                    <td>{{ $entry->topic ?: 'N/A' }}</td>
-                                    <td><span class="label {{ $entry->status === 'active' ? 'label-success' : ($entry->status === 'inactive' ? 'label-default' : 'label-danger') }}">{{ ucfirst($entry->status) }}</span></td>
-                                    <td>
-                                        @include('batch.partials.timetable-action')
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="10" class="text-center text-muted">No timetable entries found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <div class="box-typical-body panel-body follow-body">
+                    <form method="GET" action="{{ route('batch.timetable.index') }}" id="timetable-filter-form">
+                        <div class="follow-controls">
+                            <div class="d-flex" style="gap:0.5rem;align-items: center;">
+                                <label class="">Show</label>
+                                <select class="form-select form-select-sm">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                </select>
+                                <label class="">Entries</label>
+                            </div>
+                            <div class="follow-search">
+                                <input type="text" name="search" id="timetable-search" class="form-control form-control-sm"
+                                       placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
 
-                {{ $entries->links() }}
+                        <div class="program-filter-row">
+                            <div class="program-filter-field">
+                                <label class="form-label">Campus</label>
+                                <select class="form-control form-control-sm" name="campus_id">
+                                    <option value="">All Campuses</option>
+                                    @foreach($campuses as $campus)
+                                        <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
+                                            {{ $campus->code }} - {{ $campus->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="program-filter-field">
+                                <label class="form-label">Programme</label>
+                                <select class="form-control form-control-sm" name="program_id">
+                                    <option value="">All Programmes</option>
+                                    @foreach($programs as $program)
+                                        <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
+                                            {{ $program->code }} - {{ $program->title ?? $program->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="program-filter-field">
+                                <label class="form-label">Batch</label>
+                                <select class="form-control form-control-sm" name="batch_id">
+                                    <option value="">All Batches</option>
+                                    @foreach($batches as $batch)
+                                        <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
+                                            {{ $batch->code }} - {{ $batch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="program-filter-field">
+                                <label class="form-label">Day</label>
+                                <select class="form-control form-control-sm" name="day_of_week">
+                                    <option value="">All Days</option>
+                                    @foreach($dayOptions as $key => $label)
+                                        <option value="{{ $key }}" @selected(($filters['day_of_week'] ?? '') === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="program-filter-field">
+                                <label class="form-label">Status</label>
+                                <select class="form-control form-control-sm" name="status">
+                                    <option value="">All Statuses</option>
+                                    @foreach($statusOptions as $key => $label)
+                                        <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="program-filter-actions">
+                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                <a href="{{ route('batch.timetable.index') }}" class="btn btn-default btn-sm">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="batch-timetable-layout">
+                        <div class="batch-timetable-form-wrap">
+                            <div class="batch-timetable-form-card">
+                                <h4 class="batch-subtitle">{{ $editingEntry ? 'Edit Time Table Slot' : 'Add Time Table Slot' }}</h4>
+                                <form method="POST" action="{{ $editingEntry ? route('batch.timetable.update', $editingEntry) : route('batch.timetable.store') }}">
+                                    @csrf
+                                    @if($editingEntry)
+                                        @method('PATCH')
+                                    @endif
+
+                                    <div class="form-group">
+                                        <label class="form-label required">Batch</label>
+                                        <select class="form-control" name="batch_id" required>
+                                            <option value="">- Select Batch -</option>
+                                            @foreach($batches as $batch)
+                                                <option value="{{ $batch->id }}" @selected((string) old('batch_id', $editingEntry?->batch_id) === (string) $batch->id)>
+                                                    {{ $batch->code }} - {{ $batch->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label required">Day</label>
+                                            <select class="form-control" name="day_of_week" required>
+                                                <option value="">- Select Day -</option>
+                                                @foreach($dayOptions as $key => $label)
+                                                    <option value="{{ $key }}" @selected(old('day_of_week', $editingEntry?->day_of_week) === $key)>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label required">Status</label>
+                                            <select class="form-control" name="status" required>
+                                                @foreach($statusOptions as $key => $label)
+                                                    <option value="{{ $key }}" @selected(old('status', $editingEntry?->status ?? 'active') === $key)>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label required">Start Time</label>
+                                            <input type="time" class="form-control" name="start_time" value="{{ old('start_time', $editingEntry?->start_time ? \Carbon\Carbon::parse($editingEntry->start_time)->format('H:i') : null) }}" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label required">End Time</label>
+                                            <input type="time" class="form-control" name="end_time" value="{{ old('end_time', $editingEntry?->end_time ? \Carbon\Carbon::parse($editingEntry->end_time)->format('H:i') : null) }}" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label">Lab / Room</label>
+                                            <input type="text" class="form-control" name="lab" value="{{ old('lab', $editingEntry?->lab) }}" placeholder="e.g. Lab-A">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label">Instructor</label>
+                                            <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $editingEntry?->instructor) }}" placeholder="Optional override">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Subject / Topic</label>
+                                        <input type="text" class="form-control" name="topic" value="{{ old('topic', $editingEntry?->topic) }}" placeholder="e.g. Adobe Illustrator">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Remarks</label>
+                                        <textarea class="form-control" name="remarks" rows="3" placeholder="Optional note">{{ old('remarks', $editingEntry?->remarks) }}</textarea>
+                                    </div>
+
+                                    <div class="form-actions text-right" style="gap:8px; display:flex; justify-content:flex-end;">
+                                        @if($editingEntry)
+                                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Cancel Edit</a>
+                                        @endif
+                                        <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">{{ $editingEntry ? 'Update Slot' : 'Add Slot' }}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="batch-timetable-board-wrap">
+                            <div class="batch-timetable-board-card">
+                                <h4 class="batch-subtitle">Weekly Overview</h4>
+                                <div class="timetable-board-grid">
+                                    @foreach($dayOptions as $dayKey => $dayLabel)
+                                        @php $dayEntries = $boardEntries->get($dayKey, collect()); @endphp
+                                        <div class="timetable-day-card">
+                                            <div class="timetable-day-head">
+                                                <strong>{{ $dayLabel }}</strong>
+                                                <span>{{ $dayEntries->count() }} slot{{ $dayEntries->count() === 1 ? '' : 's' }}</span>
+                                            </div>
+                                            <div class="timetable-day-body">
+                                                @forelse($dayEntries as $entry)
+                                                    <div class="timetable-slot">
+                                                        <div class="slot-time">
+                                                            {{ \Carbon\Carbon::parse($entry->start_time)->format('h:i A') }}
+                                                            -
+                                                            {{ \Carbon\Carbon::parse($entry->end_time)->format('h:i A') }}
+                                                        </div>
+                                                        <div class="slot-title">{{ $entry->batch?->code ?? 'Batch' }}{{ $entry->topic ? ' | ' . $entry->topic : '' }}</div>
+                                                        <div class="slot-meta">{{ $entry->lab ?: 'No room' }}{{ $entry->instructor ? ' | ' . $entry->instructor : '' }}</div>
+                                                    </div>
+                                                @empty
+                                                    <div class="text-muted small">No slots configured.</div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered follow-table">
+                            <thead>
+                                <tr>
+                                    <th>Batch</th>
+                                    <th>Programme</th>
+                                    <th>Campus</th>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Room</th>
+                                    <th>Instructor</th>
+                                    <th>Topic</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($entries as $entry)
+                                    <tr>
+                                        <td>{{ $entry->batch?->code ?? 'N/A' }}<br><span class="text-muted">{{ $entry->batch?->name ?? '' }}</span></td>
+                                        <td>{{ $entry->batch?->program?->title ?? $entry->batch?->program?->name ?? 'N/A' }}</td>
+                                        <td>{{ $entry->batch?->campus?->code ?? $entry->batch?->campus?->name ?? 'N/A' }}</td>
+                                        <td>{{ $dayOptions[$entry->day_of_week] ?? ucfirst($entry->day_of_week) }}</td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($entry->start_time)->format('h:i A') }}
+                                            -
+                                            {{ \Carbon\Carbon::parse($entry->end_time)->format('h:i A') }}
+                                        </td>
+                                        <td>{{ $entry->lab ?: 'N/A' }}</td>
+                                        <td>{{ $entry->instructor ?: ($entry->batch?->instructor ?? 'N/A') }}</td>
+                                        <td>{{ $entry->topic ?: 'N/A' }}</td>
+                                        <td><span class="label {{ $entry->status === 'active' ? 'label-success' : ($entry->status === 'inactive' ? 'label-default' : 'label-danger') }}">{{ ucfirst($entry->status) }}</span></td>
+                                        <td class="text-right">
+                                            @include('batch.partials.timetable-action')
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted">No timetable entries found.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="follow-footer">
+                        <div>
+                            @if($entries->total() > 0)
+                                Showing {{ $entries->firstItem() }} to {{ $entries->lastItem() }} of {{ $entries->total() }} entries
+                            @else
+                                Showing 0 to 0 of 0 entries
+                            @endif
+                        </div>
+                        {{ $entries->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -268,45 +303,100 @@
 
 @push('styles')
     <style>
-        .batch-timetable-shell {
-            padding: 10px;
+        .lead-status-shell {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden;
         }
 
-        .batch-timetable-card {
-            max-width: 1450px;
-            margin: 0 auto;
+        .follow-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: rgba(245, 247, 251, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+            gap: 12px;
+        }
+
+        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
+
+        .follow-spinner .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #12a0ff;
+            animation: bounce 0.9s ease-in-out infinite;
+        }
+
+        .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
+        .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
+
+        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+
+        .follow-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+            position: relative;
+            min-height: 400px;
+        }
+
+        body.timetable-ready .follow-content { opacity: 1; visibility: visible; }
+        body.timetable-ready #timetable-loader { display: none; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.6; }
+            40% { transform: translateY(-12px); opacity: 1; }
+        }
+
+        .lead-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1f2937;
+            line-height: 1.4;
         }
 
         .required::after {
-            content: ' *';
+            content: '*';
             color: #e53935;
+            margin-left: 4px;
         }
 
-        .batch-filter-form {
-            margin-bottom: 18px;
-        }
+        .table-responsive { overflow: visible !important; }
+        .table td { padding: 4px 6px; }
 
-        .batch-filter-row {
+        .program-filter-row {
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
             align-items: end;
+            margin-bottom: 14px;
         }
 
-        .batch-filter-col {
-            flex: 1 1 180px;
+        .program-filter-field {
+            flex: 1 1 200px;
             min-width: 180px;
         }
 
-        .batch-filter-col-wide {
-            flex: 2 1 280px;
-            min-width: 260px;
+        .program-filter-field .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #54667a;
+            margin-bottom: 4px;
         }
 
-        .batch-filter-actions {
+        .program-filter-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-left: auto;
+            align-items: center;
         }
 
         .batch-timetable-layout {
@@ -314,11 +404,9 @@
             grid-template-columns: minmax(320px, 380px) 1fr;
             gap: 18px;
             align-items: start;
+            margin-top: 16px;
         }
-.form-group.batch-filter-actions
- {
-    margin: 3.8%;
-}
+
         .batch-timetable-form-card,
         .batch-timetable-board-card {
             border: 1px solid #dbe5f1;
@@ -372,44 +460,43 @@
             background: #f8fbff;
         }
 
-        .slot-time {
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 4px;
-        }
-
-        .slot-title {
-            color: #1e293b;
-            margin-bottom: 2px;
-        }
-
-        .slot-meta {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .batch-table thead th {
-            background: #1fb2ff;
-            color: #fff;
-            border-color: #1aa4ea;
-        }
-
-        .batch-table td,
-        .batch-table th {
-            vertical-align: middle;
-        }
+        .slot-time { font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .slot-title { color: #1e293b; margin-bottom: 2px; }
+        .slot-meta { font-size: 12px; color: #64748b; }
 
         @media (max-width: 992px) {
-            .batch-timetable-layout {
-                grid-template-columns: 1fr;
-            }
+            .batch-timetable-layout { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 767px) {
-            .batch-filter-actions {
-                width: 100%;
-                margin-left: 0;
-            }
+            .program-filter-actions { width: 100%; margin-left: 0; }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            function revealTimetablePage() {
+                setTimeout(function () {
+                    document.body.classList.add('timetable-ready');
+                }, 150);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                revealTimetablePage();
+
+                var searchInput = document.getElementById('timetable-search');
+                var form = document.getElementById('timetable-filter-form');
+                if (searchInput && form) {
+                    searchInput.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
 @endpush

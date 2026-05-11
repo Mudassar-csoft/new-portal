@@ -14,4 +14,6 @@ Route::prefix('batch')->name('batch.')->group(function () {
     Route::delete('/timetable/{timetable}', [BatchTimetableController::class, 'destroy'])->name('timetable.destroy');
     Route::get('/{batch}/edit', [BatchController::class, 'edit'])->name('edit');
     Route::put('/{batch}', [BatchController::class, 'update'])->name('update');
+    Route::patch('/{batch}/toggle-status', [BatchController::class, 'toggleStatus'])->name('toggle-status');
+    Route::delete('/{batch}', [BatchController::class, 'destroy'])->name('destroy');
 });

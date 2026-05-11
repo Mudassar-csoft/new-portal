@@ -291,7 +291,7 @@
 						<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
 						<span>Keep me signed in</span>
 					</label>
-					<a class="forgot" href="#">Forgot Password?</a>
+					<a class="forgot" href="{{ route('password.forgot') }}">Forgot Password?</a>
 				</div>
 
 				<button type="submit">Login</button>

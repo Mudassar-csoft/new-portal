@@ -3,102 +3,53 @@
 @section('title', 'Edit Campus / Franchise')
 
 @section('content')
-    <div class="campus-form-shell">
-        <div class="box-typical box-typical-dashboard panel panel-default campus-form-card">
-            <header class="box-typical-header panel-heading d-flex justify-content-between">
-                <div>
-                    <h3 class="panel-title mb-0">Edit Campus / Franchise</h3>
-                    <small class="text-muted">Update campus location, contact details, status, and operational setup.</small>
-                </div>
-                <div class="d-flex" style="gap:10px;">
-                    <a href="{{ route('campus.index') }}" class="btn btn-default">Back to Campuses</a>
-                    <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-primary">View Inventory</a>
-                </div>
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('campus.update', $campus) }}">
-                    @csrf
-                    @method('PUT')
-                    @include('campus.partials.form')
+    <div class="lead-shell">
+        <div id="campus-form-loader" class="lead-loader">
+            <div class="lead-spinner">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <p>Preparing campus form...</p>
+        </div>
 
-                    <div class="text-right mt-3">
-                        <button type="submit" class="btn btn-primary">Update Campus</button>
+        <div id="campus-form-content" class="lead-content">
+            <div class="box-typical box-typical-dashboard panel panel-default lead-create-card">
+                <header class="box-typical-header panel-heading lead-header">
+                    <div class="tbl w-100">
+                        <div class="tbl-row">
+                            <div class="tbl-cell tbl-cell-title p-0 m-0">
+                                <h2 class="panel-title lead-title">
+                                    Edit Campus / Franchise <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
+                                </h2>
+                            </div>
+                            <div class="tbl-cell text-right" style="width: 280px;">
+                                <a href="{{ route('campus.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Campuses</a>
+                                <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">View Inventory</a>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                </header>
+
+                <div class="box-typical-body panel-body lead-body">
+                    <form method="POST" action="{{ route('campus.update', $campus) }}">
+                        @csrf
+                        @method('PUT')
+                        @include('campus.partials.form')
+
+                        <div class="form-actions mb-2 mt-3 text-right mr-0">
+                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Update Campus</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 @endsection
 
 @push('styles')
-    <style>
-        .campus-form-shell {
-            padding: 10px;
-        }
-
-        .campus-form-card {
-            max-width: 1250px;
-            margin: 0 auto;
-        }
-
-        .required::after {
-            content: ' *';
-            color: #e53935;
-        }
-
-        .campus-type-options {
-            margin-top: 8px;
-            justify-content: space-between !important;
-        }
-
-        .campus-type-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 0;
-            cursor: pointer;
-            padding: 0;
-            background: transparent;
-            border: 0;
-        }
-
-        .campus-type-option .form-check-input {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border: 2px solid grey;
-            border-radius: 50%;
-            outline: none;
-            cursor: pointer;
-            position: relative;
-            background-color: #fff;
-            transition: background 0.2s, box-shadow 0.2s;
-            margin: 0;
-        }
-
-        .campus-type-option .form-check-input:checked {
-            border-color: #00a8ff;
-        }
-
-        .campus-type-option .form-check-input:checked::before {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: #00a8ff;
-        }
-
-        .campus-type-option .form-check-label {
-            font-size: .75rem;
-            margin-bottom: 0;
-            cursor: pointer;
-            color: #343434;
-        }
-    </style>
+    @include('campus.partials.form-styles')
 @endpush
 
 @include('partials.country_city_script')

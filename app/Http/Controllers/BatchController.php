@@ -48,7 +48,6 @@ class BatchController extends Controller
             ],
             'scopeCards' => $this->buildScopeCards($request, $today, $recentWindow),
             'pageTitle' => $this->resolvePageTitle($scope),
-            'pageDescription' => $this->resolvePageDescription($scope),
         ]);
     }
 
@@ -80,6 +79,39 @@ class BatchController extends Controller
         $batch->update($validated);
 
         return redirect()->route('batch.index')->with('status', 'Batch updated successfully.');
+    }
+
+    public function destroy(Batch $batch): RedirectResponse
+    {
+        $hasReferences = $batch->admissions()->exists()
+            || $batch->timetables()->exists();
+
+        if ($hasReferences) {
+            return redirect()->route('batch.index')
+                ->with('error', 'Cannot delete: this batch has linked admissions or timetable entries. Suspend it instead.');
+        }
+
+        $batch->delete();
+
+        return redirect()->route('batch.index')->with('status', 'Batch deleted successfully.');
+    }
+
+    public function toggleStatus(Batch $batch): RedirectResponse
+    {
+        if (in_array($batch->status, ['completed', 'cancelled'], true)) {
+            return redirect()->route('batch.index')
+                ->with('error', 'Completed or cancelled batches cannot be toggled. Edit the batch to change status.');
+        }
+
+        $batch->update([
+            'status' => $batch->status === 'active' ? 'inactive' : 'active',
+        ]);
+
+        $message = $batch->status === 'active'
+            ? 'Batch activated.'
+            : 'Batch suspended.';
+
+        return redirect()->route('batch.index')->with('status', $message);
     }
 
     private function formPayload(Batch $batch): array
@@ -199,33 +231,35 @@ class BatchController extends Controller
 
     private function buildScopeCards(Request $request, Carbon $today, Carbon $recentWindow): array
     {
-        $scopes = [
-            'all' => 'All Batches',
-            'upcoming' => 'Upcoming',
-            'recently_started' => 'Recently Started',
-            'in_progress' => 'In Progress',
-            'recently_ended' => 'Recently Ended',
-            'completed' => 'Completed',
+        $todayStr = $today->toDateString();
+        $recentStr = $recentWindow->toDateString();
+
+        $row = Batch::query()
+            ->tap(fn (Builder $query) => $this->applyFilters($query, $request))
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN start_date > ? THEN 1 ELSE 0 END) as upcoming,
+                SUM(CASE WHEN start_date BETWEEN ? AND ? THEN 1 ELSE 0 END) as recently_started,
+                SUM(CASE WHEN start_date <= ? AND (end_date IS NULL OR end_date >= ?) THEN 1 ELSE 0 END) as in_progress,
+                SUM(CASE WHEN end_date IS NOT NULL AND end_date BETWEEN ? AND ? AND end_date < ? THEN 1 ELSE 0 END) as recently_ended,
+                SUM(CASE WHEN end_date IS NOT NULL AND end_date < ? THEN 1 ELSE 0 END) as completed
+            ', [
+                $todayStr,
+                $recentStr, $todayStr,
+                $todayStr, $todayStr,
+                $recentStr, $todayStr, $todayStr,
+                $todayStr,
+            ])
+            ->first();
+
+        return [
+            ['scope' => 'all', 'label' => 'All Batches', 'count' => (int) ($row->total ?? 0)],
+            ['scope' => 'upcoming', 'label' => 'Upcoming', 'count' => (int) ($row->upcoming ?? 0)],
+            ['scope' => 'recently_started', 'label' => 'Recently Started', 'count' => (int) ($row->recently_started ?? 0)],
+            ['scope' => 'in_progress', 'label' => 'In Progress', 'count' => (int) ($row->in_progress ?? 0)],
+            ['scope' => 'recently_ended', 'label' => 'Recently Ended', 'count' => (int) ($row->recently_ended ?? 0)],
+            ['scope' => 'completed', 'label' => 'Completed', 'count' => (int) ($row->completed ?? 0)],
         ];
-
-        $cards = [];
-
-        foreach ($scopes as $scope => $label) {
-            $query = Batch::query();
-            $this->applyFilters($query, $request);
-
-            if ($scope !== 'all') {
-                $this->applyScope($query, $scope, $today, $recentWindow);
-            }
-
-            $cards[] = [
-                'scope' => $scope,
-                'label' => $label,
-                'count' => $query->count(),
-            ];
-        }
-
-        return $cards;
     }
 
     private function resolvePageTitle(string $scope): string
@@ -237,18 +271,6 @@ class BatchController extends Controller
             'recently_ended' => 'Recently Ended Batches',
             'completed' => 'Completed Batches',
             default => 'Batches & Time Table',
-        };
-    }
-
-    private function resolvePageDescription(string $scope): string
-    {
-        return match ($scope) {
-            'upcoming' => '',
-            'recently_started' => '',
-            'in_progress' => '',
-            'recently_ended' => '',
-            'completed' => '',
-            default => '',
         };
     }
 

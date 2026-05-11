@@ -86,10 +86,9 @@
         <label class=" form-label">Number of Labs</label>
         <input type="number" name="labs_count" class="form-control" min="0" value="{{ old('labs_count', $campus->labs_count) }}" placeholder="Enter number of labs">
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-md-3 js-royalty-field" @if($selectedType !== 'franchise') hidden @endif>
         <label class=" form-label">Royalty Rate (%)</label>
         <input type="number" step="0.01" min="0" name="royalty_rate" id="royalty-rate" class="form-control" value="{{ old('royalty_rate', $campus->royalty_rate) }}" placeholder="Franchise only">
-        <!-- <small class="text-muted">Only used for franchise branches.</small> -->
     </div>
 </div>
 
