@@ -59,9 +59,31 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('profile.update') }}">
+                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        <div class="avatar-row">
+                            <div class="avatar-preview">
+                                @if($user->avatar_path)
+                                    <img id="avatar-preview-img" src="{{ asset('storage/' . $user->avatar_path) }}" alt="Avatar">
+                                @else
+                                    <img id="avatar-preview-img" src="{{ asset('theme/img/avatar-2-64.png') }}" alt="Avatar">
+                                @endif
+                            </div>
+                            <div class="avatar-actions">
+                                <label class="form-label">Profile Picture</label>
+                                <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png,image/webp" class="form-control" style="padding:4px;">
+                                <small class="text-muted">JPG, PNG, or WEBP up to 2 MB.</small>
+                                @if($user->avatar_path)
+                                    <label class="d-block mt-2">
+                                        <input type="checkbox" name="remove_avatar" value="1">
+                                        Remove current picture
+                                    </label>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label class="form-label required">Full Name</label>
@@ -122,6 +144,30 @@
         .label-mute { color: #54667a; font-weight: 600; margin-right: 4px; }
         .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }
+
+        .avatar-row {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .avatar-preview img {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            display: block;
+        }
+        .avatar-actions { flex: 1 1 auto; }
+        .avatar-actions .form-label { font-size: 12px; font-weight: 600; }
+        @media (max-width: 600px) {
+            .avatar-row { flex-direction: column; align-items: flex-start; }
+        }
     </style>
 @endpush
 
@@ -129,6 +175,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () { document.body.classList.add('profile-ready'); }, 200);
+
+            var avatarInput = document.getElementById('avatar-input');
+            var avatarImg = document.getElementById('avatar-preview-img');
+            if (avatarInput && avatarImg) {
+                avatarInput.addEventListener('change', function (e) {
+                    var file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    var reader = new FileReader();
+                    reader.onload = function (evt) { avatarImg.src = evt.target.result; };
+                    reader.readAsDataURL(file);
+                });
+            }
         });
     </script>
 @endpush
