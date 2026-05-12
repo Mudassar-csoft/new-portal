@@ -36,7 +36,7 @@
 							<div class="tbl-cell tbl-cell-title p-0 m-0">
 								<h2 class="panel-title lead-title ">Create New Lead <span class=" ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span></h2>
 							</div>
-							<div class="text-right Traing-head-selector" style="width: 200px; text-align: left !important;">
+							<div class="text-right Traing-head-selector" style="text-align: left !important;">
 								<select id="leadTypeSelect" class="form-control lead-type-select" onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }">
 									@foreach($leadTypeOptions as $leadTypeValue => $leadTypeLabel)
 										<option
