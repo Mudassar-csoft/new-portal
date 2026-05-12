@@ -25,9 +25,12 @@ class DashboardController extends Controller
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'campus_type'])
             : null;
 
+        $dashboard = $this->buildDashboardPayload($selectedCampusId);
+
         return view('dashboard', [
-            'dashboard' => $this->buildDashboardPayload($selectedCampusId),
+            'dashboard' => $dashboard,
             'selectedCampus' => $selectedCampus,
+            'dashboardGeneratedAt' => $dashboard['generatedAt'] ?? null,
         ]);
     }
 

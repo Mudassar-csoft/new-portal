@@ -18,20 +18,37 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Role::with('permissions')->select('roles.*');
+            $scope = (string) $request->query('scope', 'active');
+
+            $query = Role::withoutGlobalScope('not_deleted')
+                ->with('permissions')
+                ->select('roles.*');
+
+            if ($scope === 'deleted') {
+                $query->whereNotNull('at_deleted');
+            } else {
+                $query->whereNull('at_deleted');
+            }
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('name', fn (Role $role) => e($role->name))
                 ->editColumn('slug', fn (Role $role) => e($role->slug))
                 ->addColumn('permissions', fn (Role $role) => $role->permissions->count())
+                ->addColumn('is_system', fn (Role $role) => $role->is_system
+                    ? '<span class="label label-warning">System</span>'
+                    : '<span class="label label-default">Custom</span>')
                 ->addColumn('date', fn (Role $role) => optional($role->created_at)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('actions', fn (Role $role) => view('role.partials.action', ['role' => $role])->render())
-                ->rawColumns(['actions'])
+                ->rawColumns(['is_system', 'actions'])
                 ->make(true);
         }
 
-        return view('role.index');
+        $scope = (string) $request->query('scope', 'active');
+
+        return view('role.index', [
+            'activeScope' => in_array($scope, ['active', 'deleted'], true) ? $scope : 'active',
+        ]);
     }
 
     public function create(): View
@@ -83,19 +100,22 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('roles', 'slug')->ignore($role->id)],
             'description' => ['nullable', 'string'],
             'permissions' => ['array'],
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        $slug = $validated['slug'] ?? Str::slug($validated['name']);
-
-        $role->update([
-            'name' => $validated['name'],
-            'slug' => $slug,
+        // Slug is preserved across updates so seeded role identifiers stay stable.
+        // System roles also can't be renamed.
+        $updates = [
             'description' => $validated['description'] ?? null,
-        ]);
+        ];
+
+        if (!$role->is_system) {
+            $updates['name'] = $validated['name'];
+        }
+
+        $role->update($updates);
 
         $role->permissions()->sync($validated['permissions'] ?? []);
 
@@ -104,8 +124,26 @@ class RoleController extends Controller
 
     public function destroy(Role $role): RedirectResponse
     {
+        if ($role->is_system) {
+            return redirect()->route('roles.index')
+                ->with('error', 'System roles cannot be deleted.');
+        }
+
+        if ($role->users()->exists()) {
+            return redirect()->route('roles.index')
+                ->with('error', 'Cannot delete a role that is still assigned to users.');
+        }
+
         $role->update(['at_deleted' => now()]);
 
         return redirect()->route('roles.index')->with('status', 'Role deleted.');
+    }
+
+    public function restore(int $id): RedirectResponse
+    {
+        $role = Role::withoutGlobalScope('not_deleted')->findOrFail($id);
+        $role->update(['at_deleted' => null]);
+
+        return redirect()->route('roles.index')->with('status', 'Role restored.');
     }
 }

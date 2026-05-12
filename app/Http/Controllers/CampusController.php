@@ -22,17 +22,23 @@ class CampusController extends Controller
             $scope = 'all';
         }
 
-        $campuses = Campus::query()
+        $query = Campus::query()
             ->withCount([
                 'batches',
                 'admissions',
                 'inventoryItems',
                 'programDiscounts',
-            ])
+            ]);
+
+        $this->applyScope($query, $scope);
+        $this->applyFilters($query, $request);
+
+        $campuses = $query
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByRaw("CASE WHEN campus_type = 'company' THEN 0 ELSE 1 END")
             ->orderBy('name')
-            ->get();
+            ->paginate(15)
+            ->withQueryString();
 
         return view('campus.index', [
             'campuses' => $campuses,
@@ -40,7 +46,14 @@ class CampusController extends Controller
             'scopeCards' => $this->buildScopeCards(),
             'typeOptions' => $this->typeOptions(),
             'pageTitle' => $this->resolvePageTitle($scope),
-            'pageDescription' => $this->resolvePageDescription($scope),
+            'filters' => [
+                'scope' => $scope,
+                'campus_type' => $request->input('campus_type'),
+                'status' => $request->input('status'),
+                'country' => $request->input('country'),
+                'city' => $request->input('city'),
+                'search' => $request->input('search'),
+            ],
         ]);
     }
 
@@ -70,6 +83,36 @@ class CampusController extends Controller
         $campus->update($this->extractCampusData($validated, $campus));
 
         return redirect()->route('campus.index')->with('status', 'Campus updated successfully.');
+    }
+
+    public function destroy(Campus $campus): RedirectResponse
+    {
+        $hasReferences = $campus->batches()->exists()
+            || $campus->admissions()->exists()
+            || $campus->inventoryItems()->exists()
+            || $campus->programDiscounts()->exists();
+
+        if ($hasReferences) {
+            return redirect()->route('campus.index')
+                ->with('error', 'Cannot delete: this campus has linked batches, admissions, inventory, or discounts. Suspend it instead.');
+        }
+
+        $campus->delete();
+
+        return redirect()->route('campus.index')->with('status', 'Campus deleted successfully.');
+    }
+
+    public function toggleStatus(Campus $campus): RedirectResponse
+    {
+        $campus->update([
+            'status' => $campus->status === 'active' ? 'inactive' : 'active',
+        ]);
+
+        $message = $campus->status === 'active'
+            ? 'Campus activated.'
+            : 'Campus suspended.';
+
+        return redirect()->route('campus.index')->with('status', $message);
     }
 
     public function countPreview(Request $request, string $abbr): JsonResponse
@@ -214,7 +257,37 @@ class CampusController extends Controller
 
     private function buildScopeCards(): array
     {
-        $scopes = [
+        $aggregated = Campus::query()
+            ->selectRaw('campus_type, status, COUNT(*) as aggregate')
+            ->groupBy('campus_type', 'status')
+            ->get();
+
+        $totals = [
+            'all' => 0,
+            'campuses' => 0,
+            'franchise' => 0,
+            'suspended_campuses' => 0,
+            'suspended_franchise' => 0,
+        ];
+
+        foreach ($aggregated as $row) {
+            $count = (int) $row->aggregate;
+            $totals['all'] += $count;
+
+            if ($row->campus_type === 'company') {
+                $totals['campuses'] += $count;
+                if ($row->status === 'inactive') {
+                    $totals['suspended_campuses'] += $count;
+                }
+            } elseif ($row->campus_type === 'franchise') {
+                $totals['franchise'] += $count;
+                if ($row->status === 'inactive') {
+                    $totals['suspended_franchise'] += $count;
+                }
+            }
+        }
+
+        $labels = [
             'all' => 'All Campuses / Franchise',
             'campuses' => 'All Campuses',
             'franchise' => 'All Franchise',
@@ -223,18 +296,11 @@ class CampusController extends Controller
         ];
 
         $cards = [];
-
-        foreach ($scopes as $scope => $label) {
-            $query = Campus::query();
-
-            if ($scope !== 'all') {
-                $this->applyScope($query, $scope);
-            }
-
+        foreach ($labels as $scope => $label) {
             $cards[] = [
                 'scope' => $scope,
                 'label' => $label,
-                'count' => $query->count(),
+                'count' => $totals[$scope],
             ];
         }
 
@@ -249,17 +315,6 @@ class CampusController extends Controller
             'suspended_campuses' => 'Suspended Campuses',
             'suspended_franchise' => 'Suspended Franchise',
             default => 'All Campuses / Franchise',
-        };
-    }
-
-    private function resolvePageDescription(string $scope): string
-    {
-        return match ($scope) {
-            'campuses' => '',
-            'franchise' => '',
-            'suspended_campuses' => '',
-            'suspended_franchise' => '',
-            default => '',
         };
     }
 

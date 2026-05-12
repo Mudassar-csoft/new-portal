@@ -67,45 +67,11 @@
 					</div>
 					</div>
 					<div class="form-section">
-						<div class="section-title d-flex align-items-center justify-content-between">
-							<span class="form-label">Security</span>
-							<button id="generate-password" type="button" class="btn btn-sm btn-primary" aria-label="Generate strong password" title="Generate strong password">
-								<i class="fa fa-random"></i>
-							</button>
+						<div class="section-title form-label">Account Activation</div>
+						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
+							<i class="fa fa-info-circle"></i>
+							A setup link will be emailed to the new user. The link is valid for <strong>1 hour</strong> — the user clicks it to set their own password and activate the account.
 						</div>
-						<div class="form-row align-items-end" >
-						<div class="form-group col-md-6">
-							<label class="form-label required">
-								<span>Password</span>
-							</label>
-							<div class="input-group">
-								<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********" required>
-								<span class="input-group-btn">
-									<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
-										<i class="fa fa-eye"></i>
-									</button>
-								</span>
-							</div>
-							@error('password')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-6">
-							<label class="form-label required">Confirm Password</label>
-							<div class="input-group">
-								<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********" required>
-								<span class="input-group-btn">
-									<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
-										<i class="fa fa-eye"></i>
-									</button>
-								</span>
-								
-							</div>
-							@error('password_confirmation')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-					</div>
 					</div>
 
 					<div class="text-right mt-3">

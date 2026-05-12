@@ -85,6 +85,38 @@ class ProgramController extends Controller
         return redirect()->route('program.index')->with('status', 'Programme updated successfully.');
     }
 
+    public function destroy(Program $program): RedirectResponse
+    {
+        $hasReferences = $program->batches()->exists()
+            || $program->admissions()->exists();
+
+        if ($hasReferences) {
+            return redirect()->route('program.index')
+                ->with('error', 'Cannot delete: this programme has linked batches or admissions. Suspend it instead.');
+        }
+
+        if ($program->outline_path && Storage::disk('public')->exists($program->outline_path)) {
+            Storage::disk('public')->delete($program->outline_path);
+        }
+
+        $program->delete();
+
+        return redirect()->route('program.index')->with('status', 'Programme deleted successfully.');
+    }
+
+    public function toggleStatus(Program $program): RedirectResponse
+    {
+        $program->update([
+            'status' => $program->status === 'active' ? 'inactive' : 'active',
+        ]);
+
+        $message = $program->status === 'active'
+            ? 'Programme activated.'
+            : 'Programme suspended.';
+
+        return redirect()->route('program.index')->with('status', $message);
+    }
+
     public function outline(Program $program): StreamedResponse
     {
         abort_unless(
@@ -348,31 +380,27 @@ class ProgramController extends Controller
 
     private function buildScopeCards(Request $request): array
     {
-        $scopes = [
-            'all' => 'All Programmes',
-            'ongoing' => 'Ongoing',
-            'suspended' => 'Suspended',
-            'discounted' => 'Discounted',
+        $statusCounts = Program::query()
+            ->tap(fn (Builder $query) => $this->applyFilters($query, $request))
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $ongoing = (int) ($statusCounts['active'] ?? 0);
+        $suspended = (int) ($statusCounts['inactive'] ?? 0);
+        $total = (int) $statusCounts->sum();
+
+        $discounted = (int) Program::query()
+            ->tap(fn (Builder $query) => $this->applyFilters($query, $request))
+            ->whereHas('campusDiscounts', fn (Builder $builder) => $builder->where('status', 'active'))
+            ->count();
+
+        return [
+            ['scope' => 'all', 'label' => 'All Programmes', 'count' => $total],
+            ['scope' => 'ongoing', 'label' => 'Ongoing', 'count' => $ongoing],
+            ['scope' => 'suspended', 'label' => 'Suspended', 'count' => $suspended],
+            ['scope' => 'discounted', 'label' => 'Discounted', 'count' => $discounted],
         ];
-
-        $cards = [];
-
-        foreach ($scopes as $scope => $label) {
-            $query = Program::query();
-            $this->applyFilters($query, $request);
-
-            if ($scope !== 'all') {
-                $this->applyScope($query, $scope);
-            }
-
-            $cards[] = [
-                'scope' => $scope,
-                'label' => $label,
-                'count' => $query->count(),
-            ];
-        }
-
-        return $cards;
     }
 
     private function resolvePageTitle(string $scope): string

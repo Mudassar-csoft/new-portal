@@ -182,11 +182,11 @@
 <hr>
 
 <div class="form-group">
-   <label class="form-label required">Prerequisite</label>
+   <label class="form-label">Prerequisite</label>
     <textarea class="form-control" name="prerequisite" rows="3" placeholder="Enter prerequisite or eligibility">{{ old('prerequisite', $program->prerequisite) }}</textarea>
 </div>
 
 <div class="form-group">
-   <label class="form-label required">Remarks</label>
+   <label class="form-label">Remarks</label>
     <textarea class="form-control" name="remarks" rows="3" placeholder="Add admission notes, delivery detail, or management remarks">{{ old('remarks', $program->remarks) }}</textarea>
 </div>

@@ -13,32 +13,7 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            // Leads
-            ['resource' => 'lead', 'action' => 'view'],
-            ['resource' => 'lead', 'action' => 'create'],
-            ['resource' => 'lead', 'action' => 'update'],
-            ['resource' => 'lead', 'action' => 'delete'],
-            ['resource' => 'lead', 'action' => 'followup.view'],
-            ['resource' => 'lead', 'action' => 'followup.update'],
-            // Registration
-            ['resource' => 'registration', 'action' => 'view'],
-            ['resource' => 'registration', 'action' => 'create'],
-            ['resource' => 'registration', 'action' => 'update'],
-            ['resource' => 'registration', 'action' => 'delete'],
-            // Admission
-            ['resource' => 'admission', 'action' => 'view'],
-            ['resource' => 'admission', 'action' => 'create'],
-            ['resource' => 'admission', 'action' => 'update'],
-            ['resource' => 'admission', 'action' => 'delete'],
-            // Users/Roles/Permissions
-            ['resource' => 'user', 'action' => 'view'],
-            ['resource' => 'user', 'action' => 'create'],
-            ['resource' => 'user', 'action' => 'update'],
-            ['resource' => 'user', 'action' => 'delete'],
-            ['resource' => 'role', 'action' => 'manage'],
-            ['resource' => 'permission', 'action' => 'manage'],
-        ];
+        $permissions = $this->permissionCatalog();
 
         DB::transaction(function () use ($permissions) {
             $permissionIds = collect($permissions)->mapWithKeys(function ($perm) {
@@ -58,18 +33,32 @@ class RolePermissionSeeder extends Seeder
                 'owner' => $permissionIds->values(),
                 'admin' => $permissionIds->values(),
                 'member' => $permissionIds->filter(function ($id, $slug) {
-                    return !str_contains($slug, 'user.') && !str_contains($slug, 'role.') && !str_contains($slug, 'permission.');
+                    return !str_contains($slug, 'user.')
+                        && !str_contains($slug, 'role.')
+                        && !str_contains($slug, 'permission.');
                 })->values(),
                 'read-only' => $permissionIds->filter(function ($id, $slug) {
                     return str_contains($slug, '.view');
                 })->values(),
             ];
 
-            $roles = collect($roleSets)->mapWithKeys(function ($permIds, $slug) {
+            $systemRoleSlugs = ['owner', 'admin'];
+
+            $roles = collect($roleSets)->mapWithKeys(function ($permIds, $slug) use ($systemRoleSlugs) {
                 $role = Role::firstOrCreate(
                     ['slug' => $slug],
-                    ['name' => Str::headline($slug), 'description' => ucfirst($slug)]
+                    [
+                        'name' => Str::headline($slug),
+                        'description' => ucfirst($slug),
+                        'is_system' => in_array($slug, $systemRoleSlugs, true),
+                    ]
                 );
+
+                // Keep is_system in sync if the role already existed
+                if (in_array($slug, $systemRoleSlugs, true) && !$role->is_system) {
+                    $role->update(['is_system' => true]);
+                }
+
                 $role->permissions()->sync($permIds);
                 return [$slug => $role];
             });
@@ -82,7 +71,75 @@ class RolePermissionSeeder extends Seeder
                 ]
             );
 
-            $user->roles()->sync([$roles['owner']->id]);
+            $user->roles()->sync([$roles['admin']->id]);
         });
+    }
+
+    /**
+     * @return array<int, array{resource: string, action: string}>
+     */
+    private function permissionCatalog(): array
+    {
+        $catalog = [];
+
+        // Standard CRUD per resource
+        $crudResources = [
+            'lead', 'web-lead', 'registration', 'admission',
+            'campus', 'program', 'batch', 'batch-timetable',
+            'inventory', 'student',
+            'certificate',
+            'user', 'role', 'permission',
+        ];
+        foreach ($crudResources as $resource) {
+            foreach (['view', 'create', 'update', 'delete'] as $action) {
+                $catalog[] = ['resource' => $resource, 'action' => $action];
+            }
+        }
+
+        // Lead follow-up
+        $catalog[] = ['resource' => 'lead', 'action' => 'followup.view'];
+        $catalog[] = ['resource' => 'lead', 'action' => 'followup.update'];
+        $catalog[] = ['resource' => 'lead', 'action' => 'transfer.approve'];
+
+        // Certificate workflow transitions
+        foreach (['approve', 'reject', 'send-to-printing', 'mark-ready', 'mark-delivered'] as $action) {
+            $catalog[] = ['resource' => 'certificate', 'action' => $action];
+        }
+
+        // Role / Permission management
+        $catalog[] = ['resource' => 'role', 'action' => 'manage'];
+        $catalog[] = ['resource' => 'permission', 'action' => 'manage'];
+
+        // HRM sub-modules
+        $hrmResources = [
+            'hrm.employee', 'hrm.attendance', 'hrm.leave', 'hrm.payroll',
+            'hrm.shift', 'hrm.announcement', 'hrm.document', 'hrm.master',
+        ];
+        foreach ($hrmResources as $resource) {
+            foreach (['view', 'create', 'update', 'delete'] as $action) {
+                $catalog[] = ['resource' => $resource, 'action' => $action];
+            }
+        }
+
+        // Finance sub-modules
+        $financeResources = [
+            'finance.dashboard', 'finance.payee', 'finance.payable', 'finance.receivable',
+            'finance.expense', 'finance.bill', 'finance.rent', 'finance.utility', 'finance.payroll',
+        ];
+        foreach ($financeResources as $resource) {
+            foreach (['view', 'create', 'update', 'delete'] as $action) {
+                $catalog[] = ['resource' => $resource, 'action' => $action];
+            }
+        }
+
+        // Dashboard
+        $catalog[] = ['resource' => 'dashboard', 'action' => 'view'];
+
+        // Reports
+        foreach (['leads', 'admissions', 'students', 'batches', 'programs', 'campuses', 'hr', 'finance', 'marketing', 'events', 'certificates'] as $section) {
+            $catalog[] = ['resource' => 'report', 'action' => $section];
+        }
+
+        return $catalog;
     }
 }

@@ -16,7 +16,16 @@ class PermissionController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = Permission::query()->select('permissions.*');
+            $scope = (string) $request->query('scope', 'active');
+
+            $query = Permission::withoutGlobalScope('not_deleted')
+                ->select('permissions.*');
+
+            if ($scope === 'deleted') {
+                $query->whereNotNull('at_deleted');
+            } else {
+                $query->whereNull('at_deleted');
+            }
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -29,7 +38,11 @@ class PermissionController extends Controller
                 ->make(true);
         }
 
-        return view('permission.index');
+        $scope = (string) $request->query('scope', 'active');
+
+        return view('permission.index', [
+            'activeScope' => in_array($scope, ['active', 'deleted'], true) ? $scope : 'active',
+        ]);
     }
 
     public function create(): View
@@ -41,7 +54,13 @@ class PermissionController extends Controller
     {
         $validated = $request->validate([
             'resource' => ['required', 'string', 'max:255'],
-            'action' => ['required', 'string', 'max:255'],
+            'action' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('permissions')
+                    ->where(fn ($q) => $q->where('resource', $request->resource)->whereNull('at_deleted')),
+            ],
             'description' => ['nullable', 'string'],
         ]);
 
@@ -78,7 +97,7 @@ class PermissionController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('permissions')
-                    ->where(fn ($q) => $q->where('resource', $request->resource)->where('action', $request->action))
+                    ->where(fn ($q) => $q->where('resource', $request->resource)->whereNull('at_deleted'))
                     ->ignore($permission->id),
             ],
             'description' => ['nullable', 'string'],
@@ -98,8 +117,21 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission): RedirectResponse
     {
+        if ($permission->roles()->exists()) {
+            return redirect()->route('permissions.index')
+                ->with('error', 'Cannot delete a permission that is still assigned to roles.');
+        }
+
         $permission->update(['at_deleted' => now()]);
 
         return redirect()->route('permissions.index')->with('status', 'Permission deleted.');
+    }
+
+    public function restore(int $id): RedirectResponse
+    {
+        $permission = Permission::withoutGlobalScope('not_deleted')->findOrFail($id);
+        $permission->update(['at_deleted' => null]);
+
+        return redirect()->route('permissions.index')->with('status', 'Permission restored.');
     }
 }

@@ -246,6 +246,8 @@
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_ongoing'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('program.index', ['scope' => 'suspended']) }}" class="stage-link"><span class="lbl">Suspended</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_suspended'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('program.index', ['scope' => 'discounted']) }}" class="stage-link"><span class="lbl">Discounted</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_discounted'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('program.index') }}" class="stage-link"><span class="lbl">All Programmes</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_all'] ?? 0)) }}</span></a></li>
 				</ul>
@@ -257,6 +259,14 @@
 				<ul>
 					<li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_create'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'campuses']) }}" class="stage-link"><span class="lbl">All Campuses</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_company'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'franchise']) }}" class="stage-link"><span class="lbl">All Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_franchise'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'suspended_campuses']) }}" class="stage-link"><span class="lbl">Suspended Campuses</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_company'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('campus.index', ['scope' => 'suspended_franchise']) }}" class="stage-link"><span class="lbl">Suspended Franchise</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_franchise'] ?? 0)) }}</span></a></li>
 					<li><a href="{{ route('campus.index') }}" class="stage-link"><span class="lbl">All Campuses / Franchise</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_all'] ?? 0)) }}</span></a></li>
 				</ul>
@@ -327,18 +337,19 @@
 					<img class="font-icon-dashboard" src="img/navbarIcons/certificate.webp" alt="Dashboard">
 					<span class="lbl">Certificate Management</span></span>
 				<ul>
-					<li><a href="#" class="stage-link"><span class="lbl">Request for Approval</span><span
-								class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Approved</span><span
-								class="label label-custom label-pill label-danger stage-count">21</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">On Printing</span><span
-								class="label label-custom label-pill label-danger stage-count">7</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Ready</span><span
-								class="label label-custom label-pill label-danger stage-count">12</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">Delivered</span><span
-								class="label label-custom label-pill label-danger stage-count">44</span></a></li>
-					<li><a href="#" class="stage-link"><span class="lbl">All Certificates</span><span
-								class="label label-custom label-pill label-danger stage-count">93</span></a></li>
+					<li><a href="{{ route('certificate.create') }}" class="stage-link"><span class="lbl">Request Certificate</span></a></li>
+					<li><a href="{{ route('certificate.index', ['scope' => 'requested']) }}" class="stage-link"><span class="lbl">Request for Approval</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_requested'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('certificate.index', ['scope' => 'approved']) }}" class="stage-link"><span class="lbl">Approved</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_approved'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('certificate.index', ['scope' => 'printing']) }}" class="stage-link"><span class="lbl">On Printing</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_printing'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('certificate.index', ['scope' => 'ready']) }}" class="stage-link"><span class="lbl">Ready</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_ready'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('certificate.index', ['scope' => 'delivered']) }}" class="stage-link"><span class="lbl">Delivered</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_delivered'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('certificate.index') }}" class="stage-link"><span class="lbl">All Certificates</span><span
+								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_all'] ?? 0)) }}</span></a></li>
 				</ul>
 			</li>
 			<li class="green with-sub">
@@ -346,8 +357,11 @@
 					<img class="font-icon-dashboard" src="img/navbarIcons/user.webp" alt="Dashboard">
 					<span class="lbl">User Management</span></span>
 				<ul>
+					<li><a href="{{ route('users.create') }}"><span class="lbl">Create User</span></a></li>
 					<li><a href="{{ route('users.index') }}"><span class="lbl">Users</span></a></li>
+					<li><a href="{{ route('roles.create') }}"><span class="lbl">Create Role</span></a></li>
 					<li><a href="{{ route('roles.index') }}"><span class="lbl">Roles</span></a></li>
+					<li><a href="{{ route('permissions.create') }}"><span class="lbl">Create Permission</span></a></li>
 					<li><a href="{{ route('permissions.index') }}"><span class="lbl">Permissions</span></a></li>
 					<li><a href="{{ route('login-logs.index') }}"><span class="lbl">User Activities</span></a></li>
 				</ul>

@@ -1,6 +1,26 @@
 <script>
     (function () {
+        function revealCampusFormPage() {
+            setTimeout(function () {
+                document.body.classList.add('campus-form-ready');
+            }, 200);
+        }
+
+        function debounce(fn, delay) {
+            var timer = null;
+            return function () {
+                var args = arguments;
+                var ctx = this;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(ctx, args);
+                }, delay);
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
+            revealCampusFormPage();
+
             if (window.CountryCityLoader) {
                 CountryCityLoader.init('country-select', 'city-select', {
                     country: @json(old('country', $campus->country ?: 'Pakistan')),
@@ -12,20 +32,26 @@
             var codeField = document.getElementById('campus-code-preview');
             var typeInputs = document.querySelectorAll('input[name="campus_type"]');
             var royaltyField = document.getElementById('royalty-rate');
+            var royaltyContainer = royaltyField ? royaltyField.closest('.js-royalty-field') : null;
 
             function updateRoyaltyState() {
-                if (!royaltyField) {
-                    return;
-                }
-
                 var isFranchise = Array.from(typeInputs).some(function (input) {
                     return input.checked && input.value === 'franchise';
                 });
 
-                royaltyField.disabled = !isFranchise;
+                if (royaltyContainer) {
+                    if (isFranchise) {
+                        royaltyContainer.removeAttribute('hidden');
+                    } else {
+                        royaltyContainer.setAttribute('hidden', 'hidden');
+                    }
+                }
 
-                if (!isFranchise) {
-                    royaltyField.value = '';
+                if (royaltyField) {
+                    royaltyField.disabled = !isFranchise;
+                    if (!isFranchise) {
+                        royaltyField.value = '';
+                    }
                 }
             }
 
@@ -67,8 +93,10 @@
                     });
             }
 
+            var debouncedCodePreview = debounce(updateCodePreview, 250);
+
             if (abbrInput) {
-                abbrInput.addEventListener('input', updateCodePreview);
+                abbrInput.addEventListener('input', debouncedCodePreview);
                 updateCodePreview();
             }
 

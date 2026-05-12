@@ -3,30 +3,41 @@
 @section('title', 'Create Programme')
 
 @section('content')
-    <div class="program-shell">
-        <div class="box-typical box-typical-dashboard panel panel-default program-create-card">
-            <header class="box-typical-header panel-heading program-header">
-                <div class="tbl w-100">
-                    <div class="tbl-row">
-                        <div class="tbl-cell tbl-cell-title p-0 m-0">
-                            <h2 class="panel-title program-title">
-                                Create Programme <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
-                            </h2>
+    <div class="lead-shell">
+        <div id="program-form-loader" class="lead-loader">
+            <div class="lead-spinner">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <p>Preparing programme form...</p>
+        </div>
+
+        <div id="program-form-content" class="lead-content">
+            <div class="box-typical box-typical-dashboard panel panel-default lead-create-card">
+                <header class="box-typical-header panel-heading lead-header">
+                    <div class="tbl w-100">
+                        <div class="tbl-row">
+                            <div class="tbl-cell tbl-cell-title p-0 m-0">
+                                <h2 class="panel-title lead-title">
+                                    Create Programme <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
+                                </h2>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- <a href="{{ route('program.index') }}" class="btn btn-default">Back to Programmes</a> -->
-            </header>
-            <div class="box-typical-body panel-body program-body">
-                <form method="POST" action="{{ route('program.store') }}" enctype="multipart/form-data">
-                    @csrf
-                    @include('program.partials.form')
+                </header>
 
-                    <div class="form-actions mb-2 mt-3 text-right mr-0">
-                        <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create</button>
-                        <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
-                    </div>
-                </form>
+                <div class="box-typical-body panel-body lead-body">
+                    <form method="POST" action="{{ route('program.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        @include('program.partials.form')
+
+                        <div class="form-actions mb-2 mt-3 text-right mr-0">
+                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Programme</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -34,7 +45,7 @@
 
 @push('styles')
     <style>
-        .program-shell {
+        .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
             min-height: 100vh;
@@ -44,49 +55,122 @@
             margin: 0;
         }
 
-        .program-create-card {
+        .lead-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: rgba(245, 247, 251, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+            gap: 12px;
+        }
+
+        .lead-spinner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lead-spinner .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #12a0ff;
+            animation: bounce 0.9s ease-in-out infinite;
+        }
+
+        .lead-spinner .dot:nth-child(2) {
+            animation-delay: 0.15s;
+            background: #1f8ef1;
+        }
+
+        .lead-spinner .dot:nth-child(3) {
+            animation-delay: 0.3s;
+            background: #36b1ff;
+        }
+
+        .lead-loader p {
+            margin: 0;
+            color: #54667a;
+            font-weight: 600;
+        }
+
+        .lead-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+            position: relative;
+            min-height: 400px;
+        }
+
+        body.program-form-ready .lead-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        body.program-form-ready #program-form-loader {
+            display: none;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+            40% {
+                transform: translateY(-12px);
+                opacity: 1;
+            }
+        }
+
+        .lead-create-card {
             overflow: visible !important;
             max-height: none !important;
         }
 
-        .program-create-card .panel-heading {
+        .lead-create-card .panel-heading {
             padding: 10px 20px;
         }
 
-        .program-body {
+        .lead-body {
             padding: 10px 10px 5px;
             overflow: visible !important;
         }
 
-        .program-title {
+        .lead-title {
             font-size: 18px;
             font-weight: 500;
             color: #1f2937;
             line-height: 1.4;
         }
 
-        .program-title span {
+        .lead-title span {
             font-size: 14px;
             font-weight: 400;
             color: #1f2937;
         }
 
-        .program-create-card .form-row {
+        .lead-create-card .form-row {
             padding: 3px 10px;
         }
 
-        .program-create-card .form-group {
+        .lead-create-card .form-group {
             margin-bottom: 8px;
         }
 
-        .program-create-card .form-row > .form-group.col-lg-3,
-        .program-create-card .form-row > .form-group.col-lg-4 {
+        .lead-create-card .form-row > .form-group.col-lg-3,
+        .lead-create-card .form-row > .form-group.col-lg-4 {
             flex: 0 0 25%;
             max-width: 25%;
         }
 
-        .program-create-card label,
-        .program-create-card .form-label {
+        .lead-create-card label,
+        .lead-create-card .form-label {
             color: #343434;
             font-size: 12px;
             font-weight: 600;
@@ -94,12 +178,12 @@
             margin-bottom: 6px;
         }
 
-        .program-create-card .form-control,
-        .program-create-card .form-control-file {
+        .lead-create-card .form-control,
+        .lead-create-card .form-control-file {
             font-size: 12px;
         }
 
-        .program-create-card .form-control {
+        .lead-create-card .form-control {
             height: 37px !important;
             min-height: 37px !important;
             padding: 0.375rem 0.625rem !important;
@@ -108,25 +192,26 @@
             color: #343434;
         }
 
-        .program-create-card .program-code-field[readonly] {
+        .lead-create-card .program-code-field[readonly] {
             background: #f4f8fb !important;
             color: #566a7f;
             cursor: not-allowed;
         }
 
-        .program-create-card textarea.form-control {
+        .lead-create-card textarea.form-control {
             height: 82px !important;
             min-height: 82px !important;
             resize: vertical;
         }
 
-        .program-create-card .alert {
+        .lead-create-card .alert {
             margin: 6px 10px 10px;
         }
 
         .required::after {
-            content: ' *';
+            content: '*';
             color: #e53935;
+            margin-left: 4px;
         }
 
         .program-discount-header {
@@ -153,7 +238,7 @@
             border: 1px solid #dbe5f1;
             border-radius: 6px;
             background: #f8fbff;
-            width: 100%;
+            width: auto;
             max-width: 100%;
             box-sizing: border-box;
         }
@@ -242,21 +327,21 @@
             padding: 0.35rem 0.65rem;
         }
 
-        .program-create-card hr {
+        .lead-create-card hr {
             margin: 8px 10px;
         }
 
         @media (max-width: 1199px) {
-            .program-create-card .form-row > .form-group.col-lg-3,
-            .program-create-card .form-row > .form-group.col-lg-4 {
+            .lead-create-card .form-row > .form-group.col-lg-3,
+            .lead-create-card .form-row > .form-group.col-lg-4 {
                 flex: 0 0 50%;
                 max-width: 50%;
             }
         }
 
         @media (max-width: 767px) {
-            .program-create-card .form-row > .form-group.col-lg-3,
-            .program-create-card .form-row > .form-group.col-lg-4 {
+            .lead-create-card .form-row > .form-group.col-lg-3,
+            .lead-create-card .form-row > .form-group.col-lg-4 {
                 flex: 0 0 100%;
                 max-width: 100%;
             }
@@ -326,7 +411,15 @@
                 return baseCode + counter;
             }
 
+            function revealProgramFormPage() {
+                setTimeout(function () {
+                    document.body.classList.add('program-form-ready');
+                }, 200);
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
+                revealProgramFormPage();
+
                 var input = document.getElementById('program-outline-upload');
                 var label = document.querySelector('[data-upload-label]');
                 var titleInput = document.getElementById('program-title');

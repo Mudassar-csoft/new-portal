@@ -3,63 +3,163 @@
 @section('title', $pageTitle)
 
 @section('content')
-    <!-- <div class="container-fluid"> -->
-        <!-- <div class="row"> -->
-            <!-- <div class="col-md-12"> -->
-                <div class="box-typical box-typical-dashboard panel panel-default student-directory">
-                    <header class="box-typical-header panel-heading d-flex justify-content-between">
-                        <div>
-                            <h3 class="panel-title mb-0 form-label">{{ $pageTitle }}</h3>
-                            <!-- <small class="text-muted">{{ $pageDescription }}</small> -->
-                        </div>
-                    </header>
-                    <div class="box-typical-body panel-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped" id="student-records-table">
-                                <thead>
-                                    <tr>
-                                        <th>Sr#</th>
-                                        <th>Student</th>
-                                        <th>Roll No</th>
-                                        <th>Registration No</th>
-                                        <th>Campus</th>
-                                        <th>Programme</th>
-                                        <!-- <th>Batch</th> -->
-                                        <th>Admission Date</th>
-                                        <th>Status</th>
-                                        <th>Certificate</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
+    @php
+        $studentScopeTabs = [
+            'active' => 'Active',
+            'frozen' => 'Frozen',
+            'concluded' => 'Concluded',
+            'incomplete' => 'Incomplete',
+            'suspended' => 'Suspended',
+            'admission_cancelled' => 'Cancelled',
+            'dropped' => 'Dropped',
+            'all_students' => 'All Students',
+            'alumni' => 'Alumni',
+        ];
+
+        $studentScopeBadgeKey = [
+            'active' => 'student_active',
+            'frozen' => 'student_frozen',
+            'concluded' => 'student_concluded',
+            'incomplete' => 'student_incomplete',
+            'suspended' => 'student_suspended',
+            'admission_cancelled' => 'student_admission_cancelled',
+            'dropped' => 'student_dropped',
+            'all_students' => 'student_all',
+            'alumni' => 'student_alumni',
+        ];
+
+        $studentBadgeColors = [
+            'active' => 'badge-success',
+            'frozen' => 'badge-info',
+            'concluded' => 'badge-primary',
+            'incomplete' => 'badge-warning',
+            'suspended' => 'badge-warning',
+            'admission_cancelled' => 'badge-danger',
+            'dropped' => 'badge-danger',
+            'all_students' => 'badge-secondary',
+            'alumni' => 'badge-default',
+        ];
+
+        $activeStudentScope = $scope ?? 'active';
+        $sidebarCounts = $sidebarCounts ?? [];
+    @endphp
+
+    <div class="lead-status-shell">
+        <div id="student-status-loader" class="follow-loader">
+            <div class="follow-spinner">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <p>Loading students...</p>
+        </div>
+
+        <div id="student-status-content" class="follow-content">
+            <div class="follow-card box-typical box-typical-dashboard panel panel-default student-directory">
+                <div class="follow-tab-bar">
+                    @foreach ($studentScopeTabs as $scopeKey => $scopeLabel)
+                        @php
+                            $isActive = $activeStudentScope === $scopeKey;
+                            $countKey = $studentScopeBadgeKey[$scopeKey] ?? null;
+                            $count = $countKey ? ($sidebarCounts[$countKey] ?? 0) : 0;
+                        @endphp
+                        <a href="{{ route('student.records.index', ['scope' => $scopeKey]) }}" class="follow-tab {{ $isActive ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
+                            <span class="label-text">{{ $scopeLabel }}</span>
+                            <span class="badge {{ $studentBadgeColors[$scopeKey] ?? 'badge-secondary' }}">{{ number_format((int) $count) }}</span>
+                        </a>
+                    @endforeach
+                </div>
+
+                <div class="box-typical-body panel-body follow-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered follow-table" id="student-records-table">
+                            <thead>
+                                <tr>
+                                    <th>Sr#</th>
+                                    <th>Student</th>
+                                    <th>Roll No</th>
+                                    <th>Registration No</th>
+                                    <th>Campus</th>
+                                    <th>Programme</th>
+                                    <th>Admission Date</th>
+                                    <th>Status</th>
+                                    <th>Certificate</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
                 </div>
-            <!-- </div> -->
-        <!-- </div> -->
-    <!-- </div> -->
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
     <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        .lead-status-shell {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .follow-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: rgba(245, 247, 251, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 10;
+            gap: 12px;
+        }
+
+        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
+
+        .follow-spinner .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #12a0ff;
+            animation: bounce 0.9s ease-in-out infinite;
+        }
+
+        .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
+        .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
+
+        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+
+        .follow-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+            position: relative;
+            min-height: 400px;
+        }
+
+        body.students-ready .follow-content { opacity: 1; visibility: visible; }
+        body.students-ready #student-status-loader { display: none; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.6; }
+            40% { transform: translateY(-12px); opacity: 1; }
+        }
+
         .student-directory {
-            /* max-width: 1450px; */
             margin: 0 auto;
             position: relative;
             overflow: visible;
         }
 
-        .student-directory .box-typical-body {
-            /* padding: 16px; */
-            overflow: visible;
-        }
-
-        .student-directory .table-responsive {
-            overflow-x: visible;
-            overflow-y: visible;
-        }
+        .student-directory .box-typical-body { overflow: visible; }
+        .student-directory .table-responsive { overflow-x: visible; overflow-y: visible; }
 
         .with-side-menu .page-content,
         .with-side-menu .page-content > .container-fluid,
@@ -70,30 +170,16 @@
 
         #student-records-table {
             margin-top: 8px;
-            border: 1px solid #d9e2ef;
-            border-radius: 6px;
-            background: #fff;
-        }
-
-        #student-records-table thead th {
-            background: #1fb2ff;
-            color: #fff;
-            border-color: #1aa4ea;
-            font-weight: 600;
-            vertical-align: middle;
         }
 
         #student-records-table th,
         #student-records-table td {
-            border-color: #d9e2ef;
             padding: 6px 10px;
             vertical-align: middle;
-            border-right: 1px solid #d9e2ef;
-            border-bottom: 1px solid #d9e2ef;
         }
 
         #student-records-table tbody tr:nth-of-type(odd) {
-            background-color: #f5f6ff;
+            background-color: #f9fbfd;
         }
 
         #student-records-table td.actions-cell {
@@ -103,12 +189,14 @@
         }
 
         #student-records-table td.actions-cell .dropdown,
-        #student-records-table td.actions-cell .student-action-dropdown {
+        #student-records-table td.actions-cell .student-action-dropdown,
+        #student-records-table td.actions-cell .follow-action-dropdown {
             position: relative;
             z-index: 1065;
         }
 
-        #student-records-table .student-action-dropdown .dropdown-menu {
+        #student-records-table .student-action-dropdown .dropdown-menu,
+        #student-records-table .follow-action-dropdown .dropdown-menu {
             z-index: 1070 !important;
         }
 
@@ -119,11 +207,6 @@
             transform: none !important;
             right: auto !important;
             bottom: auto !important;
-        }
-
-        .student-directory .dataTables_wrapper {
-            /* border-top: 1px solid #d9e2ef; */
-            /* padding-top: 12px; */
         }
 
         .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
@@ -159,19 +242,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            /* margin-bottom: 12px; */
-        }
-
-        .student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter label::after {
-            display: none !important;
-            content: none !important;
-        }
-
-        .student-directory .dataTables_wrapper .follow-controls--toolbar .dataTables_filter input {
-            height: 28px !important;
-            width: 240px !important;
-            padding: 3px 18px !important;
-            border-radius: 999px !important;
         }
 
         .student-directory .dataTables_wrapper .follow-footer {
@@ -194,6 +264,18 @@
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
     <script>
+        (function () {
+            function revealStudentPage() {
+                setTimeout(function () {
+                    document.body.classList.add('students-ready');
+                }, 150);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                revealStudentPage();
+            });
+        })();
+
         $(function () {
             $('#student-records-table').DataTable({
                 processing: true,
@@ -209,7 +291,6 @@
                     { data: 'registration_number', name: 'registration_number' },
                     { data: 'campus_code', name: 'campus_code', orderable: false },
                     { data: 'program_name', name: 'program_name', orderable: false },
-                   // { data: 'batch_name', name: 'batch_name', orderable: false },
                     { data: 'admission_date', name: 'admission_date' },
                     { data: 'status_badge', name: 'student_status', orderable: false, searchable: false },
                     { data: 'certificate_status', name: 'certificate_status', orderable: false, searchable: false },
@@ -239,17 +320,17 @@
                         $originDropdown.removeClass('show');
                         $originDropdown.children('.dropdown-toggle').attr('aria-expanded', 'false');
                     }
- 
+
                     restoreStudentRecordsMenu($menu);
                 });
             }
 
-            $(document).on('click.studentRecords', '.student-action-dropdown .dropdown-toggle', function (event) {
+            $(document).on('click.studentRecords', '.student-action-dropdown .dropdown-toggle, .follow-action-dropdown .dropdown-toggle', function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
                 var $toggle = $(this);
-                var $dropdown = $toggle.closest('.student-action-dropdown');
+                var $dropdown = $toggle.closest('.student-action-dropdown, .follow-action-dropdown');
                 var $menu = $dropdown.children('.dropdown-menu');
 
                 if (!$menu.length) {
@@ -290,7 +371,7 @@
             });
 
             $(document).on('click.studentRecords', function (event) {
-                if ($(event.target).closest('.student-records-floating-menu, .student-action-dropdown').length) {
+                if ($(event.target).closest('.student-records-floating-menu, .student-action-dropdown, .follow-action-dropdown').length) {
                     return;
                 }
 
