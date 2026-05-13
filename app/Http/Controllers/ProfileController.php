@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -31,12 +32,28 @@ class ProfileController extends Controller
                 'required', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'remove_avatar' => ['nullable', 'boolean'],
         ]);
 
-        $user->update([
+        $updates = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-        ]);
+        ];
+
+        if ($request->boolean('remove_avatar') && $user->avatar_path) {
+            Storage::disk('public')->delete($user->avatar_path);
+            $updates['avatar_path'] = null;
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
+            $updates['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($updates);
 
         return redirect()->route('profile.show')
             ->with('status', 'Profile updated successfully.');

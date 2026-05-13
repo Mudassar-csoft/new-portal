@@ -20,7 +20,9 @@
       "PowerShell(php artisan route:list 2>&1 | findstr \"create\")",
       "PowerShell(php artisan migrate --force 2>&1; php artisan db:seed --class=RolePermissionSeeder --force 2>&1; php artisan route:list 2>&1 | findstr certificate)",
       "PowerShell(php artisan db:seed --class=DemoAcademicSeeder --force 2>&1; php artisan tinker --execute=\"echo 'admissions: ' . App\\\\Models\\\\Admission::count\\(\\) . PHP_EOL;\")",
-      "PowerShell(php artisan route:list --name=profile 2>&1; php artisan route:list --name=logout 2>&1)"
+      "PowerShell(php artisan route:list --name=profile 2>&1; php artisan route:list --name=logout 2>&1)",
+      "PowerShell(php artisan route:list --name=student-search 2>&1)",
+      "PowerShell(php artisan migrate --force 2>&1; php artisan storage:link 2>&1)"
     ]
   }
 }

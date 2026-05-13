@@ -81,5 +81,7 @@ Route::middleware('auth')->group(function () {
     // Profile routes (current user's own profile + password change)
     require __DIR__ . '/profile.php';
 
+    Route::get('/student-search', [\App\Http\Controllers\StudentSearchController::class, 'index'])->name('student-search.index');
+
     Route::get('/login-logs', [UserLoginLogController::class, 'index'])->name('login-logs.index');
 });

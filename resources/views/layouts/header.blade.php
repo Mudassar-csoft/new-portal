@@ -22,7 +22,10 @@
                 <a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="font-icon-alarm"></i>
-                  <span class="notification-total-badge"></span>
+                  @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0))
+                  @if($notificationTotal > 0)
+                    <span class="notification-total-badge">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
+                  @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">
                   @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
@@ -260,12 +263,12 @@
                         <div class=" dropdown user-menu">
                          
                         <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	                            <img src="img/avatar-2-64.png" alt="">
+	                            <img src="{{ auth()->user()?->avatar_path ? asset('storage/' . auth()->user()->avatar_path) : asset('theme/img/avatar-2-64.png') }}" alt="Profile" style="object-fit: cover;">
 	                        </button>
                           <div class="dropdown-menu dropdown-menu-right profile-dropdown" aria-labelledby="notify">
                             <div class="user-profile-section login-drop">
                               <div class="media mx-auto">
-                                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxQHBhUSBxEWEQ8XEBAYFRcXFRMSHRUWFxgYFhgXFRUYICogGRolGxYWITElJikrLi4uFx8zODUtNygtLi8BCgoKDg0OGxAQGi0lHh0vKy8vLS8rKysrLSs1LS0rLy0tKzctLS0tLSstKzctKy0tNy0rKy0wKy0tLjcuKys3K//AABEIAOEA4QMBIgACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABwEEBQYIAwL/xABFEAACAQIDBAUHCAYLAQAAAAAAAQIDEQQFIQYHEjEiQVFhgRMUMnGRkqEXVHKxssHR8BUjNGKCojZCQ1JzdIPCw9LxM//EABkBAQADAQEAAAAAAAAAAAAAAAABAwUEAv/EACcRAQACAgADBwUAAAAAAAAAAAABAgMRBBIxFCEiQVFhcQUkMjTR/9oADAMBAAIRAxEAPwCcQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxW0ee0sgy11sa9L2jFWvOT5Rin+UkyJnRHeylz5nVVNdNpLvaRBOfbfYvNqj8nUeHpa2hTfDp+9P0m/Yu41atJ15XrtzfbJ8T9rKLcRHlDprw0z1l0xUzGlSjerVhFdrnFfExdDa3DYzNI4fLZ+Xqu7lwJuMIrnKVT0e7Rt3ZzwoJckvYi8wGYVcuq8WAqzpSa1cZON12O3M89o9nrs3u6YKkIZTvLxmCkli3HEQ61NKMrd04/emStsxtFS2jwHlME2mnacHbig+x26ux9ZdTLW3RRfFanVmQAWKwAAAAAAAAAAAAAAAAAAAAAAAAAMDFZ9tBQyCipZnUUE3aKs5Sk+vhitWRDvI2lp7RY2k8ulJ0oU5aOModOT1dnz0UdSu9eu6u2M1N6QpUoxXYmuL65M1GlSlWnajFyl2RTk/Yjjy5JmZq7cOKIiLPgF5LK68PSoVV/pz/AAPJ4OoudKfuT/AodDwBdU8urVX+ro1H6qc/wMnhtksTXhdxjT7pys/ZFMJYI2zdjmTwG1tOKfQrcVOS7dHKD8JL4vtMHmmTVcqt53HovlKL4k32X6n6y52Mjx7WYVR5+cU/hq/gmeqT4o08ZIiazt0UADRZgAAAAAAAAAAAAAAAAAAAAAAAAAAIS3v0PJbX8XVPDUn4pzj9y9pldlsvjgMpg0v1k4qU31u+qV+xJ2LjfJls8TicNPDQc5NVaeib/uyV7cl6RdYOk6OEhGXOMIJ+tKxn5o1eWjhndIewuAUrRu/MAAYzaakq2Q1r9VNyXrj0vuNd3WYTznbKm3ypwqz8eHgX2zbMzovE5bVhT9KVKpFetxaXxLLc5l0qOY4meJg4OMKcFxJrVyk5c/oxLcPfeFWadUlKwANFnAAAAAAAAAAAAAAAAAAAAAAAAAAA17aybj5NJtRbkmu12TV/iYA2naXByxmDXm6vKM1K3arNNL2mrtcLtLRnBxETF3fw8xyaUABQvAAAMtsxNvMJRTfAqd2uq99DEmw7M4GeH45148PFwqKfOyvr43LsETN4U55iKSz4ANBngAAAAAAAAAAAAAAAAAAAAAAAAAAozVdocJ5DGccV0Z/CXX7Taywzymp5XPiV7RbXrRVlrzVWYr8tttOBSMuJdEqZzTACkpKMbydkEL7J8J53jUv6q1l6l1eLNxSsjD7KJTyzjirOUp+xNpfUZo0MNOWvyz89+a3wAAuUgAAAAAAAAAAAAAAAAAAAAAAUYFQYPPtrMJs/pmteMJ2uoJOc3/BFNpd7NDzffNCN1k+FlPsnVkoL1qEbt+LQEr3MLtNnVDL8G6eLrRjVqJwpwveU5S6KtBa2u1ryRBOb7xMwzduMsQ6Sd+jQXkv5k+L+YwmFqSo4lVajcqqlCXE25O8Wmuk9XyExuCJ1KXoTdOXR9hcRxCfpaG1YjKqOZ0lUS4XKMZcUdL3V9VyfMxGP2eWEoSqSrJQim23F6Jep6nBbBeOjRrxFLfLETx8Y8rt+qxYYjEOu+louwy2EyVZhgo1qFVcD5rhd0+tPXn+esv8ACZNTw8rtOcv3uV+5ciIw2l6tmrTfrC72MzmhPDLDKtFYmDk5Um+GVm7pqL1krSWqvzNoucx7T1vPs/r1IOz84qOLXVZ8Kt4I9cp26x+StRo4mcorlGq/LR8OPVL1NHfWuoiGba25mXTAIgyffO0ks6wt+XToy/45v/cb5kG2+Cz+ooZfXXlX/ZzTpyfqUvS8LkobGAAAAAAAAAAAAAAAAAAAAAGg70ttHs5gVRy12xdWMrS0fkocuOz5yvor9jfUb8c2by8bLG7cYl1HpCoqcV2RhFK3t4n4ga1VqOtWc6zcpyk3KTd3Jvm23zZ8SXEipWMXN9FfUenl74eaaskk+w9i3p0HxXm+XZ+JcAdBbvMesw2Ow7veUKapy9dPofUkzH7x69RYWnCmv1Lk3N/vK3BF9nW/BdhgtymYKdKvhaj14o1Yd10oSt7IvxNl3iPyWSRjLVyrr4RZTl/CXbwH7NO7zYjd3Wn57UppXoSheXYp6KNu9q6/hRn8+xH6JwFWpPlCnOS77Lo/FpGJ3bPjjXgtP/lL7S+5Hlvixqwmz0aSf6ytUV/oQak/C/CvEjDHghb9Tn7m3d6IYXLXV9p515qMemr93aeh4VaHFK8Hr3/nQvZq3jG3L8+ora/MrKLh6S+KKATRuk24nmUvMs4k51lFujUfOcVq4SfXJLk+bSd9Vdykcq7P42WXZ7Qq0XZwxFJ+HElJeMW14nVK0R5lMKgAJAAAAAAAAAAAAAAAADmLbr+meM/zVX6zp0iPaHdPXzbPa9eliaUY1a05qLhNtJvk2tCYRKISqlwu8fz3Em/IviPndH3Kg+RfEfO6PuVBs0j2nPykbr/w+iQqe5rE053WLo9/QqHt8j+I+dUvdqDZpqexWb/oTaWlVbtDi4J/Qno79ydn4EqbzK/FSw8Y8m6svYopfaZq73P4j51S92obTidjsTjcBQhi69OU6VJwcrT6Wuj167KN++5XliZrMQ7OAyUx562vOoj+LDdvV4c5nHtoN+7KP/Y03elnH6V2olGm706K8mvpc5v22X8JIeVbH4jK8RKph61PjdKpGN4ysnJaN9yaRqst0WJqTbniqTbbbbjU1b1bZ5wxNa6l7+pZKZc/NSdxMQjYpKShG8uRJPyP4j51S92Z5VdzeJqS/a6KXV0KhdtwaRfOflJXl4LsKEnfIviPndH3Kg+RfEfO6PuVBs0jfCftcP8AEh9pHWiIWo7msRTrRk8XR0lF+hU6mmTQuRAqAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=" alt="" class="img">
+                                <img src="{{ auth()->user()?->avatar_path ? asset('storage/' . auth()->user()->avatar_path) : asset('theme/img/avatar-2-64.png') }}" alt="Profile" class="img">
                                 <div class="media-body">
                                   <h3>
                                             @if(auth()->check())
@@ -518,8 +521,8 @@
                                           </div>
                                       </div> -->
 							<div class="site-header-search-container">
-								 <form class="site-header-search">
-	                                <input type="text" class="site-header-search-input" placeholder="Search"/>
+								 <form class="site-header-search" method="GET" action="{{ route('student-search.index') }}">
+	                                <input type="text" name="q" class="site-header-search-input" placeholder="Name, phone, roll no..." value="{{ request()->routeIs('student-search.index') ? request()->query('q') : '' }}" autocomplete="off"/>
 	                                <button type="submit" class="site-header-search-btn">
 	                                    <span class="font-icon-search"></span>
 	                                </button>
@@ -536,8 +539,8 @@
                     <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->
 
                     <a class="dropdown-item p-2 add-new-dropdown-item" href="{{ route('leads.create') }}">Lead</a>
-                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Registration</a>
-                    <a class="dropdown-item p-2 add-new-dropdown-item"  href="#">Admission</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item" href="{{ route('registration.create') }}">Registration</a>
+                    <a class="dropdown-item p-2 add-new-dropdown-item" href="{{ route('admission.create') }}">Admission / Enroll</a>
 
                 </div>
             </div>
@@ -566,15 +569,15 @@
     .site-header .site-header-collapsed .site-header-collapsed-in{
         display:flex;
         align-items:center;
-        justify-content:space-between;
-        gap:20px;
+        justify-content:flex-start;
+        gap:16px;
         margin-top:-2px;
     }
     .site-header .site-header-search-container{
         order:1;
-        flex:0 0 220px;
-        width:220px;
-        margin-right:0;
+        flex:0 0 280px;
+        width:280px;
+        margin-right:auto;
     }
     .site-header .site-header-search-container .site-header-search,
     .site-header .site-header-collapsed .site-header-search.closed{
@@ -592,7 +595,7 @@
     .site-header .site-header-collapsed .add-lead{
         order:2;
         flex:0 0 auto;
-        margin-left:auto;
+        margin-left:0;
     }
     .site-header .site-header-collapsed .add-lead .btn{
         white-space:nowrap;
@@ -766,7 +769,7 @@ display: flex;
 		float: none !important;
 		display: flex;
 		align-items: center;
-		gap: 0px;
+		gap: 10px;
 		flex: 0 0 auto;
 		order: 2;
 	}
@@ -846,18 +849,25 @@ display: flex;
     z-index: 121;
 } */
 .notification-total-badge{
-	content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
     border: solid 1px #fff;
     background: #fa424a;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 999px;
     position: absolute;
-    left: 50%;
-    top: 6px;
-    margin-left: 1px;
+    top: -2px;
+    right: -4px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    pointer-events: none;
 }
 .site-header .header-alarm:hover,
 .site-header .dropdown-campus .dropdown-toggle:hover,

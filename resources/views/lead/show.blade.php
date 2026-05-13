@@ -17,15 +17,15 @@
 			<div>
 				<h2 class="lead-name form-label " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
 				<div class="lead-sub">
-					<span>{{ $lead->program->title ?? $lead->program->name ?? 'N/A' }}</span>
+					<span>{{ $lead->program?->title ?? $lead->program?->name ?? 'N/A' }}</span>
 					@if($lead->campus)
 						<span class="divider">•</span>
-						<span>{{ $lead->campus->code ?? $lead->campus->name }}</span>
+						<span>{{ $lead->campus?->code ?? $lead->campus?->name }}</span>
 					@endif
 				</div>
 			</div>
 				<div class="lead-actions">
-					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead, 'editOnly' => true])
+					@include('lead.partials.action', ['actionId' => 'lead-action-' . $lead->id, 'lead' => $lead])
 				</div>
 		</div>
 
@@ -45,15 +45,15 @@
 		</div>
 
 		<div class="lead-tabs">
-			<div class="tab active" data-target="#tab-followups">
+			<div class="tab active" data-tab-target="#tab-followups">
 				<i class="fa fa-list-ul"></i> Follow-Up History
 			</div>
-			<div class="tab" data-target="#tab-personal">
+			<div class="tab" data-tab-target="#tab-personal">
 				<i class="fa fa-user-o"></i> Personal Information
 			</div>
 		</div>
 
-		<div class="tab-content" id="tab-followups" style="display: block;">
+		<div class="lead-pane" id="tab-followups" style="display: block;">
 			<div class="d-flex justify-content-end align-items-center p-1">
 				
 				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
@@ -110,7 +110,7 @@
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="campus-wrap">
 									<label class="form-label ">Preferred Campus</label>
 									<select class="form-control" name="campus_id" id="campus_id" required>
-										<option value="">Same as lead ({{ $lead->campus->name ?? 'N/A' }})</option>
+										<option value="">Same as lead ({{ $lead->campus?->name ?? 'N/A' }})</option>
 										@foreach ($campuses as $campus)
 											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $lead->campus_id) === (string) $campus->id)>
 												{{ $campus->name }} ({{ $campus->code ?? $campus->city ?? $campus->country }})
@@ -250,13 +250,13 @@
 							@endphp
 							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }}">
 								<td class="text-center">{{ $idx + 1 }}</td>
-								<td>{{ $row->user->name ?? 'System' }}</td>
+								<td>{{ $row->user?->name ?? 'System' }}</td>
 								<td>{{ $row->method ? ucfirst($row->method) : '—' }}</td>
 								<td>{{ !is_null($row->probability) ? $row->probability . '%' : '—' }}</td>
 								<td>{{ $label }}</td>
 								<td>{{ optional($row->created_at)->format('Y-m-d H:i') }}</td>
 								<td>{{ $row->next_action_date ? \Illuminate\Support\Carbon::parse($row->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
-								<td>{{ $row->campus->code ?? $row->campus->name ?? '—' }}</td>
+								<td>{{ $row->campus?->code ?? $row->campus?->name ?? '—' }}</td>
 								<td>{{ $row->note ?? '—' }}</td>
 							</tr>
 						@empty
@@ -268,7 +268,7 @@
 				</table>
 			</div>
 			
-			<div class="tab-content" id="tab-personal" style="display: none;">
+			<div class="lead-pane" id="tab-personal" style="display: none;">
 				<div class="card card-elevated">
 					<div class="card-body">
 						<table class="table table-bordered info-table mb-0">
@@ -279,7 +279,7 @@
 									<th>Email Address</th>
 									<td>{{ $lead->email ?? '—' }}</td>
 									<th>Interested Program</th>
-									<td>{{ $lead->program->title ?? $lead->program->name ?? '—' }}</td>
+									<td>{{ $lead->program?->title ?? $lead->program?->name ?? '—' }}</td>
 								</tr>
 								<tr>
 									
@@ -306,16 +306,16 @@
 								<th>Next Follow-Up</th>
 								<td>{{ $nextFollowup?->next_action_date ? \Illuminate\Support\Carbon::parse($nextFollowup->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
 								<th>Campus Code</th>
-								<td>{{ $lead->campus->code ?? '—' }}</td>
-								
+								<td>{{ $lead->campus?->code ?? '—' }}</td>
+
 							</tr>
-							
+
 							<tr>
-								
+
 								<th>Campus Name</th>
-								<td>{{ $lead->campus->name ?? '—' }}</td>
+								<td>{{ $lead->campus?->name ?? '—' }}</td>
 								<th>Remarks</th>
-								<td colspan="3">{{ $latestFollowup->note ?? data_get($lead->details, 'remarks', '—') }}</td>
+								<td colspan="3">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
 							</tr>
 							
 						</tbody>
@@ -340,11 +340,11 @@
 								@foreach($transfers as $idx => $transfer)
 									<tr>
 										<td>{{ $idx + 1 }}</td>
-										<td>{{ $transfer->fromCampus->name ?? '—' }}</td>
-										<td>{{ $transfer->toCampus->name ?? '—' }}</td>
+										<td>{{ $transfer->fromCampus?->name ?? '—' }}</td>
+										<td>{{ $transfer->toCampus?->name ?? '—' }}</td>
 										<td>{{ ucfirst($transfer->status) }}</td>
-										<td>{{ $transfer->requester->name ?? '—' }}</td>
-										<td>{{ $transfer->approver->name ?? '—' }}</td>
+										<td>{{ $transfer->requester?->name ?? '—' }}</td>
+										<td>{{ $transfer->approver?->name ?? '—' }}</td>
 										<td>{{ optional($transfer->approved_at)->format('Y-m-d H:i') ?? '—' }}</td>
 										<td>{{ $transfer->reason ?? '—' }}</td>
 									</tr>
@@ -1025,23 +1025,29 @@
 
 		function initTabs() {
 			const tabs = $$('.lead-tabs .tab');
-			const contents = $$('.tab-content');
+			const contents = $$('.lead-pane');
 
 			tabs.forEach(function (tab) {
-				tab.addEventListener('click', function () {
+				tab.addEventListener('click', function (event) {
+					event.preventDefault();
+					event.stopPropagation();
+
+					const targetSelector = this.dataset.tabTarget || this.dataset.target;
+					if (!targetSelector) return;
+
+					const targetEl = document.querySelector(targetSelector);
+					if (!targetEl) return;
+
 					tabs.forEach(function (item) {
 						item.classList.remove('active');
 					});
 
 					contents.forEach(function (content) {
-						content.style.display = 'none';
+						content.style.setProperty('display', 'none', 'important');
 					});
 
 					this.classList.add('active');
-
-					if (this.dataset.target) {
-						$(this.dataset.target).style.display = 'block';
-					}
+					targetEl.style.setProperty('display', 'block', 'important');
 				});
 			});
 		}

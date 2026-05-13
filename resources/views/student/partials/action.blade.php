@@ -86,7 +86,7 @@
 @endonce
 
 <div class="dropdown follow-action-dropdown student-action-dropdown">
-    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-display="static" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false">
         Actions
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">

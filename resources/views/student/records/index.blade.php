@@ -195,18 +195,46 @@
             z-index: 1065;
         }
 
+        /* Dropdown opens DOWNWARD, right edge aligned with the Actions button */
         #student-records-table .student-action-dropdown .dropdown-menu,
         #student-records-table .follow-action-dropdown .dropdown-menu {
+            display: none;
+            min-width: 220px;
+            position: absolute !important;
+            top: 100% !important;
+            right: 0 !important;
+            left: auto !important;
+            bottom: auto !important;
+            margin-top: 4px !important;
+            margin-right: 0 !important;
+            transform: none !important;
             z-index: 1070 !important;
         }
 
-        body > .student-records-floating-menu {
-            position: fixed !important;
-            margin: 0 !important;
-            z-index: 99999 !important;
-            transform: none !important;
-            right: auto !important;
-            bottom: auto !important;
+        #student-records-table .student-action-dropdown.show .dropdown-menu,
+        #student-records-table .follow-action-dropdown.show .dropdown-menu,
+        #student-records-table .student-action-dropdown .dropdown-menu.show,
+        #student-records-table .follow-action-dropdown .dropdown-menu.show {
+            display: block !important;
+        }
+
+        /* Flip upward if no room below */
+        #student-records-table .student-action-dropdown .dropdown-menu.dropdown-menu-upward,
+        #student-records-table .follow-action-dropdown .dropdown-menu.dropdown-menu-upward {
+            top: auto !important;
+            bottom: 100% !important;
+            right: 0 !important;
+            left: auto !important;
+            margin-top: 0 !important;
+            margin-bottom: 4px !important;
+        }
+
+        /* DataTables wrappers must not clip the dropdown */
+        .student-directory .dataTables_wrapper,
+        .student-directory .dataTables_scrollBody,
+        .student-directory .dataTables_scrollHead,
+        #student-records-table_wrapper {
+            overflow: visible !important;
         }
 
         .student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label {
@@ -298,36 +326,21 @@
                 ]
             });
 
-            function restoreStudentRecordsMenu($menu) {
-                var $originDropdown = $menu.data('originDropdown');
-                if (!$originDropdown || !$originDropdown.length) {
-                    return;
-                }
-
-                $menu
-                    .removeClass('student-records-floating-menu')
-                    .removeAttr('style')
-                    .appendTo($originDropdown)
-                    .removeData('originDropdown');
-            }
-
-            function closeStudentRecordsMenus() {
-                $('body > .student-records-floating-menu').each(function () {
-                    var $menu = $(this);
-                    var $originDropdown = $menu.data('originDropdown');
-
-                    if ($originDropdown && $originDropdown.length) {
-                        $originDropdown.removeClass('show');
-                        $originDropdown.children('.dropdown-toggle').attr('aria-expanded', 'false');
-                    }
-
-                    restoreStudentRecordsMenu($menu);
+            // Dropdown opens directly below the button using exact pixel coordinates
+            // (position: fixed bypasses any ancestor overflow / CSS conflicts).
+            function closeAllStudentDropdowns() {
+                $('.student-action-dropdown.show, .follow-action-dropdown.show').each(function () {
+                    var $d = $(this);
+                    $d.removeClass('show');
+                    $d.children('.dropdown-toggle').attr('aria-expanded', 'false');
+                    $d.children('.dropdown-menu').removeClass('show').removeAttr('style');
                 });
             }
 
             $(document).on('click.studentRecords', '.student-action-dropdown .dropdown-toggle, .follow-action-dropdown .dropdown-toggle', function (event) {
                 event.preventDefault();
                 event.stopPropagation();
+                event.stopImmediatePropagation();
 
                 var $toggle = $(this);
                 var $dropdown = $toggle.closest('.student-action-dropdown, .follow-action-dropdown');
@@ -337,53 +350,50 @@
                     return;
                 }
 
-                if ($menu.data('originDropdown')) {
-                    closeStudentRecordsMenus();
-                    return;
+                var wasOpen = $dropdown.hasClass('show');
+                closeAllStudentDropdowns();
+
+                if (wasOpen) {
+                    return; // second click closes
                 }
 
-                closeStudentRecordsMenus();
+                // Compute button position in viewport coordinates
+                var rect = $toggle.get(0).getBoundingClientRect();
+                var rightOffset = Math.max(0, window.innerWidth - Math.round(rect.right));
+                var topPos = Math.round(rect.bottom) + 4;
 
-                var toggleRect = $toggle.get(0).getBoundingClientRect();
-                var viewportPadding = 12;
-                var availableAbove = toggleRect.top - viewportPadding;
-                var availableBelow = window.innerHeight - toggleRect.bottom - viewportPadding;
+                // Apply inline styles — highest specificity, can't be overridden
+                $menu.attr('style',
+                    'position:fixed !important;' +
+                    'top:' + topPos + 'px !important;' +
+                    'right:' + rightOffset + 'px !important;' +
+                    'left:auto !important;' +
+                    'bottom:auto !important;' +
+                    'margin:0 !important;' +
+                    'transform:none !important;' +
+                    'min-width:220px !important;' +
+                    'display:block !important;' +
+                    'z-index:99999 !important;'
+                );
 
                 $dropdown.addClass('show');
+                $menu.addClass('show');
                 $toggle.attr('aria-expanded', 'true');
-
-                $menu
-                    .data('originDropdown', $dropdown)
-                    .appendTo('body')
-                    .addClass('student-records-floating-menu')
-                    .attr('style', 'position:fixed !important; top:0; left:0; right:auto !important; bottom:auto !important; min-width:auto; visibility:hidden; display:block; margin:0; transform:none !important; z-index:99999;');
-
-                var menuWidth = Math.ceil($menu.outerWidth() || $menu.get(0).getBoundingClientRect().width || 180);
-                var menuHeight = Math.ceil($menu.outerHeight() || $menu.get(0).scrollHeight || 180);
-                var left = Math.round(toggleRect.left - menuWidth);
-                var top = Math.round(toggleRect.top);
-
-                if (availableBelow < menuHeight && availableAbove > availableBelow) {
-                    top = Math.round(toggleRect.bottom - menuHeight);
-                }
-
-                $menu.attr('style', 'position:fixed !important; top:' + top + 'px; left:' + left + 'px; right:auto !important; bottom:auto !important; min-width:' + menuWidth + 'px; visibility:visible; display:block; margin:0; transform:none !important; z-index:99999;');
             });
 
             $(document).on('click.studentRecords', function (event) {
-                if ($(event.target).closest('.student-records-floating-menu, .student-action-dropdown, .follow-action-dropdown').length) {
+                if ($(event.target).closest('.student-action-dropdown, .follow-action-dropdown').length) {
                     return;
                 }
-
-                closeStudentRecordsMenus();
+                closeAllStudentDropdowns();
             });
 
-            $(window).on('resize.studentRecords', function () {
-                closeStudentRecordsMenus();
+            $(window).on('resize.studentRecords scroll.studentRecords', function () {
+                closeAllStudentDropdowns();
             });
 
             $('#student-records-table').on('draw.dt', function () {
-                closeStudentRecordsMenus();
+                closeAllStudentDropdowns();
             });
 
             var statusMessage = @json(session('status'));
