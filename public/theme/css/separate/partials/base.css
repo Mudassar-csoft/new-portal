@@ -713,7 +713,7 @@ a, a:focus, a:hover {
   border-bottom-color: rgba(0, 130, 198, 0.5);
 }
 .site-header .dropdown-menu-notif {
-  width: 290px;
+  width: 340px;
   padding: 0;
   line-height: normal;
   font-size: 0.9375rem /*15/16*/;

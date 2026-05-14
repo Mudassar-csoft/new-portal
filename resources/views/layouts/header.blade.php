@@ -885,7 +885,7 @@ display: flex;
 	overflow: hidden;
 }
 .notif-accordion{
-	max-height: 390px;
+	max-height: 392px;
 	overflow-y: auto;
 	padding: 12px;
 	background: #f7f9fc;

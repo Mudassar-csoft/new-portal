@@ -78,6 +78,9 @@ Route::middleware('auth')->group(function () {
     // Certificate routes
     require __DIR__ . '/certificate.php';
 
+    // Voucher routes
+    require __DIR__ . '/voucher.php';
+
     // Profile routes (current user's own profile + password change)
     require __DIR__ . '/profile.php';
 
