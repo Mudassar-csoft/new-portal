@@ -117,12 +117,12 @@
                             <thead>
                                 <tr>
                                     <th>Sr</th>
-                                    <th>Code</th>
                                     <th>Campus / Franchise</th>
-                                    <th>Location</th>
-                                    <th>Type</th>
-                                    <th>Contact</th>
-                                    <th>Royalty</th>
+                                    <th>Campus Code</th>
+                                    <th>City</th>
+                                    <th>Landline</th>
+                                    <th>Campus Type</th>
+                                    <!-- <th>Royalty</th> -->
                                     <th>Status</th>
                                     <th class="text-left">Action</th>
                                 </tr>
@@ -136,22 +136,22 @@
                                     @endphp
                                     <tr data-type="{{ $typeKey }}" data-status="{{ $statusKey }}">
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td>{{ $campus->code ?? 'N/A' }}</td>
                                         <td>{{ $campus->title ?? $campus->name ?? 'N/A' }}</td>
+                                        <td>{{ $campus->code ?? 'N/A' }}</td>
                                         <td>{{ $campus->city ?: 'N/A' }}{{ $campus->country ? ', ' . $campus->country : '' }}</td>
+                                        <td>{{ $campus->campus_email ?: ($campus->mobile ?: ($campus->landline ?: 'N/A')) }}</td>
                                         <td>
                                             <span class="label {{ $typeBadgeClasses[$typeKey] ?? 'label-default' }}">
                                                 {{ $typeLabels[$typeKey] ?? ucfirst(str_replace('_', ' ', $typeKey)) }}
                                             </span>
                                         </td>
-                                        <td>{{ $campus->campus_email ?: ($campus->mobile ?: ($campus->landline ?: 'N/A')) }}</td>
-                                        <td>
+                                        <!-- <td>
                                             @if($typeKey === 'franchise' && $campus->royalty_rate !== null)
                                                 {{ rtrim(rtrim(number_format((float) $campus->royalty_rate, 2), '0'), '.') }}%
                                             @else
                                                 <span class="text-muted">N/A</span>
                                             @endif
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <span class="label {{ $statusBadgeClasses[$statusKey] ?? 'label-default' }}">
                                                 {{ ucfirst($statusKey ?: 'inactive') }}

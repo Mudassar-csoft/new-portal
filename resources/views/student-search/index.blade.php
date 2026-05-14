@@ -53,14 +53,14 @@
                                     <thead>
                                         <tr>
                                             <th>Sr</th>
-                                            <th>Student</th>
-                                            <th>Roll No</th>
-                                            <th>Reg No</th>
-                                            <th>Phone</th>
+                                            <th>Name</th>
+                                            <!-- <th>Roll No</th> -->
+                                            <!-- <th>Reg No</th> -->
                                             <th>Programme</th>
-                                            <th>Campus</th>
-                                            <th>Admission Date</th>
-                                            <th>Status</th>
+                                            <th>Primary Contact</th>
+                                            <th>Campus Code</th>
+                                            <!-- <th>Admission Date</th> -->
+                                            <!-- <th>Status</th> -->
                                             <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
@@ -69,18 +69,19 @@
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
                                                 <td><strong>{{ $a->student_name ?? 'N/A' }}</strong></td>
-                                                <td>{{ $a->roll_number ?: 'N/A' }}</td>
-                                                <td>{{ $a->registration_number ?: 'N/A' }}</td>
-                                                <td>{{ $a->phone ?: 'N/A' }}</td>
+                                                <!-- <td>{{ $a->roll_number ?: 'N/A' }}</td> -->
+                                                <!-- <td>{{ $a->registration_number ?: 'N/A' }}</td> -->
                                                 <td>{{ $a->program?->title ?? $a->program?->name ?? 'N/A' }}</td>
+                                                <td>{{ $a->phone ?: 'N/A' }}</td>
                                                 <td>{{ $a->campus?->code ?? $a->campus?->name ?? 'N/A' }}</td>
-                                                <td>{{ optional($a->admission_date)->format('d-M-Y') ?? 'N/A' }}</td>
-                                                <td>
+                                                <!-- <td>{{ optional($a->admission_date)->format('d-M-Y') ?? 'N/A' }}</td> -->
+                                                <!-- <td>
                                                     <span class="label label-info">{{ ucfirst($a->student_status ?? 'enrolled') }}</span>
-                                                </td>
+                                                </td> -->
                                                 <td class="text-right">
-                                                    <a href="{{ route('student.records.index', ['scope' => 'all_students']) }}?student={{ urlencode($a->student_name) }}" class="btn btn-sm btn-primary-outline">
-                                                        <i class="fa fa-eye"></i> View
+                                                    <a href="{{ route('leads.show', $lead->id) }}" class="btn btn-primary">
+                                                        <!-- <i class="fa fa-eye"></i>  -->
+                                                        Action
                                                     </a>
                                                 </td>
                                             </tr>
@@ -96,14 +97,15 @@
                                 <table class="table table-bordered follow-table">
                                     <thead>
                                         <tr>
-                                            <th>Sr</th>
-                                            <th>Student</th>
-                                            <th>Phone</th>
-                                            <th>Registration No</th>
-                                            <th>Receipt No</th>
+                                           <th>Sr</th>
+                                            <th>Name</th>
+                                            <!-- <th>Roll No</th> -->
+                                            <!-- <th>Reg No</th> -->
                                             <th>Programme</th>
-                                            <th>Campus</th>
-                                            <th>Status</th>
+                                            <th>Primary Contact</th>
+                                            <th>Campus Code</th>
+                                            <!-- <th>Admission Date</th> -->
+                                            <!-- <th>Status</th> -->
                                             <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
@@ -112,19 +114,19 @@
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
                                                 <td><strong>{{ $r->student_name ?? 'N/A' }}</strong></td>
-                                                <td>{{ $r->phone ?: 'N/A' }}</td>
-                                                <td>{{ $r->registration_number ?: 'N/A' }}</td>
-                                                <td>{{ $r->receipt_number ?: 'N/A' }}</td>
                                                 <td>{{ $r->program?->title ?? $r->program?->name ?? 'N/A' }}</td>
+                                                <td>{{ $r->phone ?: 'N/A' }}</td>
+                                                <!-- <td>{{ $r->registration_number ?: 'N/A' }}</td> -->
+                                                <!-- <td>{{ $r->receipt_number ?: 'N/A' }}</td> -->
                                                 <td>{{ $r->campus?->code ?? $r->campus?->name ?? 'N/A' }}</td>
-                                                <td>
+                                                <!-- <td>
                                                     <span class="label label-{{ $r->status === 'registered' ? 'info' : 'default' }}">
                                                         {{ ucfirst($r->status ?? 'pending') }}
                                                     </span>
-                                                </td>
+                                                </td> -->
                                                 <td class="text-right">
-                                                    <a href="{{ route('registration.status') }}" class="btn btn-sm btn-primary-outline">
-                                                        <i class="fa fa-eye"></i> View
+                                                    <a href="{{ route('registration.status') }}" class="btn btn-sm btn-primary">
+                                                        Action
                                                     </a>
                                                 </td>
                                             </tr>
@@ -142,11 +144,13 @@
                                         <tr>
                                             <th>Sr</th>
                                             <th>Name</th>
-                                            <th>Phone</th>
-                                            <th>Email</th>
+                                            <!-- <th>Roll No</th> -->
+                                            <!-- <th>Reg No</th> -->
                                             <th>Programme</th>
-                                            <th>Campus</th>
-                                            <th>Status</th>
+                                            <th>Primary Contact</th>
+                                            <th>Campus Code</th>
+                                            <!-- <th>Admission Date</th> -->
+                                            <!-- <th>Status</th> -->
                                             <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
@@ -155,18 +159,19 @@
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
                                                 <td><strong>{{ $lead->name ?? 'N/A' }}</strong></td>
-                                                <td>{{ $lead->phone ?: 'N/A' }}</td>
-                                                <td>{{ $lead->email ?: 'N/A' }}</td>
                                                 <td>{{ $lead->program?->title ?? $lead->program?->name ?? 'N/A' }}</td>
+                                                <td>{{ $lead->phone ?: 'N/A' }}</td>
+                                                <!-- <td>{{ $lead->email ?: 'N/A' }}</td> -->
                                                 <td>{{ $lead->campus?->code ?? $lead->campus?->name ?? 'N/A' }}</td>
-                                                <td>
+                                                <!-- <td>
                                                     <span class="label label-{{ $lead->status === 'registered' ? 'info' : ($lead->status === 'enrolled' ? 'success' : 'primary') }}">
                                                         {{ ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')) }}
                                                     </span>
-                                                </td>
+                                                </td> -->
                                                 <td class="text-right">
-                                                    <a href="{{ route('leads.show', $lead->id) }}" class="btn btn-sm btn-primary-outline">
-                                                        <i class="fa fa-eye"></i> View
+                                                    <a href="{{ route('leads.show', $lead->id) }}" class="btn btn-primary">
+                                                        <!-- <i class="fa fa-eye"></i>  -->
+                                                        Action
                                                     </a>
                                                 </td>
                                             </tr>
