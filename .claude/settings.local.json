@@ -31,7 +31,9 @@
       "Bash(awk NR>=224 && NR<=320 { printf \"%4d|\", NR; print } *)",
       "Bash(awk NR>=655 && NR<=680 { printf \"%4d|\", NR; print } *)",
       "Bash(php -l app/Http/Controllers/AdmissionController.php)",
-      "Bash(php -l resources/views/admission/status.blade.php)"
+      "Bash(php -l resources/views/admission/status.blade.php)",
+      "Bash(php -l routes/web.php)",
+      "Bash(php -l app/Http/Controllers/Auth/LoginController.php)"
     ]
   }
 }
