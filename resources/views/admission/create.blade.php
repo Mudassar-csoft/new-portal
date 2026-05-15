@@ -398,13 +398,21 @@
 						</div>
 					</div>
 
-					<!-- <div class="form-group">
-						<label class="form-label required">Receipt Number</label>
-						<input type="text" class="form-control @error('receipt_number') is-invalid @enderror" name="receipt_number" value="{{ old('receipt_number') }}" placeholder="Enter receipt number" required>
-						@error('receipt_number')
-							<div class="field-error">{{ $message }}</div>
-						@enderror
-					</div> -->
+					<div class="form-row">
+						<div class="form-group col-md-3">
+							<label class="form-label required">Receipt Number</label>
+							<input type="text"
+								   class="form-control @error('receipt_number') is-invalid @enderror"
+								   name="receipt_number"
+								   id="admission-receipt-number"
+								   value="{{ old('receipt_number', $previewReceiptNumber) }}"
+								   placeholder="Auto-generated"
+								   readonly>
+							@error('receipt_number')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+					</div>
 
 						<div  class="form-actions mb-2 mt-3 text-right">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
@@ -993,6 +1001,7 @@
 
 			const regNumberEl = document.getElementById('admission-registration-number');
 			const rollNumberEl = document.getElementById('admission-roll-number');
+			const receiptNumberEl = document.getElementById('admission-receipt-number');
 			const batchEl = document.querySelector('select[name="batch_id"]');
 			const leadId = @json(optional($lead)->id);
 			const previewUrl = @json(route('admission.preview-numbers'));
@@ -1019,6 +1028,9 @@
 						regNumberEl.value = data.registration_number;
 					}
 					rollNumberEl.value = data.roll_number || '';
+					if (receiptNumberEl && data.receipt_number) {
+						receiptNumberEl.value = data.receipt_number;
+					}
 				});
 			}
 

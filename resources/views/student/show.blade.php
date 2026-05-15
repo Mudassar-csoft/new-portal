@@ -47,11 +47,11 @@
                             </button>
                             <div class="dropdown-menu student-action-menu" aria-labelledby="student-action-{{ $registration->id }}">
                                 @if($admission)
-                                    <a class="dropdown-item" href="{{ route('admission.voucher', $admission) }}">
+                                    <a class="dropdown-item" href="{{ route('admission.voucher', $admission) }}" target="_blank" rel="noopener">
                                         <i class="fa fa-file-text-o mr-2"></i>Admission Voucher
                                     </a>
                                 @endif
-                                <a class="dropdown-item" href="{{ route('registration.voucher', $registration) }}">
+                                <a class="dropdown-item" href="{{ route('registration.voucher', $registration) }}" target="_blank" rel="noopener">
                                     <i class="fa fa-file-text-o mr-2"></i>Registration Voucher
                                 </a>
                                 @if($admission)

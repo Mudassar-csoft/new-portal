@@ -74,6 +74,9 @@ class AdmissionController extends Controller
             : '';
         $previewRegistrationNumber = $existingRegistration?->registration_number
             ?? ($previewCampus ? $this->previewNumbers($previewCampus->code)['registration_number'] : '');
+        $previewReceiptNumber = $previewCampus
+            ? $this->generateAdmissionReceiptNumber($previewCampus->code)
+            : '';
 
         return view('admission.create', compact(
             'campuses',
@@ -85,7 +88,8 @@ class AdmissionController extends Controller
             'programMap',
             'discountMap',
             'previewRollNumber',
-            'previewRegistrationNumber'
+            'previewRegistrationNumber',
+            'previewReceiptNumber'
         ));
     }
 
@@ -110,13 +114,18 @@ class AdmissionController extends Controller
             ? $this->generateRollNumber($campus->code, $batch->code)
             : null;
 
+        $receiptNumber = $campus
+            ? $this->generateAdmissionReceiptNumber($campus->code)
+            : null;
+
         return response()->json([
             'registration_number' => $registrationNumber ?? '',
             'roll_number' => $rollNumber ?? '',
+            'receipt_number' => $receiptNumber ?? '',
         ]);
     }
 
-    public function store(Request $request): RedirectResponse|JsonResponse
+    public function store(Request $request): \Illuminate\Http\Response|RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'lead_id' => ['nullable', 'exists:leads,id'],
@@ -124,10 +133,10 @@ class AdmissionController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'batch_id' => ['required', 'exists:batches,id'],
             'student_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:50'],
+            'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:admissions,phone'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'guardian_phone' => ['required', 'string', 'max:50'],
-            'cnic' => ['required', 'string', 'max:50'],
+            'cnic' => ['required', 'string', 'max:50', 'unique:admissions,cnic'],
             'passport_number' => ['nullable', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'education' => ['required', 'string', 'max:255'],
@@ -184,6 +193,9 @@ class AdmissionController extends Controller
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::find($validated['lead_id']);
+            }
+            if (!$lead) {
+                $lead = Lead::where('phone', $validated['phone'])->first();
             }
 
             if (!$lead) {
@@ -451,7 +463,12 @@ class AdmissionController extends Controller
                 ]);
             }
 
-            return redirect()->route('admission.voucher', $admission);
+            return response()->view('shared.voucher_redirect', [
+                'voucherUrl' => route('admission.voucher', $admission),
+                'redirectUrl' => route('admission.status'),
+                'heading' => 'Admission Enrolled',
+                'message' => 'Admission saved. Opening the fee voucher in a new tab...',
+            ]);
         } catch (Throwable $e) {
             report($e);
 
@@ -479,8 +496,26 @@ class AdmissionController extends Controller
 
     public function voucher(Admission $admission): View
     {
-        $admission->load(['program', 'campus', 'batch']);
-        return view('admission.voucher', compact('admission'));
+        $admission->load(['program', 'campus', 'batch', 'registration.lead']);
+
+        $fees = FeeCollection::query()
+            ->where(function ($q) use ($admission) {
+                $q->where('admission_id', $admission->id)
+                    ->orWhere('registration_id', $admission->registration_id);
+            })
+            ->where('status', 'paid')
+            ->get();
+
+        $registrationFeeTotal = (float) $fees->where('fee_type', 'registration')->sum('net_amount');
+        $admissionFeeTotal = (float) $fees->where('fee_type', 'admission')->sum('net_amount');
+        $totalPaid = $registrationFeeTotal + $admissionFeeTotal;
+
+        return view('admission.voucher', compact(
+            'admission',
+            'registrationFeeTotal',
+            'admissionFeeTotal',
+            'totalPaid'
+        ));
     }
 
     private function previewNumbers(string $campusCode): array

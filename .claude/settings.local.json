@@ -33,7 +33,11 @@
       "Bash(php -l app/Http/Controllers/AdmissionController.php)",
       "Bash(php -l resources/views/admission/status.blade.php)",
       "Bash(php -l routes/web.php)",
-      "Bash(php -l app/Http/Controllers/Auth/LoginController.php)"
+      "Bash(php -l app/Http/Controllers/Auth/LoginController.php)",
+      "Bash(php -l app/Http/Controllers/RegistrationController.php)",
+      "Bash(php -l resources/views/admission/voucher.blade.php)",
+      "Bash(php -l resources/views/shared/voucher_redirect.blade.php)",
+      "Bash(php -l resources/views/registration/voucher.blade.php)"
     ]
   }
 }
