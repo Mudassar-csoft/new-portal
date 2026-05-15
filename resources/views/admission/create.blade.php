@@ -10,6 +10,21 @@
 					<h3 class="panel-title">Create New Admission <span class="">(All fields marked with * are required)</span></h3>
 					<hr>
 				@endunless
+				@if(session('error'))
+					<div class="alert alert-danger" style="margin-bottom:14px;padding:10px 14px;border-radius:6px;background:#fdecea;color:#9b1c1c;border:1px solid #f5c2c0;">
+						{{ session('error') }}
+					</div>
+				@endif
+				@if($errors->any())
+					<div class="alert alert-danger" style="margin-bottom:14px;padding:10px 14px;border-radius:6px;background:#fdecea;color:#9b1c1c;border:1px solid #f5c2c0;">
+						<strong>Please fix the following:</strong>
+						<ul style="margin:6px 0 0 18px;">
+							@foreach($errors->all() as $err)
+								<li>{{ $err }}</li>
+							@endforeach
+						</ul>
+					</div>
+				@endif
 				<form method="POST" action="{{ route('admission.store') }}" id="admission-form" class="admission-form">
 					@csrf
 					@if(request()->boolean('embed'))
@@ -41,6 +56,8 @@
 									<option value="{{ $program->id }}"
 										data-title="{{ $program->title ?? $program->name }}"
 										data-fee="{{ number_format($program->fee) }}"
+										data-fee-raw="{{ (float) ($program->fee ?? 0) }}"
+										data-installments="{{ (int) ($program->installments ?? 1) }}"
 										data-duration="{{ $program->duration_weeks / 4 }}"
 										@selected(old('program_id', $lead->program_id ?? '') == $program->id)>
 										{{ $program->title ?? $program->name }}
@@ -56,8 +73,18 @@
 							<select class="form-control @error('batch_id') is-invalid @enderror" name="batch_id" required>
 								<option value="">- Select -</option>
 								@foreach($batches ?? [] as $batch)
+									@php
+										$batchLabel = $batch->code ?? $batch->name;
+										$batchStart = $batch->start_time ? \Carbon\Carbon::parse($batch->start_time)->format('h:i A') : null;
+										$batchEnd = $batch->end_time ? \Carbon\Carbon::parse($batch->end_time)->format('h:i A') : null;
+										if ($batchStart && $batchEnd) {
+											$batchLabel .= ' (' . $batchStart . ' - ' . $batchEnd . ')';
+										} elseif ($batchStart) {
+											$batchLabel .= ' (' . $batchStart . ')';
+										}
+									@endphp
 									<option value="{{ $batch->id }}" {{ old('batch_id') == $batch->id ? 'selected' : '' }}>
-										{{ $batch->name ?? $batch->code }}
+										{{ $batchLabel }}
 									</option>
 								@endforeach
 							</select>
@@ -221,28 +248,49 @@
 						</div> -->
 						<div class="form-group col-md-3">
 							<label class="form-label required">Registration Number</label>
-							<input type="text" class="form-control @error('registration_number') is-invalid @enderror" name="registration_number" value="{{ old('registration_number') }}" placeholder="Enter registration number" required>
+							<input type="text"
+								   class="form-control @error('registration_number') is-invalid @enderror"
+								   name="registration_number"
+								   id="admission-registration-number"
+								   value="{{ old('registration_number', $previewRegistrationNumber) }}"
+								   placeholder="Auto-generated"
+								   readonly>
 							@error('registration_number')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Roll Number</label>
-							<input type="text" class="form-control @error('roll_number') is-invalid @enderror" name="roll_number" value="{{ old('roll_number') }}" placeholder="Enter roll number" required>
+							<input type="text"
+								   class="form-control @error('roll_number') is-invalid @enderror"
+								   name="roll_number"
+								   id="admission-roll-number"
+								   value="{{ old('roll_number', $previewRollNumber) }}"
+								   placeholder="Auto-generated"
+								   readonly>
 							@error('roll_number')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Date of Admission</label>
-							<input type="date" class="form-control @error('admission_date') is-invalid @enderror" name="admission_date" value="{{ old('admission_date') }}" required>
+							<input type="date"
+								   class="form-control @error('admission_date') is-invalid @enderror"
+								   name="admission_date"
+								   value="{{ old('admission_date', now()->format('Y-m-d')) }}"
+								   required>
 							@error('admission_date')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Fee Package</label>
-							<input type="number" step="0.01" class="form-control @error('fee_package') is-invalid @enderror" name="fee_package" value="{{ old('fee_package') }}" required>
+							<input type="number" step="0.01"
+								   class="form-control @error('fee_package') is-invalid @enderror"
+								   name="fee_package"
+								   id="admission-fee-package"
+								   value="{{ old('fee_package') }}"
+								   readonly required>
 							@error('fee_package')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -251,22 +299,41 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="form-label required">Discount Amount</label>
-							<input type="number" step="0.01" class="form-control @error('discount_amount') is-invalid @enderror" name="discount_amount" value="{{ old('discount_amount') }}" required>
-							@error('discount_amount')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-3">
-							<label class="form-label required">Discount %</label>
-							<input type="number" step="0.01" class="form-control @error('discount_percent') is-invalid @enderror" name="discount_percent" value="{{ old('discount_percent') }}" required>
+							<label class="form-label required">
+								Discount %
+								<span class="discount-limit-hint" id="admission-discount-limit-hint"></span>
+							</label>
+							<input type="number" step="0.01"
+								   class="form-control @error('discount_percent') is-invalid @enderror"
+								   name="discount_percent"
+								   id="admission-discount-percent"
+								   value="{{ old('discount_percent') }}"
+								   readonly required>
 							@error('discount_percent')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
+							<label class="form-label required">Discount Amount</label>
+							<input type="number" step="0.01" min="0"
+								   class="form-control @error('discount_amount') is-invalid @enderror"
+								   name="discount_amount"
+								   id="admission-discount-amount"
+								   value="{{ old('discount_amount') }}"
+								   required>
+							<div class="field-error" id="admission-discount-error"></div>
+							@error('discount_amount')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+						<div class="form-group col-md-3">
 							<label class="form-label required">Discounted Fee</label>
-							<input type="number" step="0.01" class="form-control @error('discounted_fee') is-invalid @enderror" name="discounted_fee" value="{{ old('discounted_fee') }}" required>
+							<input type="number" step="0.01"
+								   class="form-control @error('discounted_fee') is-invalid @enderror"
+								   name="discounted_fee"
+								   id="admission-discounted-fee"
+								   value="{{ old('discounted_fee') }}"
+								   readonly required>
 							@error('discounted_fee')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -304,6 +371,20 @@
 							@error('fee_type')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
+						</div>
+					</div>
+
+					<div class="form-row" id="installments-block" style="display:none;">
+						<div class="form-group col-12">
+							<label class="form-label">
+								Installment Amounts
+								<small class="text-muted" id="installments-max-hint"></small>
+							</label>
+							<div id="installments-rows" class="installments-rows"></div>
+							<div class="installments-summary">
+								<span>Total: <strong id="installments-total">0</strong></span>
+								<span class="ml-3">Remaining: <strong id="installments-remaining">0</strong></span>
+							</div>
 						</div>
 					</div>
 
@@ -585,6 +666,65 @@
 			border-color: #dc3545;
 		}
 
+		.installments-rows {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.installments-rows .installment-item {
+			flex: 1 1 140px;
+		}
+
+		.installments-rows .installment-item label {
+			font-size: 12px;
+			color: #54667a;
+			margin-bottom: 4px;
+			display: block;
+			font-weight: 600;
+		}
+
+		.installments-rows .installment-item input {
+			min-height: 38px;
+			border-radius: 8px;
+			border: 1px solid #d6e2f0;
+			padding: 6px 10px;
+			width: 100%;
+			background: #fff;
+		}
+
+		.installments-rows .installment-item input:focus {
+			outline: 0;
+			border-color: #14a2f6;
+			box-shadow: 0 0 0 2px rgba(20, 162, 246, 0.15);
+		}
+
+		.installments-summary {
+			margin-top: 10px;
+			font-size: 13px;
+			color: #42556d;
+		}
+
+		.installments-summary strong {
+			color: #1f2d3d;
+		}
+
+		.discount-limit-hint {
+			color: #dc3545;
+			font-weight: 600;
+			font-size: 12px;
+			margin-left: 6px;
+		}
+
+		.discount-limit-hint:empty {
+			display: none;
+		}
+
+		#admission-discount-amount.is-invalid {
+			border-color: #dc3545;
+			background-color: #fff5f5;
+		}
+
 		@media (max-width: 991px) {
 			.adm-title {
 				font-size: 28px;
@@ -636,6 +776,333 @@
 				city: @json(old('city', 'Faisalabad'))
 			});
 		});
+	</script>
+
+	<script>
+		(function () {
+			const programMap = @json($programMap);
+			const discountMap = @json($discountMap);
+
+			const campusEl = document.querySelector('select[name="campus_id"]');
+			const programEl = document.querySelector('select[name="program_id"]');
+			const feePackageEl = document.getElementById('admission-fee-package');
+			const discountPctEl = document.getElementById('admission-discount-percent');
+			const discountAmtEl = document.getElementById('admission-discount-amount');
+			const discountLimitHintEl = document.getElementById('admission-discount-limit-hint');
+			const discountErrorEl = document.getElementById('admission-discount-error');
+			const discountedFeeEl = document.getElementById('admission-discounted-fee');
+			const feeTypeFull = document.getElementById('admission-fee-type-full');
+			const feeTypeInst = document.getElementById('admission-fee-type-installments');
+			const installmentsBlock = document.getElementById('installments-block');
+			const installmentsRows = document.getElementById('installments-rows');
+			const installmentsTotalEl = document.getElementById('installments-total');
+			const installmentsRemainingEl = document.getElementById('installments-remaining');
+			const installmentsMaxHint = document.getElementById('installments-max-hint');
+
+			let maxDiscountPercent = 0;
+			let currentFee = 0;
+
+			function round2(n) {
+				return Math.round((Number(n) || 0) * 100) / 100;
+			}
+
+			function recalcFees() {
+				const programId = programEl.value;
+				const campusId = campusEl.value;
+				const prog = programMap[programId];
+				if (!prog) {
+					currentFee = 0;
+					maxDiscountPercent = 0;
+					feePackageEl.value = '';
+					discountPctEl.value = '';
+					discountAmtEl.value = '';
+					discountedFeeEl.value = '';
+					discountLimitHintEl.textContent = '';
+					clearDiscountError();
+					rebuildInstallments();
+					return;
+				}
+				currentFee = Number(prog.fee) || 0;
+				const key = programId + ':' + (campusId || 'any');
+				const fallbackKey = programId + ':any';
+				maxDiscountPercent = Number(
+					(campusId && discountMap[key] !== undefined ? discountMap[key] : discountMap[fallbackKey]) || 0
+				);
+
+				const amt = round2(currentFee * maxDiscountPercent / 100);
+				const net = round2(currentFee - amt);
+
+				feePackageEl.value = currentFee.toFixed(2);
+				discountAmtEl.value = amt.toFixed(2);
+				discountPctEl.value = maxDiscountPercent.toFixed(2);
+				discountedFeeEl.value = net.toFixed(2);
+				updateLimitHint();
+				clearDiscountError();
+
+				rebuildInstallments();
+			}
+
+			function updateLimitHint() {
+				if (maxDiscountPercent > 0) {
+					discountLimitHintEl.textContent = 'limit (' + maxDiscountPercent + '%)';
+				} else {
+					discountLimitHintEl.textContent = '';
+				}
+			}
+
+			function maxDiscountAmount() {
+				return round2(currentFee * maxDiscountPercent / 100);
+			}
+
+			function clearDiscountError() {
+				discountErrorEl.textContent = '';
+				discountAmtEl.classList.remove('is-invalid');
+			}
+
+			function showDiscountError(msg) {
+				discountErrorEl.textContent = msg;
+				discountAmtEl.classList.add('is-invalid');
+			}
+
+			function onDiscountAmountInput() {
+				if (currentFee <= 0) {
+					return;
+				}
+				const entered = round2(Number(discountAmtEl.value) || 0);
+				const cap = maxDiscountAmount();
+
+				if (entered > cap) {
+					showDiscountError('Discount cannot exceed ' + cap.toFixed(2) + ' (' + maxDiscountPercent + '%).');
+				} else if (entered < 0) {
+					showDiscountError('Discount cannot be negative.');
+				} else {
+					clearDiscountError();
+				}
+
+				const pct = round2((entered / currentFee) * 100);
+				discountPctEl.value = pct.toFixed(2);
+				discountedFeeEl.value = round2(currentFee - entered).toFixed(2);
+
+				if (feeTypeInst.checked) {
+					renderInstallmentInputs();
+				}
+			}
+
+			function discountedFee() {
+				return Number(discountedFeeEl.value) || 0;
+			}
+
+			function programInstallmentsMax() {
+				const prog = programMap[programEl.value];
+				return prog ? Math.max(1, Number(prog.installments) || 1) : 1;
+			}
+
+			function rebuildInstallments() {
+				const max = programInstallmentsMax();
+				installmentsMaxHint.textContent = '(Program allows up to ' + max + ' installment' + (max === 1 ? '' : 's') + '. Enter 0 to skip an installment.)';
+				renderInstallmentInputs();
+			}
+
+			function renderInstallmentInputs() {
+				const n = programInstallmentsMax();
+				const total = discountedFee();
+				installmentsRows.innerHTML = '';
+				const baseSplit = round2(total / n);
+				const amounts = [];
+				for (let i = 0; i < n; i++) {
+					amounts.push(baseSplit);
+				}
+				const drift = round2(total - amounts.reduce((s, a) => s + a, 0));
+				if (drift !== 0 && n > 0) {
+					amounts[n - 1] = round2(amounts[n - 1] + drift);
+				}
+
+				for (let i = 0; i < n; i++) {
+					const wrap = document.createElement('div');
+					wrap.className = 'installment-item';
+
+					const label = document.createElement('label');
+					label.textContent = 'Installment ' + (i + 1);
+
+					const input = document.createElement('input');
+					input.type = 'number';
+					input.step = '0.01';
+					input.min = '0';
+					input.name = 'installment_amounts[]';
+					input.value = amounts[i].toFixed(2);
+					input.dataset.idx = i;
+					input.addEventListener('input', onInstallmentInput);
+
+					wrap.appendChild(label);
+					wrap.appendChild(input);
+					installmentsRows.appendChild(wrap);
+				}
+				updateSummary();
+			}
+
+			function onInstallmentInput(e) {
+				const inputs = installmentsRows.querySelectorAll('input');
+				const idx = Number(e.target.dataset.idx);
+				const total = discountedFee();
+
+				let sumThroughChanged = 0;
+				for (let i = 0; i <= idx; i++) {
+					sumThroughChanged += round2(Number(inputs[i].value) || 0);
+				}
+
+				const remaining = round2(total - sumThroughChanged);
+				const tail = inputs.length - (idx + 1);
+				if (tail <= 0) {
+					updateSummary();
+					return;
+				}
+
+				if (remaining <= 0) {
+					for (let i = idx + 1; i < inputs.length; i++) {
+						inputs[i].value = '0.00';
+					}
+				} else {
+					const split = round2(remaining / tail);
+					let assigned = 0;
+					for (let i = idx + 1; i < inputs.length - 1; i++) {
+						inputs[i].value = split.toFixed(2);
+						assigned = round2(assigned + split);
+					}
+					inputs[inputs.length - 1].value = round2(remaining - assigned).toFixed(2);
+				}
+
+				updateSummary();
+			}
+
+			function updateSummary() {
+				const inputs = installmentsRows.querySelectorAll('input');
+				let sum = 0;
+				inputs.forEach(function (i) { sum = round2(sum + (Number(i.value) || 0)); });
+				installmentsTotalEl.textContent = sum.toFixed(2);
+				installmentsRemainingEl.textContent = round2(discountedFee() - sum).toFixed(2);
+			}
+
+			function toggleInstallmentsBlock() {
+				if (feeTypeInst.checked) {
+					installmentsBlock.style.display = 'flex';
+					rebuildInstallments();
+				} else {
+					installmentsBlock.style.display = 'none';
+				}
+			}
+
+			const regNumberEl = document.getElementById('admission-registration-number');
+			const rollNumberEl = document.getElementById('admission-roll-number');
+			const batchEl = document.querySelector('select[name="batch_id"]');
+			const leadId = @json(optional($lead)->id);
+			const previewUrl = @json(route('admission.preview-numbers'));
+			const existingRegFromServer = @json($existingRegistration?->registration_number);
+
+			function refreshPreviewNumbers() {
+				const campusId = campusEl.value;
+				const batchId = batchEl ? batchEl.value : '';
+				if (!batchId) {
+					rollNumberEl.value = '';
+				}
+				if (!campusId) return;
+				const params = new URLSearchParams({ campus_id: campusId });
+				if (batchId) params.append('batch_id', batchId);
+				if (leadId) params.append('lead_id', leadId);
+				fetch(previewUrl + '?' + params.toString(), {
+					headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+					credentials: 'same-origin'
+				})
+				.then(function (r) { return r.ok ? r.json() : null; })
+				.then(function (data) {
+					if (!data) return;
+					if (!existingRegFromServer && data.registration_number) {
+						regNumberEl.value = data.registration_number;
+					}
+					rollNumberEl.value = data.roll_number || '';
+				});
+			}
+
+			const allBatches = @json($batchList);
+
+			function formatBatchLabel(b) {
+				let label = b.code || b.name || ('Batch #' + b.id);
+				const fmt = function (t) {
+					if (!t) return null;
+					const parts = String(t).split(':');
+					if (parts.length < 2) return null;
+					let h = parseInt(parts[0], 10);
+					const m = parts[1];
+					const ampm = h >= 12 ? 'PM' : 'AM';
+					h = h % 12 || 12;
+					return (h < 10 ? '0' + h : h) + ':' + m + ' ' + ampm;
+				};
+				const s = fmt(b.start_time);
+				const e = fmt(b.end_time);
+				if (s && e) label += ' (' + s + ' - ' + e + ')';
+				else if (s) label += ' (' + s + ')';
+				return label;
+			}
+
+			function refreshBatchOptions() {
+				if (!batchEl) return false;
+				const campusId = campusEl.value ? Number(campusEl.value) : null;
+				const programId = programEl.value ? Number(programEl.value) : null;
+				const previousValue = batchEl.value;
+
+				const filtered = allBatches.filter(function (b) {
+					if (campusId && b.campus_id && Number(b.campus_id) !== campusId) return false;
+					if (programId && b.program_id && Number(b.program_id) !== programId) return false;
+					return true;
+				});
+
+				batchEl.innerHTML = '';
+				const placeholder = document.createElement('option');
+				placeholder.value = '';
+				placeholder.textContent = '- Select -';
+				batchEl.appendChild(placeholder);
+
+				filtered.forEach(function (b) {
+					const opt = document.createElement('option');
+					opt.value = b.id;
+					opt.textContent = formatBatchLabel(b);
+					batchEl.appendChild(opt);
+				});
+
+				if (previousValue && filtered.some(function (b) { return String(b.id) === String(previousValue); })) {
+					batchEl.value = previousValue;
+				} else if (filtered.length === 1) {
+					batchEl.value = filtered[0].id;
+				} else {
+					batchEl.value = '';
+				}
+
+				return batchEl.value !== previousValue;
+			}
+
+			campusEl.addEventListener('change', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
+			programEl.addEventListener('change', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
+			if (batchEl) batchEl.addEventListener('change', refreshPreviewNumbers);
+
+			if (window.jQuery) {
+				jQuery(programEl).on('change select2:select', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
+			}
+
+			refreshBatchOptions();
+			refreshPreviewNumbers();
+			discountAmtEl.addEventListener('input', onDiscountAmountInput);
+			feeTypeFull.addEventListener('change', toggleInstallmentsBlock);
+			feeTypeInst.addEventListener('change', toggleInstallmentsBlock);
+
+			function init() {
+				if (programEl.value) recalcFees();
+				toggleInstallmentsBlock();
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', init);
+			} else {
+				init();
+			}
+		})();
 	</script>
 	<script>
 		(function () {

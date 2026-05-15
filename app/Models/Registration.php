@@ -54,4 +54,9 @@ class Registration extends Model
     {
         return $this->belongsTo(Program::class);
     }
+
+    public function admission(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Admission::class);
+    }
 }

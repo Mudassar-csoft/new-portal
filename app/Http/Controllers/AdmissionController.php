@@ -12,10 +12,13 @@ use App\Models\Program;
 use App\Models\ProgramCampusDiscount;
 use App\Models\Registration;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 use Throwable;
 
 class AdmissionController extends Controller
@@ -31,7 +34,86 @@ class AdmissionController extends Controller
         $programs = Program::orderBy('title')->get();
         $batches = Batch::orderBy('name')->get();
 
-        return view('admission.create', compact('campuses', 'programs', 'batches', 'lead'));
+        $existingRegistration = $lead
+            ? Registration::where('lead_id', $lead->id)->latest()->first()
+            : null;
+
+        $programMap = $programs->mapWithKeys(fn ($p) => [
+            (string) $p->id => [
+                'fee' => (float) ($p->fee ?? 0),
+                'installments' => max(1, (int) ($p->installments ?? 1)),
+            ],
+        ])->toArray();
+
+        $discountMap = ProgramCampusDiscount::query()
+            ->where('status', 'active')
+            ->get(['program_id', 'campus_id', 'discount_percent'])
+            ->mapWithKeys(fn ($d) => [
+                $d->program_id . ':' . ($d->campus_id ?? 'any') => (float) $d->discount_percent,
+            ])
+            ->toArray();
+        $programMap = (object) $programMap;
+        $discountMap = (object) $discountMap;
+
+        $batchList = $batches->map(fn ($b) => [
+            'id' => $b->id,
+            'campus_id' => $b->campus_id,
+            'program_id' => $b->program_id,
+            'code' => $b->code,
+            'name' => $b->name,
+            'start_time' => $b->start_time,
+            'end_time' => $b->end_time,
+        ])->values()->toArray();
+
+        $previewCampus = $lead?->campus ?? $campuses->first();
+        $previewBatch = $previewCampus
+            ? $batches->first(fn ($b) => (int) $b->campus_id === (int) $previewCampus->id)
+            : null;
+        $previewRollNumber = ($previewCampus && $previewBatch)
+            ? $this->generateRollNumber($previewCampus->code, $previewBatch->code)
+            : '';
+        $previewRegistrationNumber = $existingRegistration?->registration_number
+            ?? ($previewCampus ? $this->previewNumbers($previewCampus->code)['registration_number'] : '');
+
+        return view('admission.create', compact(
+            'campuses',
+            'programs',
+            'batches',
+            'batchList',
+            'lead',
+            'existingRegistration',
+            'programMap',
+            'discountMap',
+            'previewRollNumber',
+            'previewRegistrationNumber'
+        ));
+    }
+
+    public function previewNumbersAjax(Request $request): JsonResponse
+    {
+        $campusId = $request->input('campus_id');
+        $batchId = $request->input('batch_id');
+        $leadId = $request->input('lead_id');
+        $campus = $campusId ? Campus::find($campusId) : null;
+        $batch = $batchId ? Batch::find($batchId) : null;
+
+        $registrationNumber = null;
+        if ($leadId) {
+            $existing = Registration::where('lead_id', $leadId)->latest()->first();
+            $registrationNumber = $existing?->registration_number;
+        }
+        if (!$registrationNumber && $campus) {
+            $registrationNumber = $this->previewNumbers($campus->code)['registration_number'];
+        }
+
+        $rollNumber = ($campus && $batch)
+            ? $this->generateRollNumber($campus->code, $batch->code)
+            : null;
+
+        return response()->json([
+            'registration_number' => $registrationNumber ?? '',
+            'roll_number' => $rollNumber ?? '',
+        ]);
     }
 
     public function store(Request $request): RedirectResponse|JsonResponse
@@ -51,12 +133,12 @@ class AdmissionController extends Controller
             'education' => ['required', 'string', 'max:255'],
             'date_of_birth' => ['required', 'date'],
             'gender' => ['required', 'in:male,female,other'],
-            'country' => ['required', 'string', 'max:100'],
-            'city' => ['required', 'string', 'max:100'],
-            'area' => ['required', 'string', 'max:150'],
+            'country' => ['nullable', 'string', 'max:100'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'area' => ['nullable', 'string', 'max:150'],
             'postal_address' => ['required', 'string', 'max:500'],
-            'registration_number' => ['nullable', 'string', 'max:100', 'unique:admissions,registration_number'],
-            'roll_number' => ['required', 'string', 'max:100', 'unique:admissions,roll_number'],
+            'registration_number' => ['nullable', 'string', 'max:100'],
+            'roll_number' => ['nullable', 'string', 'max:100'],
             'admission_date' => ['required', 'date'],
             'fee_package' => ['nullable', 'numeric'],
             'discount_amount' => ['nullable', 'numeric'],
@@ -64,8 +146,20 @@ class AdmissionController extends Controller
             'discounted_fee' => ['nullable', 'numeric'],
             'fee_type' => ['required', 'in:full,installments'],
             'remarks' => ['required', 'string', 'max:1000'],
-            'receipt_number' => ['nullable', 'string', 'max:100', 'unique:admissions,receipt_number'],
+            'receipt_number' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $validated['country'] = $validated['country'] ?? null;
+        $validated['city'] = $validated['city'] ?? null;
+        $validated['area'] = $validated['area'] ?? null;
+        $validated['fee_package'] = $validated['fee_package'] ?? null;
+        $validated['discount_percent'] = $validated['discount_percent'] ?? null;
+        $validated['discount_amount'] = $validated['discount_amount'] ?? null;
+        $validated['discounted_fee'] = $validated['discounted_fee'] ?? null;
+        $validated['passport_number'] = $validated['passport_number'] ?? null;
+        $validated['registration_number'] = $validated['registration_number'] ?? null;
+        $validated['roll_number'] = $validated['roll_number'] ?? null;
+        $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
@@ -226,72 +320,103 @@ class AdmissionController extends Controller
             if (!$registrationNumber) {
                 $registrationNumber = $this->previewNumbers($campus->code)['registration_number'];
             }
-            $receiptNumber = $validated['receipt_number'] ?? $this->generateAdmissionReceiptNumber($campus->code);
 
-            $admission = Admission::create([
-                'registration_id' => $registration->id,
-                'campus_id' => $validated['campus_id'],
-                'program_id' => $validated['program_id'],
-                'batch_id' => $validated['batch_id'],
-                'student_name' => $validated['student_name'],
-                'phone' => $validated['phone'],
-                'guardian_name' => $validated['guardian_name'],
-                'guardian_phone' => $validated['guardian_phone'],
-                'cnic' => $validated['cnic'],
-                'passport_number' => $validated['passport_number'] ?? null,
-                'email' => $validated['email'],
-                'education' => $validated['education'],
-                'date_of_birth' => $validated['date_of_birth'],
-                'gender' => $validated['gender'],
-                'country' => $validated['country'],
-                'city' => $validated['city'],
-                'area' => $validated['area'],
-                'postal_address' => $validated['postal_address'],
-                'registration_number' => $registrationNumber,
-                'roll_number' => $validated['roll_number'],
-                'admission_date' => $validated['admission_date'],
-                'fee_package' => $feePackage,
-                'discount_amount' => $discountAmount,
-                'discount_percent' => $discountPercent,
-                'discounted_fee' => $discountedFee,
-                'fee_type' => $validated['fee_type'],
-                'student_status' => 'enrolled',
-                'status_updated_at' => now(),
-                'remarks' => $validated['remarks'],
-                'receipt_number' => $receiptNumber,
-            ]);
+            $batchForNumber = Batch::find($validated['batch_id']);
+            $providedRoll = $validated['roll_number'] ?? null;
+            if ($providedRoll) {
+                $expectedPrefix = $campus->code . '-' . ($batchForNumber?->code ?? 'NB') . '-';
+                if (!str_starts_with($providedRoll, $expectedPrefix)) {
+                    $providedRoll = null;
+                }
+            }
+
+            $admission = $this->createAdmissionAtomically(
+                campusCode: $campus->code,
+                batchCode: $batchForNumber?->code,
+                providedRollNumber: $providedRoll,
+                providedReceiptNumber: $validated['receipt_number'] ?? null,
+                attributes: [
+                    'registration_id' => $registration->id,
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'batch_id' => $validated['batch_id'],
+                    'student_name' => $validated['student_name'],
+                    'phone' => $validated['phone'],
+                    'guardian_name' => $validated['guardian_name'],
+                    'guardian_phone' => $validated['guardian_phone'],
+                    'cnic' => $validated['cnic'],
+                    'passport_number' => $validated['passport_number'] ?? null,
+                    'email' => $validated['email'],
+                    'education' => $validated['education'],
+                    'date_of_birth' => $validated['date_of_birth'],
+                    'gender' => $validated['gender'],
+                    'country' => $validated['country'],
+                    'city' => $validated['city'],
+                    'area' => $validated['area'],
+                    'postal_address' => $validated['postal_address'],
+                    'registration_number' => $registrationNumber,
+                    'admission_date' => $validated['admission_date'],
+                    'fee_package' => $feePackage,
+                    'discount_amount' => $discountAmount,
+                    'discount_percent' => $discountPercent,
+                    'discounted_fee' => $discountedFee,
+                    'fee_type' => $validated['fee_type'],
+                    'student_status' => 'enrolled',
+                    'status_updated_at' => now(),
+                    'remarks' => $validated['remarks'],
+                ]
+            );
+            $receiptNumber = $admission->receipt_number;
 
             $hasAdmissionFee = FeeCollection::where('admission_id', $admission->id)
                 ->where('fee_type', 'admission')
                 ->exists();
             if (!$hasAdmissionFee) {
-                $installmentsTotal = max(1, (int)($program->installments ?? 1));
+                $programMaxInstallments = max(1, (int) ($program->installments ?? 1));
                 $feeType = $validated['fee_type'];
+                $base = $discountedFee > 0 ? $discountedFee : $feePackage;
                 $amounts = [];
 
-                if ($feeType === 'installments' && is_array($request->input('installment_amounts'))) {
-                    $inputAmounts = array_values(array_filter($request->input('installment_amounts'), fn($v) => $v !== null && $v !== ''));
-                    if (count($inputAmounts) === $installmentsTotal) {
-                        $amounts = array_map(fn($v) => round((float)$v, 2), $inputAmounts);
-                    }
-                }
+                if ($feeType === 'installments') {
+                    $inputAmounts = array_values(array_filter(
+                        (array) $request->input('installment_amounts', []),
+                        fn ($v) => $v !== null && $v !== ''
+                    ));
 
-                if (empty($amounts)) {
-                    $base = $discountedFee > 0 ? $discountedFee : $feePackage;
-                    if ($feeType === 'installments') {
-                        $split = round($base / $installmentsTotal, 2);
-                        $amounts = array_fill(0, $installmentsTotal, $split);
+                    if (!empty($inputAmounts)) {
+                        $count = min(count($inputAmounts), $programMaxInstallments);
+                        $amounts = array_slice(
+                            array_map(fn ($v) => round((float) $v, 2), $inputAmounts),
+                            0,
+                            $count
+                        );
+                    } else {
+                        $count = $programMaxInstallments;
+                        $split = round($base / $count, 2);
+                        $amounts = array_fill(0, $count, $split);
                         $diff = round($base - array_sum($amounts), 2);
                         if ($diff !== 0.0) {
-                            $amounts[$installmentsTotal - 1] = round($amounts[$installmentsTotal - 1] + $diff, 2);
+                            $amounts[$count - 1] = round($amounts[$count - 1] + $diff, 2);
                         }
-                    } else {
-                        $amounts = [$base];
-                        $installmentsTotal = 1;
                     }
+
+                    $amounts = array_values(array_filter($amounts, fn ($a) => $a > 0));
+                    if (empty($amounts)) {
+                        $amounts = [$base];
+                        $feeType = 'full';
+                    }
+                } else {
+                    $amounts = [$base];
                 }
 
+                $installmentsTotal = $feeType === 'installments' ? count($amounts) : null;
+                $admissionDate = Carbon::parse($validated['admission_date']);
+
                 foreach ($amounts as $index => $amount) {
+                    $isFirstInstallment = $index === 0;
+                    $isInstallment = $feeType === 'installments';
+                    $isPaid = !$isInstallment || $isFirstInstallment;
+
                     FeeCollection::create([
                         'lead_id' => $lead?->id,
                         'registration_id' => $registration?->id,
@@ -299,17 +424,22 @@ class AdmissionController extends Controller
                         'campus_id' => $validated['campus_id'],
                         'program_id' => $validated['program_id'],
                         'fee_type' => 'admission',
-                        'installment_no' => $feeType === 'installments' ? $index + 1 : null,
-                        'installments_total' => $feeType === 'installments' ? $installmentsTotal : null,
+                        'installment_no' => $isInstallment ? $index + 1 : null,
+                        'installments_total' => $installmentsTotal,
                         'amount' => $amount,
                         'discount_percent' => $discountPercent,
                         'discount_amount' => $discountAmount,
                         'net_amount' => $amount,
                         'receipt_number' => $receiptNumber,
-                        'status' => $feeType === 'installments' ? 'pending' : 'paid',
-                        'paid_at' => $feeType === 'installments' ? null : Carbon::now(),
+                        'status' => $isPaid ? 'paid' : 'pending',
+                        'paid_at' => $isPaid ? $admissionDate : null,
+                        'due_at' => $isInstallment
+                            ? $admissionDate->copy()->addMonthsNoOverflow($index)
+                            : $admissionDate,
                         'created_by' => $request->user()?->id,
-                        'notes' => $feeType === 'installments' ? 'Admission fee installment scheduled.' : 'Admission fee collected.',
+                        'notes' => $isPaid
+                            ? ($isInstallment ? 'First installment paid at admission.' : 'Admission fee collected.')
+                            : 'Installment ' . ($index + 1) . ' scheduled.',
                     ]);
                 }
             }
@@ -386,12 +516,74 @@ class AdmissionController extends Controller
 
     private function generateAdmissionReceiptNumber(string $campusCode): string
     {
-        $now = Carbon::now();
-        $monthYear = $now->format('my'); // e.g. 0126
+        $prefix = $campusCode . '-' . Carbon::now()->format('my') . '-';
+        $next = $this->nextSequence(Admission::query(), 'receipt_number', $prefix);
+        return $prefix . str_pad((string) $next, 6, '0', STR_PAD_LEFT);
+    }
 
-        $countForMonth = Admission::where('receipt_number', 'like', $campusCode . '-' . $monthYear . '-%')->count() + 1;
-        $countPadded = str_pad((string)$countForMonth, 6, '0', STR_PAD_LEFT);
+    private function generateRollNumber(string $campusCode, ?string $batchCode = null): string
+    {
+        $batchPart = $batchCode ? trim($batchCode) : 'NB';
+        $prefix = $campusCode . '-' . $batchPart . '-';
+        $next = $this->nextSequence(Admission::query(), 'roll_number', $prefix);
+        return $prefix . str_pad((string) $next, 2, '0', STR_PAD_LEFT);
+    }
 
-        return $campusCode . '-' . $monthYear . '-' . $countPadded;
+    /**
+     * Highest existing seq for a column with a `{prefix}{seq}` pattern, plus 1.
+     */
+    private function nextSequence($baseQuery, string $column, string $prefix): int
+    {
+        $max = (clone $baseQuery)
+            ->where($column, 'like', $prefix . '%')
+            ->get([$column])
+            ->map(function ($row) use ($prefix, $column) {
+                $tail = substr($row->{$column}, strlen($prefix));
+                return ctype_digit($tail) ? (int) $tail : 0;
+            })
+            ->max();
+
+        return ((int) $max) + 1;
+    }
+
+    /**
+     * Generate unique roll/receipt numbers and INSERT the Admission atomically.
+     * Retries on UNIQUE-constraint violations.
+     */
+    private function createAdmissionAtomically(
+        string $campusCode,
+        ?string $batchCode,
+        ?string $providedRollNumber,
+        ?string $providedReceiptNumber,
+        array $attributes,
+    ): Admission {
+        $maxAttempts = 10;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $rollNumber = $providedRollNumber ?: $this->generateRollNumber($campusCode, $batchCode);
+            $receiptNumber = $providedReceiptNumber ?: $this->generateAdmissionReceiptNumber($campusCode);
+
+            try {
+                return DB::transaction(function () use ($rollNumber, $receiptNumber, $attributes) {
+                    return Admission::create(array_merge($attributes, [
+                        'roll_number' => $rollNumber,
+                        'receipt_number' => $receiptNumber,
+                    ]));
+                });
+            } catch (QueryException $e) {
+                $msg = $e->getMessage();
+                if (str_contains($msg, 'UNIQUE') || str_contains($msg, 'Duplicate entry') || $e->getCode() === '23000') {
+                    // If the user provided a number that conflicts, fail loudly
+                    if ($providedRollNumber || $providedReceiptNumber) {
+                        throw $e;
+                    }
+                    // Otherwise regenerate and retry
+                    continue;
+                }
+                throw $e;
+            }
+        }
+
+        throw new RuntimeException('Unable to generate unique admission numbers after ' . $maxAttempts . ' attempts.');
     }
 }

@@ -22,7 +22,16 @@
       "PowerShell(php artisan db:seed --class=DemoAcademicSeeder --force 2>&1; php artisan tinker --execute=\"echo 'admissions: ' . App\\\\Models\\\\Admission::count\\(\\) . PHP_EOL;\")",
       "PowerShell(php artisan route:list --name=profile 2>&1; php artisan route:list --name=logout 2>&1)",
       "PowerShell(php artisan route:list --name=student-search 2>&1)",
-      "PowerShell(php artisan migrate --force 2>&1; php artisan storage:link 2>&1)"
+      "PowerShell(php artisan migrate --force 2>&1; php artisan storage:link 2>&1)",
+      "PowerShell(php artisan route:list --name=student.show 2>&1; php artisan view:clear 2>&1)",
+      "Bash(php artisan *)",
+      "Bash(php -l resources/views/student/show.blade.php)",
+      "Bash(php -l app/Http/Controllers/StudentRecordController.php)",
+      "Bash(php -l resources/views/admission/create.blade.php)",
+      "Bash(awk NR>=224 && NR<=320 { printf \"%4d|\", NR; print } *)",
+      "Bash(awk NR>=655 && NR<=680 { printf \"%4d|\", NR; print } *)",
+      "Bash(php -l app/Http/Controllers/AdmissionController.php)",
+      "Bash(php -l resources/views/admission/status.blade.php)"
     ]
   }
 }

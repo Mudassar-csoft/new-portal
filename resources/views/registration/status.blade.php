@@ -81,8 +81,12 @@
 								@endphp
 								<tr data-date="{{ $regDate }}">
 									<td class="text-center">{{ $idx + 1 }}</td>
-									<td>{{ $row->student_name }}</td>
-									<td>{{ $row->program->title ?? $row->program->name ?? '' }}</td>
+									<td>
+										<a href="{{ route('student.show', $row) }}" class="student-name-link {{ $row->admission ? '' : 'student-name-link--pending' }}" title="View student detail">
+											{{ $row->student_name }}
+										</a>
+									</td>
+									<td>{{ $row->program?->title ?? $row->program?->name ?? '' }}</td>
 									<td>{{ $row->registration_number }}</td>
 									<td>{{ $regDate }}</td>
 									<td>{{ $row->phone }}</td>
@@ -120,6 +124,26 @@
 			min-width: 110px;
 			white-space: nowrap;
 			/* position: relative; */
+		}
+
+		.student-name-link {
+			color: #0a6fd1;
+			font-weight: 600;
+			text-decoration: none;
+			border-bottom: 1px dashed transparent;
+			transition: color 0.15s ease, border-color 0.15s ease;
+		}
+		.student-name-link:hover {
+			color: #0958a8;
+			border-bottom-color: #0a6fd1;
+			text-decoration: none;
+		}
+		.student-name-link--pending {
+			color: #54667a;
+		}
+		.student-name-link--pending:hover {
+			color: #1f2d3d;
+			border-bottom-color: #54667a;
 		}
 		.table-responsive {
 			overflow: visible !important;

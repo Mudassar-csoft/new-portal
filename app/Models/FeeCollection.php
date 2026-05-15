@@ -26,12 +26,14 @@ class FeeCollection extends Model
         'receipt_number',
         'status',
         'paid_at',
+        'due_at',
         'created_by',
         'notes',
     ];
 
     protected $casts = [
         'paid_at' => 'datetime',
+        'due_at' => 'date',
         'amount' => 'decimal:2',
         'discount_percent' => 'decimal:2',
         'discount_amount' => 'decimal:2',

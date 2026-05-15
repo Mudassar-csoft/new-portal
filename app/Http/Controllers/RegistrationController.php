@@ -9,9 +9,11 @@ use App\Models\Program;
 use App\Models\FeeCollection;
 use App\Models\Registration;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
@@ -51,19 +53,16 @@ class RegistrationController extends Controller
 
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
-            $regNumbers = $this->ensureUniqueNumbers($this->previewNumbers($campus->code));
 
             // Fixed fee and no discount per request
             $fee = 2000;
             $discount = 0;
             $net = $fee - $discount;
 
-            $registration = Registration::create([
+            $registration = $this->createRegistrationAtomically($campus->code, [
                 'lead_id' => $validated['lead_id'] ?? null,
                 'campus_id' => $validated['campus_id'],
                 'program_id' => $validated['program_id'],
-                'registration_number' => $regNumbers['registration_number'],
-                'receipt_number' => $regNumbers['receipt_number'],
                 'student_name' => $validated['student_name'],
                 'phone' => $validated['phone'],
                 'guardian_name' => $validated['guardian_name'],
@@ -167,7 +166,7 @@ class RegistrationController extends Controller
 
     public function status(): View
     {
-        $registrations = Registration::with(['program'])
+        $registrations = Registration::with(['program', 'admission'])
             ->orderByDesc('registered_at')
             ->orderByDesc('id')
             ->get();
@@ -181,49 +180,73 @@ class RegistrationController extends Controller
         return view('registration.voucher', compact('registration'));
     }
 
+    /**
+     * Compute the NEXT registration & receipt numbers for a campus + current month,
+     * based on the highest existing sequence (not a count, so gaps don't break it).
+     * Use this for read-only previews — actual save uses a transactional retry loop.
+     */
     private function previewNumbers(string $campusCode): array
     {
-        $now = Carbon::now();
-        $monthYear = $now->format('my'); // e.g. 0126
-
-        $countForMonth = Registration::where('registration_number', 'like', $campusCode . '-' . $monthYear . '-%')->count() + 1;
-        $countPadded = str_pad((string)$countForMonth, 2, '0', STR_PAD_LEFT);
-
-        $receiptCount = Registration::where('receipt_number', 'like', $campusCode . '-' . $monthYear . '-%')->count() + 1;
-        $receiptPadded = str_pad((string)$receiptCount, 6, '0', STR_PAD_LEFT);
+        $prefix = $campusCode . '-' . Carbon::now()->format('my') . '-';
+        $regNext = $this->nextSequence(Registration::query(), 'registration_number', $prefix);
+        $recNext = $this->nextSequence(Registration::query(), 'receipt_number', $prefix);
 
         return [
-            'registration_number' => $campusCode . '-' . $monthYear . '-' . $countPadded,
-            'receipt_number' => $campusCode . '-' . $monthYear . '-' . $receiptPadded,
+            'registration_number' => $prefix . str_pad((string) $regNext, 2, '0', STR_PAD_LEFT),
+            'receipt_number' => $prefix . str_pad((string) $recNext, 6, '0', STR_PAD_LEFT),
         ];
     }
 
-    private function ensureUniqueNumbers(array $numbers): array
+    /**
+     * Highest existing seq for a column with a `{prefix}{seq}` pattern, plus 1.
+     */
+    private function nextSequence($baseQuery, string $column, string $prefix): int
     {
-        $attempts = 0;
-        while (
-            Registration::where('registration_number', $numbers['registration_number'])
-                ->orWhere('receipt_number', $numbers['receipt_number'])
-                ->exists()
-        ) {
-            $numbers['registration_number'] = $this->incrementNumber($numbers['registration_number'], 2);
-            $numbers['receipt_number'] = $this->incrementNumber($numbers['receipt_number'], 6);
-            $attempts++;
-            if ($attempts > 20) {
-                throw new RuntimeException('Unable to generate unique registration numbers.');
+        $max = (clone $baseQuery)
+            ->where($column, 'like', $prefix . '%')
+            ->get([$column])
+            ->map(function ($row) use ($prefix, $column) {
+                $tail = substr($row->{$column}, strlen($prefix));
+                return ctype_digit($tail) ? (int) $tail : 0;
+            })
+            ->max();
+
+        return ((int) $max) + 1;
+    }
+
+    /**
+     * Generate unique numbers and insert the Registration atomically.
+     * Retries on UNIQUE-constraint violations (which can happen on concurrent inserts).
+     *
+     * @param  array<string,mixed>  $registrationAttributes  All columns except registration_number/receipt_number.
+     * @return Registration
+     */
+    private function createRegistrationAtomically(string $campusCode, array $registrationAttributes): Registration
+    {
+        $maxAttempts = 10;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $numbers = $this->previewNumbers($campusCode);
+
+            try {
+                return DB::transaction(function () use ($numbers, $registrationAttributes) {
+                    return Registration::create(array_merge($registrationAttributes, [
+                        'registration_number' => $numbers['registration_number'],
+                        'receipt_number' => $numbers['receipt_number'],
+                    ]));
+                });
+            } catch (QueryException $e) {
+                // SQLite: "UNIQUE constraint failed". MySQL: "Duplicate entry".
+                $msg = $e->getMessage();
+                if (str_contains($msg, 'UNIQUE') || str_contains($msg, 'Duplicate entry') || $e->getCode() === '23000') {
+                    // Race lost — regenerate and retry.
+                    continue;
+                }
+                throw $e;
             }
         }
 
-        return $numbers;
-    }
-
-    private function incrementNumber(string $value, int $pad): string
-    {
-        $parts = explode('-', $value);
-        $last = array_pop($parts);
-        $next = str_pad((string)((int)$last + 1), $pad, '0', STR_PAD_LEFT);
-        $parts[] = $next;
-        return implode('-', $parts);
+        throw new RuntimeException('Unable to generate unique registration numbers after ' . $maxAttempts . ' attempts.');
     }
 
     private function registrationRules(): array
