@@ -1016,13 +1016,13 @@ margin-right: auto;
 .table td.actions-cell > .dropdown.dropdown-action-menu,
 .table td > .dropdown.dropdown-action-menu,
 .table [class*="-action-dropdown"].dropdown-action-menu {
-z-index: 99970 !important;
+z-index: auto !important;
 }
 
 .dropdown-menu.action-key,
 .follow-action-dropdown .dropdown-menu,
 .registration-action-dropdown .dropdown-menu {
-font-size: 12px !important;
+font-size: 16px !important;
 min-width: 180px;
 z-index: 99970 !important;
 }
@@ -1061,7 +1061,7 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu.show,
 .table td > .dropdown.dropdown-action-menu.show,
 .table [class*="-action-dropdown"].dropdown-action-menu.show {
-z-index: 1065 !important;
+z-index: auto !important;
 }
 
 .dropdown.dropdown-action-menu.show > .dropdown-menu,
@@ -1082,6 +1082,7 @@ min-width: 68px !important;
 font-size: 13px !important;
 line-height: 1.2 !important;
 text-align: center !important;
+z-index: auto !important;
 }
 
 .btn{

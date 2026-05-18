@@ -5,6 +5,12 @@
 @section('content')
     @php
         $totalCourses = $admission ? 1 : 0;
+        $studentPhone = preg_replace('/\D+/', '', (string) ($registration->phone ?? ''));
+        $studentEmail = trim((string) ($registration->email ?? ''));
+        $studentLeadId = $registration->lead_id ?? optional($admission)->lead_id;
+        $studentSmsUrl = $studentPhone !== '' ? 'sms:' . $studentPhone : null;
+        $studentEmailUrl = $studentEmail !== '' ? 'mailto:' . $studentEmail : null;
+        $studentWhatsappUrl = $studentPhone !== '' ? 'https://wa.me/' . $studentPhone : null;
     @endphp
 
     <div class="student-detail-shell">
@@ -12,7 +18,7 @@
             <div class="student-flash">{{ session('status') }}</div>
         @endif
 
-        <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
+        <!-- <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
                 <h3 class="panel-title mb-0">Student Detail
                     <small class="text-muted" style="font-size:14px;font-weight:400;">
@@ -20,7 +26,7 @@
                     </small>
                 </h3>
             </div>
-        </div>
+        </div> -->
 
         <div class="student-detail-grid">
             {{-- ============ LEFT: PROFILE CARD ============ --}}
@@ -42,23 +48,57 @@
 
                     <div class="profile-action">
                         <div class="dropdown student-action-wrap">
-                            <button class="btn btn-sm dropdown-toggle student-action-btn" type="button" id="student-action-{{ $registration->id }}" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn  btn-primary-outline dropdown-toggle student-action-btn" type="button" id="student-action-{{ $registration->id }}" aria-haspopup="true" aria-expanded="false">
                                 Action <span class="caret"></span>
                             </button>
                             <div class="dropdown-menu student-action-menu" aria-labelledby="student-action-{{ $registration->id }}">
-                                @if($admission)
-                                    <a class="dropdown-item" href="{{ route('admission.voucher', $admission) }}" target="_blank" rel="noopener">
-                                        <i class="fa fa-file-text-o mr-2"></i>Admission Voucher
-                                    </a>
-                                @endif
-                                <a class="dropdown-item" href="{{ route('registration.voucher', $registration) }}" target="_blank" rel="noopener">
-                                    <i class="fa fa-file-text-o mr-2"></i>Registration Voucher
+                                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['lead_id' => $studentLeadId]) }}">
+                                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>
+                                            <path d="M13.5 3.75V8.5h4.75"/>
+                                            <path d="m9 12 2 2 4-4"/>
+                                        </svg>
+                                    </span>
+                                    <span class="lead-action-label">Enroll To Another Course</span>
                                 </a>
-                                @if($admission)
-                                    <a class="dropdown-item" href="{{ route('student.records.index', ['scope' => 'all_students']) }}">
-                                        <i class="fa fa-list mr-2"></i>All Students
-                                    </a>
-                                @endif
+                                <a class="dropdown-item lead-action-item {{ $studentSmsUrl ? '' : 'is-disabled' }}" href="{{ $studentSmsUrl ?: '#' }}" @if(!$studentSmsUrl) aria-disabled="true" tabindex="-1" @endif>
+                                    <span class="lead-action-icon lead-icon-yellow" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4.75 5.75h14.5A1.75 1.75 0 0 1 21 7.5v9A1.75 1.75 0 0 1 19.25 18.25H4.75A1.75 1.75 0 0 1 3 16.5v-9a1.75 1.75 0 0 1 1.75-1.75Z"/>
+                                            <path d="M7 9.5h10"/>
+                                            <path d="M7 13h7"/>
+                                            <path d="m8 18.25-2.75 2.25"/>
+                                        </svg>
+                                    </span>
+                                    <span class="lead-action-label">Send SMS</span>
+                                </a>
+                                <a class="dropdown-item lead-action-item {{ $studentEmailUrl ? '' : 'is-disabled' }}" href="{{ $studentEmailUrl ?: '#' }}" @if(!$studentEmailUrl) aria-disabled="true" tabindex="-1" @endif>
+                                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3.75 6.25h16.5A1.25 1.25 0 0 1 21.5 7.5v9a1.25 1.25 0 0 1-1.25 1.25H3.75A1.25 1.25 0 0 1 2.5 16.5v-9a1.25 1.25 0 0 1 1.25-1.25Z"/>
+                                            <path d="m3 7 9 7 9-7"/>
+                                        </svg>
+                                    </span>
+                                    <span class="lead-action-label">Send Email</span>
+                                </a>
+                                <a class="dropdown-item lead-action-item {{ $studentWhatsappUrl ? '' : 'is-disabled' }}" href="{{ $studentWhatsappUrl ?: '#' }}" @if($studentWhatsappUrl) target="_blank" rel="noopener" @else aria-disabled="true" tabindex="-1" @endif>
+                                    <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M20.52 3.48A11.8 11.8 0 0 0 12.12 0C5.58 0 .24 5.34.24 11.88c0 2.1.54 4.14 1.62 5.94L0 24l6.36-1.8a11.86 11.86 0 0 0 5.76 1.5H12.12c6.54 0 11.88-5.34 11.88-11.88 0-3.18-1.26-6.18-3.48-8.34zm-8.4 18.24h-.06a9.8 9.8 0 0 1-4.98-1.38l-.36-.24-3.78 1.08 1.02-3.66-.24-.36a9.88 9.88 0 0 1-1.56-5.28c0-5.46 4.44-9.9 9.9-9.9 2.64 0 5.1 1.02 6.96 2.88a9.8 9.8 0 0 1 2.88 7.02c0 5.46-4.44 9.9-9.84 9.9zm5.46-7.38c-.3-.18-1.8-.9-2.1-1.02-.24-.06-.48-.12-.72.18-.18.3-.72 1.02-.9 1.2-.18.18-.36.24-.66.06a8.1 8.1 0 0 1-2.4-1.5 8.98 8.98 0 0 1-1.68-2.1c-.18-.3 0-.42.12-.6.12-.12.3-.36.42-.54.12-.18.18-.3.3-.48.06-.18 0-.36 0-.54 0-.12-.72-1.74-.96-2.34-.24-.6-.54-.48-.72-.48h-.6c-.24 0-.54.06-.84.36-.3.3-1.08 1.08-1.08 2.64s1.14 3.06 1.26 3.24c.18.24 2.22 3.42 5.4 4.74.72.3 1.32.48 1.8.6.72.24 1.38.18 1.92.12.6-.06 1.8-.72 2.1-1.44.24-.66.24-1.32.18-1.44-.12-.12-.3-.18-.6-.36z"/>
+                                        </svg>
+                                    </span>
+                                    <span class="lead-action-label">Whatsapp</span>
+                                </a>
+                                <a class="dropdown-item lead-action-item {{ $studentLeadId ? '' : 'is-disabled' }}" href="{{ $studentLeadId ? route('leads.show', $studentLeadId) : '#' }}" @if(!$studentLeadId) aria-disabled="true" tabindex="-1" @endif>
+                                    <span class="lead-action-icon lead-icon-blue" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3.75 20.25h4.5l11-11a1.6 1.6 0 0 0 0-2.25l-2.25-2.25a1.6 1.6 0 0 0-2.25 0l-11 11v4.5Z"/>
+                                            <path d="m13.5 6.5 4 4"/>
+                                        </svg>
+                                    </span>
+                                    <span class="lead-action-label">Edit</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -122,7 +162,7 @@
                                         <td>{{ $admission->roll_number ?? '—' }}</td>
                                         <td>
                                             @if($feeStatus === 'Paid')
-                                                <span class="label label-success">Paid</span>
+                                                <span class="label label-primary">Paid</span>
                                             @elseif($feeStatus === 'Pending')
                                                 <span class="label label-warning">Pending</span>
                                             @else
@@ -181,7 +221,7 @@
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
                                         <td class="fee-status-cell">
                                             @if($fee->status === 'paid')
-                                                <span class="label label-success">Paid</span>
+                                                <span class="label label-primary p-2 " style="height:30px !important;line-height:1 !important;width:45px !important;">Paid</span>
                                             @elseif($fee->status === 'pending')
                                                 <button type="button"
                                                         class="label label-warning js-fee-collect"
@@ -197,19 +237,23 @@
                                                 <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                             @endif
                                             @if($voucherUrl)
-                                                <a class="btn btn-xs btn-default fee-action-btn" title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
-                                                    <i class="fa fa-file-text-o"></i>
+                                                <a class="btn btn-xs btn-warning fee-action-btn p-2 mt-1"
+                                                 style="height:30px !important;line-height:1 !important;width:30px !important;"
+                                                  title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
+                                                    <i class="bi bi-menu-button-wide"></i>
                                                 </a>
                                             @else
                                                 <span class="btn btn-xs btn-default fee-action-btn disabled" title="Voucher not available"><i class="fa fa-file-text-o"></i></span>
                                             @endif
-                                            <button class="btn btn-xs btn-default fee-action-btn js-fee-edit"
+                                            <button class="btn btn-xs btn-default fee-action-btn js-fee-edit p-2"
+                                            style="height:30px !important;line-height:1 !important;width:45px !important;"
                                                     type="button"
                                                     data-fee-id="{{ $fee->id }}"
                                                     data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
                                                     data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
                                                     data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
-                                                <i class="fa fa-pencil"></i> Edit
+                                                <!-- <i class="fa fa-pencil"></i>  -->
+                                                Edit
                                             </button>
                                         </td>
                                         <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
@@ -381,7 +425,7 @@
             overflow: hidden;
         }
         .profile-banner {
-            height: 100px;
+            height: 160px;
             background:
                 linear-gradient(135deg, rgba(15,23,42,0.55), rgba(15,23,42,0.55)),
                 linear-gradient(135deg, #2c3e50 0%, #4a5568 60%, #1e293b 100%);
@@ -404,6 +448,10 @@
             position: relative;
             z-index: 2;
         }
+        span {
+    font-size: 16px !important;
+    line-height: 1.5;
+}
         .profile-avatar {
             width: 100px;
             height: 100px;
@@ -429,39 +477,84 @@
         .profile-action { margin-bottom: 20px; }
         .student-action-wrap { display: inline-block; position: relative; }
         .student-action-btn {
-            background: #fff !important;
-            color: #1f2d3d !important;
-            border: 1px solid #cfd7df !important;
+            background: transparent !important;
+            color: #00a8ff !important;
+            border: 1px solid #00a8ff !important;
             padding: 6px 18px !important;
             border-radius: 4px;
             font-weight: 500;
         }
-        .student-action-btn:hover { border-color: #94a3b8 !important; }
+        .student-action-btn:hover {
+            background: #00a8ff !important;
+            color: #fff !important;
+            border-color: #00a8ff !important;
+        }
         .student-action-wrap .dropdown-menu {
             display: none;
-            min-width: 220px;
+            
+            width:237px;
+            min-width: 150px !important;
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #dfe5eb;
             border-radius: 6px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-            padding: 4px 0;
-            margin-top: 6px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            padding: 10px 0;
+            margin-top: 0px;
             position: absolute;
             left: 50%;
-            transform: translateX(-50%);
-            top: 100%;
+            transform: translateX(-33%);
+            top: -190px;
             z-index: 50;
             text-align: left;
         }
         .student-action-wrap.is-open .dropdown-menu { display: block; }
-        .student-action-wrap .dropdown-item {
-            display: block;
-            padding: 8px 14px;
+        .student-action-wrap .dropdown-item.lead-action-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 22px;
             color: #303740;
-            font-size: 13px;
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.4;
             text-decoration: none;
         }
-        .student-action-wrap .dropdown-item:hover { background: #f7fafc; }
+        .student-action-wrap .dropdown-item.lead-action-item:hover,
+        .student-action-wrap .dropdown-item.lead-action-item:focus {
+            background: #f7fafc;
+            color: #222b33;
+        }
+        .student-action-wrap .dropdown-item.is-disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+        .student-action-wrap .lead-action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            min-width: 26px;
+            height: 26px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .student-action-wrap .lead-action-icon svg {
+            display: block;
+            width: 24px;
+            height: 24px;
+        }
+        .student-action-wrap .lead-action-icon--whatsapp svg {
+            width: 22px;
+            height: 22px;
+        }
+        .student-action-wrap .lead-action-label {
+            display: inline-block;
+            letter-spacing: 0.01em;
+        }
+        .student-action-wrap .lead-icon-blue { color: #1b95ff; }
+        .student-action-wrap .lead-icon-yellow { color: #f5b400; }
+        .student-action-wrap .lead-icon-black { color: #303740; }
+        .student-action-wrap .lead-icon-green { color: #2db853; }
 
         .profile-stats {
             display: grid;
@@ -547,7 +640,7 @@
         }
         .info-table th,
         .info-table td {
-            padding: 12px 0;
+            padding: 5px 0;
             border-bottom: 1px solid #eef2f7;
             font-size: 14px;
             vertical-align: middle;

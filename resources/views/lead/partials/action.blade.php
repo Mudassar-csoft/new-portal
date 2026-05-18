@@ -20,6 +20,13 @@
 				background: #fff;
 				box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 				text-align: left !important;
+				z-index: 9999;
+			}
+
+			.follow-action-dropdown .dropdown-toggle,
+			.follow-action-dropdown .dropdown-toggle:hover,
+			.follow-action-dropdown .dropdown-toggle:focus {
+				z-index: auto !important;
 			}
 
 			.follow-action-dropdown .dropdown-item.lead-action-item {

@@ -191,8 +191,8 @@
         #student-records-table td.actions-cell .dropdown,
         #student-records-table td.actions-cell .student-action-dropdown,
         #student-records-table td.actions-cell .follow-action-dropdown {
-            position: relative;
-            z-index: 1065;
+            /* position: relative;
+            z-index: 1065; */
         }
 
         /* Dropdown opens DOWNWARD, right edge aligned with the Actions button */
