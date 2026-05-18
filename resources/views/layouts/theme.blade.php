@@ -1228,9 +1228,9 @@ select {
 			position: relative;
 			border-bottom: 3px solid transparent;
 		}
-.student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .student-directory .dataTables_wrapper .follow-footer{
-	    align-items: flex-start !important;
-}
+		.student-directory .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar), .student-directory .dataTables_wrapper .follow-footer{
+				align-items: flex-start !important;
+		}
 		.follow-tab.active {
 			color: #0f3c6e;
 			background-color:white;	
@@ -1290,6 +1290,7 @@ select {
 			text-decoration: none !important;
 		}
 
+		
 		.follow-footer, .dataTables_wrapper .follow-footer {
 			display: flex;
 			align-items: center;
@@ -1328,7 +1329,7 @@ select {
 		.page-content .tbl-typical,
 		.page-content .follow-table,
 		.page-content .program-table {
-			width: max-content !important;
+			/* width: max-content !important; */
 			min-width: 100% !important;
 			max-width: none !important;
 			table-layout: auto !important;
@@ -1351,7 +1352,7 @@ select {
 		.page-content .program-table thead th,
 		.page-content .program-table tbody td {
 			width: auto !important;
-			min-width: max-content;
+			max-width:300px !important;
 			height: 30px !important;
 			text-align: left !important;
 			vertical-align: center !important;
@@ -1661,7 +1662,9 @@ margin-bottom:  10px !important;
 .box-typical.box-typical-dashboard .box-typical-header {
 display: flex;
 }
-
+.Traing-head-selector{
+			width: 200px;
+		}
 /* =========================================================
    Breakpoints
    ========================================================= */
@@ -1670,14 +1673,23 @@ display: flex;
 .with-side-menu .page-content {
 padding: 110px 24px 24px;
 }
-
 .with-side-menu .page-content > .container-fluid {
-padding-left: 7px;
-padding-right: 12px;
-padding-top: 10px;
+	padding-left: 7px;
+	padding-right: 12px;
+	padding-top: 10px;
 }
 }
 @media (max-width: 768px) {
+	.control-flow-show-bar{
+		
+	}
+	.follow-controls.follow-controls--toolbar .follow-controls-search-group{
+		flex-direction:column; 
+		align-items: flex-start !important;
+	}
+.Traing-head-selector{
+			width: 100%;
+		}
 form .form-row,
 form .row {
 	padding-left: 6px !important;

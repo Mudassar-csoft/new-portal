@@ -556,7 +556,7 @@ video {
 .control-panel-container .control-panel-toggle {
   width: 100%;
   font-size: 1.6rem;
-  color: #C5D1DD;
+  color: #C5D1DD !important;
   display: block;
   position: absolute;
   bottom: 0;

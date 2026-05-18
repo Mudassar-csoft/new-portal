@@ -37,7 +37,7 @@
 
 				<div class="box-typical-body panel-body follow-body">
 					<div class="follow-controls">
-						<div class="d-flex" style="gap:0.5rem;align-items: center;">
+						<div class="d-flex control-flow-show-bar" style="gap:0.5rem;align-items: center;">
 							<label class="">Show</label>
 							<select class="form-select form-select-sm">
 								<option>10</option>

@@ -10,7 +10,7 @@
 					<h3 class="panel-title mb-0 form-label">Edit User</h3>
 					<small class="text-muted">Update campus, roles, and access.</small>
 				</div>
-				<a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a>
+				<!-- <a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a> -->
 			</header>
 			<div class="box-typical-body panel-body user-body">
 				<form method="POST" action="{{ route('users.update', $user) }}">
@@ -127,7 +127,7 @@
 			background: linear-gradient(160deg, #f6f8fc 0%, #eef3fb 100%);
 		}
 		.user-card {
-			max-width: 1200px;
+			/* max-width: 1200px; */
 			margin: 0 auto;
 			border-radius: 14px;
 			box-shadow: 0 18px 40px rgba(25, 45, 85, 0.12);

@@ -100,7 +100,7 @@
 
         .lead-create-card .form-row { padding: 3px 10px; }
         .lead-create-card .form-group { margin-bottom: 8px; }
-        .lead-create-card label, .lead-create-card .form-label { color: #343434; font-size: 12px; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
+        .lead-create-card label, .lead-create-card .form-label { color: #343434; font-size: 14px !important; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
         .lead-create-card .form-control { font-size: 12px; min-height: 37px !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: #343434; }
         .lead-create-card textarea.form-control { min-height: 82px !important; resize: vertical; }
         .required::after { content: '*'; color: #e53935; margin-left: 4px; }

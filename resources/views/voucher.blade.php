@@ -17,12 +17,10 @@
     <link href="https://portal.career.edu.pk/fee-receipt/img/favi.ico" rel="apple-touch-icon" type="image/png">
     <link href="https://portal.career.edu.pk/fee-receipt/img/favi.ico" rel="icon" type="image/png">
     <link href="https://portal.career.edu.pk/fee-receipt/img/favi.ico" rel="shortcut icon">
-    <script src="./Career _ IMS - Fee Voucher_files/jquery-3.6.1.min.js.download"></script>
-
     <link rel="icon" type="image/x-icon" href="https://portal.career.edu.pk/assets/img/favicon/favicon.png">
 
     <link rel="preconnect" href="https://fonts.gstatic.com/">
-    <link href="./Career _ IMS - Fee Voucher_files/css2" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0px;
@@ -230,7 +228,7 @@
     <div class="main">
 
         <div style="clear: both">
-            <img src="../public/theme/img/career-updated-logo.png" alt="" class="logo">
+            <img src="{{ asset('theme/img/career-updated-logo.png') }}" alt="Career Institute Logo" class="logo">
             <div class="first">
                 <p>Student Copy</p>
             </div>
@@ -352,7 +350,7 @@
         <div class="main">
 
             <div style="clear: both">
-                <img src="../public/theme/img/career-updated-logo.png" alt="" class="logo">
+                <img src="{{ asset('theme/img/career-updated-logo.png') }}" alt="Career Institute Logo" class="logo">
                 <div class="first">
                     <p>Campus Copy</p>
                 </div>
@@ -485,13 +483,16 @@
 
         }
 
-        $(document).ready(function () {
-            var totalAmount = $('#totalAmount').val();
-            var a = numberToWords(totalAmount);
-            $('.amountInWords').html(a);
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            var totalAmount = document.getElementById('totalAmount').value;
+            var amountInWords = numberToWords(totalAmount);
 
-        window.print();
+            document.querySelectorAll('.amountInWords').forEach(function (element) {
+                element.innerHTML = amountInWords;
+            });
+
+            window.print();
+        });
     </script>
 </body>
 

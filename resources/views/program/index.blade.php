@@ -116,10 +116,10 @@
                             <thead>
                                 <tr>
                                     <th>Sr</th>
+                                    <th>Title</th>
                                     <th>Code</th>
-                                    <th>Programme</th>
-                                    <th>Fee</th>
                                     <th>Duration</th>
+                                    <th>Fee</th>
                                     <th>Discounts</th>
                                     <th>Status</th>
                                     <th class="text-left">Action</th>
@@ -133,7 +133,6 @@
                                     @endphp
                                     <tr data-status="{{ $statusKey }}">
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td>{{ $program->code }}</td>
                                         <td>
                                             <strong>{{ $program->title ?? $program->name }}</strong>
                                             @if($program->remarks)
@@ -141,8 +140,9 @@
                                                 <span class="text-muted">{{ \Illuminate\Support\Str::limit($program->remarks, 80) }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ number_format((float) $program->fee, 2) }}</td>
+                                        <td>{{ $program->code }}</td>
                                         <td>{{ number_format((int) ($program->duration_weeks ?? 0)) }} weeks</td>
+                                        <td>{{ number_format((float) $program->fee, 2) }}</td>
                                         <td>
                                             @if($program->campusDiscounts->isEmpty())
                                                 <span class="text-muted">No discounts</span>

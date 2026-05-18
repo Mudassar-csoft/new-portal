@@ -94,7 +94,7 @@
 			background: linear-gradient(160deg, #f6f8fc 0%, #eef3fb 100%);
 		}
 		.user-card {
-			max-width: 1200px;
+			/* max-width: 1200px; */
 			margin: 0 auto;
 			border-radius: 14px;
 			box-shadow: 0 18px 40px rgba(25, 45, 85, 0.12);

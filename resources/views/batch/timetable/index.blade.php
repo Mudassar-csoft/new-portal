@@ -32,96 +32,81 @@
                 </div>
             @endif
 
-            <div class="follow-card box-typical box-typical-dashboard panel panel-default">
-                <header class="box-typical-header panel-heading lead-header">
-                    <div class="tbl w-100">
-                        <div class="tbl-row">
-                            <div class="tbl-cell tbl-cell-title p-0 m-0">
-                                <h2 class="panel-title lead-title">
-                                    Manage Time Table
-                                </h2>
-                            </div>
+        <div class="box-typical box-typical-dashboard panel panel-default batch-timetable-card">
+            <header class="box-typical-header panel-heading d-flex justify-content-between">
+                <div>
+                    <h3 class="panel-title mb-0">Manage Time Table</h3>
+                    <!-- <small class="text-muted">Create, update, and review weekly schedule slots for each batch.</small> -->
+                </div>
+                <!-- <div class="d-flex" style="gap:10px;">
+                    <a href="{{ route('batch.index') }}" class="btn btn-default">Back to Batches</a>
+                    <a href="{{ route('batch.create') }}" class="btn btn-primary">Create Batch</a>
+                </div> -->
+            </header>
+            <div class="box-typical-body panel-body">
+                <form method="GET" action="{{ route('batch.timetable.index') }}" class="batch-filter-form">
+                    <div class="form-row batch-filter-row">
+                        <div class="form-group col-lg-4">
+                            <label class="form-label">Campus</label>
+                            <select class="form-control" name="campus_id">
+                                <option value="">All Campuses</option>
+                                @foreach($campuses as $campus)
+                                    <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
+                                        {{ $campus->code }} - {{ $campus->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label class="form-label">Programme</label>
+                            <select class="form-control" name="program_id">
+                                <option value="">All Programmes</option>
+                                @foreach($programs as $program)
+                                    <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
+                                        {{ $program->code }} - {{ $program->title ?? $program->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label class="form-label">Batch</label>
+                            <select class="form-control" name="batch_id">
+                                <option value="">All Batches</option>
+                                @foreach($batches as $batch)
+                                    <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
+                                        {{ $batch->code }} - {{ $batch->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label class="form-label">Day</label>
+                            <select class="form-control" name="day_of_week">
+                                <option value="">All Days</option>
+                                @foreach($dayOptions as $key => $label)
+                                    <option value="{{ $key }}" @selected(($filters['day_of_week'] ?? '') === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" name="status">
+                                <option value="">All Statuses</option>
+                                @foreach($statusOptions as $key => $label)
+                                    <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 batch-filter-col-wide">
+                            <label class="form-label">Search</label>
+                            <input type="text" class="form-control" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Batch, room, instructor, or topic">
                         </div>
                     </div>
-                </header>
-
-                <div class="box-typical-body panel-body follow-body">
-                    <form method="GET" action="{{ route('batch.timetable.index') }}" id="timetable-filter-form">
-                        <div class="follow-controls">
-                            <div class="d-flex" style="gap:0.5rem;align-items: center;">
-                                <label class="">Show</label>
-                                <select class="form-select form-select-sm">
-                                    <option>10</option>
-                                    <option>25</option>
-                                    <option>50</option>
-                                </select>
-                                <label class="">Entries</label>
-                            </div>
-                            <div class="follow-search">
-                                <input type="text" name="search" id="timetable-search" class="form-control form-control-sm"
-                                       placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
-                                <i class="fa fa-search"></i>
-                            </div>
-                        </div>
-
-                        <div class="program-filter-row">
-                            <div class="program-filter-field">
-                                <label class="form-label">Campus</label>
-                                <select class="form-control form-control-sm" name="campus_id">
-                                    <option value="">All Campuses</option>
-                                    @foreach($campuses as $campus)
-                                        <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
-                                            {{ $campus->code }} - {{ $campus->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Programme</label>
-                                <select class="form-control form-control-sm" name="program_id">
-                                    <option value="">All Programmes</option>
-                                    @foreach($programs as $program)
-                                        <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                            {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Batch</label>
-                                <select class="form-control form-control-sm" name="batch_id">
-                                    <option value="">All Batches</option>
-                                    @foreach($batches as $batch)
-                                        <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
-                                            {{ $batch->code }} - {{ $batch->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Day</label>
-                                <select class="form-control form-control-sm" name="day_of_week">
-                                    <option value="">All Days</option>
-                                    @foreach($dayOptions as $key => $label)
-                                        <option value="{{ $key }}" @selected(($filters['day_of_week'] ?? '') === $key)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Status</label>
-                                <select class="form-control form-control-sm" name="status">
-                                    <option value="">All Statuses</option>
-                                    @foreach($statusOptions as $key => $label)
-                                        <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="program-filter-actions">
-                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                <a href="{{ route('batch.timetable.index') }}" class="btn btn-default btn-sm">Reset</a>
-                            </div>
-                        </div>
-                    </form>
+                    <div class=" text-right">
+                        <button type="submit" class="btn btn-primary-outline">Filter</button>
+                        <a href="{{ route('batch.timetable.index') }}" class="btn btn-danger-outline">Reset</a>
+                    </div>
+                </form>
 
                     <div class="batch-timetable-layout">
                         <div class="batch-timetable-form-wrap">

@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <div class="row mb-3 bg-white p-2 m-2">
+        <!-- <div class="row mb-3 bg-white p-2 m-2">
             <div class="col-md-6 col-lg-4">
                 <div class="payroll-stat tone-bank">
                     <div class="payroll-value">Rs. {{ number_format((float) ($payoutSummary['bank'] ?? 0), 0) }}</div>
@@ -40,7 +40,7 @@
                     <div class="payroll-label">Cheque Payout List</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="row">
             <div class="col-lg-6">

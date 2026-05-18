@@ -174,6 +174,7 @@
 				<ul>
 					<li><a href="{{ route('registration.status') }}" class="stage-link"><span class="lbl">All Registration</span><span
 								class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_registrations'] ?? 0)) }}</span></a></li>
+					<li><a href="{{ route('voucher.preview') }}"><span class="lbl">Fee Voucher Preview</span></a></li>
 				</ul>
 			</li>
 			<li class="gold orange with-sub">
