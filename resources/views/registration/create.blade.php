@@ -5,7 +5,7 @@
 @section('content')
 	@php
 		$leadDetails = $lead->details ?? [];
-		$selectedCampusId = old('campus_id', $lead->campus_id ?? null);
+		$selectedCampusId = old('campus_id', $lead->campus_id ?? ($defaultCampusId ?? null));
 		$selectedProgramId = old('program_id', $lead->program_id ?? null);
 	@endphp
 	<div class="registration-shell">
@@ -638,30 +638,53 @@
 		})();
 	</script>
 	<script>
-		(function() {
-			var campusSelect = document.querySelector('select[name="campus_id"]');
-			var regField = document.getElementById('reg-number');
-			var receiptField = document.getElementById('receipt-number');
+		(function () {
+			var previewUrl = @json(route('registration.preview'));
 
-			function updateNumbers() {
-				if (!campusSelect || !campusSelect.value) {
-					if (regField) regField.value = '';
-					if (receiptField) receiptField.value = '';
+			function bind() {
+				var $campus = jQuery('select[name="campus_id"]');
+				var $reg = jQuery('#reg-number');
+				var $receipt = jQuery('#receipt-number');
+
+				if (!$campus.length) {
+					console.warn('campus_id select not found');
 					return;
 				}
 
-				fetch('{{ route('registration.preview') }}?campus_id=' + campusSelect.value)
-					.then(function (res) { return res.json(); })
-					.then(function (data) {
-						if (regField && data.registration_number) regField.value = data.registration_number;
-						if (receiptField && data.receipt_number) receiptField.value = data.receipt_number;
-					})
-					.catch(function () {});
+				function updateNumbers() {
+					var val = $campus.val();
+					if (!val) {
+						$reg.val('');
+						$receipt.val('');
+						return;
+					}
+					jQuery.ajax({
+						url: previewUrl,
+						type: 'GET',
+						dataType: 'json',
+						data: { campus_id: val },
+						headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+					}).done(function (data) {
+						$reg.val((data && data.registration_number) || '');
+						$receipt.val((data && data.receipt_number) || '');
+					}).fail(function (xhr) {
+						console.error('Preview fetch failed:', xhr.status, xhr.responseText);
+						$reg.val('');
+						$receipt.val('');
+					});
+				}
+
+				$campus.off('change.regPreview').on('change.regPreview', updateNumbers);
+				updateNumbers();
 			}
 
-			if (campusSelect) {
-				campusSelect.addEventListener('change', updateNumbers);
-				updateNumbers();
+			if (window.jQuery) {
+				jQuery(function () { bind(); });
+			} else {
+				document.addEventListener('DOMContentLoaded', function () {
+					if (window.jQuery) bind();
+					else console.error('jQuery not loaded — registration preview disabled');
+				});
 			}
 		})();
 	</script>

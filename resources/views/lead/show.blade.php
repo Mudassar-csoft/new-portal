@@ -267,7 +267,8 @@
 					</tbody>
 				</table>
 			</div>
-			
+		</div>{{-- /lead-pane #tab-followups --}}
+
 			<div class="lead-pane" id="tab-personal" style="display: none;">
 				<div class="card card-elevated">
 					<div class="card-body">
@@ -352,12 +353,11 @@
 							</tbody>
 						</table>
 						@endif
-					</div>
-				</div>
-			</div>
-		</div>
+					</div>{{-- /card-body --}}
+				</div>{{-- /card-elevated --}}
+			</div>{{-- /lead-pane #tab-personal --}}
 
-	</div>
+	</div>{{-- /lead-show-shell --}}
 		<div class="lead-modal" id="lead-form-modal" aria-hidden="true">
 		<div class="modal-card" role="dialog" aria-modal="true">
 			<div class="modal-header">

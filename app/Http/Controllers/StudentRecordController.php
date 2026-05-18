@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admission;
+use App\Models\FeeCollection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -106,6 +107,142 @@ class StudentRecordController extends Controller
             'pageTitle' => $config['title'],
             'pageDescription' => $config['description'],
         ]);
+    }
+
+    public function show(\App\Models\Registration $registration): View
+    {
+        $registration->load([
+            'lead',
+            'campus',
+            'program',
+            'admission.batch',
+            'admission.campus',
+            'admission.program',
+            'admission.certificateDeliveredBy',
+        ]);
+
+        $this->backfillRegistrationFee($registration);
+
+        $admission = $registration->admission;
+        $feeCollections = FeeCollection::query()
+            ->where('registration_id', $registration->id)
+            ->orderBy('paid_at')
+            ->orderBy('id')
+            ->get();
+
+        $totalFee = $feeCollections->sum('net_amount');
+        $pendingFee = $feeCollections->where('status', '!=', 'paid')->sum('net_amount');
+
+        return view('student.show', [
+            'registration' => $registration,
+            'admission' => $admission,
+            'feeCollections' => $feeCollections,
+            'totalFee' => $totalFee,
+            'pendingFee' => $pendingFee,
+            'statusOptions' => self::STATUS_OPTIONS,
+        ]);
+    }
+
+    private function backfillRegistrationFee(\App\Models\Registration $registration): void
+    {
+        $hasFee = FeeCollection::where('registration_id', $registration->id)
+            ->where('fee_type', 'registration')
+            ->exists();
+        if ($hasFee) {
+            return;
+        }
+
+        $amount = (float) ($registration->fee ?? 0);
+        if ($amount <= 0) {
+            return;
+        }
+        $discount = (float) ($registration->discount ?? 0);
+        $net = (float) ($registration->net_payable ?? ($amount - $discount));
+
+        FeeCollection::create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'campus_id' => $registration->campus_id,
+            'program_id' => $registration->program_id,
+            'fee_type' => 'registration',
+            'amount' => $amount,
+            'discount_percent' => 0,
+            'discount_amount' => $discount,
+            'net_amount' => $net,
+            'receipt_number' => $registration->receipt_number,
+            'status' => 'paid',
+            'paid_at' => $registration->registered_at ?? $registration->created_at,
+            'notes' => 'Registration fee backfilled from registration record.',
+        ]);
+    }
+
+    public function collectInstallment(Request $request, FeeCollection $feeCollection): RedirectResponse
+    {
+        $validated = $request->validate([
+            'paid_amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        if ($feeCollection->status === 'paid') {
+            return back()->with('status', 'Installment already collected.');
+        }
+
+        $paid = round((float) $validated['paid_amount'], 2);
+        $original = round((float) $feeCollection->net_amount, 2);
+        $diff = round($original - $paid, 2);
+
+        $feeCollection->update([
+            'amount' => $paid,
+            'net_amount' => $paid,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        if ($diff !== 0.0 && $feeCollection->admission_id) {
+            $nextPending = FeeCollection::query()
+                ->where('admission_id', $feeCollection->admission_id)
+                ->where('fee_type', 'admission')
+                ->where('status', 'pending')
+                ->when($feeCollection->installment_no, function ($q) use ($feeCollection) {
+                    $q->where('installment_no', '>', $feeCollection->installment_no);
+                })
+                ->orderBy('installment_no')
+                ->get();
+
+            $remainder = $diff;
+            foreach ($nextPending as $next) {
+                if ($remainder === 0.0) {
+                    break;
+                }
+                $newAmount = round((float) $next->net_amount + $remainder, 2);
+                if ($newAmount <= 0) {
+                    $remainder = $newAmount;
+                    $next->delete();
+                } else {
+                    $next->update([
+                        'amount' => $newAmount,
+                        'net_amount' => $newAmount,
+                    ]);
+                    $remainder = 0.0;
+                }
+            }
+        }
+
+        return back()->with('status', 'Installment collected.');
+    }
+
+    public function updateFee(Request $request, FeeCollection $feeCollection): RedirectResponse
+    {
+        $validated = $request->validate([
+            'net_amount' => ['required', 'numeric', 'min:0'],
+            'paid_at' => ['required', 'date'],
+        ]);
+
+        $feeCollection->update([
+            'net_amount' => $validated['net_amount'],
+            'paid_at' => $validated['paid_at'],
+        ]);
+
+        return back()->with('status', 'Fee details updated.');
     }
 
     public function updateStatus(Request $request, Admission $admission): RedirectResponse

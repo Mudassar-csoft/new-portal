@@ -9,9 +9,11 @@ use App\Models\Program;
 use App\Models\FeeCollection;
 use App\Models\Registration;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
@@ -28,7 +30,9 @@ class RegistrationController extends Controller
         $campuses = Campus::orderBy('name')->get();
         $programs = Program::orderBy('title')->get();
         $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
-        $selectedCampus = $selectedCampusId > 0 ? $campuses->firstWhere('id', $selectedCampusId) : null;
+        $selectedCampus = $selectedCampusId > 0
+            ? $campuses->firstWhere('id', $selectedCampusId)
+            : null;
         $preview = $selectedCampus
             ? $this->previewNumbers($selectedCampus->code)
             : ['registration_number' => '', 'receipt_number' => ''];
@@ -38,10 +42,11 @@ class RegistrationController extends Controller
             'campuses' => $campuses,
             'programs' => $programs,
             'preview' => $preview,
+            'defaultCampusId' => $selectedCampus?->id,
         ]);
     }
 
-    public function store(Request $request): RedirectResponse|JsonResponse
+    public function store(Request $request): \Illuminate\Http\Response|RedirectResponse|JsonResponse
     {
         $validated = $request->validate(
             $this->registrationRules(),
@@ -51,19 +56,59 @@ class RegistrationController extends Controller
 
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
-            $regNumbers = $this->ensureUniqueNumbers($this->previewNumbers($campus->code));
 
             // Fixed fee and no discount per request
             $fee = 2000;
             $discount = 0;
             $net = $fee - $discount;
 
-            $registration = Registration::create([
-                'lead_id' => $validated['lead_id'] ?? null,
+            $lead = null;
+            if (!empty($validated['lead_id'])) {
+                $lead = Lead::find($validated['lead_id']);
+            }
+            if (!$lead) {
+                $lead = Lead::where('phone', $validated['phone'])->first();
+            }
+            if (!$lead) {
+                $lead = Lead::create([
+                    'campus_id' => $validated['campus_id'],
+                    'program_id' => $validated['program_id'],
+                    'type' => null,
+                    'name' => $validated['student_name'],
+                    'email' => $validated['email'],
+                    'phone' => $validated['phone'],
+                    'origin' => 'Registration',
+                    'marketing_source' => 'Registration',
+                    'status' => 'pending',
+                    'details' => [
+                        'gender' => $validated['gender'] ?? null,
+                        'education' => $validated['education'] ?? null,
+                        'address' => $validated['address'] ?? null,
+                        'guardian_name' => $validated['guardian_name'] ?? null,
+                        'guardian_phone' => $validated['guardian_phone'] ?? null,
+                        'cnic' => $validated['cnic'] ?? null,
+                        'passport_number' => $validated['passport_number'] ?? null,
+                        'date_of_birth' => $validated['date_of_birth'] ?? null,
+                    ],
+                ]);
+
+                LeadFollowup::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $lead->campus_id,
+                    'user_id' => $request->user()?->id,
+                    'note' => 'Initial follow-up created via direct registration.',
+                    'method' => null,
+                    'probability' => null,
+                    'next_action_date' => null,
+                    'stage' => 'new',
+                    'lead_status' => 'pending',
+                ]);
+            }
+
+            $registration = $this->createRegistrationAtomically($campus->code, [
+                'lead_id' => $lead->id,
                 'campus_id' => $validated['campus_id'],
                 'program_id' => $validated['program_id'],
-                'registration_number' => $regNumbers['registration_number'],
-                'receipt_number' => $regNumbers['receipt_number'],
                 'student_name' => $validated['student_name'],
                 'phone' => $validated['phone'],
                 'guardian_name' => $validated['guardian_name'],
@@ -139,7 +184,12 @@ class RegistrationController extends Controller
                 ]);
             }
 
-            return redirect()->route('registration.voucher', $registration);
+            return response()->view('shared.voucher_redirect', [
+                'voucherUrl' => route('registration.voucher', $registration),
+                'redirectUrl' => route('registration.status'),
+                'heading' => 'Registration Created',
+                'message' => 'Registration saved. Opening the registration voucher in a new tab...',
+            ]);
         } catch (Throwable $e) {
             report($e);
 
@@ -167,7 +217,7 @@ class RegistrationController extends Controller
 
     public function status(): View
     {
-        $registrations = Registration::with(['program'])
+        $registrations = Registration::with(['program', 'admission'])
             ->orderByDesc('registered_at')
             ->orderByDesc('id')
             ->get();
@@ -181,49 +231,73 @@ class RegistrationController extends Controller
         return view('registration.voucher', compact('registration'));
     }
 
+    /**
+     * Compute the NEXT registration & receipt numbers for a campus + current month,
+     * based on the highest existing sequence (not a count, so gaps don't break it).
+     * Use this for read-only previews — actual save uses a transactional retry loop.
+     */
     private function previewNumbers(string $campusCode): array
     {
-        $now = Carbon::now();
-        $monthYear = $now->format('my'); // e.g. 0126
-
-        $countForMonth = Registration::where('registration_number', 'like', $campusCode . '-' . $monthYear . '-%')->count() + 1;
-        $countPadded = str_pad((string)$countForMonth, 2, '0', STR_PAD_LEFT);
-
-        $receiptCount = Registration::where('receipt_number', 'like', $campusCode . '-' . $monthYear . '-%')->count() + 1;
-        $receiptPadded = str_pad((string)$receiptCount, 6, '0', STR_PAD_LEFT);
+        $prefix = $campusCode . '-' . Carbon::now()->format('my') . '-';
+        $regNext = $this->nextSequence(Registration::query(), 'registration_number', $prefix);
+        $recNext = $this->nextSequence(Registration::query(), 'receipt_number', $prefix);
 
         return [
-            'registration_number' => $campusCode . '-' . $monthYear . '-' . $countPadded,
-            'receipt_number' => $campusCode . '-' . $monthYear . '-' . $receiptPadded,
+            'registration_number' => $prefix . str_pad((string) $regNext, 2, '0', STR_PAD_LEFT),
+            'receipt_number' => $prefix . str_pad((string) $recNext, 6, '0', STR_PAD_LEFT),
         ];
     }
 
-    private function ensureUniqueNumbers(array $numbers): array
+    /**
+     * Highest existing seq for a column with a `{prefix}{seq}` pattern, plus 1.
+     */
+    private function nextSequence($baseQuery, string $column, string $prefix): int
     {
-        $attempts = 0;
-        while (
-            Registration::where('registration_number', $numbers['registration_number'])
-                ->orWhere('receipt_number', $numbers['receipt_number'])
-                ->exists()
-        ) {
-            $numbers['registration_number'] = $this->incrementNumber($numbers['registration_number'], 2);
-            $numbers['receipt_number'] = $this->incrementNumber($numbers['receipt_number'], 6);
-            $attempts++;
-            if ($attempts > 20) {
-                throw new RuntimeException('Unable to generate unique registration numbers.');
+        $max = (clone $baseQuery)
+            ->where($column, 'like', $prefix . '%')
+            ->get([$column])
+            ->map(function ($row) use ($prefix, $column) {
+                $tail = substr($row->{$column}, strlen($prefix));
+                return ctype_digit($tail) ? (int) $tail : 0;
+            })
+            ->max();
+
+        return ((int) $max) + 1;
+    }
+
+    /**
+     * Generate unique numbers and insert the Registration atomically.
+     * Retries on UNIQUE-constraint violations (which can happen on concurrent inserts).
+     *
+     * @param  array<string,mixed>  $registrationAttributes  All columns except registration_number/receipt_number.
+     * @return Registration
+     */
+    private function createRegistrationAtomically(string $campusCode, array $registrationAttributes): Registration
+    {
+        $maxAttempts = 10;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            $numbers = $this->previewNumbers($campusCode);
+
+            try {
+                return DB::transaction(function () use ($numbers, $registrationAttributes) {
+                    return Registration::create(array_merge($registrationAttributes, [
+                        'registration_number' => $numbers['registration_number'],
+                        'receipt_number' => $numbers['receipt_number'],
+                    ]));
+                });
+            } catch (QueryException $e) {
+                // SQLite: "UNIQUE constraint failed". MySQL: "Duplicate entry".
+                $msg = $e->getMessage();
+                if (str_contains($msg, 'UNIQUE') || str_contains($msg, 'Duplicate entry') || $e->getCode() === '23000') {
+                    // Race lost — regenerate and retry.
+                    continue;
+                }
+                throw $e;
             }
         }
 
-        return $numbers;
-    }
-
-    private function incrementNumber(string $value, int $pad): string
-    {
-        $parts = explode('-', $value);
-        $last = array_pop($parts);
-        $next = str_pad((string)((int)$last + 1), $pad, '0', STR_PAD_LEFT);
-        $parts[] = $next;
-        return implode('-', $parts);
+        throw new RuntimeException('Unable to generate unique registration numbers after ' . $maxAttempts . ' attempts.');
     }
 
     private function registrationRules(): array
@@ -233,10 +307,10 @@ class RegistrationController extends Controller
             'campus_id' => ['required', 'exists:campuses,id'],
             'program_id' => ['required', 'exists:programs,id'],
             'student_name' => ['required', 'string', 'min:3', 'max:255'],
-            'phone' => ['required', 'regex:/^03\d{9}$/'],
+            'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:registrations,phone'],
             'guardian_name' => ['required', 'string', 'min:3', 'max:255'],
             'guardian_phone' => ['required', 'regex:/^03\d{9}$/'],
-            'cnic' => ['required', 'regex:/^\d{13}$/'],
+            'cnic' => ['required', 'regex:/^\d{13}$/', 'unique:registrations,cnic'],
             'passport_number' => ['nullable', 'string', 'min:5', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'education' => ['required', 'string', 'max:255'],
@@ -252,8 +326,10 @@ class RegistrationController extends Controller
     {
         return [
             'phone.regex' => 'The primary contact number must be 11 digits and start with 03.',
+            'phone.unique' => 'This primary contact number is already registered.',
             'guardian_phone.regex' => 'The guardian contact number must be 11 digits and start with 03.',
             'cnic.regex' => 'The CNIC must be exactly 13 digits.',
+            'cnic.unique' => 'This CNIC is already registered.',
             'date_of_birth.before' => 'The date of birth must be earlier than today.',
         ];
     }

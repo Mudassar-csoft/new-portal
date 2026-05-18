@@ -80,7 +80,15 @@
 								@endphp
 								<tr data-date="{{ $admDate }}">
 									<td class="text-center">{{ $idx + 1 }}</td>
-									<td>{{ $row->student_name }}</td>
+									<td>
+										@if($row->registration_id)
+											<a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
+												{{ $row->student_name }}
+											</a>
+										@else
+											{{ $row->student_name }}
+										@endif
+									</td>
 									<td>{{ $row->program->title ?? $row->program->name ?? '' }}</td>
 									<td>{{ $row->batch->name ?? $row->batch->code ?? '' }}</td>
 									<td>{{ $admDate }}</td>
@@ -122,6 +130,18 @@
 			min-width: 110px;
 			white-space: nowrap;
 			position: relative;
+		}
+		.adm-name-link {
+			color: #0a6fd1;
+			font-weight: 600;
+			text-decoration: none;
+			border-bottom: 1px dashed transparent;
+			transition: color 0.15s ease, border-color 0.15s ease;
+		}
+		.adm-name-link:hover {
+			color: #0958a8;
+			border-bottom-color: #0a6fd1;
+			text-decoration: none;
 		}
 		.table-responsive {
 			overflow: visible !important;
