@@ -52,7 +52,9 @@ p { font-size: 14px; }
 span { font-size: 13px; }
 small { font-size: 12px; }
 
-
+.bi{
+	font-size: 18px !important;
+}
 
 button {
   font-size: 14px !important; 
@@ -1609,6 +1611,12 @@ transform: rotate(45deg);
     letter-spacing: 0.7px;
     padding: 5px 50px 2px 10px !important;
     font-weight: 500;
+}
+
+.page-item.active .page-link,
+.page-item.active .page-link:focus,
+.page-item.active .page-link:hover {
+    z-index: auto !important;
 }
 /* .btn.btn-primary:active, .btn.btn-primary:hover, button#lead-action-7, button#action-career-1, button#action-ahmed-khan-2, button#action-sara-iqbal-3, button#action-bilal-awan-4, button#action-areeba-fatima-6, button#action-zain-ali-5 {
   

@@ -213,7 +213,7 @@
 
 		@media (max-width: 768px) {
 			.container {
-				flex-direction: column;
+				flex-direction: column-reverse;
 			}
 
 			.left,
@@ -242,7 +242,11 @@
 				flex-direction: column;
 				align-items: flex-start;
 			}
+			.right::before {
+				width: 98px;
+  			  	height: 88px;
 		}
+}
 	</style>
 </head>
 

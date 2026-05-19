@@ -33,9 +33,9 @@
                             </a>
                         @endforeach
                     </div>
-                    <a href="{{ route('users.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
+                    <!-- <a href="{{ route('users.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
                         <i class="fa fa-plus mr-1"></i> Create User
-                    </a>
+                    </a> -->
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
@@ -111,8 +111,8 @@
         #users-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
         #users-table td.actions-cell { text-align: right; white-space: nowrap; position: relative; }
         #users-table td.actions-cell .dropdown,
-        #users-table td.actions-cell .follow-action-dropdown { position: relative; z-index: 1065; }
-        #users-table .follow-action-dropdown .dropdown-menu { z-index: 1070 !important; }
+        /* #users-table td.actions-cell .follow-action-dropdown { position: relative; z-index: 1065; }
+        #users-table .follow-action-dropdown .dropdown-menu { z-index: 1070 !important; } */
 
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
         .dataTables_wrapper .follow-footer {

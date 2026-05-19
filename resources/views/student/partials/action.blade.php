@@ -109,7 +109,7 @@
             }
             .follow-action-dropdown .lead-action-label {
                 display: inline-block;
-                font-size: 16px !important;
+                font-size: 18px !important;
                 font-weight: 500;
                 letter-spacing: 0.01em;
             }
@@ -137,7 +137,7 @@
                     <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
                         <i class="fa {{ $item['icon'] }}"></i>
                     </span>
-                    <span class="lead-action-label">{{ $item['label'] }}</span>
+                    <span class="lead-action-label" style = "font-size: 16px !important;">{{ $item['label'] }}</span>
                 </button>
             </form>
         @endforeach

@@ -10,7 +10,7 @@
 					<h3 class="panel-title mb-0 form-label">Create Role</h3>
 					<!-- <small class="text-muted">Define a role and attach permissions.</small> -->
 				</div>
-				<a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
+				<!-- <a href="{{ route('roles.index') }}" class="btn btn-default">Back</a> -->
 			</header>
 			<div class="box-typical-body panel-body user-body">
 				<form method="POST" action="{{ route('roles.store') }}">

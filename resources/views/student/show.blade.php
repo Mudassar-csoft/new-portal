@@ -237,7 +237,7 @@
                                                 <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                             @endif
                                             @if($voucherUrl)
-                                                <a class="btn btn-xs btn-warning fee-action-btn p-2 mt-1"
+                                                <a class="btn btn-xs btn-warning fee-action-btn p-2"
                                                  style="height:30px !important;line-height:1 !important;width:30px !important;"
                                                   title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
                                                     <i class="bi bi-menu-button-wide"></i>
