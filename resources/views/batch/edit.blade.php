@@ -23,8 +23,8 @@
                                     Edit Batch <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
                                 </h2>
                             </div>
-                            <div class="tbl-cell text-right" style="width: 280px;">
-                                <a href="{{ route('batch.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Batches</a>
+                            <div class="tbl-cell text-right d-flex" style="width: 280px;">
+                                <a href="{{ route('batch.index') }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Back to Batches</a>
                                 <a href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Time Table</a>
                             </div>
                         </div>

@@ -24,7 +24,7 @@
                                 </h2>
                             </div>
                             <div class="tbl-cell text-right" style="width: 280px;">
-                                <a href="{{ route('program.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Programmes</a>
+                                <!-- <a href="{{ route('program.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Programmes</a> -->
                                 <a href="{{ route('batch.index', ['program_id' => $program->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Related Batches</a>
                             </div>
                         </div>

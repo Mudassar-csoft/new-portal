@@ -52,7 +52,9 @@ p { font-size: 14px; }
 span { font-size: 13px; }
 small { font-size: 12px; }
 
-
+.bi{
+	font-size: 18px !important;
+}
 
 button {
   font-size: 14px !important; 
@@ -1016,13 +1018,13 @@ margin-right: auto;
 .table td.actions-cell > .dropdown.dropdown-action-menu,
 .table td > .dropdown.dropdown-action-menu,
 .table [class*="-action-dropdown"].dropdown-action-menu {
-z-index: 99970 !important;
+z-index: auto !important;
 }
 
 .dropdown-menu.action-key,
 .follow-action-dropdown .dropdown-menu,
 .registration-action-dropdown .dropdown-menu {
-font-size: 12px !important;
+font-size: 16px !important;
 min-width: 180px;
 z-index: 99970 !important;
 }
@@ -1061,7 +1063,7 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu.show,
 .table td > .dropdown.dropdown-action-menu.show,
 .table [class*="-action-dropdown"].dropdown-action-menu.show {
-z-index: 1065 !important;
+z-index: auto !important;
 }
 
 .dropdown.dropdown-action-menu.show > .dropdown-menu,
@@ -1082,6 +1084,7 @@ min-width: 68px !important;
 font-size: 13px !important;
 line-height: 1.2 !important;
 text-align: center !important;
+z-index: auto !important;
 }
 
 .btn{
@@ -1608,6 +1611,12 @@ transform: rotate(45deg);
     letter-spacing: 0.7px;
     padding: 5px 50px 2px 10px !important;
     font-weight: 500;
+}
+
+.page-item.active .page-link,
+.page-item.active .page-link:focus,
+.page-item.active .page-link:hover {
+    z-index: auto !important;
 }
 /* .btn.btn-primary:active, .btn.btn-primary:hover, button#lead-action-7, button#action-career-1, button#action-ahmed-khan-2, button#action-sara-iqbal-3, button#action-bilal-awan-4, button#action-areeba-fatima-6, button#action-zain-ali-5 {
   

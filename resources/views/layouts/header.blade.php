@@ -24,7 +24,7 @@
                   <i class="font-icon-alarm"></i>
                   @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0))
                   @if($notificationTotal > 0)
-                    <span class="notification-total-badge">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
+                    <span class="notification-total-badge" style="font-size:10px !important;">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
                   @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">

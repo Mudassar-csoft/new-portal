@@ -33,9 +33,9 @@
                             </a>
                         @endforeach
                     </div>
-                    <a href="{{ route('permissions.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
+                    <!-- <a href="{{ route('permissions.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
                         <i class="fa fa-plus mr-1"></i> Create Permission
-                    </a>
+                    </a> -->
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">

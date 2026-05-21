@@ -8,7 +8,7 @@
 			<header class="box-typical-header panel-heading d-flex justify-content-between">
 				<div>
 					<h3 class="panel-title mb-0 form-label">Edit User</h3>
-					<small class="text-muted">Update campus, roles, and access.</small>
+					<!-- <small class="text-muted">Update campus, roles, and access.</small> -->
 				</div>
 				<!-- <a href="{{ route('users.index') }}" class="btn btn-default">Back to Users</a> -->
 			</header>
@@ -208,8 +208,8 @@
 			border: 1px solid #2b78ff;
 			background: #e9f2ff;
 			color: #1f2d3d;
-			padding: 6px 10px 6px 10px;
-			margin: 4px 6px 0 0;
+			    padding: 0px 10px 6px 10px;
+    margin: -8px 6px 0 0;
 			font-size: 13px;
 			position: relative;
 		}

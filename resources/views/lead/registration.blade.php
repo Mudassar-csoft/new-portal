@@ -165,6 +165,7 @@
 
 @push('styles')
 <style>
+
 	.registration-shell { padding: 8px 0 16px; }
 	.registration-card {
 		border: 1px solid #e6ecf2;
