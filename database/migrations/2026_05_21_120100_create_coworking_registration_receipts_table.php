@@ -42,8 +42,8 @@ return new class extends Migration
                 ->on('users')
                 ->nullOnDelete();
 
-            $table->index(['coworking_registration_id', 'receipt_type']);
-            $table->index(['campus_id', 'paid_at']);
+            $table->index(['coworking_registration_id', 'receipt_type'], 'cw_reg_receipts_regid_receiptype_idx');
+            $table->index(['campus_id', 'paid_at'], 'cw_reg_receipts_campus_paid_idx');
         });
     }
 
