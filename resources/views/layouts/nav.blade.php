@@ -38,42 +38,12 @@
 					<li class="with-sub">
 						<span>
 							<img class="font-icon-dashboard" src="img/navbarIcons/meeting.webp" alt="CO leads">
-							<span class="lbl">Coworking Leads</span>
+							<span class="lbl">Coworking Space</span>
 						</span>
 						<ul>
-							<li><a href="#"><span class="lbl">Lead's Follow-up</span></a></li>
-							<li><a href="#" class="stage-link"><span class="lbl">Website Leads</span><span
-										class="label label-custom label-pill label-danger stage-count">120</span></a>
+							<li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span
+										class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a>
 							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Today</span><span
-										class="label label-custom label-pill label-danger stage-count">95</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Contacted</span><span
-										class="label label-custom label-pill label-danger stage-count">70</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Needs Analysis</span><span
-										class="label label-custom label-pill label-danger stage-count">50</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Branch Visited</span><span
-										class="label label-custom label-pill label-danger stage-count">32</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Proposal &amp; Negotiation</span><span
-										class="label label-custom label-pill label-danger stage-count">18</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Registered</span><span
-										class="label label-custom label-pill label-danger stage-count">12</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Confirmed Membership</span><span
-										class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-							<li><a href="#" class="stage-link"><span class="lbl">Not Interested</span><span
-										class="label label-custom label-pill label-danger stage-count">14</span></a>
-							</li>
-							<li><a href="#" class="stage-link"><span class="lbl">Transferred Leads</span><span
-										class="label label-custom label-pill label-danger stage-count">6</span></a></li>
-							<li><a href="#" class="stage-link"><span class="lbl">All Leads</span><span
-										class="label label-custom label-pill label-danger stage-count">436</span></a>
-							</li>
-
 						</ul>
 					</li>
 					<li class="with-sub">

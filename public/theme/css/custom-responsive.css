@@ -37,7 +37,21 @@
 
 .side-menu-list > li > a,
 .side-menu-list > li > span {
+  display: flex;
+  align-items: center;
+  min-width: 0;
   padding-left: 10px !important;
+  padding-right: 28px !important;
+}
+
+.side-menu-list > li > a .lbl,
+.side-menu-list > li > span .lbl {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .side-menu .font-icon-dashboard {

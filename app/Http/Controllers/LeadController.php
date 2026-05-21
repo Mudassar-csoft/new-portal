@@ -151,7 +151,7 @@ class LeadController extends Controller
                 ]);
             }
 
-            return Redirect::route('leads.followups')->with('status', 'Lead created with initial follow-up.');
+            return Redirect::route($this->leadFollowupsRouteName($lead->type))->with('status', 'Lead created with initial follow-up.');
         } catch (Throwable $e) {
             report($e);
             return Redirect::back()
@@ -162,12 +162,18 @@ class LeadController extends Controller
 
     public function addFollowup(Request $request, Lead $lead): RedirectResponse
     {
-        if (in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true)) {
+        if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
             return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.');
         }
 
+        $request->merge([
+            'stage' => $this->normalizeFollowupStage($lead->type, $request->input('stage')),
+        ]);
+
         $currentStage = $this->resolveCurrentStage($lead);
         $canUpdateLeadProfile = $currentStage === 'new';
+        $usesTrainingConversionFlow = $this->usesTrainingConversionFlow($lead->type);
+        $allowedStages = array_keys($this->followupStageConfig($lead->type)['stageMap']);
 
         $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
@@ -175,7 +181,7 @@ class LeadController extends Controller
             'probability' => ['required', 'integer', 'min:1', 'max:100'],
             'note' => ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
-            'stage' => ['required', Rule::in(['new', 'contacted', 'need_analysis', 'branch_visited', 'proposal_negotiation', 'not_interesting', 'registered', 'enroll'])],
+            'stage' => ['required', Rule::in($allowedStages)],
         ];
 
         if ($canUpdateLeadProfile) {
@@ -192,7 +198,15 @@ class LeadController extends Controller
             'note' => 'remarks',
         ]);
 
-        if (in_array($validated['stage'], ['registered', 'enroll'], true)) {
+        if (! $usesTrainingConversionFlow && $validated['stage'] === 'registered') {
+            throw ValidationException::withMessages([
+                'stage' => [
+                    'Use the coworking registration form to register this lead.',
+                ],
+            ]);
+        }
+
+        if ($usesTrainingConversionFlow && in_array($validated['stage'], ['registered', 'enroll'], true)) {
             throw ValidationException::withMessages([
                 'stage' => [
                     $validated['stage'] === 'registered'
@@ -206,9 +220,15 @@ class LeadController extends Controller
             $this->syncLeadProfileFromFollowup($lead, $validated);
         }
 
+        $followupCampusId = $validated['campus_id'] ?? $lead->campus_id;
+
+        if (! $followupCampusId && $lead->type === 'coworking') {
+            $followupCampusId = $this->resolveCoworkingCampus($lead)?->id;
+        }
+
         LeadFollowup::create([
             'lead_id' => $lead->id,
-            'campus_id' => $validated['campus_id'] ?? $lead->campus_id,
+            'campus_id' => $followupCampusId,
             'user_id' => $request->user()?->id,
             'method' => $validated['method'] ?? null,
             'probability' => $validated['probability'] ?? null,
@@ -244,22 +264,55 @@ class LeadController extends Controller
             'transfers.approver',
         ]);
 
-        $stages = [
-            'new' => 'New',
-            'contacted' => 'Contacted',
-            'need_analysis' => 'Need Analysis',
-            'branch_visited' => 'Branch Visited',
-            'proposal_negotiation' => 'Proposal / Negotiation',
-            'not_interesting' => 'Not Interesting',
-            'registered' => 'Registered',
-            'enroll' => 'Enrolled',
-        ];
+        $isCoworkingLead = $lead->type === 'coworking';
+        $usesTrainingConversionFlow = $this->usesTrainingConversionFlow($lead->type);
+        $stages = $this->followupStageConfig($lead->type)['stageMap'];
+        $campuses = Campus::orderBy('name')->get();
+        $resolvedCoworkingCampus = $isCoworkingLead
+            ? $this->resolveCoworkingCampus($lead, $campuses)
+            : null;
+        $leadLocationCode = $isCoworkingLead
+            ? $this->resolveCoworkingBranchCode($lead, $campuses)
+            : $lead->campus?->code;
+        $leadLocationName = $isCoworkingLead
+            ? ($resolvedCoworkingCampus?->name ?? $resolvedCoworkingCampus?->title)
+            : $lead->campus?->name;
+        $defaultFollowupCampusId = $isCoworkingLead
+            ? ($resolvedCoworkingCampus?->id ?? $lead->campus_id)
+            : $lead->campus_id;
 
-        $followups = $lead->followups->sortByDesc('created_at')->values();
-        $currentStage = $followups->first()->stage ?? 'new';
+        if ($isCoworkingLead) {
+            $lead->setRelation('program', new Program([
+                'title' => data_get($lead->details, 'space_required'),
+                'name' => data_get($lead->details, 'space_required'),
+            ]));
+
+            if (! $lead->campus && $resolvedCoworkingCampus) {
+                $lead->setRelation('campus', $resolvedCoworkingCampus);
+            }
+        }
+
+        $followups = $lead->followups
+            ->sortByDesc('created_at')
+            ->values()
+            ->map(function (LeadFollowup $followup) use ($isCoworkingLead, $leadLocationCode, $resolvedCoworkingCampus) {
+                $followup->stage = $this->normalizeFollowupStage($followup->lead?->type, $followup->stage);
+
+                if ($isCoworkingLead && ! $followup->campus && $resolvedCoworkingCampus) {
+                    $followup->setRelation('campus', $resolvedCoworkingCampus);
+                }
+
+                $followup->location_code = $isCoworkingLead
+                    ? ($followup->campus?->code ?? $leadLocationCode)
+                    : ($followup->campus?->code ?? $followup->campus?->name);
+
+                return $followup;
+            });
+
+        $currentStage = $this->normalizeFollowupStage($lead->type, $followups->first()->stage ?? 'new');
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
-        $campuses = Campus::orderBy('name')->get();
+        $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
 
         // Hide the opposite terminal state to avoid showing both end states together
         if ($lead->status === 'not_interesting') {
@@ -283,6 +336,12 @@ class LeadController extends Controller
             'latestFollowup' => $latestFollowup,
             'nextFollowup' => $nextFollowup,
             'campuses' => $campuses,
+            'defaultFollowupCampusId' => $defaultFollowupCampusId,
+            'isCoworkingLead' => $isCoworkingLead,
+            'isFollowupClosed' => $isFollowupClosed,
+            'usesTrainingConversionFlow' => $usesTrainingConversionFlow,
+            'leadLocationCode' => $leadLocationCode,
+            'leadLocationName' => $leadLocationName,
             'transfers' => $lead->transfers()->latest()->get(),
         ]);
     }
@@ -457,31 +516,118 @@ class LeadController extends Controller
 
     public function followups(): View
     {
-        $followups = $this->latestTrainingFollowups();
+        return $this->renderFollowupsModule('training');
+    }
 
-        $tabs = [
-            'all' => 'All',
-            'New' => 'New',
-            'Contacted' => 'Contacted',
-            'Need Analysis' => 'Need Analysis',
-            'Branch Visited' => 'Branch Visited',
-            'Negotiation' => 'Negotiation',
-            'Not Interesting' => 'Not Interesting',
-            'Registered' => 'Registered',
-            'Enrolled' => 'Enrolled',
-        ];
+    public function coworkingFollowups(): View
+    {
+        return $this->renderFollowupsModule('coworking');
+    }
 
-        $badgeColors = [
-            'all' => 'badge-secondary',
-            'New' => 'badge-primary',
-            'Contacted' => 'badge-success',
-            'Need Analysis' => 'badge-warning',
-            'Branch Visited' => 'badge-secondary',
-            'Proposal or Negotiation' => 'badge-info',
-            'Not Interesting' => 'badge-warning',
-            'Registered' => 'badge-success',
-            'Enrolled' => 'badge-success',
-        ];
+    private function trainingLeadQuery(): Builder
+    {
+        return Lead::query()->training();
+    }
+
+    private function coworkingLeadQuery(): Builder
+    {
+        return Lead::query()->coworking();
+    }
+
+    private function latestTrainingFollowups(): Collection
+    {
+        return $this->latestFollowupsByType('training');
+    }
+
+    private function latestFollowupsByType(string $type): Collection
+    {
+        $stageMap = $this->followupStageConfig($type)['stageMap'];
+
+        $campusDirectory = $type === 'coworking'
+            ? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
+            : collect();
+
+        return LeadFollowup::with(['lead.program', 'lead.campus', 'lead.coworkingRegistration'])
+            ->whereHas('lead', function (Builder $leadQuery) use ($type) {
+                if ($type === 'coworking') {
+                    $leadQuery->coworking();
+                    return;
+                }
+
+                $leadQuery->training();
+            })
+            ->latest()
+            ->get()
+            ->unique('lead_id')
+            ->values()
+            ->map(function (LeadFollowup $followup) use ($stageMap, $campusDirectory, $type) {
+                $followup->stage = $this->normalizeFollowupStage($type, $followup->stage);
+                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+
+                if ($type === 'coworking') {
+                    $followup->branch_code = $this->resolveCoworkingBranchCode($followup->lead, $campusDirectory);
+                }
+
+                return $followup;
+            });
+    }
+
+    private function resolveCoworkingBranchCode(?Lead $lead, Collection $campuses): ?string
+    {
+        if (! $lead) {
+            return null;
+        }
+
+        $preferredLocation = trim((string) data_get($lead->details, 'preferred_location'));
+        if ($preferredLocation !== '') {
+            return $this->resolveCoworkingCampus($lead, $campuses)?->code ?: $preferredLocation;
+        }
+
+        return $this->resolveCoworkingCampus($lead, $campuses)?->code;
+    }
+
+    private function resolveCoworkingCampus(?Lead $lead, ?Collection $campuses = null): ?Campus
+    {
+        if (! $lead) {
+            return null;
+        }
+
+        $directory = $campuses ?? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title']);
+        $candidates = array_filter([
+            data_get($lead->details, 'preferred_location'),
+            $lead->campus?->code,
+            $lead->campus?->name,
+            $lead->city,
+            data_get($lead->details, 'area'),
+        ], fn ($value) => trim((string) $value) !== '');
+
+        foreach ($candidates as $candidate) {
+            $needle = Str::lower(trim((string) $candidate));
+
+            $campus = $directory->first(function (Campus $campus) use ($needle) {
+                return in_array($needle, array_filter([
+                    Str::lower((string) $campus->code),
+                    Str::lower((string) $campus->city),
+                    Str::lower((string) $campus->city_abbr),
+                    Str::lower((string) $campus->name),
+                    Str::lower((string) $campus->title),
+                ], fn ($value) => $value !== ''), true);
+            });
+
+            if (filled($campus?->code)) {
+                return $campus;
+            }
+        }
+
+        return $lead->campus;
+    }
+
+    private function renderFollowupsModule(string $type): View
+    {
+        $followups = $this->latestFollowupsByType($type);
+        $stageConfig = $this->followupStageConfig($type);
+        $tabs = $stageConfig['tabs'];
+        $badgeColors = $stageConfig['badgeColors'];
 
         $tabCounts = [];
         foreach ($tabs as $key => $label) {
@@ -490,38 +636,131 @@ class LeadController extends Controller
                 : $followups->where('stage_label', $label)->count();
         }
 
-        return view('lead.followups', compact('followups', 'tabs', 'badgeColors', 'tabCounts'));
+        $pageTitle = $type === 'coworking'
+            ? 'Coworking Space Follow-ups'
+            : 'Training Lead Follow-ups';
+
+        $moduleTitle = $type === 'coworking'
+            ? 'Coworking Space'
+            : 'Training Leads';
+
+        $interestHeading = $type === 'coworking'
+            ? 'Space Type'
+            : 'Interested Course';
+
+        return view('lead.followups', compact(
+            'followups',
+            'tabs',
+            'badgeColors',
+            'tabCounts',
+            'pageTitle',
+            'moduleTitle',
+            'interestHeading',
+            'type'
+        ));
     }
 
-    private function trainingLeadQuery(): Builder
+    private function followupStageConfig(string $type): array
     {
-        return Lead::query()->training();
-    }
+        if ($type === 'coworking') {
+            return [
+                'stageMap' => [
+                    'new' => 'New',
+                    'contacted' => 'Contacted',
+                    'need_analysis' => 'Need Analysis',
+                    'branch_visited' => 'Branch Visited',
+                    'proposal_negotiation' => 'Proposal & Negotiation',
+                    'not_interesting' => 'Not Interesting',
+                    'registered' => 'Registered',
+                ],
+                'tabs' => [
+                    'all' => 'All',
+                    'New' => 'New',
+                    'Contacted' => 'Contacted',
+                    'Need Analysis' => 'Need Analysis',
+                    'Branch Visited' => 'Branch Visited',
+                    'Proposal & Negotiation' => 'Proposal & Negotiation',
+                    'Registered' => 'Registered',
+                    'Not Interesting' => 'Not Interesting',
+                ],
+                'badgeColors' => [
+                    'all' => 'badge-secondary',
+                    'New' => 'badge-primary',
+                    'Contacted' => 'badge-success',
+                    'Need Analysis' => 'badge-warning',
+                    'Branch Visited' => 'badge-secondary',
+                    'Proposal & Negotiation' => 'badge-info',
+                    'Registered' => 'badge-success',
+                    'Not Interesting' => 'badge-warning',
+                ],
+            ];
+        }
 
-    private function latestTrainingFollowups(): Collection
-    {
-        $stageMap = [
-            'new' => 'New',
-            'contacted' => 'Contacted',
-            'need_analysis' => 'Need Analysis',
-            'branch_visited' => 'Branch Visited',
-            'proposal_negotiation' => 'Proposal or Negotiation',
-            'not_interesting' => 'Not Interesting',
-            'registered' => 'Registered',
-            'enroll' => 'Enrolled',
+        return [
+            'stageMap' => [
+                'new' => 'New',
+                'contacted' => 'Contacted',
+                'need_analysis' => 'Need Analysis',
+                'branch_visited' => 'Branch Visited',
+                'proposal_negotiation' => 'Proposal & Negotiation',
+                'not_interesting' => 'Not Interesting',
+                'registered' => 'Registered',
+                'enroll' => 'Enrolled',
+            ],
+            'tabs' => [
+                'all' => 'All',
+                'New' => 'New',
+                'Contacted' => 'Contacted',
+                'Need Analysis' => 'Need Analysis',
+                'Branch Visited' => 'Branch Visited',
+                'Proposal & Negotiation' => 'Proposal & Negotiation',
+                'Not Interesting' => 'Not Interesting',
+                'Registered' => 'Registered',
+                'Enrolled' => 'Enrolled',
+            ],
+            'badgeColors' => [
+                'all' => 'badge-secondary',
+                'New' => 'badge-primary',
+                'Contacted' => 'badge-success',
+                'Need Analysis' => 'badge-warning',
+                'Branch Visited' => 'badge-secondary',
+                'Proposal & Negotiation' => 'badge-info',
+                'Not Interesting' => 'badge-warning',
+                'Registered' => 'badge-success',
+                'Enrolled' => 'badge-success',
+            ],
         ];
+    }
 
-        return LeadFollowup::with(['lead.program', 'lead.campus'])
-            ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
-            ->latest()
-            ->get()
-            ->unique('lead_id')
-            ->values()
-            ->map(function (LeadFollowup $followup) use ($stageMap) {
-                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+    private function leadFollowupsRouteName(?string $type): string
+    {
+        return match ($type) {
+            'coworking' => 'leads.coworking.followups',
+            default => 'leads.followups',
+        };
+    }
 
-                return $followup;
-            });
+    private function usesTrainingConversionFlow(?string $type): bool
+    {
+        return $type !== 'coworking';
+    }
+
+    private function closedFollowupStatuses(?string $type): array
+    {
+        return $this->usesTrainingConversionFlow($type)
+            ? ['registered', 'not_interesting', 'enrolled']
+            : ['registered', 'not_interesting', 'enrolled'];
+    }
+
+    private function normalizeFollowupStage(?string $type, ?string $stage): string
+    {
+        $normalizedStage = trim((string) $stage);
+
+        if ($type === 'coworking' && $normalizedStage === 'enroll') {
+            return 'registered';
+        }
+
+        return $normalizedStage !== '' ? $normalizedStage : 'new';
     }
 
     private function resolveInitialFollowupStage(?string $origin): string
@@ -675,8 +914,11 @@ class LeadController extends Controller
             'details.certification_title' => ['nullable', 'string', 'max:255'],
             'details.exam_code' => ['nullable', 'string', 'max:100'],
             'details.business_name' => ['nullable', 'string', 'max:255'],
+            'details.person_count' => ['nullable', 'integer', 'min:1', 'max:5000'],
             'details.space_required' => ['nullable', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
             'details.preferred_location' => ['nullable', 'string', 'max:255'],
+            'details.expected_starting_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
+            'details.additional_amenities' => ['nullable', 'string', 'max:1000'],
             'details.current_education' => ['nullable', 'string', 'max:255'],
             'details.preferred_study_program' => ['nullable', 'string', 'max:255'],
             'details.preferred_country' => ['nullable', 'string', 'max:255'],
@@ -708,6 +950,7 @@ class LeadController extends Controller
                 'details.country' => ['required', 'string', 'max:255'],
                 'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],
                 'details.business_name' => ['required', 'string', 'max:255'],
+                'details.person_count' => ['required', 'integer', 'min:1', 'max:5000'],
                 'details.space_required' => ['required', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
@@ -752,9 +995,12 @@ class LeadController extends Controller
             'details.organization' => 'organization/vendor',
             'details.certification_title' => 'certification title',
             'details.exam_code' => 'exam code',
-            'details.business_name' => 'business name',
+            'details.business_name' => 'business/team name',
+            'details.person_count' => 'number of persons',
             'details.space_required' => 'space required',
-            'details.preferred_location' => 'preferred location',
+            'details.preferred_location' => 'preferred branch',
+            'details.expected_starting_at' => 'expected starting date',
+            'details.additional_amenities' => 'additional amenities',
             'details.current_education' => 'current education',
             'details.preferred_study_program' => 'preferred study program',
             'details.preferred_country' => 'preferred country',

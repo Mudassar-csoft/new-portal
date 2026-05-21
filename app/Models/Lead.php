@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Lead extends Model
 {
@@ -56,8 +57,18 @@ class Lead extends Model
         return $this->hasMany(LeadTransfer::class);
     }
 
+    public function coworkingRegistration(): HasOne
+    {
+        return $this->hasOne(CoworkingRegistration::class);
+    }
+
     public function scopeTraining(Builder $query): Builder
     {
         return $query->where('type', 'training');
+    }
+
+    public function scopeCoworking(Builder $query): Builder
+    {
+        return $query->where('type', 'coworking');
     }
 }

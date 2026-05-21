@@ -1,6 +1,6 @@
 @extends('layouts.theme')
 
-@section('title', 'Lead Follow-ups')
+@section('title', $pageTitle ?? 'Lead Follow-ups')
 
 @section('content')
 	<div class="follow-shell">
@@ -15,6 +15,9 @@
 
 		<div id="follow-content" class="follow-content p-0 m-0 ">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
+				<div class="panel-heading p-3">
+					<h3 class="panel-title">Lead Management | <span class="text-muted">{{ $moduleTitle ?? 'Lead Follow-ups' }}</span></h3>
+				</div>
 				<div class="follow-tab-bar m-0 pt-3 small" style = "gap:2px;">
     @foreach ($tabs as $key => $label)
         <div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
@@ -49,19 +52,28 @@
 									<th>Name</th>
 									<th>Contact No</th>
 									<th>Status</th>
-									<th>Interested Course</th>
-									<th>Campus</th>
+									<th>{{ $interestHeading ?? 'Interested Course' }}</th>
+									<th>{{ ($type ?? 'training') === 'coworking' ? 'Branch' : 'Campus' }}</th>
 									<th class="text-left">Action</th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach ($followups as $idx => $row)
-									@php $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration; @endphp
+									@php
+										$actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration;
+										$nameUrl = !empty($row->lead?->id)
+											? route('leads.show', $row->lead->id)
+											: null;
+
+										if (($type ?? 'training') === 'coworking' && $row->lead?->coworkingRegistration) {
+											$nameUrl = route('coworking-registrations.show', $row->lead->coworkingRegistration);
+										}
+									@endphp
 									<tr data-status="{{ $row->stage_label }}">
 										<td class="text-start">{{ $idx + 1 }}</td>
 										<td>
-											@if(!empty($row->lead?->id))
-												<a href="{{ route('leads.show', $row->lead->id) }}" class="lead-link">
+											@if($nameUrl)
+												<a href="{{ $nameUrl }}" class="lead-link">
 													{{ $row->lead->name ?? '—' }}
 												</a>
 											@else
@@ -76,7 +88,7 @@
 													'Contacted' => 'label-success',
 													'Need Analysis' => 'label-warning',
 													'Branch Visited' => 'label-default',
-													'Proposal or Negotiation' => 'label-info',
+													'Proposal & Negotiation', 'Proposal or Negotiation' => 'label-info',
 													'Not Interesting' => 'label-default',
 													'Registered' => 'label-success',
 													default => 'label-default',
@@ -86,8 +98,20 @@
 												{{ $row->stage_label }}
 											</span>
 										</td>
-										<td>{{ $row->lead->program->title ?? $row->lead->program->name ?? '—' }}</td>
-										<td>{{ $row->campus->name ?? '—' }}</td>
+										<td>
+											@if(($type ?? 'training') === 'coworking')
+												{{ data_get($row->lead?->details, 'space_required') ?? '—' }}
+											@else
+												{{ $row->lead->program->title ?? $row->lead->program->name ?? '—' }}
+											@endif
+										</td>
+										<td>
+											@if(($type ?? 'training') === 'coworking')
+												{{ $row->branch_code ?? '—' }}
+											@else
+												{{ $row->lead->campus->code ?? $row->campus->code ?? $row->campus->name ?? '—' }}
+											@endif
+										</td>
 										<td class=" action-cell">
 											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row->lead])
 										</td>
@@ -201,6 +225,20 @@
 				alert(text);
 			}
 
+			function openUrls(urls) {
+				(urls || []).forEach(function (url) {
+					if (!url) {
+						return;
+					}
+
+					try {
+						window.open(url, '_blank');
+					} catch (error) {
+						console.error('Unable to open voucher url', error);
+					}
+				});
+			}
+
 			function openLeadModal(url, title) {
 				var modal = document.getElementById('lead-form-modal');
 				var frame = document.getElementById('lead-form-modal-frame');
@@ -266,6 +304,10 @@
 				window.addEventListener('message', function (event) {
 					if (event.data && event.data.type === 'lead-modal-close') {
 						closeLeadModal();
+
+						if (event.data.openUrls) {
+							openUrls(event.data.openUrls);
+						}
 
 						if (event.data.status) {
 							showAlert('Success', event.data.status, 'success');

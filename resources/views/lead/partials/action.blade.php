@@ -3,10 +3,20 @@
 	$lead = $lead ?? null;
 	$leadId = $lead?->id ?? ($leadId ?? null);
 	$leadStatus = strtolower((string) ($lead?->status ?? 'pending'));
+	$isCoworkingLead = ($lead?->type ?? null) === 'coworking';
 	$editOnly = (bool) ($editOnly ?? false);
 	$canRegister = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
-	$canEnroll = $leadStatus === 'registered';
+	$canEnroll = !$isCoworkingLead && $leadStatus === 'registered';
 	$canTransfer = !in_array($leadStatus, ['registered', 'enrolled'], true);
+	$registrationRoute = $isCoworkingLead
+		? route('coworking-registrations.create', ['lead_id' => $leadId])
+		: route('registration.create', ['lead_id' => $leadId]);
+	$registrationModalRoute = $isCoworkingLead
+		? route('coworking-registrations.create', ['lead_id' => $leadId, 'embed' => 1])
+		: route('registration.create', ['lead_id' => $leadId, 'embed' => 1]);
+	$registrationModalTitle = $isCoworkingLead
+		? 'Create New Coworking Space Registration (All fields marked with * are required)'
+		: 'Create New Registration (All fields marked with * are required)';
 @endphp
 
 @once
@@ -110,13 +120,18 @@
 	</button>
 	<div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
 		
-		@if(!$editOnly)
-			@if(!empty($leadId))
-				@if($canRegister)
-					<a class="dropdown-item lead-action-item" href="{{ route('registration.create', ['lead_id' => $leadId]) }}">
-						<span class="lead-action-icon lead-icon-blue" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>
+			@if(!$editOnly)
+				@if(!empty($leadId))
+					@if($canRegister)
+						<a class="dropdown-item lead-action-item {{ $isCoworkingLead ? 'js-lead-modal-link' : '' }}"
+							href="{{ $registrationRoute }}"
+							@if($isCoworkingLead)
+								data-lead-modal-url="{{ $registrationModalRoute }}"
+								data-lead-modal-title="{{ $registrationModalTitle }}"
+							@endif>
+							<span class="lead-action-icon lead-icon-blue" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>
 								<path d="M13.5 3.75V8.5h4.75"/>
 								<path d="M9 12h6"/>
 								<path d="M9 15.5h6"/>

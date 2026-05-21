@@ -40,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 'training_transfers' => 0,
                 'training_all_leads' => 0,
                 'training_web_leads' => 0,
+                'coworking_followups' => 0,
                 'all_registrations' => 0,
                 'all_admissions' => 0,
                 'student_attendance' => 0,
@@ -85,6 +86,11 @@ class AppServiceProvider extends ServiceProvider
                 if (Schema::hasTable('lead_followups')) {
                     $sidebarCounts['training_followups'] = LeadFollowup::query()
                         ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                        ->distinct()
+                        ->count('lead_id');
+
+                    $sidebarCounts['coworking_followups'] = LeadFollowup::query()
+                        ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->coworking())
                         ->distinct()
                         ->count('lead_id');
                 }

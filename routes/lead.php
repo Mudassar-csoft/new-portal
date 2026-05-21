@@ -8,6 +8,7 @@ Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
 Route::post('/leads/{lead}/followups', [LeadController::class, 'addFollowup'])->name('leads.followups.store');
 
 Route::get('/leads/follow-ups', [LeadController::class, 'followups'])->name('leads.followups');
+Route::get('/leads/coworking-space/follow-ups', [LeadController::class, 'coworkingFollowups'])->name('leads.coworking.followups');
 
 Route::get('/leads/{lead}/transfer', [LeadController::class, 'transferForm'])->name('leads.transfer.form');
 Route::post('/leads/{lead}/transfer', [LeadController::class, 'transferStore'])->name('leads.transfer.store');

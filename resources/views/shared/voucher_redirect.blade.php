@@ -1,5 +1,10 @@
 @php
+    $voucherUrls = array_values(array_filter((array) ($voucherUrls ?? [])));
     $voucherUrl = $voucherUrl ?? '';
+    if ($voucherUrl !== '' && $voucherUrls === []) {
+        $voucherUrls = [$voucherUrl];
+    }
+    $primaryVoucherUrl = $voucherUrls[0] ?? $voucherUrl;
     $redirectUrl = $redirectUrl ?? url('/');
     $heading = $heading ?? 'Saved';
     $message = $message ?? 'Opening voucher in a new tab...';
@@ -23,16 +28,26 @@
         <p>{{ $message }}</p>
         <p style="font-size: 13px; color: #54667a;">
             If the voucher didn't open,
-            <a href="{{ $voucherUrl }}" target="_blank" rel="noopener">click here</a>.
+            <a href="{{ $primaryVoucherUrl }}" target="_blank" rel="noopener">click here</a>.
             Otherwise you'll be redirected shortly.
         </p>
     </div>
     <script>
         (function () {
             try {
-                var w = window.open(@json($voucherUrl), '_blank');
-                if (!w) {
-                    window.location.href = @json($voucherUrl);
+                var urls = @json($voucherUrls);
+                if (!urls.length) {
+                    window.location.href = @json($redirectUrl);
+                    return;
+                }
+
+                var firstWindow = window.open(urls[0], '_blank');
+                for (var i = 1; i < urls.length; i++) {
+                    window.open(urls[i], '_blank');
+                }
+
+                if (!firstWindow) {
+                    window.location.href = @json($primaryVoucherUrl);
                     return;
                 }
             } catch (e) { /* popup blocked - fall through */ }

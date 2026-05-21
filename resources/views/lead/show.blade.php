@@ -9,6 +9,33 @@
 		$progress = $currentIndex !== false && count($stageKeys) > 1 ? ($currentIndex / (count($stageKeys) - 1)) * 100 : 0;
 		$showLeadCompletionFields = $currentStage === 'new';
 		$leadDetails = $lead->details ?? [];
+		$isCoworkingLead = $isCoworkingLead ?? false;
+		$usesTrainingConversionFlow = $usesTrainingConversionFlow ?? true;
+		$interestLabel = $isCoworkingLead ? 'Space Type' : 'Interested Program';
+		$interestValue = $isCoworkingLead
+			? (data_get($leadDetails, 'space_required') ?: 'N/A')
+			: ($lead->program?->title ?? $lead->program?->name ?? 'N/A');
+		$locationSelectLabel = $isCoworkingLead ? 'Preferred Branch' : 'Preferred Campus';
+		$locationCodeLabel = $isCoworkingLead ? 'Branch Code' : 'Campus Code';
+		$locationNameLabel = $isCoworkingLead ? 'Branch Name' : 'Campus Name';
+		$registrationFormUrl = $isCoworkingLead
+			? route('coworking-registrations.create', ['lead_id' => $lead->id])
+			: route('registration.create', ['lead_id' => $lead->id]);
+		$registrationFormModalUrl = $isCoworkingLead
+			? route('coworking-registrations.create', ['lead_id' => $lead->id, 'embed' => 1])
+			: route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]);
+		$registrationPrompt = $isCoworkingLead
+			? 'Complete the coworking registration form first.'
+			: 'Complete the registration form first.';
+		$registrationButtonLabel = $isCoworkingLead ? 'Open Coworking Registration' : 'Open Registration Form';
+		$registrationStageLabel = $isCoworkingLead ? 'Registered' : 'Register';
+		$leadLocationDisplay = $leadLocationCode ?? $leadLocationName ?? 'N/A';
+		$statusLabel = match ($lead->status) {
+			'registered' => $stages['registered'] ?? 'Registered',
+			'enrolled' => $isCoworkingLead ? ($stages['registered'] ?? 'Registered') : ($stages['enroll'] ?? 'Enrolled'),
+			'not_interesting' => $stages['not_interesting'] ?? 'Not Interesting',
+			default => ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')),
+		};
 		$defaultProbability = old('probability', $latestFollowup?->probability ?? 0);
 	@endphp
 
@@ -17,10 +44,10 @@
 			<div>
 				<h2 class="lead-name form-label " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
 				<div class="lead-sub">
-					<span>{{ $lead->program?->title ?? $lead->program?->name ?? 'N/A' }}</span>
-					@if($lead->campus)
+					<span>{{ $interestValue }}</span>
+					@if($leadLocationDisplay !== 'N/A')
 						<span class="divider">•</span>
-						<span>{{ $lead->campus?->code ?? $lead->campus?->name }}</span>
+						<span>{{ $leadLocationDisplay }}</span>
 					@endif
 				</div>
 			</div>
@@ -56,23 +83,27 @@
 		<div class="lead-pane" id="tab-followups" style="display: block;">
 			<div class="d-flex justify-content-end align-items-center p-1">
 				
-				@php $isClosed = in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
-				<button id="toggle-followup-form" class="btn btn-primary btn-sm" {{ $isClosed ? 'disabled' : '' }}>
-					Add Follow-Up
-				</button>
+				@php $isClosed = $isFollowupClosed ?? in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
+				@if($isClosed)
+					<div class="alert alert-warning mb-0 followup-closed-banner">
+						This lead is marked as <strong>{{ $statusLabel }}</strong>. No further follow-ups can be added.
+					</div>
+				@else
+					<button id="toggle-followup-form" class="btn btn-primary btn-sm">
+						Add Follow-Up
+					</button>
+				@endif
 			</div>
+			@if(!$isClosed)
 			<div class="card followup-form card-elevated" id="followup-form-card" style="display: none;">
 				<div class="card-body">
-					@if($isClosed)
-						<div class="alert alert-warning mb-3">
-							This lead is marked as <strong>{{ ucfirst(str_replace('_', ' ', $lead->status)) }}</strong>. No further follow-ups can be added.
-						</div>
-					@endif
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
-						data-registration-url="{{ route('registration.create', ['lead_id' => $lead->id]) }}"
-						data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}">
+						data-uses-training-conversion-flow="{{ $usesTrainingConversionFlow ? '1' : '0' }}"
+						data-registration-url="{{ $registrationFormModalUrl }}"
+						@if($usesTrainingConversionFlow)
+							data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}"
+						@endif>
 						@csrf
-						<fieldset {{ $isClosed ? 'disabled' : '' }}>
 							<div class="form-row" >
 								<div class="form-group col-lg-3 col-md-6 followup-toggle">
 									<label class="form-label required">Follow-Up Method </label>
@@ -88,7 +119,9 @@
 									<label class="form-label">Stage</label>
 									@php
 										$hideRegistered = $lead->status === 'not_interesting';
-										$hideNotInteresting = in_array($lead->status, ['registered', 'enrolled'], true);
+										$hideNotInteresting = $usesTrainingConversionFlow
+											? in_array($lead->status, ['registered', 'enrolled'], true)
+											: $lead->status === 'enrolled';
 									@endphp
 									<select class="form-control" name="stage" id="followup-stage" required onchange="window.handleFollowupStageChange && window.handleFollowupStageChange(this)">
 										@foreach ($stages as $key => $label)
@@ -96,7 +129,7 @@
 											@if ($hideRegistered && $key === 'registered') @continue @endif
 											@if ($hideNotInteresting && $key === 'not_interesting') @continue @endif
 											<option value="{{ $key }}" @selected(old('stage', $currentStage === 'new' ? 'contacted' : $currentStage) === $key)>
-												{{ $key === 'registered' ? 'Register' : ($key === 'enroll' ? 'Enroll' : $label) }}
+												{{ $usesTrainingConversionFlow && $key === 'registered' ? 'Register' : ($usesTrainingConversionFlow && $key === 'enroll' ? 'Enroll' : $label) }}
 											</option>
 										@endforeach
 									</select>
@@ -108,12 +141,12 @@
 									<div class="field-error" data-error-for="next_action_date"></div>
 								</div>
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="campus-wrap">
-									<label class="form-label ">Preferred Campus</label>
-									<select class="form-control" name="campus_id" id="campus_id" required>
-										<option value="">Same as lead ({{ $lead->campus?->name ?? 'N/A' }})</option>
+									<label class="form-label ">{{ $locationSelectLabel }}</label>
+									<select class="form-control" name="campus_id" id="campus_id">
+										<option value="">Same as lead ({{ $leadLocationDisplay }})</option>
 										@foreach ($campuses as $campus)
-											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $lead->campus_id) === (string) $campus->id)>
-												{{ $campus->name }} ({{ $campus->code ?? $campus->city ?? $campus->country }})
+											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $defaultFollowupCampusId ?? $lead->campus_id) === (string) $campus->id)>
+												{{ $isCoworkingLead ? (($campus->code ?? 'N/A') . ' - ' . $campus->name) : ($campus->name . ' (' . ($campus->code ?? $campus->city ?? $campus->country) . ')') }}
 											</option>
 										@endforeach
 									</select>
@@ -210,22 +243,29 @@
 							</div>
 
 							<div class="alert alert-info d-none" id="registration-link">
-								Selecting <strong>Register</strong>? Complete the registration form first.
-								<a href="{{ route('registration.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Registration Form</a>
+								Selecting <strong>{{ $registrationStageLabel }}</strong>? {{ $registrationPrompt }}
+								<a href="{{ $registrationFormUrl }}"
+									class="btn btn-sm btn-primary ml-2 {{ $isCoworkingLead ? 'js-lead-modal-link' : '' }}"
+									@if($isCoworkingLead)
+										data-lead-modal-url="{{ $registrationFormModalUrl }}"
+										data-lead-modal-title="Create New Coworking Space Registration (All fields marked with * are required)"
+									@endif>{{ $registrationButtonLabel }}</a>
 							</div>
-							<div class="alert alert-info d-none" id="admission-link">
-								Selecting <strong>Enroll</strong>? Complete the admission form first.
-								<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
-							</div>
+							@if($usesTrainingConversionFlow)
+								<div class="alert alert-info d-none" id="admission-link">
+									Selecting <strong>Enroll</strong>? Complete the admission form first.
+									<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
+								</div>
+							@endif
 
 							<div class="text-right p-1">
 								<button type="submit" class="btn btn-primary-outline">Save Follow-Up</button>
 								<button type="button" id="cancel-followup-btn" class="btn btn-danger-outline">Cancel</button>
 							</div>
-						</fieldset>
 					</form>
 				</div>
 			</div>
+			@endif
 
 			<div class="table-responsive followup-table-wrapper">
 				<table class="table table-bordered followup-table">
@@ -238,7 +278,7 @@
 							<th>Status</th>
 							<th>Created At</th>
 							<th>Next Follow-Up</th>
-							<th>Campus Code</th>
+							<th>{{ $locationCodeLabel }}</th>
 							<th>Remarks</th>
 						</tr>
 					</thead>
@@ -279,7 +319,7 @@
 									<td>{{ $lead->phone ?? '—' }}</td>
 									<th>Email Address</th>
 									<td>{{ $lead->email ?? '—' }}</td>
-									<th>Interested Program</th>
+									<th>{{ $interestLabel }}</th>
 									<td>{{ $lead->program?->title ?? $lead->program?->name ?? '—' }}</td>
 								</tr>
 								<tr>
@@ -303,17 +343,17 @@
 									
 									
 								<th>Status</th>
-								<td>{{ ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')) }}</td>
+								<td>{{ $statusLabel }}</td>
 								<th>Next Follow-Up</th>
 								<td>{{ $nextFollowup?->next_action_date ? \Illuminate\Support\Carbon::parse($nextFollowup->next_action_date)->format('Y-m-d H:i') : '—' }}</td>
-								<th>Campus Code</th>
+								<th>{{ $locationCodeLabel }}</th>
 								<td>{{ $lead->campus?->code ?? '—' }}</td>
 
 							</tr>
 
 							<tr>
 
-								<th>Campus Name</th>
+								<th>{{ $locationNameLabel }}</th>
 								<td>{{ $lead->campus?->name ?? '—' }}</td>
 								<th>Remarks</th>
 								<td colspan="3">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
@@ -678,6 +718,12 @@
 			margin-bottom: 5px;
 		}
 
+		.followup-closed-banner {
+			max-width: 460px;
+			text-align: left;
+			font-size: 13px;
+		}
+
 		.followup-extra-fields {
 			margin: 8px 15px 12px;
 			padding: 12px 14px 2px;
@@ -930,6 +976,20 @@
 			alert(text);
 		}
 
+		function openUrls(urls) {
+			(urls || []).forEach(function (url) {
+				if (!url) {
+					return;
+				}
+
+				try {
+					window.open(url, '_blank');
+				} catch (error) {
+					console.error('Unable to open voucher url', error);
+				}
+			});
+		}
+
 		function errorKeyToInputName(key) {
 			return key.replace(/\.(\w+)/g, '[$1]');
 		}
@@ -1140,6 +1200,10 @@
 				if (event.data && event.data.type === 'lead-modal-close') {
 					closeLeadModal();
 
+					if (event.data.openUrls) {
+						openUrls(event.data.openUrls);
+					}
+
 					if (event.data.status) {
 						showAlert('Success', event.data.status, 'success');
 					}
@@ -1177,6 +1241,7 @@
 			const stageField = $('#followup-stage');
 			const nextStage = String(element ? element.value : (stageField ? stageField.value : '')).trim().toLowerCase();
 			const form = $('#followup-form');
+			const usesTrainingConversionFlow = form && form.dataset.usesTrainingConversionFlow === '1';
 
 			updateStageSpecificUI(nextStage);
 
@@ -1184,7 +1249,11 @@
 				return;
 			}
 
-			if (nextStage === 'enroll' && form.dataset.admissionUrl) {
+			if (!usesTrainingConversionFlow && nextStage === 'registered' && form.dataset.registrationUrl) {
+				openLeadModal(form.dataset.registrationUrl, 'Create New Coworking Space Registration (All fields marked with * are required)');
+			}
+
+			if (usesTrainingConversionFlow && nextStage === 'enroll' && form.dataset.admissionUrl) {
 				openLeadModal(form.dataset.admissionUrl, 'Create New Admission (All fields marked with * are required)');
 			}
 		};
@@ -1192,18 +1261,22 @@
 		function updateStageSpecificUI(stageValue) {
 			const normalizedStage = String(stageValue || '').trim().toLowerCase();
 			const isNotInteresting = normalizedStage === 'not_interesting';
-			const isModalStage = normalizedStage === 'registered' || normalizedStage === 'enroll';
+			const form = $('#followup-form');
+			const usesTrainingConversionFlow = form && form.dataset.usesTrainingConversionFlow === '1';
+			const isRegistrationStage = normalizedStage === 'registered';
+			const isAdmissionStage = usesTrainingConversionFlow && normalizedStage === 'enroll';
+			const isModalStage = isRegistrationStage || isAdmissionStage;
 			const useMinimalFields = isNotInteresting || isModalStage;
 			const registrationLink = $('#registration-link');
 			const admissionLink = $('#admission-link');
 			const completionFields = $('#lead-completion-fields');
 
 			if (registrationLink) {
-				registrationLink.classList.toggle('d-none', normalizedStage !== 'registered');
+				registrationLink.classList.toggle('d-none', !isRegistrationStage);
 			}
 
 			if (admissionLink) {
-				admissionLink.classList.toggle('d-none', normalizedStage !== 'enroll');
+				admissionLink.classList.toggle('d-none', !isAdmissionStage);
 			}
 
 			$$('.followup-hide-on-close').forEach(function (element) {

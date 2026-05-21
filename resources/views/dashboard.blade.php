@@ -2281,7 +2281,12 @@
 
 				syncIncomeLayout();
 
-				if (!(window.google && google.visualization)) {
+				if (!(
+					window.google &&
+					google.visualization &&
+					typeof google.visualization.DataTable === 'function' &&
+					typeof google.visualization.AreaChart === 'function'
+				)) {
 					showChartFallback();
 					return;
 				}

@@ -44,10 +44,10 @@
         <input type="text" class="form-control" id="batch-code-preview" value="{{ old('code', $batch->code) }}" readonly>
         <!-- <small class="text-muted">Code is auto-generated. If a duplicate exists, the system adds a suffix automatically.</small> -->
     </div>
-    <!-- <div class="form-group col-lg-3 col-md-6">
+    <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Batch Name</label>
         <input type="text" class="form-control" name="name" value="{{ old('name', $batch->name) }}" placeholder="e.g. Graphic Design Spring Morning" required>
-    </div> -->
+    </div>
     <div class="form-group col-lg-3 col-md-6">
         <label class="form-label required">Instructor / Teacher</label>
         <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $batch->instructor) }}" placeholder="Enter instructor name" required>
@@ -100,14 +100,14 @@
         <input type="time" class="form-control" name="end_time" value="{{ old('end_time', $batch->end_time ? \Carbon\Carbon::parse($batch->end_time)->format('H:i') : null) }}" required>
     </div>
    
-    <!-- <div class="form-group col-md-3">
+    <div class="form-group col-md-3">
         <label class="form-label required">Batch Status</label>
         <select class="form-control" name="status" required>
             @foreach($statusOptions as $key => $label)
                 <option value="{{ $key }}" @selected($selectedStatus === $key)>{{ $label }}</option>
             @endforeach
         </select>
-    </div> -->
+    </div>
 </div>
 
 <div class="form-row">
