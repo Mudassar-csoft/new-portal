@@ -45,7 +45,11 @@ class UserController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->editColumn('name', fn (User $user) => e($user->name))
+                ->editColumn('name', fn (User $user) => sprintf(
+                    '<a href="%s" class="table-name-link">%s</a>',
+                    e(route('users.edit', $user)),
+                    e($user->name)
+                ))
                 ->editColumn('email', fn (User $user) => e($user->email))
                 ->addColumn('role', function (User $user) {
                     $roles = $user->roles->pluck('name');
@@ -75,7 +79,7 @@ class UserController extends Controller
                         $campusQuery->where('code', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['role', 'status', 'actions'])
+                ->rawColumns(['name', 'role', 'status', 'actions'])
                 ->make(true);
         }
 

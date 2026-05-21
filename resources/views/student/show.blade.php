@@ -221,10 +221,10 @@
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
                                         <td class="fee-status-cell">
                                             @if($fee->status === 'paid')
-                                                <span class="label label-primary p-2 " style="height:30px !important;line-height:1 !important;width:45px !important;">Paid</span>
+                                                <span class="label label-primary p-2 fee-status-control fee-status-control--text">Paid</span>
                                             @elseif($fee->status === 'pending')
                                                 <button type="button"
-                                                        class="label label-warning js-fee-collect"
+                                                        class="label label-warning js-fee-collect fee-status-control fee-status-control--text"
                                                         title="Collect installment"
                                                         data-fee-id="{{ $fee->id }}"
                                                         data-fee-amount="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
@@ -237,16 +237,14 @@
                                                 <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                             @endif
                                             @if($voucherUrl)
-                                                <a class="btn btn-xs btn-warning fee-action-btn p-2"
-                                                 style="height:30px !important;line-height:1 !important;width:30px !important;"
+                                                <a class="btn btn-xs btn-warning fee-action-btn fee-status-control fee-status-control--icon p-2"
                                                   title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
                                                     <i class="bi bi-menu-button-wide"></i>
                                                 </a>
                                             @else
                                                 <span class="btn btn-xs btn-default fee-action-btn disabled" title="Voucher not available"><i class="fa fa-file-text-o"></i></span>
                                             @endif
-                                            <button class="btn btn-xs btn-default fee-action-btn js-fee-edit p-2"
-                                            style="height:30px !important;line-height:1 !important;width:45px !important;"
+                                            <button class="btn btn-xs btn-default fee-action-btn js-fee-edit fee-status-control fee-status-control--text p-2"
                                                     type="button"
                                                     data-fee-id="{{ $fee->id }}"
                                                     data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
@@ -621,6 +619,16 @@
 
         .fee-status-cell { white-space: nowrap; }
         .fee-status-cell .label { padding: 4px 10px; font-size: 11px; font-weight: 600; }
+        .fee-status-control {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 30px !important;
+            line-height: 1 !important;
+            vertical-align: middle;
+        }
+        .fee-status-control--text { min-width: 45px; }
+        .fee-status-control--icon { width: 30px; }
         .fee-action-btn { margin-left: 4px; padding: 3px 8px; }
         .fee-action-btn .fa { font-size: 12px; }
         .fee-action-btn.disabled { opacity: 0.5; cursor: not-allowed; }
