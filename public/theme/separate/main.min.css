@@ -152,7 +152,6 @@ a.label:hover {
 .page-item.active .page-link,
 .page-item.active .page-link:focus,
 .page-item.active .page-link:hover {
-    z-index: 2;
     color: #fff;
     cursor: default;
     background-color: #0275d8;
@@ -12578,7 +12577,7 @@ body.modal-open {
 
 .box-typical .box-typical-header .tbl-cell {
     vertical-align: middle;
-    padding: 15px
+     padding-top: 9px;
 }
 
 .box-typical .box-typical-header .tbl-cell.tbl-cell-title {

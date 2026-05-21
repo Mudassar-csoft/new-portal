@@ -12582,7 +12582,7 @@ body.modal-open {
 
 .box-typical .box-typical-header .tbl-cell {
     vertical-align: middle;
-    padding: 15px
+    padding-top: 9px;
 }
 
 .box-typical .box-typical-header .tbl-cell.tbl-cell-title {

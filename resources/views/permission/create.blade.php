@@ -85,11 +85,11 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Create Permission</h5>
-                        <small class="text-muted">
-                            <!-- Define a permission for a resource and action. -->
-                        </small>
+                        <!-- <small class="text-muted">
+                            Define a permission for a resource and action.
+                        </small> -->
                     </div>
-                    <a href="{{ route('permissions.index') }}" class="btn btn-primary btn-sm">Back</a>
+                    <!-- <a href="{{ route('permissions.index') }}" class="btn btn-primary btn-sm">Back</a> -->
                 </div>
 
                 <!-- Body -->

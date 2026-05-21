@@ -33,9 +33,9 @@
                             </a>
                         @endforeach
                     </div>
-                    <a href="{{ route('roles.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
+                    <!-- <a href="{{ route('roles.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
                         <i class="fa fa-plus mr-1"></i> Create Role
-                    </a>
+                    </a> -->
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
@@ -100,6 +100,12 @@
         #roles-table { margin-top: 8px; }
         #roles-table th, #roles-table td { padding: 6px 10px; vertical-align: middle; }
         #roles-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
+        #roles-table .table-name-link {
+            color: ##0082C6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+      
         #roles-table td.actions-cell { text-align: right; white-space: nowrap; }
         #roles-table .follow-action-dropdown .dropdown-menu { z-index: 1070 !important; }
 

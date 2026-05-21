@@ -32,7 +32,11 @@ class RoleController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->editColumn('name', fn (Role $role) => e($role->name))
+                ->editColumn('name', fn (Role $role) => sprintf(
+                    '<a href="%s" class="table-name-link">%s</a>',
+                    e(route('roles.edit', $role)),
+                    e($role->name)
+                ))
                 ->editColumn('slug', fn (Role $role) => e($role->slug))
                 ->addColumn('permissions', fn (Role $role) => $role->permissions->count())
                 ->addColumn('is_system', fn (Role $role) => $role->is_system
@@ -40,7 +44,7 @@ class RoleController extends Controller
                     : '<span class="label label-default">Custom</span>')
                 ->addColumn('date', fn (Role $role) => optional($role->created_at)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('actions', fn (Role $role) => view('role.partials.action', ['role' => $role])->render())
-                ->rawColumns(['is_system', 'actions'])
+                ->rawColumns(['name', 'is_system', 'actions'])
                 ->make(true);
         }
 
