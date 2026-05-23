@@ -189,10 +189,9 @@
 		}
 
 		.lead-modal .modal-title {
-			font-weight: 800;
-			color: #0f3c6e;
-			margin: 0;
-			font-size: 18px;
+			font-size: 26px !important;
+  font-weight: 500 !important;
+      text-wrap: auto;
 		}
 
 		.lead-modal .modal-close {

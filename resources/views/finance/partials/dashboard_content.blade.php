@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div class="row finance-kpis">
+    <!-- <div class="row finance-kpis">
         <div class="col-xl-4 col-md-6">
             <a
                 class="finance-kpi finance-kpi-link kpi-income"
@@ -118,7 +118,7 @@
                 <div class="kpi-label">Net Cashflow</div>
             </a>
         </div>
-    </div>
+    </div> -->
 
     <div class="row finance-charts">
         <div class="col-lg-6">

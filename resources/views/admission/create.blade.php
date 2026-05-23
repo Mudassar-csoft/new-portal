@@ -349,7 +349,7 @@
 											name="fee_type"
 											value="full"
 											@checked(old('fee_type', 'full') === 'full')>
-										<label class="form-label small mt-0 mb-0" for="admission-fee-type-full">
+										<label class="form-check-label small mt-0 mb-0" for="admission-fee-type-full">
 											Full Fee
 										</label>
 									</div>
@@ -362,7 +362,7 @@
 											name="fee_type"
 											value="installments"
 											@checked(old('fee_type') === 'installments')>
-										<label class="form-label small mt-0 mb-0" for="admission-fee-type-installments">
+										<label class="form-check-label small mt-0 mb-0" for="admission-fee-type-installments">
 											Installments
 										</label>
 									</div>
@@ -482,7 +482,7 @@
 			display: inline-block;
 			margin-bottom: 8px;
 			font-weight: 600;
-			color: #223a57 ;
+			/* color: #223a57 ; */
 		}
 
 		.admission-form .form-control {
@@ -620,10 +620,10 @@
 		}
 
 		.admission-form .form-check-label {
-			font-size: 0.75rem;
+			font-size: 14px;
 			margin-bottom: 0;
 			cursor: pointer;
-			color: #42556d;
+			/* color: #42556d; */
 			font-weight: 600;
 		}
 

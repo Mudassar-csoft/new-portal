@@ -41,7 +41,7 @@
                         <input type="hidden" name="scope" value="open">
                     @endif
                     <div class="form-row mt-3">
-                        <div class="form-group col-md-5">
+                        <div class="form-group col-md-4">
                             <label class="form-label required">Campus</label>
                             <select class="form-control" name="campus_id">
                                 <option value="">All Campuses</option>

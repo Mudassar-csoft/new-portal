@@ -45,7 +45,7 @@
                 <form method="POST" action="{{ route('finance.expense.store') }}" id="expenseRequestForm">
                     @csrf
                     <div class="form-row mt-2">
-                        <div class="form-group col-lg-6 col-md-6">
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Campus / Franchise</label>
                             <select name="campus_id" id="campusSelect" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -56,7 +56,16 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-6 col-md-6">
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label"> Payee</label>
+                            <select name="payee_id" class="form-control">
+                                <option value="">- Select -</option>
+                                @foreach($payees as $payee)
+                                    <option value="{{ $payee->id }}">{{ $payee->full_name }} ({{ ucfirst($payee->type) }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Expense Type</label>
                             <div class="input-group">
                                 <select name="expense_type_id" id="expenseTypeSelect" class="form-control" required>
@@ -75,8 +84,34 @@
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickExpenseTypeModal">+</button>
                                 </span>
                             </div>
-                            <small class="text-muted">If it is missing, add a new expense type from the popup.</small>
+                            <!-- <small class="text-muted">If it is missing, add a new expense type from the popup.</small> -->
                         </div>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label required">Payment Date</label>
+                            <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label required">Paid Amount</label>
+                            <input type="number" step="0.01" min="1" name="paid_amount" class="form-control" value="{{ old('paid_amount') }}" required>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label required">Payment Method</label>
+                            <select name="payment_method" class="form-control" required>
+                                <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
+                                <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
+                                <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
+                            </select>
+                        </div>
+                         <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label">Payment Ref No</label>
+                            <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
+                        </div>
+                     
+                        <div class="form-group col-lg-3 col-md-6" id="amountFieldCol">
+                            <label class="form-label required">Amount (PKR)</label>
+                            <input type="number" step="0.01" min="1" name="amount" id="expenseAmount" class="form-control" value="{{ old('amount') }}" required>
+                        </div>
+                  
                     </div>
 
                     <input type="hidden" name="rent_id" id="rentIdField" value="{{ old('rent_id') }}">
@@ -88,7 +123,7 @@
                     <section class="finance-source-section d-none" id="rentSourceSection">
                         <div class="source-section-title">Building Rent</div>
                         <div class="form-row" id="rentFieldsRow">
-                            <div class="form-group col-lg-6 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Rent Month</label>
                                 <input type="month" name="expense_month" id="rentMonthSelect" class="form-control" value="{{ old('expense_month') }}">
                                 <small class="text-danger d-none" id="rentMonthMessage"></small>
@@ -116,15 +151,10 @@
                                 </select>
                             </div>
                         </div>
-                        <small class="text-muted">Reference numbers are loaded from the Utility Bill setup for the selected campus.</small>
+                        <!-- <small class="text-muted">Reference numbers are loaded from the Utility Bill setup for the selected campus.</small> -->
                     </section>
 
-                    <div class="form-row mt-2" id="amountRow">
-                        <div class="form-group col-lg-6 col-md-6" id="amountFieldCol">
-                            <label class="form-label required">Amount (PKR)</label>
-                            <input type="number" step="0.01" min="1" name="amount" id="expenseAmount" class="form-control" value="{{ old('amount') }}" required>
-                        </div>
-                    </div>
+                    
 
                     <div class="form-row">
                         <div class="form-group col-12">
