@@ -837,7 +837,7 @@
             text-align: center;
             cursor: pointer;
             color: #4c5a6a;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             border-bottom: 3px solid transparent;
             transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;

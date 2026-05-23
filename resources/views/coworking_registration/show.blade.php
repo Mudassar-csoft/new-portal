@@ -9,6 +9,17 @@
         $campus = $member->campus ?? $lead?->campus;
         $leadDetails = $lead->details ?? [];
         $canMarkInactive = ($member->status ?? 'registered') === 'registered';
+        $inactiveAction = old('inactive_action', 'leave');
+        $inactiveModalTitle = match ($inactiveAction) {
+            'drop' => 'Drop Coworking Member',
+            'close_agreement' => 'Close Agreement',
+            default => 'Leave Coworking Member',
+        };
+        $inactiveReasonLabel = match ($inactiveAction) {
+            'drop' => 'Reason for Drop',
+            'close_agreement' => 'Agreement Closing Reason',
+            default => 'Reason for Leaving',
+        };
         $showInactiveModal = $errors->has('leave_date')
             || $errors->has('damage_deduction_amount')
             || $errors->has('damage_notes')
@@ -52,6 +63,9 @@
             : null;
         $showUpcomingCoworkingCharge = !$pendingCoworkingCharge
             && ($member->status ?? 'registered') === 'registered'
+            && $member->next_due_date
+            && filled($member->coworking_charges);
+        $canOpenChargeModal = ($member->status ?? 'registered') === 'registered'
             && $member->next_due_date
             && filled($member->coworking_charges);
         $showCollectChargeAction = !$pendingCoworkingCharge
@@ -137,27 +151,47 @@
 
                     <div class="profile-action">
                         <div class="dropdown student-action-wrap">
-                            <button class="btn btn-sm dropdown-toggle student-action-btn" type="button" id="coworking-action-{{ $member->id }}" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-primary-outline dropdown-toggle student-action-btn" type="button" id="coworking-action-{{ $member->id }}" aria-haspopup="true" aria-expanded="false">
                                 Actions <span class="caret"></span>
                             </button>
                             <div class="dropdown-menu student-action-menu" aria-labelledby="coworking-action-{{ $member->id }}">
-                                <a class="dropdown-item" href="{{ route('coworking-registrations.edit', $member) }}">
-                                    <i class="fa fa-pencil mr-2"></i>Edit
-                                </a>
-                                @if($canMarkInactive)
-                                    <button type="button"
-                                            class="dropdown-item js-open-inactive-modal"
-                                            data-inactive-modal-open>
-                                        <i class="fa fa-ban mr-2"></i>Inactive
-                                    </button>
-                                @endif
-                                @if($showCollectChargeAction)
+                                @if($canOpenChargeModal)
                                     <button type="button"
                                             class="dropdown-item js-open-charge-modal"
                                             data-charge-modal-open>
-                                        <i class="fa fa-money mr-2"></i>Collect Coworking Charge
+                                        <i class="bi bi-clipboard-check"></i>Collect Payment
                                     </button>
                                 @endif
+                                @if($canMarkInactive)
+                                <button type="button"
+                                            class="dropdown-item js-open-inactive-modal"
+                                            data-inactive-modal-open
+                                            data-inactive-action="close_agreement"
+                                            data-inactive-title="Close Agreement"
+                                            data-inactive-reason-label="Agreement Closing Reason">
+                                        <i class="fa fa-file-text-o action-icon "></i>Close Agreement
+                                    </button>
+                                    <button type="button"
+                                            class="dropdown-item js-open-inactive-modal"
+                                            data-inactive-modal-open
+                                            data-inactive-action="leave"
+                                            data-inactive-title="Leave Coworking Member"
+                                            data-inactive-reason-label="Reason for Leaving">
+                                        <i class="fa fa-pause action-icon action-icon--danger"></i>Leave
+                                    </button>
+                                    <button type="button"
+                                            class="dropdown-item js-open-inactive-modal"
+                                            data-inactive-modal-open
+                                            data-inactive-action="drop"
+                                            data-inactive-title="Drop Coworking Member"
+                                            data-inactive-reason-label="Reason for Drop">
+                                        <i class="fa fa-stop action-icon action-icon--danger"></i>Drop
+                                    </button>
+                                    
+                                @endif
+                                <a class="dropdown-item" href="{{ route('coworking-registrations.edit', $member) }}">
+                                    <i class="bi bi-pencil-square action-icon action-icon--dark"></i>Edit
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -197,11 +231,11 @@
                         <table class="table table-bordered follow-table">
                             <thead>
                                 <tr>
+                                    <th>Registration No</th>
                                     <th>Branch</th>
                                     <th>Space Type</th>
                                     <th>Business / Team</th>
                                     <th>Members</th>
-                                    <th>Registration No</th>
                                     <th>Registration Date</th>
                                     <th>Next Due Date</th>
                                     <th>Status</th>
@@ -209,11 +243,11 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>{{ $member->registration_number }}</td>
                                     <td>{{ $branchCode }}@if($branchName)<br><small class="text-muted">{{ $branchName }}</small>@endif</td>
                                     <td>{{ $spaceType }}</td>
                                     <td>{{ $businessName }}</td>
                                     <td>{{ $membersCount }}</td>
-                                    <td>{{ $member->registration_number }}</td>
                                     <td>{{ optional($member->registration_date)->format('Y-m-d') ?: 'N/A' }}</td>
                                     <td>{{ optional($member->next_due_date)->format('Y-m-d') ?: 'N/A' }}</td>
                                     <td>
@@ -237,7 +271,7 @@
                                     <th>Payment Status</th>
                                     <th>Due Date</th>
                                     <th>Collected At</th>
-                                    <th>Receipt Number</th>
+                                    <!-- <th>Receipt Number</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -269,13 +303,13 @@
                                                    href="{{ $fee['voucher_url'] }}"
                                                    target="_blank"
                                                    rel="noopener">
-                                                    <i class="fa fa-file-text-o"></i>
+                                                    <i class="bi bi-menu-button-wide"></i>
                                                 </a>
                                             @endif
                                         </td>
                                         <td>{{ optional($fee['due_date'])->format('Y-m-d') ?: 'N/A' }}</td>
                                         <td>{{ optional($fee['collected_at'])->format('Y-m-d') ?: 'N/A' }}</td>
-                                        <td>{{ $fee['receipt_number'] ?: 'N/A' }}</td>
+                                        <!-- <td>{{ $fee['receipt_number'] ?: 'N/A' }}</td> -->
                                     </tr>
                                 @empty
                                     <tr>
@@ -291,46 +325,57 @@
                     <div class="pane-card pane-card--info">
                         <h3 class="pane-section-title">Personal Information</h3>
                         <div class="row info-columns">
-                            <div class="col-lg-6 info-column">
+                            <div class="col-lg-12 info-column">
                                 <table class="info-table">
                                     <tbody>
-                                        <tr>
+                                        <!-- <tr>
                                             <th>Full Name:</th>
                                             <td>{{ $member->full_name ?? 'N/A' }}</td>
-                                        </tr>
+                                        </tr> -->
                                         <tr>
                                             <th>Primary Contact:</th>
                                             <td>{{ $member->phone ?? 'N/A' }}</td>
+                                        </tr>
+                                         <tr>
+                                            <th>Date of Birth:</th>
+                                            <td>{{ optional($member->date_of_birth)->format('d-M-Y') ?: 'N/A' }}</td>
+                                        </tr>
+                                         <tr>
+                                            <th>CNIC:</th>
+                                            <td>{{ $member->cnic ?? 'N/A' }}</td>
+                                        </tr>
+                                         <tr>
+                                            <th>Registration No:</th>
+                                            <td>{{ $member->registration_number ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <th>Guardian Name:</th>
                                             <td>{{ $member->guardian_name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Guardian Contact:</th>
-                                            <td>{{ $member->guardian_phone ?? 'N/A' }}</td>
+                                            <th>Postal Address:</th>
+                                            <td>{{ $member->address ?? 'N/A' }}</td>
                                         </tr>
-                                        <tr>
-                                            <th>CNIC:</th>
-                                            <td>{{ $member->cnic ?? 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Email Address:</th>
-                                            <td>{{ $member->email ?? 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Education:</th>
-                                            <td>{{ $member->education ?? 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Date of Birth:</th>
-                                            <td>{{ optional($member->date_of_birth)->format('d-M-Y') ?: 'N/A' }}</td>
-                                        </tr>
-                                        <tr>
+                                         <tr>
                                             <th>Gender:</th>
                                             <td>{{ ucfirst($member->gender ?? 'N/A') }}</td>
                                         </tr>
+                                       
+                                       
+                                        <!-- <tr>
+                                            <th>Email Address:</th>
+                                            <td>{{ $member->email ?? 'N/A' }}</td>
+                                        </tr> -->
                                         <tr>
+                                            <th>Qualification:</th>
+                                            <td>{{ $member->education ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Guardian Contact:</th>
+                                            <td>{{ $member->guardian_phone ?? 'N/A' }}</td>
+                                        </tr>
+                                       
+                                        <!-- <tr>
                                             <th>Nature of Work:</th>
                                             <td>{{ $member->nature_of_work ?? 'N/A' }}</td>
                                         </tr>
@@ -338,19 +383,16 @@
                                             <th>Timing:</th>
                                             <td>{{ $member->timing ?? 'N/A' }}</td>
                                         </tr>
-                                        <tr>
-                                            <th>Postal Address:</th>
-                                            <td>{{ $member->address ?? 'N/A' }}</td>
-                                        </tr>
+                                        
                                         <tr>
                                             <th>Remarks:</th>
                                             <td>{{ $member->remarks ?: 'N/A' }}</td>
-                                        </tr>
+                                        </tr> -->
                                     </tbody>
                                 </table>
                             </div>
 
-                            <div class="col-lg-6 info-column">
+                            <!-- <div class="col-lg-6 info-column">
                                 <table class="info-table">
                                     <tbody>
                                         <tr>
@@ -389,10 +431,7 @@
                                             <th>Marketing Source:</th>
                                             <td>{{ $lead?->marketing_source ?: 'N/A' }}</td>
                                         </tr>
-                                        <tr>
-                                            <th>Registration No:</th>
-                                            <td>{{ $member->registration_number ?? 'N/A' }}</td>
-                                        </tr>
+                                       
                                         <tr>
                                             <th>Main Receipt No:</th>
                                             <td>{{ $member->receipt_number ?? 'N/A' }}</td>
@@ -423,7 +462,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -436,7 +475,7 @@
             <div class="fee-edit-backdrop" data-inactive-close></div>
             <div class="fee-edit-dialog inactive-dialog" role="dialog" aria-modal="true" aria-labelledby="inactiveModalTitle">
                 <div class="fee-edit-header">
-                    <h4 id="inactiveModalTitle">Mark Coworking Member Inactive</h4>
+                    <h4 id="inactiveModalTitle">{{ $inactiveModalTitle }}</h4>
                     <button type="button" class="fee-edit-close" data-inactive-close aria-label="Close">&times;</button>
                 </div>
                     <form method="POST"
@@ -448,49 +487,50 @@
                         data-security-fee="{{ number_format((float) $member->security_fee, 2, '.', '') }}"
                         data-daily-rate="{{ number_format((float) $dailyDeductionAmount, 2, '.', '') }}">
                     @csrf
+                    <input type="hidden" name="inactive_action" id="inactive_action" value="{{ $inactiveAction }}">
                     <div class="fee-edit-body">
                         <div class="inactive-receipt-note">
                             Original Security Receipt:
                             <strong>{{ $securityReceipt?->receipt_number ?: 'N/A' }}</strong>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
+                        <div class="row gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_security_fee">Security Fee</label>
+                                    <label class = "form-label" for="inactive_security_fee">Security Fee</label>
                                     <input type="text" id="inactive_security_fee" value="{{ number_format((float) $member->security_fee, 2, '.', '') }}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="leave_date">Leave Date</label>
+                                    <label class = "form-label" for="leave_date">Leave Date</label>
                                     <input type="date" id="leave_date" name="leave_date" value="{{ $defaultLeaveDate }}" min="{{ optional($member->registration_date)->toDateString() }}" required>
                                     @error('leave_date')
                                         <div class="field-error">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_used_days">Used Days</label>
+                                    <label class = "form-label" for="inactive_used_days">Used Days</label>
                                     <input type="text" id="inactive_used_days" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_daily_rate">Day Wise Amount</label>
+                                    <label class = "form-label" for="inactive_daily_rate">Day Wise Amount</label>
                                     <input type="text" id="inactive_daily_rate" value="{{ number_format((float) $dailyDeductionAmount, 2, '.', '') }}" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_usage_deduction">Day Wise Deduction</label>
+                                    <label class = "form-label" for="inactive_usage_deduction">Day Wise Deduction</label>
                                     <input type="text" id="inactive_usage_deduction" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="fee-edit-field">
-                                    <label for="damage_deduction_amount">Damage Deduction</label>
+                                    <label class = "form-label" for="damage_deduction_amount">Damage Deduction</label>
                                     <input type="number" step="0.01" min="0" id="damage_deduction_amount" name="damage_deduction_amount" value="{{ $defaultDamageDeduction }}" required>
                                     @error('damage_deduction_amount')
                                         <div class="field-error">{{ $message }}</div>
@@ -499,32 +539,32 @@
                             </div>
                             <div class="col-12">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_refund_amount">Remaining Refundable Security</label>
+                                    <label class = "form-label" for="inactive_refund_amount">Remaining Refundable Security</label>
                                     <input type="text" id="inactive_refund_amount" readonly>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="fee-edit-field">
-                                    <label for="damage_notes">Damage Details</label>
-                                    <textarea id="damage_notes" name="damage_notes" rows="2" placeholder="Broken chair, desk damage, mirror issue...">{{ old('damage_notes', $member->damage_notes) }}</textarea>
+                                    <label class = "form-label" for="damage_notes">Damage Details</label>
+                                    <textarea id="damage_notes" name="damage_notes" row gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0s="2" placeholder="Broken chair, desk damage, mirror issue...">{{ old('damage_notes', $member->damage_notes) }}</textarea>
                                     @error('damage_notes')
                                         <div class="field-error">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_reason">Reason for Leaving</label>
+                                    <label class = "form-label" for="inactive_reason" id="inactiveReasonLabel">{{ $inactiveReasonLabel }}</label>
                                     <input type="text" id="inactive_reason" name="inactive_reason" value="{{ old('inactive_reason', $member->inactive_reason) }}" required>
                                     @error('inactive_reason')
                                         <div class="field-error">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <div class="fee-edit-field">
-                                    <label for="inactive_remarks">Remarks</label>
-                                    <textarea id="inactive_remarks" name="inactive_remarks" rows="2" placeholder="Additional notes...">{{ old('inactive_remarks', $member->inactive_remarks) }}</textarea>
+                                    <label class = "form-label" for="inactive_remarks">Remarks</label>
+                                    <textarea id="inactive_remarks" name="inactive_remarks"  placeholder="Additional notes...">{{ old('inactive_remarks', $member->inactive_remarks) }}</textarea>
                                     @error('inactive_remarks')
                                         <div class="field-error">{{ $message }}</div>
                                     @enderror
@@ -533,15 +573,15 @@
                         </div>
                     </div>
                     <div class="fee-edit-footer">
-                        <button type="button" class="btn-fee-cancel" data-inactive-close>Cancel</button>
-                        <button type="submit" class="btn-fee-save">Submit</button>
+                        <button type="button" class="btn btn-primary-outline">Submit</button>
+                        <button type="button" class="btn btn-danger-outline" data-inactive-close>Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
     @endif
 
-    @if($showCollectChargeAction || $showChargeModal || $showUpcomingCoworkingCharge)
+    @if($canOpenChargeModal || $showChargeModal || $showUpcomingCoworkingCharge)
         <div class="fee-edit-modal{{ $showChargeModal ? ' is-open' : '' }}" id="chargeModal" aria-hidden="{{ $showChargeModal ? 'false' : 'true' }}">
             <div class="fee-edit-backdrop" data-charge-close></div>
             <div class="fee-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="chargeModalTitle">
@@ -552,10 +592,10 @@
                 <form method="POST" action="{{ route('coworking-registrations.collect-charge', $member) }}" id="chargeForm">
                     @csrf
                     <div class="fee-edit-body">
-                        <div class="row">
+                        <div class="row gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0 gap-0">
                             <div class="col-md-6">
                                 <div class="fee-edit-field">
-                                    <label for="charge_date">Charge Date</label>
+                                    <label class = "form-label" for="charge_date">Charge Date</label>
                                     <input type="date" id="charge_date" name="charge_date" value="{{ $defaultChargeDate }}" required>
                                     @error('charge_date')
                                         <div class="field-error">{{ $message }}</div>
@@ -564,7 +604,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="fee-edit-field">
-                                    <label for="charge_amount">Charge Amount</label>
+                                    <label class = "form-label" for="charge_amount">Charge Amount</label>
                                     <input type="number" step="0.01" min="1" id="charge_amount" name="charge_amount" value="{{ $defaultChargeAmount }}" required>
                                     @error('charge_amount')
                                         <div class="field-error">{{ $message }}</div>
@@ -573,15 +613,15 @@
                             </div>
                             <div class="col-12">
                                 <div class="fee-edit-field">
-                                    <label>Due Date</label>
+                                    <label class = " form-label">Due Date</label>
                                     <input type="text" value="{{ optional($member->next_due_date)->format('Y-m-d') ?: 'N/A' }}" readonly>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="fee-edit-footer">
-                        <button type="button" class="btn-fee-cancel" data-charge-close>Cancel</button>
-                        <button type="submit" class="btn-fee-save">Submit</button>
+                        <button type="button" class="btn btn-primary-outline">Submit</button>
+                        <button type="button" class="btn btn-danger-outline" data-inactive-close>Cancel</button>
                     </div>
                 </form>
             </div>
@@ -632,7 +672,7 @@
         }
 
         .profile-banner {
-            height: 100px;
+            height: 150px;
             position: relative;
             overflow: hidden;
         }
@@ -691,13 +731,13 @@
 
         .profile-phone {
             color: #4c5a6a;
-            font-size: 14px;
+            font-size: 16px;
             margin-bottom: 8px;
         }
 
         .profile-campus {
             color: #0f766e;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 16px;
         }
@@ -732,31 +772,31 @@
         }
 
         .student-action-btn {
-            background: #fff !important;
-            color: #1f2d3d !important;
-            border: 1px solid #cfd7df !important;
-            padding: 6px 18px !important;
-            border-radius: 4px;
-            font-weight: 500;
+            /* background: #fff !important; */
+            /* color: #1f2d3d !important; */
+            /* border: 1px solid #cfd7df !important; */
+            /* padding: 6px 18px !important; */
+            /* border-radius: 4px; */
+            /* font-weight: 500; */
         }
 
         .student-action-btn:hover {
-            border-color: #94a3b8 !important;
+            /* border-color: #94a3b8 !important; */
         }
 
         .student-action-wrap .dropdown-menu {
             display: none;
-            min-width: 220px;
+            min-width: 240px;
             background: #fff;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-            padding: 4px 0;
-            margin-top: 6px;
+            border-radius: 10px;
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+            padding: 10px 0;
+            /* margin-top: 8px; */
             position: absolute;
             left: 50%;
-            transform: translateX(-50%);
-            top: 100%;
+            transform: translateX(-36%);
+            top: -564%;
             z-index: 50;
             text-align: left;
         }
@@ -766,10 +806,13 @@
         }
 
         .student-action-wrap .dropdown-item {
-            display: block;
-            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
             color: #303740;
-            font-size: 13px;
+            font-size: 14px;
+            line-height: 1.2;
             text-decoration: none;
         }
 
@@ -782,6 +825,21 @@
             border: 0;
             background: transparent;
             text-align: left;
+        }
+
+        .action-icon {
+            width: 18px;
+            flex: 0 0 18px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .action-icon--danger {
+            color: #e34b5f;
+        }
+
+        .action-icon--dark {
+            color: #3b4450;
         }
 
         .profile-stats {
@@ -838,7 +896,7 @@
             text-align: center;
             cursor: pointer;
             color: #4c5a6a;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             border-bottom: 3px solid transparent;
             transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -934,14 +992,14 @@
 
         .info-table th,
         .info-table td {
-            padding: 12px 0;
+            padding: 8px 0px 9px 0;
             border-bottom: 1px solid #eef2f7;
             font-size: 14px;
             vertical-align: middle;
         }
 
         .info-table th {
-            width: 28%;
+            max-width: 28%;
             text-align: left;
             color: #1f2d3d;
             font-weight: 700;
@@ -972,8 +1030,8 @@
         .inactive-receipt-note {
             font-size: 13px;
             color: #475569;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
+            margin-bottom: 7px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -1005,7 +1063,9 @@
             background: #fff;
             border-radius: 8px;
             width: 100%;
-            max-width: 440px;
+            height: 95vh;
+            overflow-y: scroll !important;
+            max-width: 723px;
             margin: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
@@ -1021,7 +1081,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 4px 18px;
             background: #1fb2ff;
             color: #fff;
         }
@@ -1084,13 +1144,12 @@
             display: flex;
             justify-content: flex-end;
             gap: 8px;
-            padding: 12px 18px;
-            border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
+            padding: 0px 31px 18px;
+            /* border-top: 1px solid #e2e8f0; */
+            /* background: #f8fafc; */
         }
 
-        .btn-fee-cancel,
-        .btn-fee-save {
+        .btn-fee-cancel{
             padding: 7px 16px;
             border-radius: 4px;
             font-size: 13px;
@@ -1104,10 +1163,10 @@
             color: #1f2d3d;
         }
 
-        .btn-fee-save {
+        /* .btn-fee-save {
             background: #20b2aa;
             color: #fff;
-        }
+        } */
 
         @media (max-width: 767px) {
             .student-tab-bar {
@@ -1196,6 +1255,9 @@
 
             var inactiveModal = document.getElementById('inactiveModal');
             var inactiveForm = document.getElementById('inactiveForm');
+            var inactiveActionField = document.getElementById('inactive_action');
+            var inactiveModalTitle = document.getElementById('inactiveModalTitle');
+            var inactiveReasonLabel = document.getElementById('inactiveReasonLabel');
             var leaveDateField = document.getElementById('leave_date');
             var damageField = document.getElementById('damage_deduction_amount');
             var usedDaysField = document.getElementById('inactive_used_days');
@@ -1264,9 +1326,21 @@
                 }
             }
 
-            function openInactiveModal() {
+            function openInactiveModal(config) {
                 if (!inactiveModal) {
                     return;
+                }
+
+                if (inactiveActionField) {
+                    inactiveActionField.value = config && config.action ? config.action : 'leave';
+                }
+
+                if (inactiveModalTitle) {
+                    inactiveModalTitle.textContent = config && config.title ? config.title : 'Leave Coworking Member';
+                }
+
+                if (inactiveReasonLabel) {
+                    inactiveReasonLabel.textContent = config && config.reasonLabel ? config.reasonLabel : 'Reason for Leaving';
                 }
 
                 inactiveModal.classList.add('is-open');
@@ -1290,7 +1364,11 @@
                     document.querySelectorAll('.student-action-wrap.is-open').forEach(function (node) {
                         node.classList.remove('is-open');
                     });
-                    openInactiveModal();
+                    openInactiveModal({
+                        action: this.getAttribute('data-inactive-action'),
+                        title: this.getAttribute('data-inactive-title'),
+                        reasonLabel: this.getAttribute('data-inactive-reason-label')
+                    });
                 });
             });
 
@@ -1357,4 +1435,3 @@
         })();
     </script>
 @endpush
-

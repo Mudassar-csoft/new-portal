@@ -326,11 +326,14 @@
 
         .registration-form label,
         .registration-form .form-label {
-            display: block;
-            min-height: 22px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #223a57;
+          
+    margin-bottom: 6px;
+    margin-top: 6px;
+    font-size: 13.8px !important;
+    color: #343a40 !important;
+    text-transform: uppercase;
+    font-weight: 600;
+
         }
 
         .registration-form .form-control {

@@ -144,7 +144,14 @@
             color: #54667a;
             font-weight: 600;
         }
-
+        .form-label {
+                margin-bottom: 6px;
+                margin-top: 6px;
+                font-size: 13.8px !important;
+                color: #343a40 !important;
+                text-transform: uppercase;
+                font-weight: 600;
+        }
         .lead-content {
             opacity: 0;
             visibility: hidden;
@@ -236,7 +243,7 @@
         .lead-transfer-form label {
             display: inline-block;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 600;
             /* color: #223a57; */
         }
 
