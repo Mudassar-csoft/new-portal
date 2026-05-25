@@ -7,6 +7,7 @@ use App\Models\Campus;
 use App\Models\FinanceExpense;
 use App\Models\FinanceExpenseType;
 use App\Models\FinancePayee;
+use App\Support\AccessMap;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,12 @@ class PayrollController extends Controller
             'campuses' => Campus::query()->orderBy('name')->get(),
             'employees' => FinancePayee::query()->where('type', 'employee')->where('status', 'active')->orderBy('full_name')->get(),
             'payrollExpenses' => FinanceExpense::query()->with(['campus', 'payee'])->where('category', 'payroll')->latest()->paginate(20),
-            'isAdmin' => $this->isAdmin($request),
+            'canCreatePayroll' => $this->canCreatePayroll($request),
+            'canManagePayroll' => $this->canManagePayroll($request),
+            'canViewPayroll' => $this->canViewPayroll($request),
+            'paymentMethods' => $this->paymentMethodOptions(),
+            'receiptPreviewByMethod' => $this->receiptPreviewByMethod(),
+            'settlementPayees' => $this->settlementPayees(),
         ]);
     }
 
@@ -79,13 +85,21 @@ class PayrollController extends Controller
         return back()->with('status', $created . ' payroll expense request(s) generated.');
     }
 
-    private function isAdmin(Request $request): bool
+    private function canViewPayroll(Request $request): bool
     {
-        $user = $request->user();
-        if (!$user) {
-            return false;
-        }
-        return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+        return $request->user()?->hasAnyPermission(['finance.payroll.view']) ?? false;
+    }
+
+    private function canCreatePayroll(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.payroll.create']) ?? false;
+    }
+
+    private function canManagePayroll(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(
+            AccessMap::financeExpenseManagePermissions('payroll')
+        ) ?? false;
     }
 
     private function generateExpenseVoucherNo(string $campusCode): string
@@ -103,5 +117,47 @@ class PayrollController extends Controller
         $prefix = $campusCode . '-' . strtoupper($modeCode) . '-' . now()->format('my');
         $count = FinanceExpense::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
         return $prefix . '-' . str_pad((string) $count, 6, '0', STR_PAD_LEFT);
+    }
+
+    private function paymentMethodOptions(): array
+    {
+        return [
+            'cash' => 'Cash',
+            'bank' => 'Bank',
+            'cheque' => 'Cheque',
+            'online_transfer' => 'Online Transfer',
+            'easypaisa' => 'EasyPaisa',
+            'jazzcash' => 'JazzCash',
+        ];
+    }
+
+    private function settlementPayees()
+    {
+        return FinancePayee::query()
+            ->whereIn('type', ['supplier', 'payee', 'employee'])
+            ->where('status', 'active')
+            ->orderBy('full_name')
+            ->get(['id', 'full_name', 'display_name', 'company_name', 'type', 'status']);
+    }
+
+    private function receiptPreviewByMethod(): array
+    {
+        $modeCodes = [
+            'cash' => 'CSH',
+            'bank' => 'BNK',
+            'cheque' => 'CHQ',
+            'online_transfer' => 'OTR',
+            'easypaisa' => 'EZY',
+            'jazzcash' => 'JZZ',
+        ];
+
+        $previews = [];
+        foreach ($modeCodes as $method => $code) {
+            $prefix = 'INV-' . $code . '-' . now()->format('my');
+            $count = FinanceExpense::query()->where('receipt_no', 'like', $prefix . '-%')->count() + 1;
+            $previews[$method] = $prefix . '-' . str_pad((string) $count, 7, '0', STR_PAD_LEFT);
+        }
+
+        return $previews;
     }
 }

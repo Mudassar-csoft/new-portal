@@ -13,11 +13,13 @@ use Illuminate\View\View;
 
 class PayeeController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('finance.payee.index', [
             'payees' => FinancePayee::query()->with(['campus', 'bankAccounts'])->orderByDesc('id')->paginate(20),
             'campuses' => Campus::query()->orderBy('name')->get(['id', 'name', 'code']),
+            'canCreatePayees' => $this->canCreatePayees($request),
+            'canViewPayees' => $this->canViewPayees($request),
         ]);
     }
 
@@ -82,5 +84,15 @@ class PayeeController extends Controller
         }
 
         return back()->with('status', 'Supplier/Payee saved successfully.');
+    }
+
+    private function canCreatePayees(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.payee.create']) ?? false;
+    }
+
+    private function canViewPayees(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.payee.view']) ?? false;
     }
 }

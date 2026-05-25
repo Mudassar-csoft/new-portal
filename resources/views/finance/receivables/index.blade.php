@@ -24,14 +24,15 @@
             </div>
         @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card">
-            <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title form-label">Manual Invoice (Fine / Certificate / Other)</h3>
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('finance.receivables.store') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-row">
+        @if($canCreateReceivables)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card">
+                <header class="box-typical-header panel-heading finance-header">
+                    <h3 class="panel-title form-label">Manual Invoice (Fine / Certificate / Other)</h3>
+                </header>
+                <div class="box-typical-body panel-body">
+                    <form method="POST" action="{{ route('finance.receivables.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-row">
                         <div class="form-group col-md-6 col-lg-3">
                             <label class="form-label required" >Campus / Franchise</label>
                             <select name="campus_id" class="form-control" required>
@@ -119,15 +120,17 @@
                         <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>
                         <button type="submit" class="btn btn-inline btn-danger-outline">Cancel</button>
                     </div>
-                </form>
-            </div>
-        </section>
+                    </form>
+                </div>
+            </section>
+        @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
-            <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title form-label">Receivables</h3>
-            </header>
-            <div class="box-typical-body panel-body">
+        @if($canViewReceivables)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
+                <header class="box-typical-header panel-heading finance-header">
+                    <h3 class="panel-title form-label">Receivables</h3>
+                </header>
+                <div class="box-typical-body panel-body">
                 <form class="mb-3" method="GET" action="{{ route('finance.receivables') }}">
                     <div class="form-row">
                         <div class="form-group col-md-5">
@@ -191,18 +194,18 @@
                                                 @if($charge->attachment_path)
                                                     <a class="dropdown-item" href="{{ asset('storage/' . $charge->attachment_path) }}" target="_blank">View Image</a>
                                                 @endif
-                                                @if($charge->status === 'pending')
+                                                @if($canUpdateReceivables && $charge->status === 'pending')
                                                     <a class="dropdown-item text-primary" data-toggle="collapse" href="#collect-{{ $charge->id }}">
                                                         Collect Payment
                                                     </a>
                                                 @else
-                                                    <span class="dropdown-item text-success">Already Paid</span>
+                                                    <span class="dropdown-item text-muted">{{ $charge->status === 'paid' ? 'Already Paid' : 'Permission required' }}</span>
                                                 @endif
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
-                                @if($charge->status === 'pending')
+                                @if($canUpdateReceivables && $charge->status === 'pending')
                                     <tr class="collapse" id="collect-{{ $charge->id }}">
                                         <td colspan="9">
                                             <form method="POST" action="{{ route('finance.receivables.collect', $charge) }}" enctype="multipart/form-data">
@@ -252,8 +255,9 @@
                 </div>
 
                 {{ $charges->links() }}
-            </div>
-        </section>
+                </div>
+            </section>
+        @endif
     </div>
 @endsection
 

@@ -17,15 +17,16 @@
             </div>
         @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card">
-            <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title form-label">Expense Management <span class="text-muted">|</span> Manage Supplier, Payee & Employee</h3>
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('finance.payees.store') }}">
-                    @csrf
-                    <h4 class="section-title mt-2" style = "gap:18px;padding-left:15px">Basic Profile</h4>
-                    <div class="form-row">
+        @if($canCreatePayees)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card">
+                <header class="box-typical-header panel-heading finance-header">
+                    <h3 class="panel-title form-label">Expense Management <span class="text-muted">|</span> Manage Supplier, Payee & Employee</h3>
+                </header>
+                <div class="box-typical-body panel-body">
+                    <form method="POST" action="{{ route('finance.payees.store') }}">
+                        @csrf
+                        <h4 class="section-title mt-2" style = "gap:18px;padding-left:15px">Basic Profile</h4>
+                        <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Type</label>
                             <select name="type" class="form-control" required>
@@ -146,12 +147,14 @@
                         <button type="submit" class="btn btn-inline btn-primary-outline">Save</button>
                         <button type="submit" class="btn btn-inline btn-danger-outline">Cancel</button>
                     </div>
-                </form>
-            </div>
-        </section>
+                    </form>
+                </div>
+            </section>
+        @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
-            <div class="box-typical-body panel-body">
+        @if($canViewPayees)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
+                <div class="box-typical-body panel-body">
                 <div class="table-responsive">
                     <table class="table table-bordered finance-table">
                         <thead>
@@ -197,8 +200,9 @@
                     </table>
                 </div>
                 {{ $payees->links() }}
-            </div>
-        </section>
+                </div>
+            </section>
+        @endif
     </div>
 @endsection
 

@@ -91,6 +91,9 @@
                         </thead>
                         <tbody>
                             @forelse($payables as $expense)
+                                @php
+                                    $canManageExpense = auth()->user()?->hasAnyPermission(\App\Support\AccessMap::financeExpenseManagePermissions($expense->category)) ?? false;
+                                @endphp
                                 <tr>
                                     <td>{{ $expense->voucher_no ?? 'N/A' }}</td>
                                     <td>{{ $expense->expenseType->name ?? ucfirst($expense->category ?? 'expense') }}</td>
@@ -108,7 +111,7 @@
                                                 @if($expense->attachment_path)
                                                     <a class="dropdown-item" href="{{ asset('storage/' . $expense->attachment_path) }}" target="_blank">View Image</a>
                                                 @endif
-                                                @if($isAdmin && $expense->status === 'pending')
+                                                @if($canManageExpense && $expense->status === 'pending')
                                                     <form method="POST" action="{{ route('finance.expense.approve', $expense) }}">
                                                         @csrf
                                                         <button class="dropdown-item text-success" type="submit">Approve</button>
@@ -119,11 +122,11 @@
                                                         <button class="dropdown-item text-danger" type="submit">Regret / Reject</button>
                                                     </form>
                                                 @endif
-                                                @if($expense->status === 'approved')
-                                                    @include('finance.partials.pay_now_modal', ['expense' => $expense, 'paymentMethods' => $paymentMethods, 'isAdmin' => $isAdmin])
+                                                @if($canManageExpense && $expense->status === 'approved')
+                                                    @include('finance.partials.pay_now_modal', ['expense' => $expense, 'paymentMethods' => $paymentMethods, 'canAdjustAmount' => $canManageExpense])
                                                 @endif
-                                                @if(!$isAdmin && $expense->status !== 'approved')
-                                                    <span class="dropdown-item text-muted">Admin action required</span>
+                                                @if(!$canManageExpense && $expense->status !== 'approved')
+                                                    <span class="dropdown-item text-muted">Permission required</span>
                                                 @endif
                                             </div>
                                         </div>

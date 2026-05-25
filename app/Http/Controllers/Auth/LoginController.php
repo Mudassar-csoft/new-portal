@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserLoginLog;
+use App\Support\AccessMap;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -42,7 +43,7 @@ class LoginController extends Controller
                 'logged_at' => now(),
             ]);
 
-            return redirect()->intended('/')
+            return redirect()->intended(AccessMap::firstAccessibleRouteFor($user))
                 ->with('welcome', optional($request->user())->name ?? 'User');
         }
 

@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'admin_otp_email' => env('ADMIN_OTP_EMAIL', 'adeelajavaid.50@gmail.com'),
+    'admin_otp_email' => env('ADMIN_OTP_EMAIL', 'uafmcs@gmail.com'),
 
     /*
     |--------------------------------------------------------------------------
