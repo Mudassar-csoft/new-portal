@@ -164,7 +164,7 @@
                     </div>
 
                     <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline" id="expenseSubmitBtn">Submit For Approval</button>
+                        <button type="submit" class="btn btn-inline btn-primary-outline" id="expenseSubmitBtn" >Submit For Approval</button>
                         <button type="submit" class="btn btn-inline btn-danger-outline" id="expenseSubmitBtn">Cancel</button>
                     </div>
                 </form>

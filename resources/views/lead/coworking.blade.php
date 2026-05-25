@@ -8,7 +8,22 @@
             ?? optional($campuses->firstWhere('id', data_get($leadPrefill, 'campus_id')))->code
     );
 @endphp
-<div id="lead-form-coworking" class="lead-form active" data-type="coworking">
+<div id="lead-form-coworking" class="lead-form active coworking-voucher-lead" data-type="coworking">
+    <div class="coworking-voucher-head">
+        <div class="coworking-voucher-brand">
+            <div class="coworking-voucher-kicker">Career Institute</div>
+            <div class="coworking-voucher-name">Coworking Lead Intake</div>
+            <div class="coworking-voucher-copy">Structured in the same voucher-style layout for faster scanning and entry.</div>
+        </div>
+        <div class="coworking-voucher-meta">
+            <div><span>Lead Type</span><strong>Coworking Space</strong></div>
+            <div><span>Preferred Branch</span><strong>{{ $selectedPreferredBranch ?: 'Pending' }}</strong></div>
+            <div><span>Stage</span><strong>New Lead</strong></div>
+        </div>
+    </div>
+
+    <section class="voucher-section">
+        <div class="voucher-section-title">Client Details</div>
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Full Name (As Per CNIC)</label>
@@ -144,6 +159,10 @@
             @enderror
         </div>
     </div>
+    </section>
+
+    <section class="voucher-section">
+        <div class="voucher-section-title">Lead Preferences</div>
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Marketing Source</label>
@@ -210,4 +229,132 @@
             @enderror
         </div>
     </div>
+    </section>
 </div>
+
+@once
+    @push('styles')
+        <style>
+            .coworking-voucher-lead {
+                border: 1px solid #2f2f2f;
+                background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+                padding: 18px 16px 10px;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-head {
+                display: grid;
+                grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.9fr);
+                gap: 14px;
+                align-items: start;
+                border-bottom: 1px solid #2f2f2f;
+                padding-bottom: 14px;
+                margin-bottom: 14px;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-kicker {
+                font-size: 12px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: #6b7280;
+                margin-bottom: 4px;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-name {
+                font-size: 24px;
+                font-weight: 700;
+                color: #111827;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-copy {
+                margin-top: 4px;
+                font-size: 13px;
+                color: #4b5563;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-meta {
+                display: grid;
+                gap: 8px;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-meta > div {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 6px 0;
+                border-bottom: 1px solid #d1d5db;
+                font-size: 13px;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-meta span {
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
+            .coworking-voucher-lead .coworking-voucher-meta strong {
+                color: #111827;
+                font-weight: 700;
+            }
+
+            .coworking-voucher-lead .voucher-section {
+                border: 1px solid #2f2f2f;
+                background: #fff;
+                padding: 12px 10px 2px;
+                margin-bottom: 14px;
+            }
+
+            .coworking-voucher-lead .voucher-section-title {
+                display: inline-block;
+                margin: -21px 0 10px;
+                padding: 0 8px;
+                background: #fff;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #111827;
+            }
+
+            .coworking-voucher-lead .form-label {
+                margin-bottom: 6px;
+                margin-top: 6px;
+                font-size: 13.8px !important;
+                color: #343a40 !important;
+                text-transform: uppercase;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+            }
+
+            .coworking-voucher-lead .form-control,
+            .coworking-voucher-lead .choice-group {
+                min-height: 46px;
+                border-radius: 0;
+                border: 1px solid #6b7280;
+                background: #fff;
+                box-shadow: none;
+            }
+
+            .coworking-voucher-lead .choice-group {
+                margin-left: 0;
+                margin-right: 0;
+                align-items: center;
+            }
+
+            .coworking-voucher-lead .field-error {
+                margin-top: 6px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            @media (max-width: 767px) {
+                .coworking-voucher-lead .coworking-voucher-head {
+                    grid-template-columns: 1fr;
+                }
+
+                .coworking-voucher-lead .coworking-voucher-name {
+                    font-size: 20px;
+                }
+            }
+        </style>
+    @endpush
+@endonce
