@@ -45,7 +45,7 @@ class InventoryController extends Controller
             'filters' => $filters,
             'categories' => InventoryItem::categories(),
             'categoryLabels' => InventoryItem::categoryLabels(),
-            'isAdmin' => $this->isAdmin($request),
+            'isAdmin' => $this->canUpdateInventory($request),
             'summary' => [
                 'records' => (clone $summaryBase)->count(),
                 'total_quantity' => (int) (clone $summaryBase)->sum('quantity'),
@@ -66,7 +66,7 @@ class InventoryController extends Controller
             'conditions' => InventoryItem::conditionStatuses(),
             'selectedCampusId' => $selectedCampusId,
             'inventoryItem' => null,
-            'isAdmin' => $this->isAdmin($request),
+            'isAdmin' => $this->canUpdateInventory($request),
             'recentItems' => InventoryItem::query()
                 ->with('campus:id,code,name')
                 ->when($selectedCampusId, fn ($q, $campusId) => $q->where('campus_id', $campusId))
@@ -78,7 +78,7 @@ class InventoryController extends Controller
 
     public function edit(Request $request, InventoryItem $inventoryItem): View
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanUpdateInventory($request);
 
         return view('inventory.create', [
             'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name', 'campus_type']),
@@ -143,7 +143,7 @@ class InventoryController extends Controller
 
     public function update(Request $request, InventoryItem $inventoryItem): RedirectResponse
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanUpdateInventory($request);
 
         $validated = $request->validate([
             'campus_id' => ['required', 'exists:campuses,id'],
@@ -195,14 +195,14 @@ class InventoryController extends Controller
         return $code;
     }
 
-    private function ensureAdmin(Request $request): void
+    private function ensureCanUpdateInventory(Request $request): void
     {
-        if (!$this->isAdmin($request)) {
-            abort(403, 'Only admin can edit inventory records.');
+        if (!$this->canUpdateInventory($request)) {
+            abort(403, 'You do not have permission to update inventory records.');
         }
     }
 
-    private function isAdmin(Request $request): bool
+    private function canUpdateInventory(Request $request): bool
     {
         $user = $request->user();
 
@@ -210,6 +210,6 @@ class InventoryController extends Controller
             return false;
         }
 
-        return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+        return $user->hasAnyPermission(['inventory.update']);
     }
 }

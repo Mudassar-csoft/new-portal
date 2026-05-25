@@ -17,23 +17,67 @@
 					@csrf
 					@method('PUT')
 					<div class="form-section">
-						<!-- <div class="section-title form-label">User Details</div> -->
+						<div class="section-title">Access &amp; Roles</div>
 						<div class="form-row">
-						<div class="form-group col-md-4">
-							<label class="form-label required">Full Name</label>
-							<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
-							@error('name')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
+							<div class="form-group col-md-6">
+								<label class="form-label">Campus</label>
+								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
+									<option value="">Select campus</option>
+									@foreach($campuses as $campus)
+										<option value="{{ $campus->id }}" @selected(old('campus_id', $user->campus_id) == $campus->id)>{{ $campus->name }}</option>
+									@endforeach
+								</select>
+								@error('campus_id')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							<div class="form-group col-md-6">
+								<label class="form-label">Roles</label>
+								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
+									@foreach($roles as $role)
+										<option value="{{ $role->id }}" data-slug="{{ $role->slug }}" @selected(collect(old('roles', $user->roles->pluck('id')->all()))->contains($role->id))>{{ $role->name }}</option>
+									@endforeach
+								</select>
+								<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
+								@error('roles')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+								@error('roles.*')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
 						</div>
-						<div class="form-group col-md-4">
-							<label class="form-label required">Email Address</label>
-							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}" required>
-							@error('email')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
+					</div>
+					@php($selectedPermissionIds = collect(old('permissions', $user->permissions->pluck('id')->all()))->map(fn ($id) => (int) $id))
+					@include('user.partials.direct-permissions', ['permissionGroups' => $permissionGroups, 'selectedPermissionIds' => $selectedPermissionIds])
+					<div class="form-section">
+						<div class="section-title">User Details</div>
+						<div class="form-row">
+							<div class="form-group col-md-6">
+								<label class="form-label required">Full Name</label>
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name', $user->name) }}" required>
+								@error('name')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							<div class="form-group col-md-6">
+								<label class="form-label required">Email</label>
+								<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email', $user->email) }}" required>
+								@error('email')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
 						</div>
-						<div class="form-group col-md-4">
+					</div>
+					<div class="form-section">
+						<div class="section-title d-flex align-items-center justify-content-between">
+							<span>Security</span>
+							<button id="generate-password" type="button" class="btn btn-sm btn-primary" aria-label="Generate strong password" title="Generate strong password">
+								<i class="fa fa-random"></i>
+							</button>
+						</div>
+						<div class="form-row align-items-end">
+							<div class="form-group col-md-6">
 								<label class="form-label">
 									<span>Password</span>
 									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
@@ -50,13 +94,7 @@
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
-							
-					</div>
-					</div>
-					<div class="form-section">
-						<!-- <div class="section-title form-label">Access &amp; Roles</div> -->
-						<div class="form-row" >
-							<div class="form-group col-md-4">
+							<div class="form-group col-md-6">
 								<label class="form-label">Confirm Password</label>
 								<div class="input-group">
 									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
@@ -70,39 +108,12 @@
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
-						<div class="form-group col-md-4">
-							<label class="form-label">Campus</label>
-								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
-									<option value="">Select campus</option>
-								@foreach($campuses as $campus)
-									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
-								@endforeach
-							</select>
-							@error('campus_id')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
 						</div>
-						<div class="form-group col-md-4">
-							<label class="form-label">Roles</label>
-								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
-								@foreach($roles as $role)
-									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
-								@endforeach
-							</select>
-							<!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small> -->
-							@error('roles')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-							@error('roles.*')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-					</div>
 					</div>
 
 					<div class="text-right mt-3">
-						<button type="submit" class="btn btn-primary-outline">Save Changes</button>
-						<a href="{{ route('users.index') }}" class="btn btn-danger-outline mr-2">Cancel</a>
+						<a href="{{ route('users.index') }}" class="btn btn-default mr-2">Cancel</a>
+						<button type="submit" class="btn btn-primary">Save Changes</button>
 					</div>
 				</form>
 			</div>
@@ -129,7 +140,7 @@
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
 		.form-section {
 			background: #fff;
-			/* border: 1px solid #e6edf5; */
+			border: 1px solid #e6edf5;
 			border-radius: 12px;
 			padding: 18px 18px 6px;
 			margin-bottom: 18px;
@@ -199,8 +210,8 @@
 			border: 1px solid #2b78ff;
 			background: #e9f2ff;
 			color: #1f2d3d;
-			    padding: 0px 10px 6px 10px;
-    margin: -8px 6px 0 0;
+			padding: 0px 10px 6px 10px;
+			margin: -8px 6px 0 0;
 			font-size: 13px;
 			position: relative;
 		}
@@ -308,6 +319,22 @@
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
+				function syncAdminPermissions() {
+					const roleSelect = document.querySelector('.select2-roles');
+					if (!roleSelect) return;
+
+					const selectedOptions = Array.from(roleSelect.selectedOptions || []);
+					const adminSelected = selectedOptions.some(function (option) {
+						return ['admin', 'owner'].includes(option.dataset.slug || '');
+					});
+
+					document.querySelectorAll('input[name="permissions[]"]').forEach(function (checkbox) {
+						if (adminSelected) {
+							checkbox.checked = true;
+						}
+					});
+				}
+
 				if (window.jQuery && $.fn.select2) {
 					$('.select2-user').select2({
 						width: '100%',
@@ -321,13 +348,15 @@
 						closeOnSelect: false,
 						templateResult: function (state) {
 							if (!state.id) return state.text;
-							return $('<span class="role-check"><span class="box">✓</span>' + state.text + '</span>');
+							return $('<span class="role-check"><span class="box">&#10003;</span>' + state.text + '</span>');
 						},
 						templateSelection: function (state) {
 							return state.text;
 						},
 					});
 				}
+				syncAdminPermissions();
+				document.querySelector('.select2-roles')?.addEventListener('change', syncAdminPermissions);
 				document.querySelectorAll('.toggle-visibility').forEach(function (btn) {
 					btn.addEventListener('click', function () {
 						toggleVisibility(this);

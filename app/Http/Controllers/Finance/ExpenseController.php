@@ -11,6 +11,7 @@ use App\Models\FinanceBuildingRent;
 use App\Models\FinanceExpense;
 use App\Models\FinanceExpenseType;
 use App\Models\FinancePayee;
+use App\Support\AccessMap;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,6 @@ class ExpenseController extends Controller
                 ->get(),
             'paymentMethods' => $this->paymentMethodOptions(),
             'receiptPreviewByMethod' => $this->receiptPreviewByMethod(),
-            'isAdmin' => $this->isAdmin($request),
         ]);
     }
 
@@ -212,13 +212,12 @@ class ExpenseController extends Controller
             ],
             'paymentMethods' => $this->paymentMethodOptions(),
             'receiptPreviewByMethod' => $this->receiptPreviewByMethod(),
-            'isAdmin' => $this->isAdmin($request),
         ]);
     }
 
     public function approve(Request $request, FinanceExpense $expense): RedirectResponse
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanManageExpense($request, $expense);
 
         if (in_array($expense->status, ['approved', 'paid'], true)) {
             return back()->with('status', 'Expense already approved.');
@@ -238,7 +237,7 @@ class ExpenseController extends Controller
 
     public function reject(Request $request, FinanceExpense $expense): RedirectResponse
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanManageExpense($request, $expense);
 
         if ($expense->is_reversal) {
             return back()->with('error', 'Reversal entry cannot be rejected.');
@@ -307,7 +306,7 @@ class ExpenseController extends Controller
 
     public function markPaid(Request $request, FinanceExpense $expense): RedirectResponse
     {
-        $this->ensureCanSettle($request, $expense);
+        $this->ensureCanManageExpense($request, $expense);
 
         if ($expense->status === 'paid') {
             return back()->with('status', 'Expense already marked as paid.');
@@ -341,9 +340,7 @@ class ExpenseController extends Controller
             return back()->withErrors(['payment_ref_no' => 'Payment reference number is required for the selected payment method.']);
         }
 
-        $amount = $this->isAdmin($request)
-            ? (float) ($validated['amount'] ?? $expense->amount)
-            : (float) $expense->amount;
+        $amount = (float) ($validated['amount'] ?? $expense->amount);
 
         if ($amount <= 0) {
             return back()->withErrors(['amount' => 'Amount must be greater than zero.']);
@@ -400,13 +397,15 @@ class ExpenseController extends Controller
         return back()->with('status', 'Expense paid successfully.');
     }
 
-    public function typesIndex(): View
+    public function typesIndex(Request $request): View
     {
         $this->ensureDefaultExpenseTypes();
 
         return view('finance.expense.types', [
             'types' => FinanceExpenseType::query()->orderBy('name')->paginate(30),
             'categories' => $this->categories,
+            'canCreateExpenseTypes' => $this->canCreateExpenseTypes($request),
+            'canViewExpenseTypes' => $this->canViewExpenseTypes($request),
         ]);
     }
 
@@ -463,7 +462,6 @@ class ExpenseController extends Controller
             ],
             'paymentMethods' => $this->paymentMethodOptions(),
             'receiptPreviewByMethod' => $this->receiptPreviewByMethod(),
-            'isAdmin' => $this->isAdmin($request),
         ]);
     }
 
@@ -568,39 +566,28 @@ class ExpenseController extends Controller
         return in_array($category, $this->categories, true) ? $category : 'general';
     }
 
-    protected function ensureAdmin(Request $request): void
+    protected function ensureCanManageExpense(Request $request, ?FinanceExpense $expense = null): void
     {
-        if (!$this->isAdmin($request)) {
-            abort(403, 'Only admin can perform this action.');
+        if (!$this->canManageExpense($request, $expense)) {
+            abort(403, 'You do not have permission to manage this expense.');
         }
     }
 
-    protected function ensureCanSettle(Request $request, FinanceExpense $expense): void
+    protected function canManageExpense(Request $request, ?FinanceExpense $expense = null): bool
     {
-        $user = $request->user();
-        if (!$user) {
-            abort(403, 'You are not allowed to pay this expense.');
-        }
-
-        if ($this->isAdmin($request)) {
-            return;
-        }
-
-        if ((int) $expense->requested_by === (int) $user->id || (int) $expense->created_by === (int) $user->id) {
-            return;
-        }
-
-        abort(403, 'Only admin or the requesting campus user can pay this expense.');
+        return $request->user()?->hasAnyPermission(
+            AccessMap::financeExpenseManagePermissions($expense?->category)
+        ) ?? false;
     }
 
-    protected function isAdmin(Request $request): bool
+    protected function canViewExpenseTypes(Request $request): bool
     {
-        $user = $request->user();
-        if (!$user) {
-            return false;
-        }
+        return $request->user()?->hasAnyPermission(['finance.expense.view']) ?? false;
+    }
 
-        return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+    protected function canCreateExpenseTypes(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.expense.create']) ?? false;
     }
 
     protected function storeAttachment(?UploadedFile $file): ?string

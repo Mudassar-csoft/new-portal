@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Mail\WelcomeUserMail;
 use App\Models\Campus;
 use App\Models\User;
+use App\Models\User\Permission;
 use App\Models\User\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -94,8 +96,9 @@ class UserController extends Controller
     {
         $campuses = Campus::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
+        $permissionGroups = $this->permissionGroups();
 
-        return view('user.create', compact('campuses', 'roles'));
+        return view('user.create', compact('campuses', 'roles', 'permissionGroups'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -106,6 +109,8 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'roles' => ['array'],
             'roles.*' => ['exists:roles,id'],
+            'permissions' => ['array'],
+            'permissions.*' => ['exists:permissions,id'],
         ]);
 
         try {
@@ -124,6 +129,8 @@ class UserController extends Controller
                 );
             }
 
+            $this->syncUserPermissions($user, $validated['roles'] ?? [], $validated['permissions'] ?? []);
+
             $this->sendWelcomeEmail($user, $request->user());
 
             return redirect()->route('users.index')
@@ -140,9 +147,14 @@ class UserController extends Controller
     {
         $campuses = Campus::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
-        $user->load('roles');
+        $permissionGroups = $this->permissionGroups();
+        $user->load(['roles', 'permissions']);
 
-        return view('user.edit', compact('user', 'campuses', 'roles'));
+        if ($user->roles->pluck('slug')->intersect(['owner', 'admin'])->isNotEmpty()) {
+            $user->setRelation('permissions', Permission::query()->orderBy('resource')->orderBy('action')->get());
+        }
+
+        return view('user.edit', compact('user', 'campuses', 'roles', 'permissionGroups'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -154,6 +166,8 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'roles' => ['array'],
             'roles.*' => ['exists:roles,id'],
+            'permissions' => ['array'],
+            'permissions.*' => ['exists:permissions,id'],
         ]);
 
         // Prevent demoting the last admin
@@ -180,6 +194,7 @@ class UserController extends Controller
                 $id => ['assigned_by' => optional($request->user())->id],
             ])
         );
+        $this->syncUserPermissions($user, $validated['roles'] ?? [], $validated['permissions'] ?? []);
 
         return redirect()->route('users.index')->with('status', 'User updated.');
     }
@@ -254,5 +269,219 @@ class UserController extends Controller
         $newRoleSlugs = Role::whereIn('id', $newRoleIds)->pluck('slug')->all();
 
         return !array_intersect(['owner', 'admin'], $newRoleSlugs);
+    }
+
+    /**
+     * @param  array<int, int|string>  $roleIds
+     * @param  array<int, int|string>  $permissionIds
+     */
+    private function syncUserPermissions(User $user, array $roleIds, array $permissionIds): void
+    {
+        $roleSlugs = Role::query()
+            ->whereIn('id', $roleIds)
+            ->pluck('slug');
+
+        if ($roleSlugs->intersect(['owner', 'admin'])->isNotEmpty()) {
+            $user->permissions()->sync(Permission::query()->pluck('id')->all());
+
+            return;
+        }
+
+        $user->permissions()->sync($permissionIds);
+    }
+
+    /**
+     * @return array<int, array{key: string, label: string, permissions: array<int, array{id: int, label: string}>}>
+     */
+    private function permissionGroups(): array
+    {
+        $permissions = Permission::query()
+            ->orderBy('resource')
+            ->orderBy('action')
+            ->get()
+            ->sortBy(fn (Permission $permission) => sprintf(
+                '%02d:%s',
+                $this->permissionPriority($permission),
+                $this->canonicalPermissionKey($permission)
+            ))
+            ->unique(fn (Permission $permission) => $this->canonicalPermissionKey($permission));
+
+        return $permissions
+            ->groupBy(fn (Permission $permission) => $this->permissionModuleKey($permission))
+            ->map(function (Collection $groupPermissions, string $moduleKey): array {
+                return [
+                    'key' => $moduleKey,
+                    'label' => $this->permissionModuleLabel($moduleKey),
+                    'permissions' => $groupPermissions
+                        ->map(fn (Permission $permission): array => [
+                            'id' => (int) $permission->id,
+                            'label' => $this->permissionDisplayLabel($permission),
+                        ])
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values()
+            ->all();
+    }
+
+    private function permissionPriority(Permission $permission): int
+    {
+        if (str_starts_with($permission->resource, 'hrm_')) {
+            return 0;
+        }
+
+        if (str_starts_with($permission->resource, 'hrm.')) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private function canonicalPermissionKey(Permission $permission): string
+    {
+        $resource = $permission->resource;
+
+        if (str_starts_with($resource, 'hrm.')) {
+            $resource = str_replace('hrm.', 'hrm_', $resource);
+        }
+
+        return $resource . '.' . $permission->action;
+    }
+
+    private function permissionModuleKey(Permission $permission): string
+    {
+        return match (true) {
+            $permission->resource === 'lead' && str_starts_with($permission->action, 'followup') => 'training-leads',
+            $permission->resource === 'lead' && $permission->action === 'transfer.approve' => 'training-leads',
+            $permission->resource === 'dashboard' => 'dashboard',
+            $permission->resource === 'lead' => 'lead-management',
+            $permission->resource === 'web-lead' => 'web-leads',
+            $permission->resource === 'registration' => 'registration-management',
+            $permission->resource === 'admission' => 'admission-management',
+            $permission->resource === 'student' => 'student-management',
+            $permission->resource === 'inventory' => 'inventory-management',
+            $permission->resource === 'batch' || $permission->resource === 'batch-timetable' => 'batch-management',
+            $permission->resource === 'program' => 'programme-management',
+            $permission->resource === 'campus' => 'campus-management',
+            $permission->resource === 'certificate' => 'certificate-management',
+            $permission->resource === 'user' => 'user-management',
+            $permission->resource === 'role' => 'role-management',
+            $permission->resource === 'permission' => 'permission-management',
+            $permission->resource === 'report' => 'reports',
+            str_starts_with($permission->resource, 'finance.') => 'finance-management',
+            str_starts_with($permission->resource, 'hrm_') || str_starts_with($permission->resource, 'hrm.') => 'human-resources',
+            default => str_replace(['.', '_'], '-', $permission->resource),
+        };
+    }
+
+    private function permissionModuleLabel(string $moduleKey): string
+    {
+        return [
+            'dashboard' => 'Dashboard',
+            'lead-management' => 'Lead Management',
+            'training-leads' => 'Training Leads',
+            'web-leads' => 'Web Leads',
+            'registration-management' => 'Registration Management',
+            'admission-management' => 'Admission Management',
+            'student-management' => 'Student Management',
+            'inventory-management' => 'Inventory Management',
+            'batch-management' => 'Batches & Time Table',
+            'programme-management' => 'Programme Management',
+            'campus-management' => 'Campuses / Franchise',
+            'certificate-management' => 'Certificate Management',
+            'user-management' => 'User Management',
+            'role-management' => 'Role Management',
+            'permission-management' => 'Permission Management',
+            'reports' => 'Reports',
+            'finance-management' => 'Finance Management',
+            'human-resources' => 'Human Resources',
+        ][$moduleKey] ?? Str::headline(str_replace('-', ' ', $moduleKey));
+    }
+
+    private function permissionDisplayLabel(Permission $permission): string
+    {
+        $resourceLabel = $this->permissionResourceLabel($permission);
+
+        return match ($permission->action) {
+            'view' => 'View ' . $resourceLabel,
+            'create' => 'Create ' . $resourceLabel,
+            'update' => 'Update ' . $resourceLabel,
+            'delete' => 'Delete ' . $resourceLabel,
+            'manage' => 'Manage ' . $resourceLabel,
+            'approve' => 'Approve ' . $resourceLabel,
+            'reject' => 'Reject ' . $resourceLabel,
+            'publish' => 'Publish ' . $resourceLabel,
+            'assign' => 'Assign ' . $resourceLabel,
+            'request' => 'Request ' . $resourceLabel,
+            'process' => 'Process ' . $resourceLabel,
+            'close' => 'Close ' . $resourceLabel,
+            'import' => 'Import ' . $resourceLabel,
+            'upload' => 'Upload ' . $resourceLabel,
+            'manage_status' => 'Manage Status',
+            'manage_type' => 'Manage Types',
+            'manage_balance' => 'Manage Balances',
+            'manage_structure' => 'Manage Structure',
+            'checkin' => 'Check In',
+            'checkout' => 'Check Out',
+            'followup.view' => 'View Follow-up',
+            'followup.update' => 'Manage Follow-up',
+            'transfer.approve' => 'Approve Transfer',
+            'send-to-printing' => 'Send To Printing',
+            'mark-ready' => 'Mark Ready',
+            'mark-delivered' => 'Mark Delivered',
+            default => Str::headline(str_replace(['.', '_', '-'], ' ', $permission->action)),
+        };
+    }
+
+    private function permissionResourceLabel(Permission $permission): string
+    {
+        return [
+            'dashboard' => 'Dashboard',
+            'lead' => 'Lead',
+            'web-lead' => 'Web Lead',
+            'registration' => 'Registration',
+            'admission' => 'Admission',
+            'student' => 'Student',
+            'inventory' => 'Inventory',
+            'batch' => 'Batch',
+            'batch-timetable' => 'Batch Timetable',
+            'program' => 'Program',
+            'campus' => 'Campus',
+            'certificate' => 'Certificate',
+            'user' => 'User',
+            'role' => 'Role',
+            'permission' => 'Permission',
+            'report' => 'Report',
+            'finance.dashboard' => 'Finance Dashboard',
+            'finance.payee' => 'Payee',
+            'finance.payable' => 'Payable',
+            'finance.receivable' => 'Receivable',
+            'finance.expense' => 'Expense',
+            'finance.bill' => 'Utility Bill',
+            'finance.rent' => 'Building Rent',
+            'finance.utility' => 'Utility',
+            'finance.payroll' => 'Payroll',
+            'hrm_dashboard' => 'HRM Dashboard',
+            'hrm_employee' => 'Employee',
+            'hrm_department' => 'Department',
+            'hrm_designation' => 'Designation',
+            'hrm_shift' => 'Shift',
+            'hrm_attendance' => 'Attendance',
+            'hrm_leave' => 'Leave',
+            'hrm_holiday' => 'Holiday',
+            'hrm_payroll' => 'Payroll',
+            'hrm_announcement' => 'Announcement',
+            'hrm_document' => 'Document',
+            'hrm.employee' => 'Employee',
+            'hrm.attendance' => 'Attendance',
+            'hrm.leave' => 'Leave',
+            'hrm.payroll' => 'Payroll',
+            'hrm.shift' => 'Shift',
+            'hrm.announcement' => 'Announcement',
+            'hrm.document' => 'Document',
+            'hrm.master' => 'Master',
+        ][$permission->resource] ?? Str::headline(str_replace(['.', '_', '-'], ' ', $permission->resource));
     }
 }

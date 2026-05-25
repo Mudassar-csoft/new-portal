@@ -68,7 +68,7 @@
                                 name="amount"
                                 class="form-control"
                                 value="{{ old('amount', (float) $expense->amount) }}"
-                                @unless($isAdmin) readonly @endunless
+                                @unless($canAdjustAmount ?? false) readonly @endunless
                                 required
                             >
                         </div>

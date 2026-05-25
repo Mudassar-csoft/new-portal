@@ -16,7 +16,9 @@ class RentController extends Controller
         return view('finance.rent.index', [
             'campuses' => Campus::query()->orderBy('name')->get(),
             'rents' => FinanceBuildingRent::query()->with('campus')->latest('id')->paginate(20),
-            'isAdmin' => $this->isAdmin($request),
+            'canCreateRent' => $this->canCreateRent($request),
+            'canUpdateRent' => $this->canUpdateRent($request),
+            'canViewRent' => $this->canViewRent($request),
         ]);
     }
 
@@ -40,7 +42,7 @@ class RentController extends Controller
 
     public function update(Request $request, FinanceBuildingRent $rent): RedirectResponse
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanUpdateRent($request);
 
         $validated = $this->validateRent($request, true);
         $payload = $this->buildRentPayload($validated) + [
@@ -97,20 +99,25 @@ class RentController extends Controller
         ];
     }
 
-    private function ensureAdmin(Request $request): void
+    private function canViewRent(Request $request): bool
     {
-        if (!$this->isAdmin($request)) {
-            abort(403, 'Only admin can edit building rent records.');
+        return $request->user()?->hasAnyPermission(['finance.rent.view']) ?? false;
+    }
+
+    private function canCreateRent(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.rent.create']) ?? false;
+    }
+
+    private function ensureCanUpdateRent(Request $request): void
+    {
+        if (!$this->canUpdateRent($request)) {
+            abort(403, 'You do not have permission to update building rent records.');
         }
     }
 
-    private function isAdmin(Request $request): bool
+    private function canUpdateRent(Request $request): bool
     {
-        $user = $request->user();
-        if (!$user) {
-            return false;
-        }
-
-        return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+        return $request->user()?->hasAnyPermission(['finance.rent.update']) ?? false;
     }
 }

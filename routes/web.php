@@ -34,8 +34,28 @@ Route::post('/user/setup/{user}', [UserSetupController::class, 'store'])
     ->name('users.setup.store');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])->name('dashboard.live-data');
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.live-data');
+    Route::get('/', [DashboardController::class, 'index'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard');
+
+    Route::get('/admin/coming-soon/{module}', function (string $module) {
+        abort_unless(auth()->user()?->isAdmin(), 403);
+
+        $modules = [
+            'event-management' => 'Event Management',
+            'marketing-management' => 'Marketing Management',
+            'reports' => 'Reports',
+        ];
+
+        abort_unless(array_key_exists($module, $modules), 404);
+
+        return view('admin.coming-soon', [
+            'pageTitle' => $modules[$module],
+        ]);
+    })->name('admin.coming-soon');
 
     // Student routes
     require __DIR__ . '/student.php';
@@ -86,7 +106,11 @@ Route::middleware('auth')->group(function () {
     // Profile routes (current user's own profile + password change)
     require __DIR__ . '/profile.php';
 
-    Route::get('/student-search', [\App\Http\Controllers\StudentSearchController::class, 'index'])->name('student-search.index');
+    Route::get('/student-search', [\App\Http\Controllers\StudentSearchController::class, 'index'])
+        ->middleware('permission:student.view')
+        ->name('student-search.index');
 
-    Route::get('/login-logs', [UserLoginLogController::class, 'index'])->name('login-logs.index');
+    Route::get('/login-logs', [UserLoginLogController::class, 'index'])
+        ->middleware('permission:user.view')
+        ->name('login-logs.index');
 });
