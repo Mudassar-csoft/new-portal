@@ -19,13 +19,15 @@ use Illuminate\View\View;
 
 class UtilityController extends Controller
 {
-    public function typesIndex(): View
+    public function typesIndex(Request $request): View
     {
         $this->ensureDefaultBillTypes();
 
         return view('finance.utility.types', [
             'types' => FinanceBillType::query()->with('payee')->orderBy('name')->paginate(30),
             'payees' => FinancePayee::query()->where('status', 'active')->orderBy('full_name')->get(),
+            'canCreateBillTypes' => $this->canCreateBillTypes($request),
+            'canViewBillTypes' => $this->canViewBillTypes($request),
         ]);
     }
 
@@ -72,7 +74,10 @@ class UtilityController extends Controller
             'campuses' => Campus::query()->orderBy('name')->get(),
             'billTypes' => FinanceBillType::query()->where('is_active', true)->orderBy('name')->get(),
             'payees' => FinancePayee::query()->where('status', 'active')->orderBy('full_name')->get(),
-            'isAdmin' => $this->isAdmin($request),
+            'canCreateBills' => $this->canCreateBills($request),
+            'canUpdateBills' => $this->canUpdateBills($request),
+            'canViewBills' => $this->canViewBills($request),
+            'canCreateBillTypes' => $this->canCreateBillTypes($request),
         ]);
     }
 
@@ -106,7 +111,7 @@ class UtilityController extends Controller
 
     public function billsUpdate(Request $request, FinanceBill $bill): RedirectResponse
     {
-        $this->ensureAdmin($request);
+        $this->ensureCanUpdateBills($request);
 
         $validated = $request->validate([
             'campus_id' => ['required', 'exists:campuses,id'],
@@ -181,7 +186,8 @@ class UtilityController extends Controller
             'campuses' => Campus::query()->orderBy('name')->get(),
             'bills' => FinanceBill::query()->with(['campus', 'billType'])->whereIn('status', ['unpaid', 'partial'])->orderByDesc('id')->get(),
             'payments' => FinanceBillPayment::query()->with(['bill.campus', 'bill.billType'])->latest()->paginate(20),
-            'isAdmin' => $this->isAdmin($request),
+            'canCreatePayments' => $this->canCreatePayments($request),
+            'canViewPayments' => $this->canViewPayments($request),
         ]);
     }
 
@@ -259,21 +265,46 @@ class UtilityController extends Controller
         return back()->with('status', 'Utility payment request submitted for approval.');
     }
 
-    private function isAdmin(Request $request): bool
+    private function canViewBillTypes(Request $request): bool
     {
-        $user = $request->user();
-        if (!$user) {
-            return false;
-        }
-
-        return $user->roles()->whereIn('slug', ['owner', 'admin'])->exists();
+        return $request->user()?->hasAnyPermission(['finance.utility.view']) ?? false;
     }
 
-    private function ensureAdmin(Request $request): void
+    private function canCreateBillTypes(Request $request): bool
     {
-        if (!$this->isAdmin($request)) {
-            abort(403, 'Only admin can edit utility bill records.');
+        return $request->user()?->hasAnyPermission(['finance.utility.create']) ?? false;
+    }
+
+    private function canViewBills(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.bill.view']) ?? false;
+    }
+
+    private function canCreateBills(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.bill.create']) ?? false;
+    }
+
+    private function ensureCanUpdateBills(Request $request): void
+    {
+        if (!$this->canUpdateBills($request)) {
+            abort(403, 'You do not have permission to update utility bill records.');
         }
+    }
+
+    private function canUpdateBills(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.bill.update', 'finance.utility.update']) ?? false;
+    }
+
+    private function canViewPayments(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.utility.view']) ?? false;
+    }
+
+    private function canCreatePayments(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.utility.create']) ?? false;
     }
 
     private function storeAttachment(?UploadedFile $file): ?string

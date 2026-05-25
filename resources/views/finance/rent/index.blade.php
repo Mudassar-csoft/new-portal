@@ -17,77 +17,80 @@
             </div>
         @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card">
-            <header class="box-typical-header panel-heading finance-header">
-                <div>
-                    <h3 class="panel-title">Building Rent Setup</h3>
-                    <!-- <p class="text-muted mb-0">Add the active rent record for each campus so expense requests can fetch the correct monthly amount.</p> -->
+        @if($canCreateRent)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card">
+                <header class="box-typical-header panel-heading finance-header">
+                    <div>
+                        <h3 class="panel-title">Building Rent Setup</h3>
+                        <p class="text-muted mb-0">Add the active rent record for each campus so expense requests can fetch the correct monthly amount.</p>
+                    </div>
+                    <div class="finance-header-actions">
+                        <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Create Expense Request</a>
+                        <a href="{{ route('finance.expense.rent') }}" class="btn btn-danger btn-sm">Rent Expense List</a>
+                    </div>
+                </header>
+                <div class="box-typical-body panel-body">
+                    <form method="POST" action="{{ route('finance.rent.store') }}" data-rent-calculator>
+                        @csrf
+                        <div class="form-row mt-2">
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label required">Campus / Franchise</label>
+                                <select name="campus_id" class="form-control" required>
+                                    <option value="">- Select -</option>
+                                    @foreach($campuses as $campus)
+                                        <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>
+                                            {{ $campus->code }} - {{ $campus->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label required">Rent Agreement Date</label>
+                                <input type="date" name="agreement_date" class="form-control" value="{{ old('agreement_date', now()->toDateString()) }}" required>
+                            </div>
+                            <div class="form-group col-lg-6 col-md-12">
+                                <label class="form-label required">Address</label>
+                                <input type="text" name="address" class="form-control" value="{{ old('address') }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label required">Rent Amount</label>
+                                <input type="number" step="0.01" min="0" name="rent_amount" class="form-control" value="{{ old('rent_amount') }}" data-rent-amount required>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label">Increment Percentage</label>
+                                <input type="number" step="0.01" min="0" name="increment_percentage" class="form-control" value="{{ old('increment_percentage', 0) }}" data-rent-increment>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label">Actual Amount</label>
+                                <input type="text" class="form-control" data-rent-actual readonly>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label">Advance Payment</label>
+                                <input type="number" step="0.01" min="0" name="advance_payment" class="form-control" value="{{ old('advance_payment', 0) }}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea name="remarks" class="form-control" rows="3" style="padding:10px;">{{ old('remarks') }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-inline btn-primary-outline">Save Building Rent</button>
+                        </div>
+                    </form>
                 </div>
-                <!-- <div class="finance-header-actions">
-                    <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Create Expense Request</a>
-                    <a href="{{ route('finance.expense.rent') }}" class="btn btn-danger btn-sm">Rent Expense List</a>
-                </div> -->
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('finance.rent.store') }}" data-rent-calculator>
-                    @csrf
-                    <div class="form-row mt-2">
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Campus / Franchise</label>
-                            <select name="campus_id" class="form-control" required>
-                                <option value="">- Select -</option>
-                                @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>
-                                        {{ $campus->code }} - {{ $campus->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Rent Agreement Date</label>
-                            <input type="date" name="agreement_date" class="form-control" value="{{ old('agreement_date', now()->toDateString()) }}" required>
-                        </div>
-                        <div class="form-group col-lg-6 col-md-12">
-                            <label class="form-label required">Address</label>
-                            <input type="text" name="address" class="form-control" value="{{ old('address') }}" required>
-                        </div>
-                    </div>
+            </section>
+        @endif
 
-                    <div class="form-row">
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Rent Amount</label>
-                            <input type="number" step="0.01" min="0" name="rent_amount" class="form-control" value="{{ old('rent_amount') }}" data-rent-amount required>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Increment Percentage</label>
-                            <input type="number" step="0.01" min="0" name="increment_percentage" class="form-control" value="{{ old('increment_percentage', 0) }}" data-rent-increment>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Actual Amount</label>
-                            <input type="text" class="form-control" data-rent-actual readonly>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Advance Payment</label>
-                            <input type="number" step="0.01" min="0" name="advance_payment" class="form-control" value="{{ old('advance_payment', 0) }}">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-12">
-                            <label class="form-label">Remarks</label>
-                            <textarea name="remarks" class="form-control" rows="3" style="padding:10px;">{{ old('remarks') }}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save Building Rent</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
-            <div class="box-typical-body panel-body">
+        @if($canViewRent)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
+                <div class="box-typical-body panel-body">
                 <div class="table-responsive">
                     <table class="table table-bordered finance-table">
                         <thead>
@@ -100,7 +103,7 @@
                             <th>Actual Amount</th>
                             <th>Advance</th>
                             <th>Status</th>
-                            @if($isAdmin)
+                            @if($canUpdateRent)
                                 <th>Action</th>
                             @endif
                         </tr>
@@ -120,7 +123,7 @@
                                         {{ $rent->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                 </td>
-                                @if($isAdmin)
+                                @if($canUpdateRent)
                                     <td class="rent-action-cell">
                                         <div class="dropdown rent-action-dropdown">
                                             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
@@ -135,7 +138,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $isAdmin ? 9 : 8 }}" class="text-center text-muted">No building rent record found.</td>
+                                <td colspan="{{ $canUpdateRent ? 9 : 8 }}" class="text-center text-muted">No building rent record found.</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -143,12 +146,13 @@
                 </div>
 
                 {{ $rents->links() }}
-            </div>
-        </section>
+                </div>
+            </section>
+        @endif
     </div>
 @endsection
 
-@if($isAdmin)
+@if($canUpdateRent)
     @push('modals')
         @foreach($rents as $rent)
             <div class="modal fade" id="editRentModal-{{ $rent->id }}" tabindex="-1" role="dialog" aria-labelledby="editRentModalLabel-{{ $rent->id }}" aria-hidden="true">

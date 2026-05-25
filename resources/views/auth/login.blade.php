@@ -5,13 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<title>Career Institute - Sign In</title>
-
-	<link href="{{ asset('theme/img/favicon.144x144.png') }}" rel="apple-touch-icon" type="image/png" sizes="144x144">
-	<link href="{{ asset('theme/img/favicon.114x114.png') }}" rel="apple-touch-icon" type="image/png" sizes="114x114">
-	<link href="{{ asset('theme/img/favicon.72x72.png') }}" rel="apple-touch-icon" type="image/png" sizes="72x72">
-	<link href="{{ asset('theme/img/favicon.57x57.png') }}" rel="apple-touch-icon" type="image/png">
-	<link href="{{ asset('theme/img/favicon.png') }}" rel="icon" type="image/png">
-	<link href="{{ asset('theme/img/favicon.ico') }}" rel="shortcut icon">
+	<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+	<link rel="preload" as="image" href="{{ asset('theme/img/Career-Institute-logo.webp') }}" fetchpriority="high">
 
 	<style>
 		* {
@@ -164,11 +159,34 @@
 			overflow: hidden;
 		}
 
-		.right h1 {
+		.hero-copy {
 			position: absolute;
-			top: 97px;
-			font-size: 26px;
+			top: 68px;
+			left: 42px;
+			right: 42px;
 			z-index: 2;
+		}
+
+		.hero-title {
+			margin: 0;
+			font-size: clamp(28px, 3.6vw, 40px);
+			font-weight: 800;
+			line-height: 1.05;
+			letter-spacing: -0.04em;
+			text-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+			white-space: nowrap;
+			width: fit-content;
+		}
+
+		.hero-title::after {
+			content: "";
+			display: block;
+			width: 76px;
+			height: 4px;
+			margin-top: 14px;
+			border-radius: 999px;
+			background: linear-gradient(90deg, #7ef2d7 0%, #ffffff 100%);
+			box-shadow: 0 8px 18px rgba(126, 242, 215, 0.35);
 		}
 
 		.right::before {
@@ -229,8 +247,14 @@
 				min-height: 240px;
 			}
 
-			.right h1 {
-				top: 32px;
+			.hero-copy {
+				top: 26px;
+				left: 24px;
+				right: 24px;
+			}
+
+			.hero-title {
+				font-size: 24px;
 			}
 
 			.illustration img {
@@ -251,10 +275,26 @@
 </head>
 
 <body>
+	@php
+		$pakistanHour = now('Asia/Karachi')->hour;
+		[$greetingText, $greetingEmoji] = match (true) {
+			$pakistanHour < 12 => ['Good Morning', '🌞'],
+			$pakistanHour < 17 => ['Good Afternoon', '☀️'],
+			default => ['Good Evening', '🌙'],
+		};
+	@endphp
+
 	<div class="container">
 		<div class="left">
 			<div class="logo">
-				<img src="{{ asset('theme/img/login/group-1015.png') }}" alt="Career Institute">
+				<img
+					src="{{ asset('theme/img/Career-Institute-logo.webp') }}"
+					alt="Career Institute"
+					width="232"
+					height="58"
+					decoding="async"
+					fetchpriority="high"
+				>
 			</div>
 			<h2>Login to your account</h2>
 
@@ -269,6 +309,8 @@
 						placeholder="Enter email"
 						value="{{ old('email') }}"
 						class="@error('email') is-invalid @enderror"
+						autocomplete="email"
+						inputmode="email"
 						required
 					>
 					@error('email')
@@ -283,6 +325,7 @@
 						name="password"
 						placeholder="Enter password"
 						class="@error('password') is-invalid @enderror"
+						autocomplete="current-password"
 						required
 					>
 					@error('password')
@@ -307,20 +350,24 @@
 		</div>
 
 		<div class="right">
-			<h1>Welcome Back</h1>
+			<div class="hero-copy">
+				<h1 class="hero-title">{{ $greetingText }} {{ $greetingEmoji }}</h1>
+			</div>
 			<div class="illustration">
-				<img src="{{ asset('theme/img/login/group-7.png') }}" alt="Welcome illustration">
+				<img
+					src="{{ asset('theme/img/login/group-7.png') }}"
+					alt=""
+					width="160"
+					height="160"
+					loading="lazy"
+					decoding="async"
+					fetchpriority="low"
+				>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
-
-
-
-
-
-
 
 
 

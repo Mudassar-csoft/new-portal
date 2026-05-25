@@ -2633,12 +2633,20 @@ margin-left: 0;
 		});
 	</script>
 	@if(session('welcome'))
+		@php
+			$pakistanHour = now('Asia/Karachi')->hour;
+			$welcomeTitle = match (true) {
+				$pakistanHour < 12 => 'Good Morning',
+				$pakistanHour < 17 => 'Good Afternoon',
+				default => 'Good Evening',
+			};
+		@endphp
 		<script>
 			(function () {
 				if (!window.swal) return;
 				var name = @json(session('welcome'));
 				swal({
-					title: 'Welcome back',
+					title: @json($welcomeTitle),
 					text: name,
 					type: 'success',
 					customClass: 'welcome-swal',

@@ -34,6 +34,9 @@ class ReceivableController extends Controller
                 'campus_id' => $request->integer('campus_id') ?: null,
                 'status' => $request->input('status'),
             ],
+            'canCreateReceivables' => $this->canCreateReceivables($request),
+            'canUpdateReceivables' => $this->canUpdateReceivables($request),
+            'canViewReceivables' => $this->canViewReceivables($request),
         ]);
     }
 
@@ -176,5 +179,20 @@ class ReceivableController extends Controller
                 ]
             );
         }
+    }
+
+    private function canCreateReceivables(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.receivable.create']) ?? false;
+    }
+
+    private function canUpdateReceivables(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.receivable.update']) ?? false;
+    }
+
+    private function canViewReceivables(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.receivable.view']) ?? false;
     }
 }

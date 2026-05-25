@@ -148,7 +148,7 @@
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
 		.form-section {
 			background: #fff;
-			/* border: 1px solid #e6edf5; */
+			border: 1px solid #e6edf5;
 			border-radius: 12px;
 			padding: 18px 18px 6px;
 			margin-bottom: 18px;
@@ -218,8 +218,8 @@
 			border: 1px solid #2b78ff;
 			background: #e9f2ff;
 			color: #1f2d3d;
-			    padding: 0px 10px 6px 10px;
-    margin: -8px 6px 0 0;
+			padding: 0px 10px 6px 10px;
+			margin: -8px 6px 0 0;
 			font-size: 13px;
 			position: relative;
 		}
@@ -327,6 +327,22 @@
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
+				function syncAdminPermissions() {
+					const roleSelect = document.querySelector('.select2-roles');
+					if (!roleSelect) return;
+
+					const selectedOptions = Array.from(roleSelect.selectedOptions || []);
+					const adminSelected = selectedOptions.some(function (option) {
+						return ['admin', 'owner'].includes(option.dataset.slug || '');
+					});
+
+					document.querySelectorAll('input[name="permissions[]"]').forEach(function (checkbox) {
+						if (adminSelected) {
+							checkbox.checked = true;
+						}
+					});
+				}
+
 				if (window.jQuery && $.fn.select2) {
 					$('.select2-user').select2({
 						width: '100%',
@@ -340,13 +356,15 @@
 						closeOnSelect: false,
 						templateResult: function (state) {
 							if (!state.id) return state.text;
-							return $('<span class="role-check"><span class="box">✓</span>' + state.text + '</span>');
+							return $('<span class="role-check"><span class="box">&#10003;</span>' + state.text + '</span>');
 						},
 						templateSelection: function (state) {
 							return state.text;
 						},
 					});
 				}
+				syncAdminPermissions();
+				document.querySelector('.select2-roles')?.addEventListener('change', syncAdminPermissions);
 				document.querySelectorAll('.toggle-visibility').forEach(function (btn) {
 					btn.addEventListener('click', function () {
 						toggleVisibility(this);

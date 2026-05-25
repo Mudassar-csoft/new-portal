@@ -191,7 +191,7 @@
 							<label class="form-label">Roles</label>
 								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
 								@foreach($roles as $role)
-									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
+									<option value="{{ $role->id }}" data-slug="{{ $role->slug }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
 								@endforeach
 							</select>
 							<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
@@ -423,7 +423,23 @@
 				if (confirm) confirm.value = pwd;
 			}
 
-			document.addEventListener('DOMContentLoaded', function () {
+							document.addEventListener('DOMContentLoaded', function () {
+				function syncAdminPermissions() {
+					const roleSelect = document.querySelector('.select2-roles');
+					if (!roleSelect) return;
+
+					const selectedOptions = Array.from(roleSelect.selectedOptions || []);
+					const adminSelected = selectedOptions.some(function (option) {
+						return ['admin', 'owner'].includes(option.dataset.slug || '');
+					});
+
+					document.querySelectorAll('input[name="permissions[]"]').forEach(function (checkbox) {
+						if (adminSelected) {
+							checkbox.checked = true;
+						}
+					});
+				}
+
 				if (window.jQuery && $.fn.select2) {
 					$('.select2-user').select2({
 						width: '100%',
@@ -444,6 +460,8 @@
 						},
 					});
 				}
+				syncAdminPermissions();
+				document.querySelector('.select2-roles')?.addEventListener('change', syncAdminPermissions);
 				document.querySelectorAll('.toggle-visibility').forEach(function (btn) {
 					btn.addEventListener('click', function () {
 						toggleVisibility(this);

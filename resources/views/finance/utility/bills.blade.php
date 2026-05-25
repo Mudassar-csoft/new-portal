@@ -17,75 +17,80 @@
             </div>
         @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card">
-            <header class="box-typical-header panel-heading finance-header">
-                <div>
-                    <h3 class="panel-title">Bill Management <span class="text-muted">|</span> Add Utility Bill</h3>
-                    <!-- <p class="text-muted mb-0">Add campus utility bill master details only. Payment amount will be entered later from the expense request form.</p> -->
-                </div>
-            </header>
-            <div class="box-typical-body panel-body">
-                <form method="POST" action="{{ route('finance.utility.bills.store') }}">
-                    @csrf
-                    <div class="form-row mt-3">
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Campus / Franchise</label>
-                            <select name="campus_id" class="form-control" required>
-                                <option value="">- Select -</option>
-                                @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>
-                                        {{ $campus->code }} - {{ $campus->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Bill Type</label>
-                            <div class="input-group">
-                                <select name="bill_type_id" id="billTypeSelect" class="form-control utility-bill-type-select" data-company-target="#billCompanyName" required>
+        @if($canCreateBills)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card">
+                <header class="box-typical-header panel-heading finance-header">
+                    <div>
+                        <h3 class="panel-title">Bill Management <span class="text-muted">|</span> Add Utility Bill</h3>
+                        <p class="text-muted mb-0">Add campus utility bill master details only. Payment amount will be entered later from the expense request form.</p>
+                    </div>
+                </header>
+                <div class="box-typical-body panel-body">
+                    <form method="POST" action="{{ route('finance.utility.bills.store') }}">
+                        @csrf
+                        <div class="form-row mt-3">
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label required">Campus / Franchise</label>
+                                <select name="campus_id" class="form-control" required>
                                     <option value="">- Select -</option>
-                                    @foreach($billTypes as $type)
-                                        <option
-                                            value="{{ $type->id }}"
-                                            data-company="{{ $type->company_name }}"
-                                            data-service="{{ $type->service_name }}"
-                                            @selected(old('bill_type_id') == $type->id)
-                                        >
-                                            {{ $type->service_name ?: $type->display_name }}
+                                    @foreach($campuses as $campus)
+                                        <option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>
+                                            {{ $campus->code }} - {{ $campus->name }}
                                         </option>
                                     @endforeach
                                 </select>
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickBillTypeModal">+</button>
-                                </span>
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6">
+                                <label class="form-label required">Bill Type</label>
+                                <div class="input-group">
+                                    <select name="bill_type_id" id="billTypeSelect" class="form-control utility-bill-type-select" data-company-target="#billCompanyName" required>
+                                        <option value="">- Select -</option>
+                                        @foreach($billTypes as $type)
+                                            <option
+                                                value="{{ $type->id }}"
+                                                data-company="{{ $type->company_name }}"
+                                                data-service="{{ $type->service_name }}"
+                                                @selected(old('bill_type_id') == $type->id)
+                                            >
+                                                {{ $type->service_name ?: $type->display_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if($canCreateBillTypes)
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickBillTypeModal">+</button>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" id="billCompanyName" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-lg-2 col-md-6">
+                                <label class="form-label required">Reference Number</label>
+                                <input type="text" name="reference_number" class="form-control" value="{{ old('reference_number') }}" required>
                             </div>
                         </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label">Company Name</label>
-                            <input type="text" id="billCompanyName" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-lg-3 col-md-6">
-                            <label class="form-label required">Reference Number</label>
-                            <input type="text" name="reference_number" class="form-control" value="{{ old('reference_number') }}" required>
-                        </div>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-12">
-                            <label class="form-label">Remarks</label>
-                            <textarea name="remarks" class="form-control" rows="3" style="padding:10px;">{{ old('remarks') }}</textarea>
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea name="remarks" class="form-control" rows="3" style="padding:10px;">{{ old('remarks') }}</textarea>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save Bill</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-inline btn-primary-outline">Save Bill</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        @endif
 
-        <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
-            <div class="box-typical-body panel-body">
+        @if($canViewBills)
+            <section class="box-typical box-typical-dashboard panel panel-default finance-card mt-3">
+                <div class="box-typical-body panel-body">
                 <div class="table-responsive">
                     <table class="table table-bordered finance-table">
                         <thead>
@@ -96,7 +101,7 @@
                                 <th>Company</th>
                                 <th>Bill Type</th>
                                 <th>Remarks</th>
-                                @if($isAdmin)
+                                @if($canUpdateBills)
                                     <th>Action</th>
                                 @endif
                             </tr>
@@ -110,7 +115,7 @@
                                     <td>{{ $bill->billType->company_name ?? '-' }}</td>
                                     <td>{{ $bill->billType->service_name ?? $bill->billType->display_name ?? $bill->billType->name ?? 'N/A' }}</td>
                                     <td>{{ $bill->remarks ?: '-' }}</td>
-                                    @if($isAdmin)
+                                    @if($canUpdateBills)
                                         <td class="utility-action-cell">
                                             <div class="dropdown utility-action-dropdown">
                                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
@@ -125,7 +130,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ $isAdmin ? 7 : 6 }}" class="text-center text-muted">No utility bills found.</td>
+                                    <td colspan="{{ $canUpdateBills ? 7 : 6 }}" class="text-center text-muted">No utility bills found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -133,11 +138,12 @@
                 </div>
 
                 {{ $bills->links() }}
-            </div>
-        </section>
+                </div>
+            </section>
+        @endif
     </div>
 
-    @if($isAdmin)
+    @if($canUpdateBills)
         @push('modals')
             @foreach($bills as $bill)
                 <div class="modal fade" id="editUtilityBillModal-{{ $bill->id }}" tabindex="-1" role="dialog" aria-labelledby="editUtilityBillModalLabel-{{ $bill->id }}" aria-hidden="true">
@@ -212,46 +218,48 @@
         @endpush
     @endif
 
-    <div class="modal fade" id="quickBillTypeModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="quickBillTypeForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add Bill Type</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-danger d-none" id="quickBillTypeError"></div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-label">Company Name</label>
-                                <input type="text" name="company_name" class="form-control" placeholder="FESCO">
+    @if($canCreateBillTypes)
+        <div class="modal fade" id="quickBillTypeModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form id="quickBillTypeForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add Bill Type</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger d-none" id="quickBillTypeError"></div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label class="form-label">Company Name</label>
+                                    <input type="text" name="company_name" class="form-control" placeholder="FESCO">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label required">Bill Type</label>
+                                    <input type="text" name="service_name" class="form-control" placeholder="Electricity" required>
+                                </div>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-label required">Bill Type</label>
-                                <input type="text" name="service_name" class="form-control" placeholder="Electricity" required>
+                            <div class="form-group">
+                                <label class="form-label">Default Payee</label>
+                                <select name="payee_id" class="form-control">
+                                    <option value="">- Select -</option>
+                                    @foreach($payees as $payee)
+                                        <option value="{{ $payee->id }}">{{ $payee->full_name }} ({{ ucfirst($payee->type) }})</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Default Payee</label>
-                            <select name="payee_id" class="form-control">
-                                <option value="">- Select -</option>
-                                @foreach($payees as $payee)
-                                    <option value="{{ $payee->id }}">{{ $payee->full_name }} ({{ ucfirst($payee->type) }})</option>
-                                @endforeach
-                            </select>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-inline btn-danger-outline" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-inline btn-primary-outline">Save Type</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-inline btn-danger-outline" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save Type</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 @endsection
 
 @push('styles')
