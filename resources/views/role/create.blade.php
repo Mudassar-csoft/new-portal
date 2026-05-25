@@ -18,24 +18,34 @@
 					<div class="form-section">
 						<div class="section-title form-label">Role Details</div>
 						<div class="form-row">
-							<div class="form-group col-md-6">
+							<div class="form-group col-md-2   	">
 								<label class="required form-label">Name</label>
+</div>
+							<div class="form-group col-md-10">
+
 								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin" required>
 								@error('name')
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
-							<div class="form-group col-md-6 ">
+							<div class="form-group col-md-2   ">
 								<label class="form-label" >Slug</label>
+
+								</div>
+							<div class="form-group col-md-10">
 								<input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
-								<small class="text-muted">Auto from name if left blank.</small>
+								<!-- <small class="text-muted">Auto from name if left blank.</small> -->
 								@error('slug')
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-row">
+							<div class="form-group col-md-2   ">
+
 							<label class="form-label">Description</label>
+							</div>
+							<div class="form-group col-md-10">
 							<textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
 							@error('description')
 								<div class="field-error">{{ $message }}</div>
@@ -76,7 +86,7 @@
 						</div>
 					</div> -->
 
-					<div class="text-right mt-1">
+					<div class=" text-right mt-1">
 						<button type="submit" class="btn btn-inline btn-primary-outline">Create Role</button>
 						<a href="{{ route('roles.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
 					</div>
