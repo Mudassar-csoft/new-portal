@@ -117,16 +117,13 @@
                             <label class="form-label required">Upload Image</label>
                             <input type="file" name="attachment" class="form-control-file" required>
                         </div>
-                    </div>
+                   
                     </div>
 
-                    <div class="form-row">
+                      <div class="form-row">
                         <div class="form-group col-12">
                             <label class="form-label">Remarks</label>
-                            <textarea name="remarks" class="form-control form-control-sm @error('remarks') is-invalid @enderror" rows="3" placeholder="Remarks" style="padding:10px; margin-bottom:7px;">{{ old('remarks') }}</textarea>
-                            @error('remarks')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <textarea name="remarks" class="form-control" rows="3" style="padding:10px;">{{ old('remarks') }}</textarea>
                         </div>
                     </div>
 
@@ -150,7 +147,8 @@
                     --}}
 
                     <div class="text-right">
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Submit For Approval</button>
+                        <button type="submit" class="btn btn-primary-outline ">Submit For Approval</button>
+                        <button type="submit" class="btn btn-danger-outline ">Cancel</button>
                     </div>
                 </form>
             </div>

@@ -5792,7 +5792,7 @@ textarea.form-control {
 .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
   position: absolute;
   right: 0;
-  top: 1px;
+  top: -10px;
   color: #fff !important;
   width: 1.5rem;
   text-align: center;
@@ -11110,10 +11110,13 @@ body {
   border-bottom-color: rgba(0, 130, 198, 0.5);
 }
 .site-header .dropdown-menu-notif {
-  width: 290px;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: calc(100vw - 30px);
   padding: 0;
   line-height: normal;
   font-size: 0.9375rem /*15/16*/;
+  overflow-x: auto;
 }
 .site-header .dropdown-menu-notif a {
   text-decoration: none;

@@ -23,9 +23,9 @@
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
                 <h3 class="panel-title">Net Cashflow Detail</h3>
-                <a class="btn btn-inline btn-danger-outline" href="{{ route('finance.dashboard', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}">
+                <!-- <a class="btn btn-inline btn-danger-outline" href="{{ route('finance.dashboard', ['campus_id' => $filters['campus_id'] ?? null, 'from' => $filters['from'] ?? null, 'to' => $filters['to'] ?? null]) }}">
                     Back to Dashboard
-                </a>
+                </a> -->
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.dashboard.netcashflow') }}">

@@ -713,10 +713,13 @@ a, a:focus, a:hover {
   border-bottom-color: rgba(0, 130, 198, 0.5);
 }
 .site-header .dropdown-menu-notif {
-  width: 340px;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: calc(100vw - 30px);
   padding: 0;
   line-height: normal;
   font-size: 0.9375rem /*15/16*/;
+  overflow-x: auto;
 }
 .site-header .dropdown-menu-notif a {
   text-decoration: none;

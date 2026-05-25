@@ -105,7 +105,7 @@
 		.required::after { content: '*'; color: #e74c3c; margin-left: 4px; }
 		.form-section {
 			background: #fff;
-			border: 1px solid #e6edf5;
+			/* border: 1px solid #e6edf5; */
 			border-radius: 12px;
 			padding: 3px 18px 2px;
     margin-bottom: 6px;

@@ -3177,7 +3177,7 @@ textarea.form-control {
 .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
   position: absolute;
   right: 0;
-  top: 1px;
+  top: -10px;
   color: #fff !important;
   width: 1.5rem;
   text-align: center;

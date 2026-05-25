@@ -46,7 +46,7 @@
                 @endunless
 
                 <div class="box-typical-body panel-body registration-body">
-                    <form method="POST" action="{{ $formAction }}" id="coworking-registration-form" class="registration-form">
+                    <form method="POST" action="{{ $formAction }}" id="coworking-registration-form" class="registration-form coworking-voucher-form">
                         @csrf
                         @if($isEditMode)
                             @method('PUT')
@@ -57,6 +57,22 @@
                         @if(!empty($leadId))
                             <input type="hidden" name="lead_id" value="{{ $leadId }}">
                         @endif
+
+                        <div class="coworking-voucher-head">
+                            <div class="coworking-voucher-brand">
+                                <div class="coworking-voucher-kicker">Career Institute</div>
+                                <div class="coworking-voucher-name">Coworking Space Registration</div>
+                                <div class="coworking-voucher-copy">Voucher-style layout for cleaner registration entry.</div>
+                            </div>
+                            <div class="coworking-voucher-meta">
+                                <div><span>Campus</span><strong>{{ optional($campuses->firstWhere('id', $selectedCampusId))->code ?? 'Pending' }}</strong></div>
+                                <div><span>Registration Date</span><strong>{{ $registrationDateValue }}</strong></div>
+                                <div><span>Status</span><strong>{{ $isEditMode ? 'Edit Mode' : 'New Entry' }}</strong></div>
+                            </div>
+                        </div>
+
+                        <section class="voucher-section">
+                            <div class="voucher-section-title">Member Details</div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-lg-3">
@@ -185,8 +201,10 @@
                                 @enderror
                             </div>
                         </div>
+                        </section>
 
-                        <hr>
+                        <section class="voucher-section">
+                            <div class="voucher-section-title">Registration Details</div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-lg-4">
@@ -236,6 +254,7 @@
                                 @enderror
                             </div>
                         </div>
+                        </section>
 
                         <div class="form-actions registration-actions mb-2 mt-3 text-right">
                             <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">{{ $submitLabel }}</button>
@@ -428,6 +447,113 @@
         .registration-form hr {
             border-color: #e6eef6;
             margin: 4px 0 18px;
+        }
+
+        .coworking-voucher-form {
+            border: 1px solid #2f2f2f;
+            padding: 18px 16px 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+        }
+
+        .coworking-voucher-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.9fr);
+            gap: 14px;
+            align-items: start;
+            border-bottom: 1px solid #2f2f2f;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+        }
+
+        .coworking-voucher-kicker {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .coworking-voucher-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .coworking-voucher-copy {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .coworking-voucher-meta {
+            display: grid;
+            gap: 8px;
+        }
+
+        .coworking-voucher-meta > div {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #d1d5db;
+            font-size: 13px;
+        }
+
+        .coworking-voucher-meta span {
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .coworking-voucher-meta strong {
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .voucher-section {
+            border: 1px solid #2f2f2f;
+            padding: 12px 10px 2px;
+            margin-bottom: 14px;
+            background: #fff;
+        }
+
+        .voucher-section-title {
+            display: inline-block;
+            margin: -21px 0 10px;
+            padding: 0 8px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #111827;
+        }
+
+        .coworking-voucher-form .form-control,
+        .coworking-voucher-form .choice-group {
+            border-radius: 0;
+            border-color: #6b7280;
+            background: #fff;
+        }
+
+        .coworking-voucher-form .form-control[disabled],
+        .coworking-voucher-form .form-control[readonly] {
+            background: #f8fafc;
+        }
+
+        .coworking-voucher-form .form-label,
+        .coworking-voucher-form label {
+            letter-spacing: 0.03em;
+        }
+
+        @media (max-width: 767px) {
+            .coworking-voucher-head {
+                grid-template-columns: 1fr;
+            }
+
+            .coworking-voucher-name {
+                font-size: 20px;
+            }
         }
     </style>
 @endpush
