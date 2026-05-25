@@ -206,6 +206,29 @@ class UserPermissionManagementTest extends TestCase
         $forbiddenResponse->assertForbidden();
     }
 
+    public function test_sidebar_hides_modules_that_have_no_visible_destinations_for_the_users_permissions(): void
+    {
+        $dashboardView = Permission::query()->create([
+            'resource' => 'dashboard',
+            'action' => 'view',
+            'slug' => 'dashboard.view',
+        ]);
+
+        $certificateApprove = Permission::query()->create([
+            'resource' => 'certificate',
+            'action' => 'approve',
+            'slug' => 'certificate.approve',
+        ]);
+
+        $user = User::factory()->create();
+        $user->permissions()->sync([$dashboardView->id, $certificateApprove->id]);
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertDontSee('Certificate Management');
+    }
+
     private function createAdminUser(): User
     {
         $user = User::factory()->create();
