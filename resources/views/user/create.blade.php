@@ -20,9 +20,171 @@
                 </div>
             </header>
 
+<<<<<<< HEAD
             <div class="box-typical-body panel-body user-body">
                 <form method="POST" action="{{ route('users.store') }}" class="user-form">
                     @csrf
+=======
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
+								@error('name')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+							<label class="form-label required">Email Address</label>
+							</div>
+							<div class="form-group col-md-10">
+							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}" required>
+							@error('email')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							</div>
+						</div>
+						<div class="form-row">
+								<div class="form-group col-md-2">
+								<label class="form-label">
+									<span>Password</span>
+									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
+								</label>
+								</div>
+								<div class="form-group col-md-10">
+								<div class="input-group">
+									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
+									<span class="input-group-btn">
+										<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
+											<i class="fa fa-eye"></i>
+										</button>
+									</span>
+								</div>
+								@error('password')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							
+					</div>
+					<!-- </div> -->
+					<!-- <div class="form-section"> -->
+						<!-- <div class="section-title form-label">Access &amp; Roles</div> -->
+						<div class="form-row" >
+							<div class="form-group col-md-2">
+								<label class="form-label">Confirm Password</label>
+								</div>
+							<div class="form-group col-md-10">
+								<div class="input-group">
+									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
+									<span class="input-group-btn">
+										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
+											<i class="fa fa-eye"></i>
+										</button>
+									</span>
+								</div>
+								@error('password_confirmation')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+								<label class="form-label">Campus</label>
+							</div>
+							<div class="form-group col-md-10">
+								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
+									<option value="">Select campus</option>
+								@foreach($campuses as $campus)
+									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
+								@endforeach
+								</select>
+							@error('campus_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+								<label class="form-label">Roles</label>
+							</div>
+							<div class="form-group col-md-10">
+								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
+								@foreach($roles as $role)
+									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
+								@endforeach
+								</select>
+							</div>
+							<!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small> -->
+							<!-- @error('roles')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							@error('roles.*')
+								<div class="field-error">{{ $message }}</div>
+							@enderror -->
+						</div>
+					</div>
+					<!-- <div class="form-section">
+						<div class="section-title form-label">Access &amp; Roles</div>
+						<div class="form-row" >
+							<div class="form-group col-md-4">
+								<label class="form-label">Confirm Password</label>
+								<div class="input-group">
+									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
+									<span class="input-group-btn">
+										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
+											<i class="fa fa-eye"></i>
+										</button>
+									</span>
+								</div>
+								@error('password_confirmation')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+						<div class="form-group col-md-4">
+							<label class="form-label">Campus</label>
+								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
+									<option value="">Select campus</option>
+								@foreach($campuses as $campus)
+									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
+								@endforeach
+							</select>
+							@error('campus_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+						<div class="form-group col-md-4">
+							<label class="form-label">Roles</label>
+								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
+								@foreach($roles as $role)
+									<option value="{{ $role->id }}" data-slug="{{ $role->slug }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
+								@endforeach
+							</select>
+							<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
+							@error('roles')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							@error('roles.*')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
+					</div>
+<<<<<<< HEAD
+<<<<<<< HEAD
+					</div> -->
+=======
+					</div>
+					@php($selectedPermissionIds = collect(old('permissions', []))->map(fn ($id) => (int) $id))
+					@include('user.partials.direct-permissions', ['permissionGroups' => $permissionGroups, 'selectedPermissionIds' => $selectedPermissionIds])
+>>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+					</div> -->
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
+					<div class="form-section">
+						<div class="section-title form-label">Account Activation</div>
+						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
+							<i class="fa fa-info-circle"></i>
+							A setup link will be emailed to the new user. The link is valid for <strong>1 hour</strong> — the user clicks it to set their own password and activate the account.
+						</div>
+					</div>
+>>>>>>> 3818b92d2c5dfbefc80a33c2404579bf23da1338
 
                     <div class="user-form-row">
                         <div class="user-form-label">
