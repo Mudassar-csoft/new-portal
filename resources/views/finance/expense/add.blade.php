@@ -67,23 +67,19 @@
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label required">Expense Type</label>
-                            <div class="input-group">
-                                <select name="expense_type_id" id="expenseTypeSelect" class="form-control" required>
-                                    <option value="">- Select -</option>
-                                    @foreach($expenseTypes as $type)
-                                        <option
-                                            value="{{ $type->id }}"
-                                            data-category="{{ $type->category ?: 'general' }}"
-                                            @selected(old('expense_type_id') == $type->id)
+                            <select name="expense_type_id" id="expenseTypeSelect" class="form-control" required>
+                                <option value="">- Select -</option>
+                                <option value="__add_new__" >+ Add Expense Type</option>
+                                @foreach($expenseTypes as $type)
+                                <option
+                                value="{{ $type->id }}"
+                                        data-category="{{ $type->category ?: 'general' }}"
+                                        @selected(old('expense_type_id') == $type->id)
                                         >
-                                            {{ $type->name }}
-                                        </option>
+                                        {{ $type->name }}
+                                    </option>
                                     @endforeach
-                                </select>
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickExpenseTypeModal">+</button>
-                                </span>
-                            </div>
+                            </select>
                             <!-- <small class="text-muted">If it is missing, add a new expense type from the popup.</small> -->
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
@@ -315,10 +311,6 @@
             text-transform: uppercase;
             margin-bottom: 10px;
         }
-        .input-group .btn {
-            height: 32px;
-            line-height: 1;
-        }
         .dropdown-menu form { margin: 0; }
         .dropdown-menu form .dropdown-item { width: 100%; text-align: left; background: transparent; border: 0; }
     </style>
@@ -538,7 +530,15 @@
                 $('#expenseTypeHint').removeClass('d-none alert-danger').addClass('alert-info').text('This expense type uses a manual amount and then goes to approval.');
             }
 
-            $('#campusSelect, #expenseTypeSelect').on('change', toggleExpenseSourceSections);
+            $('#campusSelect, #expenseTypeSelect').on('change', function () {
+                if ($('#expenseTypeSelect').val() === '__add_new__') {
+                    $('#quickExpenseTypeModal').modal('show');
+                    $('#expenseTypeSelect').val('');
+                    return;
+                }
+
+                toggleExpenseSourceSections();
+            });
             $('#utilityBillTypeFilter').on('change', function () {
                 syncUtilityCompany();
                 renderUtilityBills();

@@ -16,7 +16,7 @@
 				<form method="POST" action="{{ route('roles.store') }}">
 					@csrf
 					<div class="form-section">
-						<div class="section-title form-label">Role Details</div>
+						<!-- <div class="section-title form-label">Role Details</div> -->
 						<div class="form-row">
 							<div class="form-group col-md-2   	">
 								<label class="required form-label">Name</label>
@@ -86,9 +86,9 @@
 						</div>
 					</div> -->
 
-					<div class=" text-right mt-1">
+					<div class=" text-right mt-1 mr-3">
 						<button type="submit" class="btn btn-inline btn-primary-outline">Create Role</button>
-						<a href="{{ route('roles.index') }}" class="btn btn-inline btn-secondary-outline">Cancel</a>
+						<a href="{{ route('roles.index') }}" class="btn btn-inline btn-danger-outline">Cancel</a>
 					</div>
 				</form>
 			</div>
