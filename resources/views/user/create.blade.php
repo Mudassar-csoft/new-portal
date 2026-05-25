@@ -17,8 +17,8 @@
 				<form method="POST" action="{{ route('users.store') }}">
 					@csrf
 					
-					<div class="form-section">
-						<!-- <div class="section-title form-label">User Details</div> -->
+					<!-- <div class="form-section">
+						<div class="section-title form-label">User Details</div>
 						<div class="form-row">
 						<div class="form-group col-md-4">
 							<label class="form-label required">Full Name</label>
@@ -37,7 +37,7 @@
 						<div class="form-group col-md-4">
 								<label class="form-label">
 									<span>Password</span>
-									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
+									<small class="text-muted">(leave blank to keep current)</small>
 								</label>
 								<div class="input-group">
 									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
@@ -53,9 +53,113 @@
 							</div>
 							
 					</div>
+					</div> -->
+					<!-- <div class="form-section"> -->
+						<!-- <div class="section-title form-label">User Details</div> -->
+						<div class="form-row">
+							<div class="form-group col-md-2">
+								<label class="form-label required">Full Name</label>
+							</div>
+							<div class="form-group col-md-10">
+
+								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
+								@error('name')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+							<label class="form-label required">Email Address</label>
+							</div>
+							<div class="form-group col-md-10">
+							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}" required>
+							@error('email')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							</div>
+						</div>
+						<div class="form-row">
+								<div class="form-group col-md-2">
+								<label class="form-label">
+									<span>Password</span>
+									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
+								</label>
+								</div>
+								<div class="form-group col-md-10">
+								<div class="input-group">
+									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
+									<span class="input-group-btn">
+										<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
+											<i class="fa fa-eye"></i>
+										</button>
+									</span>
+								</div>
+								@error('password')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							
 					</div>
-					<div class="form-section">
+					<!-- </div> -->
+					<!-- <div class="form-section"> -->
 						<!-- <div class="section-title form-label">Access &amp; Roles</div> -->
+						<div class="form-row" >
+							<div class="form-group col-md-2">
+								<label class="form-label">Confirm Password</label>
+								</div>
+							<div class="form-group col-md-10">
+								<div class="input-group">
+									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
+									<span class="input-group-btn">
+										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
+											<i class="fa fa-eye"></i>
+										</button>
+									</span>
+								</div>
+								@error('password_confirmation')
+									<div class="field-error">{{ $message }}</div>
+								@enderror
+							</div>
+							</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+								<label class="form-label">Campus</label>
+							</div>
+							<div class="form-group col-md-10">
+								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
+									<option value="">Select campus</option>
+								@foreach($campuses as $campus)
+									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
+								@endforeach
+								</select>
+							@error('campus_id')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-group col-md-2">
+								<label class="form-label">Roles</label>
+							</div>
+							<div class="form-group col-md-10">
+								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
+								@foreach($roles as $role)
+									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
+								@endforeach
+								</select>
+							</div>
+							<!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small> -->
+							<!-- @error('roles')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+							@error('roles.*')
+								<div class="field-error">{{ $message }}</div>
+							@enderror -->
+						</div>
+					</div>
+					<!-- <div class="form-section">
+						<div class="section-title form-label">Access &amp; Roles</div>
 						<div class="form-row" >
 							<div class="form-group col-md-4">
 								<label class="form-label">Confirm Password</label>
@@ -90,7 +194,7 @@
 									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
 								@endforeach
 							</select>
-							<!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small> -->
+							<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
 							@error('roles')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -99,7 +203,7 @@
 							@enderror
 						</div>
 					</div>
-					</div>
+					</div> -->
 					<div class="form-section">
 						<div class="section-title form-label">Account Activation</div>
 						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
@@ -108,7 +212,7 @@
 						</div>
 					</div>
 
-					<div class="text-right mt-3">
+					<div class="text-right mt-3 mr-5 mb-2">
 							<button type="submit" class="btn btn-inline btn-primary-outline">Create User</button>
 						<a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline p-2">Cancel</a>
 					</div>
