@@ -17,6 +17,9 @@
 					@csrf
 					@method('PUT')
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 						<div class="form-row">
 							<div class="form-group col-md-2">
 								<label class="form-label required">Full Name</label>
@@ -25,6 +28,7 @@
 
 								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
 								@error('name')
+<<<<<<< HEAD
 =======
 					<div class="form-section">
 						<div class="section-title">Access &amp; Roles</div>
@@ -54,11 +58,16 @@
 								@enderror
 								@error('roles.*')
 >>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 									<div class="field-error">{{ $message }}</div>
 								@enderror
 							</div>
 						</div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 						<div class="form-row">
 							<div class="form-group col-md-2">
 							<label class="form-label required">Email Address</label>
@@ -72,6 +81,7 @@
 						</div>
 						<div class="form-row">
 								<div class="form-group col-md-2">
+<<<<<<< HEAD
 =======
 					</div>
 					@php($selectedPermissionIds = collect(old('permissions', $user->permissions->pluck('id')->all()))->map(fn ($id) => (int) $id))
@@ -105,6 +115,8 @@
 						<div class="form-row align-items-end">
 							<div class="form-group col-md-6">
 >>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 								<label class="form-label">
 									<span>Password</span>
 									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
@@ -124,6 +136,9 @@
 								@enderror
 							</div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 							
 					</div>
 					<!-- </div> -->
@@ -131,9 +146,12 @@
 						<!-- <div class="section-title form-label">Access &amp; Roles</div> -->
 						<div class="form-row" >
 							<div class="form-group col-md-2">
+<<<<<<< HEAD
 =======
 							<div class="form-group col-md-6">
 >>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 								<label class="form-label">Confirm Password</label>
 								</div>
 							<div class="form-group col-md-10">
@@ -150,6 +168,9 @@
 								@enderror
 							</div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 							</div>
 						<div class="form-row">
 							<div class="form-group col-md-2">
@@ -191,6 +212,7 @@
 					<div class="text-right mt-3 mr-5 mb-4">
 						<button type="submit" class="btn btn-primary-outline">Save Changes</button>
 						<a href="{{ route('users.index') }}" class="btn btn-danger-outline mr-2">Cancel</a>
+<<<<<<< HEAD
 =======
 						</div>
 					</div>
@@ -199,6 +221,8 @@
 						<a href="{{ route('users.index') }}" class="btn btn-default mr-2">Cancel</a>
 						<button type="submit" class="btn btn-primary">Save Changes</button>
 >>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 					</div>
 				</form>
 			</div>

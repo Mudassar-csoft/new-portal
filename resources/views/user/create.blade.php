@@ -204,12 +204,16 @@
 						</div>
 					</div>
 <<<<<<< HEAD
+<<<<<<< HEAD
 					</div> -->
 =======
 					</div>
 					@php($selectedPermissionIds = collect(old('permissions', []))->map(fn ($id) => (int) $id))
 					@include('user.partials.direct-permissions', ['permissionGroups' => $permissionGroups, 'selectedPermissionIds' => $selectedPermissionIds])
 >>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
+=======
+					</div> -->
+>>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
 					<div class="form-section">
 						<div class="section-title form-label">Account Activation</div>
 						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
