@@ -17,7 +17,7 @@ Route::get('/leads/follow-ups', [LeadController::class, 'followups'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.followups');
 Route::get('/leads/coworking-space/follow-ups', [LeadController::class, 'coworkingFollowups'])
-    ->middleware('permission:lead.followup.view')
+    ->middleware('permission:lead.coworking.view')
     ->name('leads.coworking.followups');
 
 Route::get('/leads/{lead}/transfer', [LeadController::class, 'transferForm'])

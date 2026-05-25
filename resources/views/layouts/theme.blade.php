@@ -110,9 +110,6 @@ hr {
 .fas {
 font-family: "Font Awesome 6 Free" !important;
 }
-.user-shell{
-	padding:0px !important;
-}
 .box-typical .panel-title{
 	font-size: 26px !important;
   font-weight: 500 !important;
@@ -2091,7 +2088,7 @@ margin-left: 0;
 @php
 	$isMainDashboardPage = request()->routeIs('dashboard') && in_array(optional(request()->route())->uri(), ['', '/'], true);
 @endphp
-<body class="with-side-menu control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }}">
+<body class="with-side-menu control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }} {{ trim($__env->yieldContent('body_class')) }}">
 
 	@include('layouts.header')
 	@include('layouts.nav')

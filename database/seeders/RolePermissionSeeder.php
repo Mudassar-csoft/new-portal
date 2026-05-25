@@ -100,6 +100,7 @@ class RolePermissionSeeder extends Seeder
         $catalog[] = ['resource' => 'lead', 'action' => 'followup.view'];
         $catalog[] = ['resource' => 'lead', 'action' => 'followup.update'];
         $catalog[] = ['resource' => 'lead', 'action' => 'transfer.approve'];
+        $catalog[] = ['resource' => 'lead', 'action' => 'coworking.view'];
 
         // Certificate workflow transitions
         foreach (['approve', 'reject', 'send-to-printing', 'mark-ready', 'mark-delivered'] as $action) {
