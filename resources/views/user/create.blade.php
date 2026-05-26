@@ -127,8 +127,8 @@
 								<label class="form-label">Campus</label>
 							</div>
 							<div class="form-group col-md-10">
-								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
-									<option value="">Select campus</option>
+								<select name="campus_id" class="form-control select2  select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" >
+									<option value="">- Select Campus -</option>
 								@foreach($campuses as $campus)
 									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
 								@endforeach
@@ -205,15 +205,14 @@
 					</div>
 <<<<<<< HEAD
 <<<<<<< HEAD
-					</div> -->
-=======
+					</div>
+
 					</div>
 					@php($selectedPermissionIds = collect(old('permissions', []))->map(fn ($id) => (int) $id))
 					@include('user.partials.direct-permissions', ['permissionGroups' => $permissionGroups, 'selectedPermissionIds' => $selectedPermissionIds])
->>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
-=======
+
 					</div> -->
->>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
+
 					<div class="form-section">
 						<div class="section-title form-label">Account Activation</div>
 						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
@@ -282,6 +281,17 @@
 		.select2-container {
 			width: 100% !important;
 		}
+
+.select2-results > .select2-results__options {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+}
+
+/* Smooth scrollbar */
+
+.select2-results__options::-webkit-scrollbar {
+    width: 8px;
+}
 		.select2-container--white .select2-selection--single,
 		.select2-container--white .select2-selection--multiple {
 			min-height: 38px;
@@ -296,11 +306,18 @@
 			align-items: center;
 			width: 100%;
 		}
+		.select2-results__option--highlighted {
+    background: #00a8ff !important;
+    color: #fff !important;
+	margin-left: 8px;
+}
+
 		.select2-container--white .select2-selection--multiple {
 			height: 36px;
 			display: flex;
 			align-items: center;
-			padding: 6px 10px;
+			/* padding: 6px 10px; */
+			margin: 2px;
 		}
 		.select2-container--white .select2-selection--multiple .select2-selection__rendered {
 			min-height: 44px;
@@ -317,7 +334,7 @@
 			gap: 4px;
 			margin: 0;
 			padding: 0;
-			align-items: center;
+			align-items: baseline;
 		}
 		.select2-container--white .select2-selection--multiple .select2-selection__choice {
 			border-radius: 12px;
