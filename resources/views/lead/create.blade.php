@@ -32,7 +32,7 @@
 									<span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
 								</h2>
 							</div>
-							<div class="tbl-cell text-right lead-header-tools">
+							<div class="tbl-cell lead-header-tools">
 								<select
 									id="leadTypeSelect"
 									class="form-control lead-type-select"
@@ -120,6 +120,17 @@
 			background: #fff;
 		}
 
+		.lead-header .tbl-row {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		.lead-header .tbl-cell-title {
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
 		.lead-title {
 			font-size: 18px;
 			font-weight: 500;
@@ -136,6 +147,8 @@
 		.lead-header-tools {
 			width: 220px;
 			min-width: 220px;
+			margin-left: auto;
+			text-align: left !important;
 		}
 
 		.lead-body {
@@ -168,6 +181,15 @@
 		.lead-form-shell select.form-control,
 		.lead-form-shell select.form-select {
 			color: #495057;
+		}
+
+		.lead-type-select {
+			text-align: left;
+			text-align-last: left;
+		}
+
+		.lead-type-select option {
+			text-align: left;
 		}
 
 		.lead-form-shell .form-control:focus,
@@ -261,13 +283,16 @@
 			padding: 8px 14px;
 			display: flex;
 			align-items: center;
+			position: relative;
+			overflow: hidden;
 		}
 
 		.lead-form-shell .select2-container--default .select2-selection--single .select2-selection__rendered,
 		.lead-form-shell .select2-container--white .select2-selection--single .select2-selection__rendered {
 			border: 0 !important;
 			background: transparent !important;
-			padding: 0 !important;
+			padding-left: 0 !important;
+			padding-right: 2rem !important;
 			height: auto !important;
 			line-height: 1.3;
 			color: #495057;
@@ -275,8 +300,13 @@
 
 		.lead-form-shell .select2-container--default .select2-selection--single .select2-selection__arrow,
 		.lead-form-shell .select2-container--white .select2-selection--single .select2-selection__arrow {
-			height: 44px;
-			right: 8px;
+			height: 100% !important;
+			width: 38px;
+			right: 0;
+			top: 0;
+			border-left: 1px solid #d6e2f0;
+			border-radius: 0 !important;
+			background: #eef4f8;
 		}
 
 		.lead-form-shell .select2-container--default .select2-selection--single.is-invalid,
