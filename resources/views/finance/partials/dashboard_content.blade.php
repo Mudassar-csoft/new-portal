@@ -481,7 +481,7 @@
             margin-bottom: 12px;
         }
         .finance-stat-card {
-            min-height: 170px;
+            height: 150px;
             margin-bottom: 0;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
             transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;

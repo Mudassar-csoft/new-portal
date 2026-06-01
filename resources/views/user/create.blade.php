@@ -306,11 +306,12 @@
 			align-items: center;
 			width: 100%;
 		}
-		.select2-results__option--highlighted {
-    background: #00a8ff !important;
-    color: #fff !important;
-	margin-left: 8px;
-}
+		.select2-container--white .select2-results__option--highlighted[aria-selected],
+		.select2-container--white .select2-results__option--highlighted,
+		.select2-container--white .select2-results__option:hover {
+			/* background: #e8f4ff !important; */
+			color: #00a8ff !important;
+		}
 
 		.select2-container--white .select2-selection--multiple {
 			height: 36px;
@@ -398,6 +399,24 @@
 			width: 100%;
 			box-sizing: border-box;
 		}
+		.select2-container--white .role-dropdown-search {
+			display: block;
+			padding: 10px 12px;
+			border-bottom: 1px solid #eef2f7;
+			background: #fff;
+		}
+		.select2-container--white .role-dropdown-search-input {
+			width: 100%;
+			border: 1px solid #dbe5f1;
+			border-radius: 6px;
+			padding: 6px 10px;
+			outline: none;
+			box-sizing: border-box;
+		}
+		.select2-container--white .role-dropdown-search-input:focus {
+			border-color: #aaa;
+			/* box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.12); */
+		}
 		.select2-results__option .role-check {
 			display: inline-flex;
 			align-items: center;
@@ -422,8 +441,8 @@
 		.select2-container--white.select2-container--focus .select2-selection--single,
 		.select2-container--white.select2-container--open .select2-selection--single,
 		.select2-container--white.select2-container--focus .select2-selection--multiple {
-			border-color: #2b78ff;
-			box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.12);
+			border-color: #aaa;
+			/* box-shadow: 0 0 0 3px rgba(43, 120, 255, 0.12); */
 		}
 	
 	</style>
@@ -468,12 +487,15 @@
 				}
 
 				if (window.jQuery && $.fn.select2) {
-					$('.select2-user').select2({
+					$('.select2-user').not('.select2-roles').select2({
 						width: '100%',
 						dropdownParent: $('.user-card'),
 						dropdownAutoWidth: true,
+						minimumResultsForSearch: 0,
 					});
-					$('.select2-roles').select2({
+					const $roleSelect = $('.select2-roles');
+
+					$roleSelect.select2({
 						width: '100%',
 						dropdownParent: $('.user-card'),
 						dropdownAutoWidth: true,
@@ -485,6 +507,31 @@
 						templateSelection: function (state) {
 							return state.text;
 						},
+					});
+
+					$roleSelect.on('select2:open', function () {
+						const $openContainer = $('.select2-container--open').last();
+						const $dropdown = $openContainer.find('.select2-dropdown');
+						if (!$dropdown.length || $dropdown.find('.role-dropdown-search').length) return;
+
+						const $inlineSearch = $(this).next('.select2-container').find('.select2-search--inline .select2-search__field');
+						const $searchWrap = $('<span class="role-dropdown-search"></span>');
+						const $searchInput = $('<input class="role-dropdown-search-input" type="search" autocomplete="off" placeholder="Search roles">');
+
+						$searchWrap.append($searchInput);
+						$dropdown.prepend($searchWrap);
+
+						$searchInput.on('keydown keyup input mousedown', function (event) {
+							event.stopPropagation();
+						});
+
+						$searchInput.on('input', function () {
+							$inlineSearch.val(this.value).trigger('input').trigger('keyup');
+						});
+
+						setTimeout(function () {
+							$searchInput.trigger('focus');
+						}, 0);
 					});
 				}
 				syncAdminPermissions();
