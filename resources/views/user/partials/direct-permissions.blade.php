@@ -105,7 +105,7 @@
                 gap: 8px;
                 padding: 6px 0;
                 cursor: pointer;
-                font-weight: 500;
+                font-weight: 500 !important;
             }
             .perm-item input[type="checkbox"] {
                 margin: 0;

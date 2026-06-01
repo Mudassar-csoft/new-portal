@@ -48,14 +48,14 @@
         <label class="form-label required">Batch Name</label>
         <input type="text" class="form-control" name="name" value="{{ old('name', $batch->name) }}" placeholder="e.g. Graphic Design Spring Morning" required>
     </div>
-    <div class="form-group col-lg-3 col-md-6">
-        <label class="form-label required">Instructor / Teacher</label>
-        <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $batch->instructor) }}" placeholder="Enter instructor name" required>
-    </div>
+   
 </div>
 
 <div class="form-row">
-    
+     <div class="form-group col-lg-3 col-md-6">
+        <label class="form-label required">Instructor / Teacher</label>
+        <input type="text" class="form-control" name="instructor" value="{{ old('instructor', $batch->instructor) }}" placeholder="Enter instructor name" required>
+    </div>
     <div class="form-group col-lg-3 col-md-6">
         <label class="form-label">Lab / Room</label>
         <input type="text" class="form-control" name="lab" value="{{ old('lab', $batch->lab) }}" placeholder="e.g. Lab-A / Room 4">
@@ -68,6 +68,10 @@
         <label class="form-label">Expected Ending Date</label>
         <input type="date" class="form-control" name="end_date" value="{{ old('end_date', optional($batch->end_date)->format('Y-m-d')) }}">
     </div>
+      
+</div>
+
+<div class="form-row">
      <div class="form-group col-md-6 col-lg-3">
         <label class="form-label required d-block">Batch Session</label>
         <div class="row mt-2 choice-group">
@@ -87,10 +91,7 @@
                 </div>
             @endforeach
         </div>
-    </div>  
-</div>
-
-<div class="form-row">
+    </div>
     <div class="form-group col-md-3">
         <label class="form-label required">Batch Start Time</label>
         <input type="time" class="form-control" name="start_time" value="{{ old('start_time', $batch->start_time ? \Carbon\Carbon::parse($batch->start_time)->format('H:i') : null) }}" required>

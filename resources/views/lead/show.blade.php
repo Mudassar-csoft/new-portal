@@ -508,7 +508,7 @@
 		}
 
 		.form-check-label {
-			font-size: .75rem;
+			font-size: 14px;
 			margin-bottom: 0;
 			cursor: pointer;
 		}

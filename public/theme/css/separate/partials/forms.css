@@ -2988,12 +2988,13 @@ textarea.form-control {
 .select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
 .select2-container--white .select2-selection--single .select2-selection__rendered {
-  border: solid 1px #d8e2e7;
+  /* border: solid 1px #d8e2e7; */
   -webkit-border-radius: .25rem;
           border-radius: .25rem;
   font-size: 1rem;
   line-height: 1.5;
   color: #343434;
+  text-align: left;
   padding: .375rem 25px .375rem 1rem;
   min-height: 38px;
   background: #fff;
@@ -3129,6 +3130,7 @@ textarea.form-control {
   -webkit-border-radius: 0 0 .25rem .25rem;
           border-radius: 0 0 .25rem .25rem;
   border-top-color: #fff;
+  text-align: left !important;
   border-bottom-color: #d8e2e7;
 }
 .select2-container--default.select2-container--disabled,

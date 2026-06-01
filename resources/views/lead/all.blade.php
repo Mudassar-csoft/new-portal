@@ -315,7 +315,7 @@
 			height:38px;
 		}
 		.select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
+    /* border: solid 1px #d8e2e7; */
     -webkit-border-radius: .25rem;
     border-radius: .25rem;
     font-size: 1rem;
