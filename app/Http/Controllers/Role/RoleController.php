@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Role;
 
 use App\Http\Controllers\Controller;
-use App\Models\User\Permission;
 use App\Models\User\Role;
+use App\Support\PermissionCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -57,9 +57,9 @@ class RoleController extends Controller
 
     public function create(): View
     {
-        $permissions = Permission::orderBy('resource')->get()->groupBy('resource');
+        $permissionGroups = PermissionCatalog::grouped();
 
-        return view('role.create', compact('permissions'));
+        return view('role.create', compact('permissionGroups'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -94,10 +94,10 @@ class RoleController extends Controller
 
     public function edit(Role $role): View
     {
-        $permissions = Permission::orderBy('resource')->get()->groupBy('resource');
+        $permissionGroups = PermissionCatalog::grouped();
         $role->load('permissions');
 
-        return view('role.edit', compact('role', 'permissions'));
+        return view('role.edit', compact('role', 'permissionGroups'));
     }
 
     public function update(Request $request, Role $role): RedirectResponse

@@ -195,7 +195,9 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
                     ->distinct()
                     ->count('lead_id');
+            }
 
+            if ($can('lead.coworking.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
                 $sidebarCounts['coworking_followups'] = LeadFollowup::query()
                     ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->coworking())
                     ->distinct()

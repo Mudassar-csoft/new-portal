@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             HrmAccessSeeder::class,
             CampusSeeder::class,
+            CampusUserSeeder::class,
             ProgramSeeder::class,
             DemoAcademicSeeder::class,
             FinanceSetupSeeder::class,

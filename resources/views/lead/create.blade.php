@@ -15,29 +15,29 @@
 			'certification' => 'Certification Exam',
 		];
 		$selectedLeadType = old('type', request('type', data_get($leadPrefill, 'type', 'training')));
-		if (!array_key_exists($selectedLeadType, $leadTypeOptions)) {
+		if (! array_key_exists($selectedLeadType, $leadTypeOptions)) {
 			$selectedLeadType = 'training';
 		}
 	@endphp
+
 	<div class="lead-shell">
-		<div id="lead-loader" class="lead-loader">
-			<div class="lead-spinner">
-				<div class="dot"></div>
-				<div class="dot"></div>
-				<div class="dot"></div>
-			</div>
-			<p>Preparing lead form...</p>
-		</div>
-		<div id="lead-content" class="lead-content">
-			<div class="box-typical box-typical-dashboard panel panel-default lead-create-card">
+		<div class="lead-content">
+			<div class="lead-card box-typical box-typical-dashboard panel panel-default">
 				<header class="box-typical-header panel-heading lead-header">
 					<div class="tbl w-100">
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title p-0 m-0">
-								<h2 class="panel-title lead-title ">Create New Lead <span class=" ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span></h2>
+								<h2 class="panel-title lead-title">
+									Create New Lead
+									<span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
+								</h2>
 							</div>
-							<div class="text-right Traing-head-selector" style="text-align: left !important;">
-								<select id="leadTypeSelect" class="form-control lead-type-select" onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }">
+							<div class="tbl-cell text-right lead-header-tools">
+								<select
+									id="leadTypeSelect"
+									class="form-control lead-type-select"
+									onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }"
+								>
 									@foreach($leadTypeOptions as $leadTypeValue => $leadTypeLabel)
 										<option
 											value="{{ $leadTypeValue }}"
@@ -50,6 +50,7 @@
 						</div>
 					</div>
 				</header>
+
 				<div class="box-typical-body panel-body lead-body">
 					@if (!empty($webLead))
 						<div class="alert alert-info web-lead-alert">
@@ -60,16 +61,17 @@
 							<a href="{{ route('web-leads.show', $webLead) }}" class="btn btn-xs btn-primary-outline ml-2">View Source Lead</a>
 						</div>
 					@endif
-					<form method="POST" action="{{ route('leads.store') }}">
+
+					<form method="POST" action="{{ route('leads.store') }}" id="lead-create-form" class="lead-form-shell">
 						@csrf
 						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
 						<input type="hidden" name="type" id="lead-type-field" value="{{ $selectedLeadType }}">
-						@include('lead.' . $selectedLeadType)
-						<div class="form-actions mb-2 mt-3 text-right  mr-0">
-							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Lead</button>
 
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px; ">Cancel</a>
+						@include('lead.' . $selectedLeadType)
+
+						<div class="form-actions lead-actions mb-2 mt-3 text-right">
+							<button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">Create Lead</button>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem;">Cancel</a>
 						</div>
 					</form>
 				</div>
@@ -81,10 +83,6 @@
 @push('styles')
 	@include('lead.partials.probability_slider_assets')
 	<style>
-		.row{
-	padding:3px 10px;
-	/* gap:5px;%% */
-}
 		.lead-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
@@ -95,77 +93,49 @@
 			margin: 0;
 		}
 
-		.lead-loader {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 100vh;
-			background: rgba(245, 247, 251, 0.95);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex-direction: column;
-			z-index: 10;
-			gap: 12px;
-		}
-
-		.lead-spinner {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-		}
-
-		.lead-spinner .dot {
-			width: 12px;
-			height: 12px;
-			border-radius: 50%;
-			background: #12a0ff;
-			animation: bounce 0.9s ease-in-out infinite;
-		}
-
-		.lead-spinner .dot:nth-child(2) {
-			animation-delay: 0.15s;
-			background: #1f8ef1;
-		}
-
-		.lead-spinner .dot:nth-child(3) {
-			animation-delay: 0.3s;
-			background: #36b1ff;
-		}
-
-		.lead-loader p {
-			margin: 0;
-			color: #54667a;
-			font-weight: 600;
-		}
-
 		.lead-content {
-			opacity: 0;
-			visibility: hidden;
-			transition: opacity 0.4s ease;
 			position: relative;
 			min-height: 400px;
 		}
 
-		body.lead-ready .lead-content {
-			opacity: 1;
-			visibility: visible;
+		.lead-card {
+			overflow: visible !important;
+			max-height: none !important;
+			border: 1px solid #e3edf7;
+			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+			background: #fff;
 		}
 
-		body.lead-ready #lead-loader {
-			display: none;
+		.lead-card .panel-heading {
+			padding: 10px 20px;
 		}
 
-		@keyframes bounce {
-			0%, 80%, 100% {
-				transform: translateY(0);
-				opacity: 0.6;
-			}
-			40% {
-				transform: translateY(-12px);
-				opacity: 1;
-			}
+		.lead-card .panel-body {
+			max-height: none !important;
+			overflow: visible !important;
+		}
+
+		.lead-header {
+			border-bottom: 1px solid #e6eef3;
+			background: #fff;
+		}
+
+		.lead-title {
+			font-size: 18px;
+			font-weight: 500;
+			color: #25364a;
+			margin: 0;
+		}
+
+		.lead-title > span {
+			font-size: 14px;
+			font-weight: 400;
+			color: #5f7289;
+		}
+
+		.lead-header-tools {
+			width: 220px;
+			min-width: 220px;
 		}
 
 		.lead-body {
@@ -173,225 +143,306 @@
 			overflow: visible !important;
 		}
 
-		.lead-create-card {
-			overflow: visible !important;
-			max-height: none !important;
+		.lead-type-select,
+		.lead-form-shell .form-control,
+		.lead-form-shell .form-select,
+		.lead-form-shell .select2-container--default .select2-selection--single,
+		.lead-form-shell .select2-container--default .select2-selection--multiple,
+		.lead-form-shell .select2-container--white .select2-selection--single,
+		.lead-form-shell .select2-container--white .select2-selection--multiple {
+			border-radius: 12px;
+			border: 1px solid #d6e2f0;
+			background: #fff;
+			box-shadow: none;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease;
 		}
 
-		.lead-create-card .panel-heading {
-			padding: 10px 20px;
+		.lead-type-select,
+		.lead-form-shell .form-control,
+		.lead-form-shell .form-select {
+			min-height: 46px;
+			padding: 10px 14px;
 		}
 
-		.web-lead-alert {
-			margin: 8px 12px 12px;
-			padding: 10px 12px;
+		.lead-type-select,
+		.lead-form-shell select.form-control,
+		.lead-form-shell select.form-select {
+			color: #495057;
 		}
 
-		.lead-type-select {
-			display: inline-block;
-			width: 180px !important;
-			min-width: 180px;
+		.lead-form-shell .form-control:focus,
+		.lead-form-shell .form-select:focus,
+		.lead-type-select:focus {
+			border-color: #14a2f6;
+			box-shadow: 0 0 0 3px rgba(20, 162, 246, 0.12);
 		}
 
-		.lead-title {
-			font-size: 18px;
-			font-weight: 500;
+		.lead-form-shell .form-control[disabled],
+		.lead-form-shell .form-control[readonly] {
+			background: #f4f8fc;
+			color: #5f7289;
 		}
 
-		.lead-form {
-			display: none;
-			max-height: none !important;
-			overflow: visible !important;
+		.lead-form-shell textarea.form-control {
+			min-height: 92px;
+			resize: vertical;
 		}
 
-		.lead-form.active {
+		.lead-form-shell .lead-form {
 			display: block;
+			max-height: none !important;
+			overflow: visible !important;
 		}
 
-		.lead-form-title {
-			margin: 0 0 12px;
+		.lead-form-shell .container-fluid {
+			padding: 0;
+		}
+
+		.lead-form-shell .row,
+		.lead-form-shell .form-row {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+
+		.lead-form-shell .row > [class*="col-"],
+		.lead-form-shell .form-row > [class*="col-"] {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		.lead-form-shell .form-group {
+			margin-bottom: 18px;
+		}
+
+		.lead-form-shell label,
+		.lead-form-shell .form-label {
+			display: block;
+			min-height: 22px;
+			margin-bottom: 8px;
+			font-weight: 600;
+			color: #223a57 !important;
+		}
+
+		.lead-form-shell .choice-group {
+			align-items: center;
+			padding-top: 4px;
+			padding-bottom: 2px;
+		}
+
+		.lead-form-shell .choice-group .form-check {
+			gap: 3px;
+		}
+
+		.lead-form-shell .choice-group.is-invalid {
+			border: 1px solid #e53935;
+			border-radius: 6px;
+			margin-left: 0;
+			margin-right: 0;
+			padding: 4px 0;
+		}
+
+		.lead-form-shell .field-error {
+			margin-top: 6px;
 			font-size: 12px;
-			font-weight: 700;
-			color: #54667a;
+			color: #dc3545;
 		}
 
-		.required::after {
-			content: '*';
-			color: #e53935;
-			margin-left: 4px;
-		}
-
-		.field-error {
-			color: #e53935;
-			font-size: 14px;
-			margin-top: 4px;
-		}
-
-		.form-control.is-invalid,
-		.form-select.is-invalid,
-		.form-control-range.is-invalid {
+		.lead-form-shell .form-control.is-invalid,
+		.lead-form-shell .form-select.is-invalid,
+		.lead-form-shell .form-control-range.is-invalid {
 			border-color: #e53935;
 			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 		}
 
-		.select2-container--default .select2-selection--single.is-invalid,
-		.training-course-select.is-invalid + .select2-container .select2-selection--single {
+		.lead-form-shell .select2-container--default .select2-selection--single,
+		.lead-form-shell .select2-container--white .select2-selection--single {
+			min-height: 46px;
+			height: 46px;
+			padding: 8px 14px;
+			display: flex;
+			align-items: center;
+		}
+
+		.lead-form-shell .select2-container--default .select2-selection--single .select2-selection__rendered,
+		.lead-form-shell .select2-container--white .select2-selection--single .select2-selection__rendered {
+			border: 0 !important;
+			background: transparent !important;
+			padding: 0 !important;
+			height: auto !important;
+			line-height: 1.3;
+			color: #495057;
+		}
+
+		.lead-form-shell .select2-container--default .select2-selection--single .select2-selection__arrow,
+		.lead-form-shell .select2-container--white .select2-selection--single .select2-selection__arrow {
+			height: 44px;
+			right: 8px;
+		}
+
+		.lead-form-shell .select2-container--default .select2-selection--single.is-invalid,
+		.lead-form-shell .training-course-select.is-invalid + .select2-container .select2-selection--single {
 			border-color: #e53935 !important;
 			box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
 		}
 
-		.radio-group.is-invalid {
-			border: 1px solid #e53935;
-			border-radius: 6px;
-			padding: 6px 10px;
+		.lead-form-shell .select2-dropdown {
+			border: 1px solid #d6e2f0;
+			border-radius: 12px;
+			box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+			overflow: hidden;
 		}
 
-		.radio-group label {
-			margin-right: 14px;
+		.lead-form-shell .select2-search--dropdown {
+			padding: 10px;
+			border-bottom: 1px solid #e8eef5;
+			background: #fff;
+		}
+
+		.lead-form-shell .select2-search--dropdown .select2-search__field {
+			min-height: 38px;
+			border-radius: 10px;
+			border: 1px solid #d6e2f0;
+			padding: 8px 10px;
+			outline: none;
+		}
+
+		.lead-form-shell .select2-results__options {
+			padding: 6px;
+			background: #fff;
+		}
+
+		.lead-form-shell .select2-results__option {
+			border-radius: 8px;
+			padding: 8px 10px;
+			color: #223a57;
+		}
+
+		.lead-form-shell .select2-results__option--highlighted[aria-selected],
+		.lead-form-shell .select2-results__option--highlighted[data-selected] {
+			background: #f2f8ff !important;
+			color: #223a57 !important;
+		}
+
+		.training-course-select {
+			width: 100%;
+			min-width: 0;
+			max-width: 100%;
+			display: block;
+		}
+
+		.training-course-select + .select2-container {
+			width: 100% !important;
+		}
+
+		.training-course-option {
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+			line-height: 1.25;
+		}
+
+		.training-course-option-line {
+			display: block;
+			white-space: normal;
+			margin-bottom: 0;
+		}
+
+		.training-course-option-label {
 			font-weight: 600;
-			color: #54667a;
+			color: #183b68;
 		}
 
-		.probability-display {
+		.training-course-option-value {
+			color: #5f6b7a;
+		}
+
+		.lead-form-shell .probability-display {
 			margin-top: 6px;
 			font-weight: 600;
 			color: #54667a;
 		}
 
-		.lead-create-card .panel-body {
-			max-height: none !important;
-			overflow: visible !important;
-		}
-/* 
-		.form-row {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			margin-bottom: 12px;
+		.lead-actions {
+			padding: 0 10px 4px;
 		}
 
-		.form-row .form-group {
-			margin-bottom: 0;
-			flex: 1 1 32%;
-			min-width: 260px;
+		.web-lead-alert {
+			margin: 0 10px 14px;
+			border-radius: 12px;
+			border-color: #cfe4f7;
+			background: #f2f8ff;
 		}
 
-		.form-row .form-group.col-md-6 {
-			flex-basis: 48%;
+		.lead-form-shell .coworking-voucher-head,
+		.lead-form-shell .voucher-section-title,
+		.lead-form-shell .coworking-voucher-kicker,
+		.lead-form-shell .coworking-voucher-copy,
+		.lead-form-shell .coworking-voucher-meta {
+			display: none !important;
 		}
 
-		.form-row .form-group.col-md-4 {
-			flex-basis: 32%;
-		}
-
-		.form-row .form-group.col-md-3 {
-			flex-basis: 24%;
-		} */
-
-		input[type="range"] {
-			width: 100%;
-		}
-
-		.lead-create-card .panel-body {
-			max-height: none !important;
-			overflow: visible !important;
-		}
-
-		/* .form-row {
-			margin-bottom: 12px;
-		} */
-
-		.follow-action-dropdown .dropdown-menu {
-			min-width: 220px;
-			padding: 6px 0;
-			border-radius: 8px;
-			box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
-		}
-
-		.follow-action-dropdown .dropdown-item {
-			display: flex;
-			align-items: center;
-			gap: 10px;
-			padding: 8px 14px;
+		.lead-form-shell .coworking-voucher-lead,
+		.lead-form-shell .voucher-section {
 			border: 0 !important;
-			white-space: normal;
-			background: transparent;
+			background: transparent !important;
+			padding: 0 !important;
+			margin: 0 !important;
 		}
 
-		.follow-action-dropdown .dropdown-item i {
-			width: 18px;
-			text-align: center;
-			flex: 0 0 18px;
+		.form-check-input[type="radio"] {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			width: 14px;
+			height: 14px !important;
+			border: 2px solid grey;
+			border-radius: 50%;
+			outline: none;
+			cursor: pointer;
+			position: relative;
+			background-color: #fff;
+			transition: background 0.2s, box-shadow 0.2s;
 		}
 
-		.follow-action-dropdown .dropdown-item:focus,
-		.follow-action-dropdown .dropdown-item:hover {
-			background: #f3f8ff;
+		.form-check-input[type="radio"]:checked {
+			border-color: #00a8ff;
 		}
 
-		.follow-action-dropdown .dropdown-divider {
-			margin: 6px 0;
+		.form-check-input[type="radio"]:checked::before {
+			content: '';
+			position: absolute;
+			top: 2px;
+			left: 2px;
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background-color: #00a8ff;
 		}
-		.tbl-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between; /* title left, select right */
-    gap: 12px;
-}
 
-/* Right cell holds the select */
-.tbl-cell.text-right {
-    flex: 1 1 auto;
-    text-align: right;
-    min-width: 150px;
-}
+		@media (max-width: 767px) {
+			.lead-card .panel-heading {
+				padding: 10px 14px;
+			}
 
-/* Select styling */
-.lead-type-select {
-    width: 180px !important;
-    min-width: 180px;
-    max-width: 100%;
-    padding: 6px 12px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
+			.lead-body {
+				padding: 10px 8px 4px;
+			}
 
-/* =====================
-   RESPONSIVE FIX
-===================== */
-@media (max-width: 768px) {
+			.tbl-row {
+				display: block;
+			}
 
-    .tbl-row {
-        flex-direction: column;
-        align-items: stretch; /* full width children */
-    }
+			.lead-header-tools {
+				width: 100%;
+				min-width: 0;
+				margin-top: 10px;
+				text-align: left !important;
+			}
 
-    /* Equal spacing on both sides */
-    .tbl-cell.tbl-cell-title,
-    .tbl-cell.text-right {
-        width: 100%;
-        padding-left: 12px;
-        padding-right: 12px;
-        box-sizing: border-box;
-    }
-
-    .tbl-cell.text-right {
-        text-align: left;
-        margin-top: 0px;
-    }
-
-    .lead-type-select {
-        width: 100%;
-        max-width: 100%;
-    }
-}
-
-
-
-
+			.lead-type-select {
+				width: 100%;
+			}
+		}
 	</style>
 @endpush
 
@@ -431,23 +482,12 @@
 				window.addEventListener('resize', function () {
 					syncAllProbabilityRanges();
 				});
-
-				return syncAllProbabilityRanges;
 			}
 
-			function revealLeadForm() {
-				// Allow the DOM to settle so the loader feels intentional
-				setTimeout(function () {
-					document.body.classList.add('lead-ready');
-				}, 200);
-			}
-
-			document.addEventListener('DOMContentLoaded', function () {
-				bindProbabilityDisplays();
-				revealLeadForm();
-			});
+			document.addEventListener('DOMContentLoaded', bindProbabilityDisplays);
 		})();
 	</script>
+
 	@if($errors->any() && !session('error'))
 		<script>
 			(function () {
@@ -460,6 +500,7 @@
 			})();
 		</script>
 	@endif
+
 	@include('partials.country_city_script')
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
@@ -480,6 +521,7 @@
 			});
 		});
 	</script>
+
 	<script>
 		(function () {
 			function escapeHtml(value) {
@@ -507,7 +549,7 @@
 
 				return (
 					'<div class="training-course-option">' +
-						'<span class="training-course-option-line"> <span class="training-course-option-label">' + escapeHtml(title) + '</span></span>' +
+						'<span class="training-course-option-line"><span class="training-course-option-label">' + escapeHtml(title) + '</span></span>' +
 						'<span class="training-course-option-line"><span class="training-course-option-label">Fee:</span> <span class="training-course-option-value">' + escapeHtml(fee) + '</span></span>' +
 						'<span class="training-course-option-line"><span class="training-course-option-label">Duration:</span> <span class="training-course-option-value">' + escapeHtml(duration) + ' months</span></span>' +
 					'</div>'
