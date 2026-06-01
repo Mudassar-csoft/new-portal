@@ -174,7 +174,7 @@
                                     @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $key => $label)
                                         <div class="col-4 d-flex justify-content-center mb-1">
                                             <div class="form-check d-flex align-items-center{{ $loop->first ? ' mt-0' : '' }}">
-                                                <input class="form-check-input mt-0 mr-1 @error('gender') is-invalid @enderror"
+                                                <input class="form-check-input mt-1  @error('gender') is-invalid @enderror"
                                                     id="coworking-registration-gender-{{ $key }}"
                                                     name="gender"
                                                     type="radio"

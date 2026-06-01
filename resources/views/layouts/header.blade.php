@@ -886,7 +886,7 @@ display: flex;
 }
 .notif-accordion{
 	max-height: 392px;
-	overflow-y: auto;
+	overflow-y: hidden;
 	padding: 12px;
 	background: #f7f9fc;
 }
@@ -959,7 +959,8 @@ display: flex;
 }
 .notif-accordion-panel .table-responsive{
 	max-height: 310px;
-	overflow-y: auto;
+
+	overflow-y: hidden !important;
 }
 .notif-accordion-panel .notification-table{
 	margin-bottom: 0;
@@ -979,7 +980,10 @@ display: flex;
 } */
 .notification-table td,
 .notification-table th{
-	text-align:center !important;
+	text-align:left !important;
+  padding: 8px 3px !important;
+  text-wrap: wrap !important;
+  max-width:100px;
 }
 .lead-tabs {
   display: flex;
