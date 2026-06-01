@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Campus;
 use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
@@ -13,7 +14,7 @@ class UserPermissionManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_create_user_form_groups_permissions_by_module(): void
+    public function test_create_user_form_hides_direct_permission_selection(): void
     {
         $admin = $this->createAdminUser();
 
@@ -29,13 +30,101 @@ class UserPermissionManagementTest extends TestCase
             'slug' => 'lead.followup.view',
         ]);
 
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'transfer.approve',
+            'slug' => 'lead.transfer.approve',
+        ]);
+
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'view',
+            'slug' => 'lead.view',
+        ]);
+
+        $this->findOrCreatePermission('lead', 'coworking.view', 'lead.coworking.view');
+
         $response = $this->actingAs($admin)->get(route('users.create'));
 
         $response->assertOk();
+        $response->assertSee('All Campuses');
+        $response->assertSee('Password');
+        $response->assertSee('Confirm Password');
+        $response->assertSee('Select role');
+        $response->assertDontSee('Direct Permissions');
+        $response->assertDontSee('Permissions are assigned manually by module. Role-based access stays separate and is not auto-selected here.');
+    }
+
+    public function test_create_role_form_groups_permissions_by_module(): void
+    {
+        $admin = $this->createAdminUser();
+
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'create',
+            'slug' => 'lead.create',
+        ]);
+
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'followup.view',
+            'slug' => 'lead.followup.view',
+        ]);
+
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'transfer.approve',
+            'slug' => 'lead.transfer.approve',
+        ]);
+
+        Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'view',
+            'slug' => 'lead.view',
+        ]);
+
+        $this->findOrCreatePermission('lead', 'coworking.view', 'lead.coworking.view');
+
+        $response = $this->actingAs($admin)->get(route('roles.create'));
+
+        $response->assertOk();
+        $response->assertSee('Role Permissions');
         $response->assertSee('Lead Management');
+        $response->assertSee('Create New Lead');
         $response->assertSee('Training Leads');
-        $response->assertSee('Create Lead');
-        $response->assertSee('View Follow-up');
+        $response->assertSee("Lead's Follow-up");
+        $response->assertSee('Transferred Leads');
+        $response->assertSee('All Leads');
+        $response->assertSee('Coworking Space');
+    }
+
+    public function test_admin_can_create_role_and_assign_permissions(): void
+    {
+        $admin = $this->createAdminUser();
+
+        $leadCreate = Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'create',
+            'slug' => 'lead.create',
+        ]);
+
+        $leadCoworking = $this->findOrCreatePermission('lead', 'coworking.view', 'lead.coworking.view');
+
+        $response = $this->actingAs($admin)->post(route('roles.store'), [
+            'name' => 'Lead Supervisor',
+            'slug' => 'lead-supervisor',
+            'description' => 'Lead module supervisor',
+            'permissions' => [$leadCreate->id, $leadCoworking->id],
+        ]);
+
+        $response->assertRedirect(route('roles.index'));
+
+        $role = Role::query()->where('slug', 'lead-supervisor')->firstOrFail();
+
+        $this->assertEqualsCanonicalizing(
+            [$leadCreate->id, $leadCoworking->id],
+            $role->permissions()->pluck('permissions.id')->all()
+        );
     }
 
     public function test_admin_can_assign_direct_permissions_when_creating_a_user(): void
@@ -64,7 +153,9 @@ class UserPermissionManagementTest extends TestCase
         $response = $this->actingAs($admin)->post(route('users.store'), [
             'name' => 'Permissions User',
             'email' => 'permissions@example.com',
-            'roles' => [$memberRole->id],
+            'password' => 'secret12345',
+            'password_confirmation' => 'secret12345',
+            'role_id' => $memberRole->id,
             'permissions' => [$leadCreate->id, $leadFollowup->id],
         ]);
 
@@ -77,6 +168,7 @@ class UserPermissionManagementTest extends TestCase
             [$leadCreate->id, $leadFollowup->id],
             $user->permissions()->pluck('permissions.id')->all()
         );
+        Mail::assertNothingOutgoing();
     }
 
     public function test_admin_can_update_direct_permissions_for_an_existing_user(): void
@@ -136,6 +228,66 @@ class UserPermissionManagementTest extends TestCase
         );
     }
 
+    public function test_admin_can_edit_user_change_role_and_assign_all_campuses(): void
+    {
+        Mail::fake();
+
+        $admin = $this->createAdminUser();
+        $campus = Campus::query()->create([
+            'name' => 'Main Campus',
+            'slug' => 'main-campus',
+            'code' => 'MC',
+        ]);
+
+        $oldRole = Role::query()->create([
+            'name' => 'Old Role',
+            'slug' => 'old-role',
+            'description' => 'Old role',
+        ]);
+
+        $newRole = Role::query()->create([
+            'name' => 'New Role',
+            'slug' => 'new-role',
+            'description' => 'New role',
+        ]);
+
+        $leadCoworking = $this->findOrCreatePermission('lead', 'coworking.view', 'lead.coworking.view');
+
+        $user = User::factory()->create([
+            'name' => 'Campus User',
+            'email' => 'campus-user@example.com',
+            'campus_id' => $campus->id,
+        ]);
+
+        $user->roles()->sync([
+            $oldRole->id => ['assigned_by' => $admin->id],
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('users.update', $user), [
+            'name' => 'Campus User Updated',
+            'email' => 'campus-user@example.com',
+            'campus_id' => '',
+            'roles' => [$newRole->id],
+            'permissions' => [$leadCoworking->id],
+        ]);
+
+        $response->assertRedirect(route('users.index'));
+
+        $user->refresh();
+
+        $this->assertSame('Campus User Updated', $user->name);
+        $this->assertNull($user->campus_id);
+        $this->assertSame([$newRole->id], $user->roles()->pluck('roles.id')->all());
+        $this->assertSame([$leadCoworking->id], $user->permissions()->pluck('permissions.id')->all());
+
+        $listing = $this->actingAs($admin)
+            ->withHeader('X-Requested-With', 'XMLHttpRequest')
+            ->get(route('users.index', ['scope' => 'active']));
+
+        $listing->assertOk();
+        $listing->assertSee('All Campuses');
+    }
+
     public function test_admin_role_users_receive_all_permissions_automatically_when_created(): void
     {
         Mail::fake();
@@ -164,7 +316,9 @@ class UserPermissionManagementTest extends TestCase
         $response = $this->actingAs($admin)->post(route('users.store'), [
             'name' => 'Admin Permissions User',
             'email' => 'admin-permissions@example.com',
-            'roles' => [$adminRole->id],
+            'password' => 'secret12345',
+            'password_confirmation' => 'secret12345',
+            'role_id' => $adminRole->id,
             'permissions' => [$leadCreate->id],
         ]);
 
@@ -174,9 +328,10 @@ class UserPermissionManagementTest extends TestCase
 
         $this->assertTrue($user->isAdmin());
         $this->assertEqualsCanonicalizing(
-            [$leadCreate->id, $financeDashboardView->id, $inventoryView->id],
+            Permission::query()->pluck('id')->all(),
             $user->permissions()->pluck('permissions.id')->all()
         );
+        Mail::assertNothingOutgoing();
     }
 
     public function test_user_without_module_permission_gets_403_and_navigation_hides_that_module(): void
@@ -229,6 +384,31 @@ class UserPermissionManagementTest extends TestCase
         $response->assertDontSee('Certificate Management');
     }
 
+    public function test_coworking_route_requires_dedicated_coworking_permission(): void
+    {
+        $trainingFollowup = Permission::query()->create([
+            'resource' => 'lead',
+            'action' => 'followup.view',
+            'slug' => 'lead.followup.view',
+        ]);
+
+        $coworkingFollowup = $this->findOrCreatePermission('lead', 'coworking.view', 'lead.coworking.view');
+
+        $trainingUser = User::factory()->create();
+        $trainingUser->permissions()->sync([$trainingFollowup->id]);
+
+        $coworkingUser = User::factory()->create();
+        $coworkingUser->permissions()->sync([$coworkingFollowup->id]);
+
+        $this->actingAs($trainingUser)
+            ->get(route('leads.coworking.followups'))
+            ->assertForbidden();
+
+        $this->actingAs($coworkingUser)
+            ->get(route('leads.coworking.followups'))
+            ->assertOk();
+    }
+
     private function createAdminUser(): User
     {
         $user = User::factory()->create();
@@ -246,5 +426,16 @@ class UserPermissionManagementTest extends TestCase
         ]);
 
         return $user;
+    }
+
+    private function findOrCreatePermission(string $resource, string $action, string $slug): Permission
+    {
+        return Permission::query()->firstOrCreate(
+            ['slug' => $slug],
+            [
+                'resource' => $resource,
+                'action' => $action,
+            ]
+        );
     }
 }

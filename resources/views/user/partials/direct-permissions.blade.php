@@ -1,8 +1,15 @@
+@php
+    $sectionTitle = $sectionTitle ?? 'Direct Permissions';
+    $helperText = $helperText ?? 'Permissions are assigned manually by module. Role-based access stays separate and is not auto-selected here.';
+    $selectedPermissionIds = collect($selectedPermissionIds ?? []);
+    $inputName = $inputName ?? 'permissions[]';
+@endphp
+
 <div class="form-section">
-    <div class="section-title form-label">Direct Permissions</div>
-    <p class="permission-helper text-muted">
-        Permissions are assigned manually by module. Role-based access stays separate and is not auto-selected here.
-    </p>
+    <div class="section-title form-label">{{ $sectionTitle }}</div>
+    @if($helperText)
+        <p class="permission-helper text-muted">{{ $helperText }}</p>
+    @endif
 
     @if (!empty($permissionGroups))
         <div class="permission-wrapper">
@@ -10,16 +17,23 @@
                 @foreach ($permissionGroups as $group)
                     <div class="perm-column">
                         <h6 class="text-muted text-uppercase perm-heading">{{ $group['label'] }}</h6>
-                        @foreach ($group['permissions'] as $permission)
-                            <label class="perm-item form-label">
-                                <input
-                                    type="checkbox"
-                                    name="permissions[]"
-                                    value="{{ $permission['id'] }}"
-                                    @checked($selectedPermissionIds->contains($permission['id']))
-                                >
-                                <span>{{ $permission['label'] }}</span>
-                            </label>
+                        @foreach (($group['sections'] ?? [['label' => null, 'permissions' => $group['permissions']]]) as $section)
+                            <div class="perm-section">
+                                @if(!empty($section['label']))
+                                    <div class="perm-subheading">{{ $section['label'] }}</div>
+                                @endif
+                                @foreach ($section['permissions'] as $permission)
+                                    <label class="perm-item form-label">
+                                        <input
+                                            type="checkbox"
+                                            name="{{ $inputName }}"
+                                            value="{{ $permission['id'] }}"
+                                            @checked($selectedPermissionIds->contains($permission['id']))
+                                        >
+                                        <span>{{ $permission['label'] }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         @endforeach
                     </div>
                 @endforeach
@@ -71,6 +85,19 @@
                 margin-bottom: 8px;
                 font-weight: 700;
                 letter-spacing: 0.5px;
+            }
+            .perm-section + .perm-section {
+                margin-top: 14px;
+                padding-top: 12px;
+                border-top: 1px solid #e6edf5;
+            }
+            .perm-subheading {
+                margin-bottom: 6px;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: #7f93ac;
             }
             .perm-item {
                 display: flex;

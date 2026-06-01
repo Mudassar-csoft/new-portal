@@ -19,11 +19,12 @@
 
     $canLeadCreate = $can('lead.create');
     $canLeadFollowups = $can('lead.followup.view');
+    $canLeadCoworkingView = $can('lead.coworking.view');
     $canLeadTransfers = $can('lead.view', 'lead.transfer.approve');
     $canLeadListing = $can('lead.view');
     $canWebLeads = $can('web-lead.view');
     $showTrainingLeads = $canLeadFollowups || $canLeadTransfers || $canLeadListing;
-    $showCoworkingLeads = $canLeadFollowups;
+    $showCoworkingLeads = $canLeadCoworkingView;
     $showLeadModule = $canLeadCreate || $showTrainingLeads || $showCoworkingLeads || $canWebLeads;
 
     $canRegistrationView = $can('registration.view');
@@ -105,14 +106,10 @@
     $canUserView = $can('user.view');
     $canRoleCreate = $can('role.create', 'role.manage');
     $canRoleView = $can('role.view', 'role.manage');
-    $canPermissionCreate = $can('permission.create', 'permission.manage');
-    $canPermissionView = $can('permission.view', 'permission.manage');
     $showUserModule = $canUserCreate
         || $canUserView
         || $canRoleCreate
-        || $canRoleView
-        || $canPermissionCreate
-        || $canPermissionView;
+        || $canRoleView;
 @endphp
 
 <div class="mobile-menu-left-overlay"></div>
@@ -165,7 +162,9 @@
                                 <span class="lbl">Coworking Space</span>
                             </span>
                             <ul>
-                                <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                @if($canLeadCoworkingView)
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                @endif
                             </ul>
                         </li>
                     @endif
@@ -504,12 +503,6 @@
                     @endif
                     @if($canRoleView)
                         <li><a href="{{ route('roles.index') }}"><span class="lbl">Roles</span></a></li>
-                    @endif
-                    @if($canPermissionCreate)
-                        <li><a href="{{ route('permissions.create') }}"><span class="lbl">Create Permission</span></a></li>
-                    @endif
-                    @if($canPermissionView)
-                        <li><a href="{{ route('permissions.index') }}"><span class="lbl">Permissions</span></a></li>
                     @endif
                     @if($canUserView)
                         <li><a href="{{ route('login-logs.index') }}"><span class="lbl">User Activities</span></a></li>
