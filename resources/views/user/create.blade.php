@@ -20,171 +20,9 @@
                 </div>
             </header>
 
-<<<<<<< HEAD
             <div class="box-typical-body panel-body user-body">
                 <form method="POST" action="{{ route('users.store') }}" class="user-form">
                     @csrf
-=======
-								<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Alex Morgan" value="{{ old('name') }}" required>
-								@error('name')
-									<div class="field-error">{{ $message }}</div>
-								@enderror
-							</div>
-						</div>
-						<div class="form-row">
-							<div class="form-group col-md-2">
-							<label class="form-label required">Email Address</label>
-							</div>
-							<div class="form-group col-md-10">
-							<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="alex@example.com" value="{{ old('email') }}" required>
-							@error('email')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-							</div>
-						</div>
-						<div class="form-row">
-								<div class="form-group col-md-2">
-								<label class="form-label">
-									<span>Password</span>
-									<!-- <small class="text-muted">(leave blank to keep current)</small> -->
-								</label>
-								</div>
-								<div class="form-group col-md-10">
-								<div class="input-group">
-									<input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="********">
-									<span class="input-group-btn">
-										<button class="btn btn-default toggle-visibility" type="button" data-target="#password" aria-label="Show password">
-											<i class="fa fa-eye"></i>
-										</button>
-									</span>
-								</div>
-								@error('password')
-									<div class="field-error">{{ $message }}</div>
-								@enderror
-							</div>
-							
-					</div>
-					<!-- </div> -->
-					<!-- <div class="form-section"> -->
-						<!-- <div class="section-title form-label">Access &amp; Roles</div> -->
-						<div class="form-row" >
-							<div class="form-group col-md-2">
-								<label class="form-label">Confirm Password</label>
-								</div>
-							<div class="form-group col-md-10">
-								<div class="input-group">
-									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
-									<span class="input-group-btn">
-										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
-											<i class="fa fa-eye"></i>
-										</button>
-									</span>
-								</div>
-								@error('password_confirmation')
-									<div class="field-error">{{ $message }}</div>
-								@enderror
-							</div>
-							</div>
-						<div class="form-row">
-							<div class="form-group col-md-2">
-								<label class="form-label">Campus</label>
-							</div>
-							<div class="form-group col-md-10">
-								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
-									<option value="">Select campus</option>
-								@foreach($campuses as $campus)
-									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
-								@endforeach
-								</select>
-							@error('campus_id')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-							</div>
-						</div>
-						<div class="form-row">
-							<div class="form-group col-md-2">
-								<label class="form-label">Roles</label>
-							</div>
-							<div class="form-group col-md-10">
-								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
-								@foreach($roles as $role)
-									<option value="{{ $role->id }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
-								@endforeach
-								</select>
-							</div>
-							<!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small> -->
-							<!-- @error('roles')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-							@error('roles.*')
-								<div class="field-error">{{ $message }}</div>
-							@enderror -->
-						</div>
-					</div>
-					<!-- <div class="form-section">
-						<div class="section-title form-label">Access &amp; Roles</div>
-						<div class="form-row" >
-							<div class="form-group col-md-4">
-								<label class="form-label">Confirm Password</label>
-								<div class="input-group">
-									<input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" placeholder="********">
-									<span class="input-group-btn">
-										<button class="btn btn-default toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
-											<i class="fa fa-eye"></i>
-										</button>
-									</span>
-								</div>
-								@error('password_confirmation')
-									<div class="field-error">{{ $message }}</div>
-								@enderror
-							</div>
-						<div class="form-group col-md-4">
-							<label class="form-label">Campus</label>
-								<select name="campus_id" class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror" style="width: 100%;" data-placeholder="Select campus">
-									<option value="">Select campus</option>
-								@foreach($campuses as $campus)
-									<option value="{{ $campus->id }}" @selected(old('campus_id') == $campus->id)>{{ $campus->name }}</option>
-								@endforeach
-							</select>
-							@error('campus_id')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-						<div class="form-group col-md-4">
-							<label class="form-label">Roles</label>
-								<select name="roles[]" class="form-control select2 select2-white select2-user select2-roles @error('roles') is-invalid @enderror" multiple style="width: 100%;" data-placeholder="Select roles">
-								@foreach($roles as $role)
-									<option value="{{ $role->id }}" data-slug="{{ $role->slug }}" @selected(collect(old('roles', []))->contains($role->id))>{{ $role->name }}</option>
-								@endforeach
-							</select>
-							<small class="text-muted">Hold Ctrl/Cmd to select multiple roles.</small>
-							@error('roles')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-							@error('roles.*')
-								<div class="field-error">{{ $message }}</div>
-							@enderror
-						</div>
-					</div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-					</div> -->
-=======
-					</div>
-					@php($selectedPermissionIds = collect(old('permissions', []))->map(fn ($id) => (int) $id))
-					@include('user.partials.direct-permissions', ['permissionGroups' => $permissionGroups, 'selectedPermissionIds' => $selectedPermissionIds])
->>>>>>> 25d1ce62700834616981bc37d4cca069998e0c05
-=======
-					</div> -->
->>>>>>> 0e39de725b396073aed5291ece042d051839ebbf
-					<div class="form-section">
-						<div class="section-title form-label">Account Activation</div>
-						<div class="alert alert-info mb-0" style="background:#eef5ff;border:1px solid #cfe0f5;color:#0a6fd1;border-radius:8px;padding:10px 12px;">
-							<i class="fa fa-info-circle"></i>
-							A setup link will be emailed to the new user. The link is valid for <strong>1 hour</strong> — the user clicks it to set their own password and activate the account.
-						</div>
-					</div>
->>>>>>> 3818b92d2c5dfbefc80a33c2404579bf23da1338
 
                     <div class="user-form-row">
                         <div class="user-form-label">
@@ -292,7 +130,7 @@
                             <select
                                 name="campus_id"
                                 id="campus_id"
-                                class="form-control select2 select2-white select2-user @error('campus_id') is-invalid @enderror"
+                                class="form-control select2 select2-white @error('campus_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="Select campus"
                             >
@@ -315,7 +153,7 @@
                             <select
                                 name="role_id"
                                 id="role_id"
-                                class="form-control select2 select2-white select2-user-role @error('role_id') is-invalid @enderror"
+                                class="form-control select2 select2-white @error('role_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="Select role"
                             >
@@ -362,7 +200,7 @@
         }
         .user-create-page .user-shell {
             min-height: 100vh;
-            padding: 24px !important;
+            padding: 24px;
             background:
                 radial-gradient(circle at top left, rgba(45, 120, 255, 0.09), transparent 26%),
                 linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
@@ -403,9 +241,8 @@
             flex-direction: column;
             gap: 22px;
             width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
             max-width: 960px;
+            margin: 0 auto;
         }
         .user-create-page .user-form-row {
             display: grid;
@@ -413,7 +250,6 @@
             gap: 24px;
             align-items: start;
             width: 100%;
-            max-width: 100%;
         }
         .user-create-page .user-form-label {
             padding-top: 16px;
@@ -438,8 +274,7 @@
             max-width: 100%;
         }
         .user-create-page .user-input,
-        .user-create-page .select2-container--white .select2-selection--single,
-        .user-create-page .select2-container--white .select2-selection--multiple {
+        .user-create-page .select2-container--white .select2-selection--single {
             min-height: 54px;
             border: 1px solid #cfe0f1;
             border-radius: 14px;
@@ -460,8 +295,7 @@
         }
         .user-create-page .user-input:focus,
         .user-create-page .select2-container--white.select2-container--focus .select2-selection--single,
-        .user-create-page .select2-container--white.select2-container--open .select2-selection--single,
-        .user-create-page .select2-container--white.select2-container--focus .select2-selection--multiple {
+        .user-create-page .select2-container--white.select2-container--open .select2-selection--single {
             border-color: #2b78ff;
             box-shadow: 0 0 0 4px rgba(43, 120, 255, 0.13);
         }
@@ -549,116 +383,19 @@
             background: #fff !important;
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
         }
-        .user-create-page form .select2-container--default .select2-selection--single .select2-selection__rendered,
-        .user-create-page form .select2-container--white .select2-selection--single .select2-selection__rendered {
-            display: block !important;
-            flex: 1 1 auto;
+        .user-create-page .select2-container--default .select2-selection--single .select2-selection__rendered,
+        .user-create-page .select2-container--white .select2-selection--single .select2-selection__rendered {
             width: 100% !important;
-            height: auto !important;
-            min-height: 0 !important;
             color: #16324f;
             line-height: 1.2 !important;
             padding: 0 !important;
             margin: 0 !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            border: 0 !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            box-shadow: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__arrow,
         .user-create-page .select2-container--white .select2-selection--single .select2-selection__arrow {
             height: 100% !important;
             right: 14px !important;
             width: 20px !important;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple {
-            height: auto;
-            padding: 8px 12px;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-selection__rendered {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 0;
-            padding: 0;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-search--inline {
-            margin: 0;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-search--inline .select2-search__field {
-            height: 30px;
-            margin: 0;
-            line-height: 30px;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-selection__choice {
-            margin: 0;
-            padding: 6px 12px;
-            border-radius: 999px;
-            border: 1px solid #cfe0ff;
-            background: #edf4ff;
-            color: #1b4880;
-            font-size: 13px;
-            font-weight: 600;
-            position: relative;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
-            position: static;
-            width: auto;
-            height: auto;
-            margin-right: 6px;
-            border: 0;
-            background: transparent;
-            color: #7990ac;
-            font-size: 13px;
-            line-height: 1;
-        }
-        .user-create-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove:hover {
-            background: transparent;
-            color: #d93048;
-        }
-        .user-create-page .select2-container--white .select2-dropdown {
-            border: 1px solid #d6e4f3;
-            border-radius: 14px;
-            box-shadow: 0 18px 38px rgba(15, 42, 78, 0.12);
-            overflow: hidden;
-            margin-top: 8px;
-            z-index: 1060;
-        }
-        .user-create-page .select2-container--white .select2-search--dropdown {
-            padding: 12px;
-            border-bottom: 1px solid #edf2f8;
-        }
-        .user-create-page .select2-container--white .select2-search--dropdown .select2-search__field {
-            border: 1px solid #d6e4f3;
-            border-radius: 10px;
-            padding: 8px 10px;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .user-create-page .select2-results__option .role-check {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .user-create-page .select2-results__option .role-check .box {
-            width: 14px;
-            height: 14px;
-            border: 1px solid #9fb3c8;
-            border-radius: 4px;
-            background: #fff;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #fff;
-        }
-        .user-create-page .select2-results__option[aria-selected=true] .role-check .box {
-            background: #2b78ff;
-            border-color: #2b78ff;
         }
         .user-create-page .user-actions {
             display: flex;
@@ -761,6 +498,7 @@
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
                     });
+
                     $('#role_id').select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
