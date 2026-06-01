@@ -46,7 +46,7 @@
                 @endunless
 
                 <div class="box-typical-body panel-body registration-body">
-                    <form method="POST" action="{{ $formAction }}" id="coworking-registration-form" class="registration-form coworking-voucher-form">
+                    <form method="POST" action="{{ $formAction }}" id="coworking-registration-form" class="registration-form">
                         @csrf
                         @if($isEditMode)
                             @method('PUT')
@@ -57,22 +57,6 @@
                         @if(!empty($leadId))
                             <input type="hidden" name="lead_id" value="{{ $leadId }}">
                         @endif
-
-                        <div class="coworking-voucher-head">
-                            <div class="coworking-voucher-brand">
-                                <div class="coworking-voucher-kicker">Career Institute</div>
-                                <div class="coworking-voucher-name">Coworking Space Registration</div>
-                                <div class="coworking-voucher-copy">Voucher-style layout for cleaner registration entry.</div>
-                            </div>
-                            <div class="coworking-voucher-meta">
-                                <div><span>Campus</span><strong>{{ optional($campuses->firstWhere('id', $selectedCampusId))->code ?? 'Pending' }}</strong></div>
-                                <div><span>Registration Date</span><strong>{{ $registrationDateValue }}</strong></div>
-                                <div><span>Status</span><strong>{{ $isEditMode ? 'Edit Mode' : 'New Entry' }}</strong></div>
-                            </div>
-                        </div>
-
-                        <section class="voucher-section">
-                            <div class="voucher-section-title">Member Details</div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-lg-3">
@@ -171,20 +155,40 @@
                             <div class="col-md-6 col-lg-3 mb-lg-1 registration-gender-group">
                                 <label class="form-label text-dark fw-semibold registration-gender-title required">Gender</label>
                                 <div class="row mt-2 choice-group registration-gender-options @error('gender') is-invalid @enderror">
-                                    @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $key => $label)
-                                        <div class="col-4 d-flex justify-content-center mb-1">
-                                            <div class="form-check d-flex align-items-center{{ $loop->first ? ' mt-0' : '' }}">
-                                                <input class="form-check-input mt-1  @error('gender') is-invalid @enderror"
-                                                    id="coworking-registration-gender-{{ $key }}"
-                                                    name="gender"
-                                                    type="radio"
-                                                    value="{{ $key }}"
-                                                    @checked(old('gender', data_get($leadDetails, 'gender', 'male')) === $key)
-                                                    required>
-                                                <label class="form-check-label mb-0" for="coworking-registration-gender-{{ $key }}">{{ $label }}</label>
-                                            </div>
+                                    <div class="col-4 d-flex justify-content-center mb-1">
+                                        <div class="form-check d-flex align-items-center mt-0">
+                                            <input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
+                                                id="coworking-registration-gender-male"
+                                                name="gender"
+                                                type="radio"
+                                                value="male"
+                                                {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'male' ? 'checked' : '' }}
+                                                required>
+                                            <label class="form-check-label mb-0" for="coworking-registration-gender-male">Male</label>
                                         </div>
-                                    @endforeach
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-center mb-1">
+                                        <div class="form-check d-flex align-items-center">
+                                            <input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
+                                                id="coworking-registration-gender-female"
+                                                name="gender"
+                                                type="radio"
+                                                value="female"
+                                                {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'female' ? 'checked' : '' }}>
+                                            <label class="form-check-label mb-0" for="coworking-registration-gender-female">Female</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 d-flex justify-content-center">
+                                        <div class="form-check d-flex align-items-center">
+                                            <input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
+                                                id="coworking-registration-gender-other"
+                                                name="gender"
+                                                type="radio"
+                                                value="other"
+                                                {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'other' ? 'checked' : '' }}>
+                                            <label class="form-check-label mb-0" for="coworking-registration-gender-other">Other</label>
+                                        </div>
+                                    </div>
                                 </div>
                                 @error('gender')
                                     <div class="field-error mt-1">{{ $message }}</div>
@@ -201,10 +205,8 @@
                                 @enderror
                             </div>
                         </div>
-                        </section>
 
-                        <section class="voucher-section">
-                            <div class="voucher-section-title">Registration Details</div>
+                        <hr>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-lg-4">
@@ -254,7 +256,6 @@
                                 @enderror
                             </div>
                         </div>
-                        </section>
 
                         <div class="form-actions registration-actions mb-2 mt-3 text-right">
                             <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">{{ $submitLabel }}</button>
@@ -345,14 +346,11 @@
 
         .registration-form label,
         .registration-form .form-label {
-          
-    margin-bottom: 6px;
-    margin-top: 6px;
-    font-size: 13.8px !important;
-    color: #343a40 !important;
-    text-transform: uppercase;
-    font-weight: 600;
-
+            display: block;
+            min-height: 22px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #223a57;
         }
 
         .registration-form .form-control {
@@ -386,33 +384,66 @@
         .registration-form .form-control[disabled],
         .registration-form .form-control[readonly] {
             background: #f4f8fc;
+            color: #5f7289;
         }
 
         .registration-form .field-error {
             margin-top: 6px;
-            color: #d93025;
             font-size: 12px;
-            font-weight: 600;
+            color: #dc3545;
         }
 
         .registration-form .choice-group {
             margin-left: 0;
             margin-right: 0;
-            min-height: 46px;
             align-items: center;
-            border: 1px solid #d6e2f0;
-            border-radius: 12px;
-            background: #fff;
+            padding-top: 4px;
+            padding-bottom: 2px;
         }
 
-        .registration-form .choice-group.is-invalid,
+        .registration-form .choice-group.is-invalid {
+            border: 1px solid #e53935;
+            border-radius: 6px;
+            padding: 4px 0;
+        }
+
         .registration-form .form-control.is-invalid {
             border-color: #e53935 !important;
-            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+            box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
         }
 
         .registration-form .choice-group .form-check {
-            margin: 0;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px;
+            margin-bottom: 0;
+            padding-left: 0;
+            position: relative;
+        }
+
+        .registration-actions {
+            padding: 0 10px 4px;
+        }
+
+        .registration-gender-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .registration-gender-options {
+            margin-top: 0 !important;
+        }
+
+        .registration-gender-group .form-check-input[type="radio"] {
+            width: 17px;
+            height: 17px !important;
+            border-width: 2px;
+            margin: 0 !important;
+            position: static;
+            top: auto;
+            left: auto;
+            flex: 0 0 auto;
         }
 
         .registration-form .form-check-input[type="radio"] {
@@ -421,12 +452,13 @@
             appearance: none;
             width: 14px;
             height: 14px !important;
-            border: 2px solid #7f93ab;
+            border: 2px solid grey;
             border-radius: 50%;
             outline: none;
             cursor: pointer;
             position: relative;
             background-color: #fff;
+            transition: background 0.2s, box-shadow 0.2s;
         }
 
         .registration-form .form-check-input[type="radio"]:checked {
@@ -438,123 +470,64 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
             background-color: #00a8ff;
         }
 
+        .registration-gender-group .form-check-input[type="radio"]:checked::before {
+            top: 3px;
+            left: 3px;
+            width: 7px;
+            height: 7px;
+        }
+
+        .registration-gender-group .form-check-label {
+            font-size: 15px !important;
+            margin: 0 !important;
+            cursor: pointer;
+            font-weight: 600;
+            color: #223a57;
+            line-height: 1.2;
+            display: inline-flex;
+            align-items: center;
+        }
+
         .registration-form hr {
-            border-color: #e6eef6;
-            margin: 4px 0 18px;
-        }
-
-        .coworking-voucher-form {
-            border: 1px solid #2f2f2f;
-            padding: 18px 16px 10px;
-            background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
-        }
-
-        .coworking-voucher-head {
-            display: grid;
-            grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.9fr);
-            gap: 14px;
-            align-items: start;
-            border-bottom: 1px solid #2f2f2f;
-            padding-bottom: 14px;
-            margin-bottom: 14px;
-        }
-
-        .coworking-voucher-kicker {
-            font-size: 12px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .coworking-voucher-name {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .coworking-voucher-copy {
-            margin-top: 4px;
-            font-size: 13px;
-            color: #4b5563;
-        }
-
-        .coworking-voucher-meta {
-            display: grid;
-            gap: 8px;
-        }
-
-        .coworking-voucher-meta > div {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 6px 0;
-            border-bottom: 1px solid #d1d5db;
-            font-size: 13px;
-        }
-
-        .coworking-voucher-meta span {
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .coworking-voucher-meta strong {
-            color: #111827;
-            font-weight: 700;
-        }
-
-        .voucher-section {
-            border: 1px solid #2f2f2f;
-            padding: 12px 10px 2px;
-            margin-bottom: 14px;
-            background: #fff;
-        }
-
-        .voucher-section-title {
-            display: inline-block;
-            margin: -21px 0 10px;
-            padding: 0 8px;
-            background: #fff;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #111827;
-        }
-
-        .coworking-voucher-form .form-control,
-        .coworking-voucher-form .choice-group {
-            border-radius: 0;
-            border-color: #6b7280;
-            background: #fff;
-        }
-
-        .coworking-voucher-form .form-control[disabled],
-        .coworking-voucher-form .form-control[readonly] {
-            background: #f8fafc;
-        }
-
-        .coworking-voucher-form .form-label,
-        .coworking-voucher-form label {
-            letter-spacing: 0.03em;
+            margin: 8px 0 22px;
+            border-top: 1px solid #e8eef5;
         }
 
         @media (max-width: 767px) {
-            .coworking-voucher-head {
-                grid-template-columns: 1fr;
+            .registration-card .panel-heading {
+                padding: 10px 14px;
             }
 
-            .coworking-voucher-name {
-                font-size: 20px;
+            .registration-body {
+                padding: 10px 8px 4px;
             }
         }
+
+@if(request()->boolean('embed'))
+        .registration-shell {
+            padding: 0;
+        }
+
+        .registration-card {
+            border-radius: 0;
+            box-shadow: none;
+            border: 0;
+        }
+
+        .registration-body {
+            padding: 12px 12px 6px;
+        }
+
+        .registration-header {
+            display: none;
+        }
+@endif
     </style>
 @endpush
 
