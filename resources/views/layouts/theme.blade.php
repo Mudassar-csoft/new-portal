@@ -902,7 +902,7 @@ form .select2-container--white .select2-selection--single .select2-selection__ar
 
 form .select2-container--default .select2-selection--multiple .select2-selection__rendered,
 form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
-  padding: 0.25rem var(--lead-form-control-padding-x) !important;
+  /* padding: 0.25rem var(--lead-form-control-padding-x) !important; */
 }
 
 form .embed-actions,

@@ -713,8 +713,8 @@ a, a:focus, a:hover {
   border-bottom-color: rgba(0, 130, 198, 0.5);
 }
 .site-header .dropdown-menu-notif {
-  width: -moz-fit-content;
-  width: fit-content;
+ 
+  width: 320px !important;
   max-width: calc(100vw - 30px);
   padding: 0;
   line-height: normal;

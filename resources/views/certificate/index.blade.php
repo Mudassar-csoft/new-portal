@@ -62,9 +62,9 @@
                             </a>
                         @endforeach
                     </div>
-                    <a href="{{ route('certificate.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
+                    <!-- <a href="{{ route('certificate.create') }}" class="btn btn-inline btn-primary-outline create-action-btn">
                         <i class="fa fa-plus mr-1"></i> Request Certificate
-                    </a>
+                    </a> -->
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">

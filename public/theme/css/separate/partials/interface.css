@@ -5618,7 +5618,7 @@ body.modal-open {
    ========================================================================== */
 .statistic-box {
   -webkit-border-radius: 4px;
-          border-radius: 4px;
+          border-radius: 8px;
   text-align: center;
   color: #fff;
   background: no-repeat 50% 50%;

@@ -140,36 +140,36 @@
 							<div class="row mt-2 choice-group registration-gender-options @error('gender') is-invalid @enderror">
 								<div class="col-4 d-flex justify-content-center mb-1">
 									<div class="form-check d-flex align-items-center mt-0">
-										<input class="form-check-input mt-0 mr-1 @error('gender') is-invalid @enderror"
+										<input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
 											   id="gender-male"
 											   name="gender"
 											   type="radio"
 											   value="male"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'male' ? 'checked' : '' }}
 											   required>
-										<label class="form-check-label  mb-0" for="gender-male">Male</label>
+										<label class="form-check-label mt-1 mb-0" for="gender-male">Male</label>
 									</div>
 								</div>
 								<div class="col-4 d-flex justify-content-center mb-1">
 									<div class="form-check d-flex align-items-center">
-										<input class="form-check-input mt-0 mr-1 @error('gender') is-invalid @enderror"
+										<input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
 											   id="gender-female"
 											   name="gender"
 											   type="radio"
 											   value="female"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'female' ? 'checked' : '' }}>
-										<label class="form-check-label  mb-0" for="gender-female">Female</label>
+										<label class="form-check-label mt-1  mb-0" for="gender-female">Female</label>
 									</div>
 								</div>
 								<div class="col-4 d-flex justify-content-center">
 									<div class="form-check d-flex align-items-center">
-										<input class="form-check-input mt-0 mr-1 @error('gender') is-invalid @enderror"
+										<input class="form-check-input mt-0 @error('gender') is-invalid @enderror"
 											   id="gender-other"
 											   name="gender"
 											   type="radio"
 											   value="other"
 											   {{ old('gender', data_get($leadDetails, 'gender', 'male')) === 'other' ? 'checked' : '' }}>
-										<label class="form-check-label mb-0" for="gender-other">Other</label>
+										<label class="form-check-label mt-1 mb-0" for="gender-other">Other</label>
 									</div>
 								</div>
 							</div>
@@ -419,7 +419,7 @@
 		}
 
 		.registration-form .choice-group .form-check {
-			gap: 6px;
+			gap: 3px;
 		}
 
 		.registration-gender-title {
