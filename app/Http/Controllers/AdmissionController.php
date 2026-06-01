@@ -34,9 +34,11 @@ class AdmissionController extends Controller
             $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
         }
 
-        $campuses = $this->campusOptionsForUser($request->user());
+        $campuses = Campus::query()
+            ->orderBy('name')
+            ->get();
         $programs = Program::orderBy('title')->get();
-        $batches = $this->scopeQueryToUserCampus(Batch::query(), $request->user())
+        $batches = Batch::query()
             ->orderBy('name')
             ->get();
 
@@ -101,13 +103,11 @@ class AdmissionController extends Controller
 
     public function previewNumbersAjax(Request $request): JsonResponse
     {
-        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
+        $campusId = $request->integer('campus_id');
         $batchId = $request->integer('batch_id');
         $leadId = $request->integer('lead_id');
         $campus = $campusId ? Campus::query()->find($campusId) : null;
-        $batch = $batchId
-            ? $this->scopeQueryToUserCampus(Batch::query(), $request->user())->find($batchId)
-            : null;
+        $batch = $batchId ? Batch::query()->find($batchId) : null;
 
         if ($campus && $batch && (int) $batch->campus_id !== (int) $campus->id) {
             $batch = null;
@@ -185,11 +185,6 @@ class AdmissionController extends Controller
         $validated['roll_number'] = $validated['roll_number'] ?? null;
         $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        if ($campusScopeId) {
-            $validated['campus_id'] = $campusScopeId;
-        }
-
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
             $program = Program::findOrFail($validated['program_id']);
@@ -226,7 +221,7 @@ class AdmissionController extends Controller
                 $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
             }
             if (!$lead) {
-                $lead = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                $lead = Lead::query()
                     ->where('phone', $validated['phone'])
                     ->first();
             }

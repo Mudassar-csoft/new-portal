@@ -51,7 +51,7 @@ class CampusModuleScopeTest extends TestCase
             ->assertDontSee('Beta Admission');
     }
 
-    public function test_non_admin_registration_store_forces_current_campus(): void
+    public function test_non_admin_registration_create_form_shows_all_campuses_and_keeps_selected_campus(): void
     {
         $registrationCreate = $this->createPermission('registration', 'create', 'registration.create');
 
@@ -60,6 +60,12 @@ class CampusModuleScopeTest extends TestCase
         $program = $this->createProgram();
 
         $user = $this->createScopedUser($alphaCampus, [$registrationCreate]);
+
+        $this->actingAs($user)
+            ->get(route('registration.create'))
+            ->assertOk()
+            ->assertSee('Alpha Campus')
+            ->assertSee('Beta Campus');
 
         $this->actingAs($user)
             ->postJson(route('registration.store'), [
@@ -83,12 +89,63 @@ class CampusModuleScopeTest extends TestCase
 
         $this->assertDatabaseHas('registrations', [
             'student_name' => 'Campus Locked Registration',
-            'campus_id' => $alphaCampus->id,
+            'campus_id' => $betaCampus->id,
+        ]);
+    }
+
+    public function test_non_admin_admission_create_form_shows_all_campuses_and_keeps_selected_campus(): void
+    {
+        $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = $this->createProgram();
+        $alphaBatch = $this->createBatch($alphaCampus, $program, 'ALP-B4');
+        $betaBatch = $this->createBatch($betaCampus, $program, 'BET-B4');
+
+        $user = $this->createScopedUser($alphaCampus, [$admissionCreate]);
+
+        $this->actingAs($user)
+            ->get(route('admission.create'))
+            ->assertOk()
+            ->assertSee('Alpha Campus')
+            ->assertSee('Beta Campus');
+
+        $this->actingAs($user)
+            ->postJson(route('admission.store'), [
+                'campus_id' => $betaCampus->id,
+                'program_id' => $program->id,
+                'batch_id' => $betaBatch->id,
+                'student_name' => 'Cross Campus Admission',
+                'phone' => '03200000007',
+                'guardian_name' => 'Admission Guardian',
+                'guardian_phone' => '03200000017',
+                'cnic' => '3520212345603',
+                'passport_number' => 'AD1234567',
+                'email' => 'cross.admission@example.test',
+                'education' => 'Intermediate',
+                'date_of_birth' => '2001-05-10',
+                'gender' => 'male',
+                'country' => 'Pakistan',
+                'city' => 'Lahore',
+                'area' => 'Johar Town',
+                'postal_address' => '123 Testing Street, Lahore, Pakistan',
+                'admission_date' => now()->toDateString(),
+                'fee_type' => 'full',
+                'remarks' => 'Campus scope test admission.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'Admission created successfully.');
+
+        $this->assertDatabaseHas('admissions', [
+            'student_name' => 'Cross Campus Admission',
+            'campus_id' => $betaCampus->id,
+            'batch_id' => $betaBatch->id,
         ]);
 
-        $this->assertDatabaseMissing('registrations', [
-            'student_name' => 'Campus Locked Registration',
-            'campus_id' => $betaCampus->id,
+        $this->assertDatabaseMissing('admissions', [
+            'student_name' => 'Cross Campus Admission',
+            'campus_id' => $alphaCampus->id,
         ]);
     }
 

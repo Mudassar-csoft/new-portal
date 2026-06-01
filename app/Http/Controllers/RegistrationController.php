@@ -31,12 +31,11 @@ class RegistrationController extends Controller
             $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
         }
 
-        $campuses = $this->campusOptionsForUser($request->user());
+        $campuses = Campus::query()
+            ->orderBy('name')
+            ->get();
         $programs = Program::orderBy('title')->get();
-        $selectedCampusId = (int) ($this->effectiveCampusFilter(
-            (int) ($request->old('campus_id', $lead?->campus_id) ?? 0),
-            $request->user()
-        ) ?? 0);
+        $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
         $selectedCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
             : null;
@@ -61,11 +60,6 @@ class RegistrationController extends Controller
             $this->registrationAttributes()
         );
 
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        if ($campusScopeId) {
-            $validated['campus_id'] = $campusScopeId;
-        }
-
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
 
@@ -80,7 +74,7 @@ class RegistrationController extends Controller
                 $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
             }
             if (!$lead) {
-                $lead = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                $lead = Lead::query()
                     ->where('phone', $validated['phone'])
                     ->first();
             }
@@ -226,8 +220,7 @@ class RegistrationController extends Controller
             'campus_id' => ['required', 'exists:campuses,id'],
         ]);
 
-        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
-        $campus = Campus::query()->whereKey($campusId)->firstOrFail();
+        $campus = Campus::query()->whereKey($request->integer('campus_id'))->firstOrFail();
 
         return response()->json($this->previewNumbers($campus->code));
     }

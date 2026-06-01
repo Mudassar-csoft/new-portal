@@ -79,7 +79,9 @@ class LeadController extends Controller
             $leadPrefill = $this->buildWebLeadPrefill($webLead);
         }
 
-        $campuses = $this->availableCampusesForCurrentUser();
+        $campuses = Campus::query()
+            ->orderBy('name')
+            ->get();
         $programs = Program::orderBy('title')->get();
         $origins = ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
         $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'];
@@ -108,11 +110,6 @@ class LeadController extends Controller
             $this->leadStoreMessages(),
             $this->leadStoreAttributes()
         );
-
-        $campusScopeId = $this->currentUserCampusScopeId();
-        if ($campusScopeId && ($validated['type'] ?? null) === 'training') {
-            $validated['campus_id'] = $campusScopeId;
-        }
 
         try {
             $details = $validated['details'] ?? [];
@@ -636,16 +633,6 @@ class LeadController extends Controller
         }
 
         return $lead->campus;
-    }
-
-    private function availableCampusesForCurrentUser(): Collection
-    {
-        $campusScopeId = $this->currentUserCampusScopeId();
-
-        return Campus::query()
-            ->when($campusScopeId, fn (Builder $query, int $campusId) => $query->whereKey($campusId))
-            ->orderBy('name')
-            ->get();
     }
 
     private function scopeLeadQueryToCurrentCampus(Builder $query): Builder

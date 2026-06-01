@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Campus;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
+use App\Models\Program;
 use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
@@ -107,6 +108,62 @@ class LeadCampusScopeTest extends TestCase
             ->assertOk()
             ->assertSee('Alpha Lead')
             ->assertSee('Beta Lead');
+    }
+
+    public function test_non_admin_lead_create_form_shows_all_campuses_and_keeps_selected_campus(): void
+    {
+        $leadCreate = $this->createPermission('lead', 'create', 'lead.create');
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = Program::query()->create([
+            'name' => 'Campus Scoped Programme',
+            'title' => 'Campus Scoped Programme',
+            'code' => 'CSP102',
+            'program_type' => 'bootcamp',
+            'fee' => 50000,
+            'duration_weeks' => 12,
+            'installments' => 3,
+            'status' => 'active',
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $alphaCampus->id,
+        ]);
+        $user->permissions()->sync([$leadCreate->id]);
+
+        $this->actingAs($user)
+            ->get(route('leads.create'))
+            ->assertOk()
+            ->assertSee('Alpha Campus')
+            ->assertSee('Beta Campus');
+
+        $this->actingAs($user)
+            ->post(route('leads.store'), [
+                'type' => 'training',
+                'name' => 'Cross Campus Lead',
+                'email' => 'cross-campus@example.test',
+                'phone' => '03000000028',
+                'city' => 'Lahore',
+                'origin' => 'Referral',
+                'marketing_source' => 'Referral',
+                'campus_id' => $betaCampus->id,
+                'program_id' => $program->id,
+                'details' => [
+                    'country' => 'Pakistan',
+                    'area' => 'Johar Town',
+                    'next_followup_at' => '2026-06-05T12:00',
+                    'probability' => 55,
+                    'remarks' => 'Lead assigned to another campus from create form.',
+                    'gender' => 'male',
+                    'teaching_method' => 'campus',
+                ],
+            ])
+            ->assertRedirect(route('leads.followups'));
+
+        $this->assertDatabaseHas('leads', [
+            'name' => 'Cross Campus Lead',
+            'campus_id' => $betaCampus->id,
+        ]);
     }
 
     private function createPermission(string $resource, string $action, string $slug): Permission
