@@ -7,6 +7,7 @@
 		$user = auth()->user();
 		$dashboardAccess = $dashboardAccess ?? [];
 		$canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
+		$canViewTrainingLeads = (bool) ($dashboardAccess['training_leads'] ?? false);
 		$canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
 		$canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
 		$roleSlugs = $user?->roles->pluck('slug')->filter()->map(fn ($slug) => strtolower((string) $slug))->values() ?? collect();
@@ -46,11 +47,13 @@
 		$monthlyAdmissionCounts = collect($monthlyAdmissionsInsight['counts'] ?? [])->map(fn ($count) => (int) $count)->values();
 		$monthlyAdmissionMax = max(1, (int) $monthlyAdmissionCounts->max());
 		$admissionMonthDelta = $currentMonthAdmissions - $previousMonthAdmissions;
-		$comparisonChartTitle = $canViewLeads && $canViewAdmissions
+		$showComparisonChart = $canViewTrainingLeads || $canViewAdmissions;
+		$comparisonChartTitle = $canViewTrainingLeads && $canViewAdmissions
 			? 'Current Month Leads vs Admissions'
-			: ($canViewLeads ? 'Current Month Leads' : 'Current Month Admissions');
+			: ($canViewTrainingLeads ? 'Current Month Leads' : 'Current Month Admissions');
 		$hasDashboardContent = $showIncomeChart
 			|| $showAdmissionProgressWidget
+			|| $showComparisonChart
 			|| $canViewLeads
 			|| $canViewAdmissions
 			|| $showMonthCollectionCard
@@ -206,7 +209,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="totalLeads" data-format="number" data-mask-mode="icon"></div>
 								<div class="caption mt-3">
-									<div class="caption-text">Today Leads</div>
+									<div class="caption-text">Total Leads</div>
 								</div>
 							</div>
 						</article>
@@ -256,7 +259,7 @@
 		
 		
 	    </div>
-	@if($canViewLeads || $canViewAdmissions)
+	@if($showComparisonChart)
 <!--Current Month Charts-->
 	<div class="row pl-4 pr-3 tables-dashbord">
 		<div class="col-xl-12 pl-1 ml-1 mr-2 m-md-0 m-lg-0 current-month-chart-col">
@@ -2155,7 +2158,7 @@
 			}
 
 			function buildComparisonChartData() {
-				var leadAllowed = !!dashboardAccessMap.leads;
+				var leadAllowed = !!dashboardAccessMap.training_leads;
 				var admissionAllowed = !!dashboardAccessMap.admissions;
 				var leadData = leadAllowed ? normalizeComparisonSeries(chartSeries.leads || {}) : [];
 				var admissionData = admissionAllowed ? normalizeComparisonSeries(chartSeries.admissions || {}) : [];

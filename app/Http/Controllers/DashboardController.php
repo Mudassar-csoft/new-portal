@@ -83,7 +83,7 @@ class DashboardController extends Controller
 
         return [
             'stats' => $stats,
-            'dailyActivity' => $canViewLeads ? $this->buildDailyActivity($selectedCampusId) : $emptyPayload['dailyActivity'],
+            'dailyActivity' => $canViewLeads ? $this->buildDailyActivity($selectedCampusId, $dashboardAccess) : $emptyPayload['dailyActivity'],
             'admissionsActivity' => $canViewAdmissions ? $this->buildAdmissionsActivity($selectedCampusId) : $emptyPayload['admissionsActivity'],
             'monthlyAdmissionsInsight' => $canViewAdmissions ? $this->buildMonthlyAdmissionsInsight($selectedCampusId) : $emptyPayload['monthlyAdmissionsInsight'],
             'incomeSummary' => [
@@ -222,8 +222,7 @@ class DashboardController extends Controller
 
         return [
             'totalLeads' => $canViewLeads
-                ? Lead::query()
-                    ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ? $this->leadQueryForDashboard($campusId, $dashboardAccess)
                     ->count()
                 : 0,
             'currentStudents' => $currentStudents,
@@ -232,8 +231,7 @@ class DashboardController extends Controller
             'currentMonthCollection' => number_format((float) $monthCollection, 0),
             'currentMonthCollectionRaw' => (float) $monthCollection,
             'currentMonthPending' => $canViewLeads
-                ? Lead::query()
-                    ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ? $this->leadQueryForDashboard($campusId, $dashboardAccess)
                     ->where('status', 'pending')
                     ->whereBetween('created_at', [$monthStart, $monthEnd])
                     ->count()
@@ -246,11 +244,10 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildDailyActivity(?int $campusId = null): array
+    private function buildDailyActivity(?int $campusId = null, array $dashboardAccess = []): array
     {
-        $rows = Lead::query()
+        $rows = $this->leadQueryForDashboard($campusId, $dashboardAccess)
             ->with('campus:id,code,name')
-            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->latest('created_at')
             ->latest('id')
             ->limit(12)
@@ -521,9 +518,8 @@ class DashboardController extends Controller
         $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
 
         $leadCountsByProgram = $canViewLeads
-            ? Lead::query()
+            ? $this->leadQueryForDashboard($campusId, $dashboardAccess, true)
                 ->selectRaw('program_id, COUNT(*) as aggregate')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->whereBetween('created_at', [$monthStart, $monthEnd])
                 ->groupBy('program_id')
                 ->pluck('aggregate', 'program_id')
@@ -707,6 +703,35 @@ class DashboardController extends Controller
         });
     }
 
+    private function leadQueryForDashboard(?int $campusId = null, array $dashboardAccess = [], bool $trainingOnly = false): Builder
+    {
+        $query = Lead::query()
+            ->when($campusId, fn (Builder $builder, int $id) => $builder->where('campus_id', $id));
+
+        $canViewTrainingLeads = (bool) ($dashboardAccess['training_leads'] ?? false);
+        $canViewCoworkingLeads = (bool) ($dashboardAccess['coworking_leads'] ?? false);
+
+        if ($trainingOnly) {
+            return $canViewTrainingLeads
+                ? $query->training()
+                : $query->whereRaw('1 = 0');
+        }
+
+        if ($canViewTrainingLeads && $canViewCoworkingLeads) {
+            return $query->whereIn('type', ['training', 'coworking']);
+        }
+
+        if ($canViewTrainingLeads) {
+            return $query->training();
+        }
+
+        if ($canViewCoworkingLeads) {
+            return $query->coworking();
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
     private function resolveCampusId(Request $request): ?int
     {
         if (!Schema::hasTable('campuses')) {
@@ -780,6 +805,18 @@ class DashboardController extends Controller
                 || $user->canAccessModule('training-leads')
                 || $user->canAccessModule('coworking-space')
                 || $user->canAccessModule('web-leads'),
+            'training_leads' => $user->hasAnyPermission([
+                'lead.view',
+                'lead.create',
+                'lead.update',
+                'lead.delete',
+                'lead.followup.view',
+                'lead.followup.update',
+                'lead.transfer.approve',
+            ]),
+            'coworking_leads' => $user->hasAnyPermission([
+                'lead.coworking.view',
+            ]),
             'admissions' => $user->canAccessModule('admission-management')
                 || $user->canAccessModule('student-management'),
             'income' => $user->canAccessModule('registration-management')

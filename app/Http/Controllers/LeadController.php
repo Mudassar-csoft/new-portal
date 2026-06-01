@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
 use App\Models\Program;
+use App\Models\User;
 use App\Models\WebLead;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -78,7 +79,7 @@ class LeadController extends Controller
             $leadPrefill = $this->buildWebLeadPrefill($webLead);
         }
 
-        $campuses = Campus::orderBy('name')->get();
+        $campuses = $this->availableCampusesForCurrentUser();
         $programs = Program::orderBy('title')->get();
         $origins = ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
         $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'];
@@ -107,6 +108,11 @@ class LeadController extends Controller
             $this->leadStoreMessages(),
             $this->leadStoreAttributes()
         );
+
+        $campusScopeId = $this->currentUserCampusScopeId();
+        if ($campusScopeId && ($validated['type'] ?? null) === 'training') {
+            $validated['campus_id'] = $campusScopeId;
+        }
 
         try {
             $details = $validated['details'] ?? [];
@@ -162,6 +168,8 @@ class LeadController extends Controller
 
     public function addFollowup(Request $request, Lead $lead): RedirectResponse
     {
+        $this->ensureLeadCampusAccess($lead);
+
         if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
             return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.');
         }
@@ -253,6 +261,8 @@ class LeadController extends Controller
 
     public function show(Lead $lead): View
     {
+        $this->ensureLeadCampusAccess($lead);
+
         $lead->load([
             'campus',
             'program',
@@ -348,6 +358,8 @@ class LeadController extends Controller
 
     public function transferForm(Lead $lead): View
     {
+        $this->ensureLeadCampusAccess($lead);
+
         if (in_array($lead->status, ['registered', 'enrolled'], true)) {
             abort(403, 'Registered or enrolled leads cannot be transferred.');
         }
@@ -357,6 +369,8 @@ class LeadController extends Controller
 
     public function transferStore(Request $request, Lead $lead): RedirectResponse|JsonResponse
     {
+        $this->ensureLeadCampusAccess($lead);
+
         if (in_array($lead->status, ['registered', 'enrolled'], true)) {
             $message = 'Registered or enrolled leads cannot be transferred.';
 
@@ -407,6 +421,9 @@ class LeadController extends Controller
 
     public function approveTransfer(Request $request, LeadTransfer $transfer): RedirectResponse
     {
+        $transfer->loadMissing('lead.campus');
+        $this->ensureLeadCampusAccess($transfer->lead);
+
         if ($transfer->status === 'approved') {
             return Redirect::back()->with('status', 'Transfer already approved.');
         }
@@ -437,7 +454,7 @@ class LeadController extends Controller
     {
         if ($request->ajax()) {
             $query = LeadTransfer::query()
-                ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToCurrentCampus($leadQuery->training()))
                 ->with([
                     'lead:id,name,phone,program_id',
                     'lead.program:id,title,name',
@@ -526,7 +543,7 @@ class LeadController extends Controller
 
     private function trainingLeadQuery(): Builder
     {
-        return Lead::query()->training();
+        return $this->scopeLeadQueryToCurrentCampus(Lead::query()->training());
     }
 
     private function coworkingLeadQuery(): Builder
@@ -551,10 +568,9 @@ class LeadController extends Controller
             ->whereHas('lead', function (Builder $leadQuery) use ($type) {
                 if ($type === 'coworking') {
                     $leadQuery->coworking();
-                    return;
+                } else {
+                    $this->scopeLeadQueryToCurrentCampus($leadQuery->training());
                 }
-
-                $leadQuery->training();
             })
             ->latest()
             ->get()
@@ -620,6 +636,66 @@ class LeadController extends Controller
         }
 
         return $lead->campus;
+    }
+
+    private function availableCampusesForCurrentUser(): Collection
+    {
+        $campusScopeId = $this->currentUserCampusScopeId();
+
+        return Campus::query()
+            ->when($campusScopeId, fn (Builder $query, int $campusId) => $query->whereKey($campusId))
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function scopeLeadQueryToCurrentCampus(Builder $query): Builder
+    {
+        $campusScopeId = $this->currentUserCampusScopeId();
+
+        return $query->when(
+            $campusScopeId,
+            fn (Builder $builder, int $campusId) => $builder->where('campus_id', $campusId)
+        );
+    }
+
+    private function ensureLeadCampusAccess(?Lead $lead): void
+    {
+        if (! $lead) {
+            abort(404);
+        }
+
+        $campusScopeId = $this->currentUserCampusScopeId();
+        $leadCampusId = $this->resolveLeadCampusScopeId($lead);
+
+        if ($campusScopeId && $leadCampusId && $leadCampusId !== $campusScopeId) {
+            abort(403, 'You are not allowed to access leads from another campus.');
+        }
+    }
+
+    private function resolveLeadCampusScopeId(Lead $lead): ?int
+    {
+        $campusId = (int) ($lead->campus_id ?? 0);
+        if ($campusId > 0) {
+            return $campusId;
+        }
+
+        $resolvedCampusId = (int) ($this->resolveCoworkingCampus($lead)?->id ?? 0);
+
+        return $resolvedCampusId > 0 ? $resolvedCampusId : null;
+    }
+
+    private function currentUserCampusScopeId(): ?int
+    {
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        if (! $user || $user->isAdmin()) {
+            return null;
+        }
+
+        $campusId = (int) ($user->campus_id ?? 0);
+
+        return $campusId > 0 ? $campusId : null;
     }
 
     private function renderFollowupsModule(string $type): View

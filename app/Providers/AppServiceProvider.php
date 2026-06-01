@@ -107,7 +107,7 @@ class AppServiceProvider extends ServiceProvider
                 if (Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
                     $followupNotifications = LeadFollowup::with(['lead'])
                         ->whereNotNull('next_action_date')
-                        ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                        ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->training(), $currentUser))
                         ->orderBy('next_action_date')
                         ->latest('id')
                         ->get()
@@ -204,28 +204,29 @@ class AppServiceProvider extends ServiceProvider
             $recentWindowDate = $today->copy()->subDays(30)->toDateString();
 
             if (($can('lead.followup.view') || $can('lead.view') || $can('lead.transfer.approve')) && Schema::hasTable('leads')) {
-                $sidebarCounts['training_all_leads'] = Lead::query()
-                    ->training()
-                    ->count();
+                $sidebarCounts['training_all_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->training(),
+                    $user
+                )->count();
             }
 
             if ($can('lead.followup.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
                 $sidebarCounts['training_followups'] = LeadFollowup::query()
-                    ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->training(), $user))
                     ->distinct()
                     ->count('lead_id');
             }
 
             if ($can('lead.coworking.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
                 $sidebarCounts['coworking_followups'] = LeadFollowup::query()
-                    ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->coworking())
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->coworking(), $user))
                     ->distinct()
                     ->count('lead_id');
             }
 
             if (($can('lead.view') || $can('lead.transfer.approve')) && Schema::hasTable('lead_transfers') && Schema::hasTable('leads')) {
                 $sidebarCounts['training_transfers'] = LeadTransfer::query()
-                    ->whereHas('lead', fn (Builder $leadQuery) => $leadQuery->training())
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->training(), $user))
                     ->count();
             }
 
@@ -342,5 +343,26 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return $sidebarCounts;
+    }
+
+    private function scopeLeadQueryToUserCampus(Builder $query, ?User $user): Builder
+    {
+        $campusScopeId = $this->userCampusScopeId($user);
+
+        return $query->when(
+            $campusScopeId,
+            fn (Builder $builder, int $campusId) => $builder->where('campus_id', $campusId)
+        );
+    }
+
+    private function userCampusScopeId(?User $user): ?int
+    {
+        if (! $user || $user->isAdmin()) {
+            return null;
+        }
+
+        $campusId = (int) ($user->campus_id ?? 0);
+
+        return $campusId > 0 ? $campusId : null;
     }
 }

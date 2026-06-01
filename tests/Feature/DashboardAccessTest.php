@@ -104,7 +104,7 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Today Leads')
+            ->assertSee('Total Leads')
             ->assertSee('Recent Leads')
             ->assertSee('Current Month Leads')
             ->assertSee('Pending Recovery')
@@ -120,6 +120,32 @@ class DashboardAccessTest extends TestCase
             ->assertJsonPath('dashboard.stats.currentMonthAdmissions', 0)
             ->assertJsonPath('dashboard.stats.currentMonthCollectionRaw', 0)
             ->assertJsonPath('dashboard.admissionsActivity.rows', []);
+    }
+
+    public function test_training_dashboard_lead_count_excludes_coworking_leads(): void
+    {
+        $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([
+            $dashboardView->id,
+            $leadView->id,
+        ]);
+
+        $this->seedDashboardRecords($campus, 'alpha', 1200);
+        $this->seedCoworkingLead($campus, 'cw-1');
+        $this->seedCoworkingLead($campus, 'cw-2');
+        $this->seedCoworkingLead($campus, 'cw-3');
+
+        $this->actingAs($user)
+            ->get(route('dashboard.live-data'))
+            ->assertOk()
+            ->assertJsonPath('dashboard.stats.totalLeads', 1)
+            ->assertJsonCount(1, 'dashboard.dailyActivity.rows');
     }
 
     private function createPermission(string $resource, string $action, string $slug): Permission
@@ -184,6 +210,17 @@ class DashboardAccessTest extends TestCase
             'fee_type' => 'full',
             'student_status' => 'enrolled',
             'remarks' => 'Test record',
+        ]);
+    }
+
+    private function seedCoworkingLead(Campus $campus, string $suffix): void
+    {
+        Lead::query()->create([
+            'campus_id' => $campus->id,
+            'type' => 'coworking',
+            'name' => 'Coworking ' . $suffix,
+            'phone' => '03333333333',
+            'status' => 'pending',
         ]);
     }
 
