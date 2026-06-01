@@ -41,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.header', function ($view): void {
+            $currentUser = auth()->user();
             $webLeadSourceLabels = WebLead::sourceLabels();
             $webLeadNotificationCounts = array_fill_keys(array_keys($webLeadSourceLabels), 0);
             $webLeadNotifications = [];
@@ -48,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
             $followupNotificationCount = 0;
             $dashboardCampuses = collect();
             $activeDashboardCampus = null;
+            $dashboardAllowsAllCampuses = (bool) ($currentUser?->isAdmin() ?? false);
             $activeDashboardCampusId = (int) session('dashboard_campus_id', 0);
 
             foreach (array_keys($webLeadSourceLabels) as $sourceType) {
@@ -56,12 +58,28 @@ class AppServiceProvider extends ServiceProvider
 
             try {
                 if (Schema::hasTable('campuses')) {
-                    $dashboardCampuses = Campus::query()
-                        ->orderBy('name')
-                        ->get(['id', 'code', 'name', 'campus_type']);
+                    if ($dashboardAllowsAllCampuses) {
+                        $dashboardCampuses = Campus::query()
+                            ->orderBy('name')
+                            ->get(['id', 'code', 'name', 'campus_type']);
 
-                    if ($activeDashboardCampusId > 0) {
-                        $activeDashboardCampus = $dashboardCampuses->firstWhere('id', $activeDashboardCampusId);
+                        if ($activeDashboardCampusId > 0) {
+                            $activeDashboardCampus = $dashboardCampuses->firstWhere('id', $activeDashboardCampusId);
+                        }
+                    } elseif ($currentUser?->campus_id) {
+                        $dashboardCampuses = Campus::query()
+                            ->whereKey($currentUser->campus_id)
+                            ->get(['id', 'code', 'name', 'campus_type']);
+
+                        $activeDashboardCampus = $dashboardCampuses->first();
+
+                        if ($activeDashboardCampus) {
+                            session(['dashboard_campus_id' => $activeDashboardCampus->id]);
+                        } else {
+                            session()->forget('dashboard_campus_id');
+                        }
+                    } else {
+                        session()->forget('dashboard_campus_id');
                     }
                 }
 
@@ -112,6 +130,7 @@ class AppServiceProvider extends ServiceProvider
                 'followupNotificationCount' => $followupNotificationCount,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
+                'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
             ]);
         });
     }

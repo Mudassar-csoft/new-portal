@@ -239,9 +239,11 @@
                 </div>
 						</div>
             
+            @php($dashboardCampusTitle = $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : (($dashboardAllowsAllCampuses ?? false) ? 'All Branches' : 'Assigned Campus'))
+            @if(($dashboardAllowsAllCampuses ?? false) || ($dashboardCampuses ?? collect())->isNotEmpty())
             <div class="dropdown dropdown-campus">
                           <button class="header-alarm dropdown-toggle active" type="button" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false" title="{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}">
+                            aria-expanded="false" title="{{ $dashboardCampusTitle }}">
                             <img class="camppus-branch" src="img/campuses.webp" alt="campus">
                           </button>
                           <div class="dropdown-menu p-2 campus-dropdown-menu">
@@ -250,9 +252,11 @@
                               <span class="text-muted">Current:</span>
                               <strong>{{ $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : 'All Branches' }}</strong>
                             </div> -->
+                            @if($dashboardAllowsAllCampuses ?? false)
                             <a class="dropdown-item campus-dropdown-item @if(!$activeDashboardCampus) active @endif" href="{{ route('dashboard', ['campus_id' => 0]) }}">
                               <img class="campus-item-icon" src="img/campuses.webp" alt="campus">All Branches
                             </a>
+                            @endif
                             @foreach(($dashboardCampuses ?? collect()) as $campus)
                               <a class="dropdown-item campus-dropdown-item @if(($activeDashboardCampus->id ?? null) === $campus->id) active @endif" href="{{ route('dashboard', ['campus_id' => $campus->id]) }}">
                                 <img class="campus-item-icon" src="img/campuses.webp" alt="campus">{{ $campus->code }}-{{ $campus->name }}
@@ -260,6 +264,7 @@
                             @endforeach
                           </div>
                         </div>
+                        @endif
                         <div class=" dropdown user-menu">
                          
                         <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

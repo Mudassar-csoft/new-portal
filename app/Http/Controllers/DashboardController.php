@@ -7,6 +7,7 @@ use App\Models\Admission;
 use App\Models\Lead;
 use App\Models\Program;
 use App\Models\Registration;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,14 +22,16 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         $selectedCampusId = $this->resolveCampusId($request);
+        $dashboardAccess = $this->resolveDashboardAccess($request->user());
         $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'campus_type'])
             : null;
 
-        $dashboard = $this->buildDashboardPayload($selectedCampusId);
+        $dashboard = $this->buildDashboardPayload($selectedCampusId, $dashboardAccess);
 
         return view('dashboard', [
             'dashboard' => $dashboard,
+            'dashboardAccess' => $dashboardAccess,
             'selectedCampus' => $selectedCampus,
             'dashboardGeneratedAt' => $dashboard['generatedAt'] ?? null,
         ]);
@@ -36,8 +39,10 @@ class DashboardController extends Controller
 
     public function liveData(Request $request): JsonResponse
     {
+        $dashboardAccess = $this->resolveDashboardAccess($request->user());
+
         return response()->json([
-            'dashboard' => $this->buildDashboardPayload($this->resolveCampusId($request)),
+            'dashboard' => $this->buildDashboardPayload($this->resolveCampusId($request), $dashboardAccess),
         ]);
     }
 
@@ -54,35 +59,44 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildDashboardPayload(?int $selectedCampusId = null): array
+    private function buildDashboardPayload(?int $selectedCampusId = null, array $dashboardAccess = []): array
     {
+        $emptyPayload = $this->emptyPayload();
+
         if (!$this->requiredTablesExist()) {
-            $payload = $this->emptyPayload();
+            $payload = $emptyPayload;
             $payload['generatedAt'] = now()->toIso8601String();
 
             return $payload;
         }
 
+        $canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
+        $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
+        $canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
         $today = now()->startOfDay();
         $monthStart = now()->startOfMonth();
         $monthEnd = now()->endOfMonth();
         $yearStart = now()->startOfYear();
         $yearEnd = now()->endOfYear();
 
-        $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId);
+        $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId, $dashboardAccess);
 
         return [
             'stats' => $stats,
-            'dailyActivity' => $this->buildDailyActivity($selectedCampusId),
-            'admissionsActivity' => $this->buildAdmissionsActivity($selectedCampusId),
-            'monthlyAdmissionsInsight' => $this->buildMonthlyAdmissionsInsight($selectedCampusId),
+            'dailyActivity' => $canViewLeads ? $this->buildDailyActivity($selectedCampusId) : $emptyPayload['dailyActivity'],
+            'admissionsActivity' => $canViewAdmissions ? $this->buildAdmissionsActivity($selectedCampusId) : $emptyPayload['admissionsActivity'],
+            'monthlyAdmissionsInsight' => $canViewAdmissions ? $this->buildMonthlyAdmissionsInsight($selectedCampusId) : $emptyPayload['monthlyAdmissionsInsight'],
             'incomeSummary' => [
-                'today' => $stats['todayCollectionRaw'],
-                'week' => $stats['weekCollectionRaw'],
-                'month' => $stats['currentMonthCollectionRaw'],
+                'today' => $canViewIncome ? $stats['todayCollectionRaw'] : 0,
+                'week' => $canViewIncome ? $stats['weekCollectionRaw'] : 0,
+                'month' => $canViewIncome ? $stats['currentMonthCollectionRaw'] : 0,
             ],
-            'incomeRanges' => $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId),
-            'charts' => $this->buildCharts($monthStart, $monthEnd, $selectedCampusId),
+            'incomeRanges' => $canViewIncome
+                ? $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId)
+                : $emptyPayload['incomeRanges'],
+            'charts' => ($canViewLeads || $canViewAdmissions)
+                ? $this->buildCharts($monthStart, $monthEnd, $selectedCampusId, $dashboardAccess)
+                : $emptyPayload['charts'],
             'generatedAt' => now()->toIso8601String(),
         ];
     }
@@ -144,8 +158,18 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildStats(Carbon $today, Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null): array
+    private function buildStats(
+        Carbon $today,
+        Carbon $monthStart,
+        Carbon $monthEnd,
+        ?int $campusId = null,
+        array $dashboardAccess = []
+    ): array
     {
+        $canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
+        $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
+        $canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
+
         $todayCollection = $this->registrationDateRange(
             Registration::query()
                 ->where('status', 'registered')
@@ -153,6 +177,7 @@ class DashboardController extends Controller
             $today,
             $today->copy()->endOfDay()
         )->sum('net_payable');
+        $todayCollection = $canViewIncome ? $todayCollection : 0;
 
         $weekStart = now()->startOfDay()->subDays(6);
         $weekCollection = $this->registrationDateRange(
@@ -162,6 +187,7 @@ class DashboardController extends Controller
             $weekStart,
             now()->endOfDay()
         )->sum('net_payable');
+        $weekCollection = $canViewIncome ? $weekCollection : 0;
 
         $monthCollection = $this->registrationDateRange(
             Registration::query()
@@ -170,6 +196,7 @@ class DashboardController extends Controller
             $monthStart,
             $monthEnd
         )->sum('net_payable');
+        $monthCollection = $canViewIncome ? $monthCollection : 0;
         $previousMonthStart = $monthStart->copy()->subMonth()->startOfMonth();
         $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
 
@@ -177,33 +204,40 @@ class DashboardController extends Controller
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->count();
+        $currentStudents = $canViewAdmissions ? $currentStudents : 0;
 
         $currentMonthAdmissions = (int) DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->count();
+        $currentMonthAdmissions = $canViewAdmissions ? $currentMonthAdmissions : 0;
 
         $previousMonthAdmissions = (int) DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
             ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
             ->whereBetween('admissions.admission_date', [$previousMonthStart->toDateString(), $previousMonthEnd->toDateString()])
             ->count();
+        $previousMonthAdmissions = $canViewAdmissions ? $previousMonthAdmissions : 0;
 
         return [
-            'totalLeads' => Lead::query()
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-                ->count(),
+            'totalLeads' => $canViewLeads
+                ? Lead::query()
+                    ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                    ->count()
+                : 0,
             'currentStudents' => $currentStudents,
             'currentMonthAdmissions' => $currentMonthAdmissions,
             'previousMonthAdmissions' => $previousMonthAdmissions,
             'currentMonthCollection' => number_format((float) $monthCollection, 0),
             'currentMonthCollectionRaw' => (float) $monthCollection,
-            'currentMonthPending' => Lead::query()
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-                ->where('status', 'pending')
-                ->whereBetween('created_at', [$monthStart, $monthEnd])
-                ->count(),
+            'currentMonthPending' => $canViewLeads
+                ? Lead::query()
+                    ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                    ->where('status', 'pending')
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->count()
+                : 0,
             'todayCollectionRaw' => (float) $todayCollection,
             'weekCollectionRaw' => (float) $weekCollection,
         ];
@@ -481,30 +515,39 @@ class DashboardController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function buildCharts(Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null): array
+    private function buildCharts(Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null, array $dashboardAccess = []): array
     {
-        $leadCountsByProgram = Lead::query()
-            ->selectRaw('program_id, COUNT(*) as aggregate')
-            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereBetween('created_at', [$monthStart, $monthEnd])
-            ->groupBy('program_id')
-            ->pluck('aggregate', 'program_id');
+        $canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
+        $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
 
-        $admissionCountsByProgram = DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->selectRaw('registrations.program_id as program_id, COUNT(*) as aggregate')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
-            ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
-            ->groupBy('registrations.program_id')
-            ->pluck('aggregate', 'program_id');
+        $leadCountsByProgram = $canViewLeads
+            ? Lead::query()
+                ->selectRaw('program_id, COUNT(*) as aggregate')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->groupBy('program_id')
+                ->pluck('aggregate', 'program_id')
+            : collect();
 
-        $admissionsByCampus = DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->selectRaw('registrations.campus_id as campus_id, COUNT(*) as aggregate')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
-            ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
-            ->groupBy('registrations.campus_id')
-            ->pluck('aggregate', 'campus_id');
+        $admissionCountsByProgram = $canViewAdmissions
+            ? DB::table('admissions')
+                ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
+                ->selectRaw('registrations.program_id as program_id, COUNT(*) as aggregate')
+                ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+                ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                ->groupBy('registrations.program_id')
+                ->pluck('aggregate', 'program_id')
+            : collect();
+
+        $admissionsByCampus = $canViewAdmissions
+            ? DB::table('admissions')
+                ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
+                ->selectRaw('registrations.campus_id as campus_id, COUNT(*) as aggregate')
+                ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+                ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                ->groupBy('registrations.campus_id')
+                ->pluck('aggregate', 'campus_id')
+            : collect();
 
         $programLabels = Program::query()
             ->whereIn(
@@ -672,6 +715,22 @@ class DashboardController extends Controller
             return null;
         }
 
+        $user = $request->user();
+
+        if (!$this->canSelectDashboardCampus($user)) {
+            $userCampusId = (int) ($user?->campus_id ?? 0);
+
+            if ($userCampusId > 0 && Campus::query()->whereKey($userCampusId)->exists()) {
+                session(['dashboard_campus_id' => $userCampusId]);
+
+                return $userCampusId;
+            }
+
+            session()->forget('dashboard_campus_id');
+
+            return null;
+        }
+
         if ($request->has('campus_id')) {
             $value = strtolower(trim((string) $request->input('campus_id')));
 
@@ -701,5 +760,35 @@ class DashboardController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * @return array{leads: bool, admissions: bool, income: bool}
+     */
+    private function resolveDashboardAccess(?User $user): array
+    {
+        if (!$user) {
+            return [
+                'leads' => false,
+                'admissions' => false,
+                'income' => false,
+            ];
+        }
+
+        return [
+            'leads' => $user->canAccessModule('lead-management')
+                || $user->canAccessModule('training-leads')
+                || $user->canAccessModule('coworking-space')
+                || $user->canAccessModule('web-leads'),
+            'admissions' => $user->canAccessModule('admission-management')
+                || $user->canAccessModule('student-management'),
+            'income' => $user->canAccessModule('registration-management')
+                || $user->canAccessModule('finance-management'),
+        ];
+    }
+
+    private function canSelectDashboardCampus(?User $user): bool
+    {
+        return (bool) ($user?->isAdmin() ?? false);
     }
 }

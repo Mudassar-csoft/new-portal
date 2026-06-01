@@ -5,6 +5,10 @@
 @section('content')
 	@php
 		$user = auth()->user();
+		$dashboardAccess = $dashboardAccess ?? [];
+		$canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
+		$canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
+		$canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
 		$roleSlugs = $user?->roles->pluck('slug')->filter()->map(fn ($slug) => strtolower((string) $slug))->values() ?? collect();
 		$roleNames = $user?->roles->pluck('name')->filter()->map(fn ($name) => strtolower((string) $name))->values() ?? collect();
 		$roleLabels = $roleSlugs->merge($roleNames)->unique()->values();
@@ -16,10 +20,10 @@
 				|| str_contains($role, 'receipt')
 				|| str_contains($role, 'reception');
 		});
-		$showIncomeChart = !$hasRecipientDashboardRole && !$hasAdmissionDashboardRole;
-		$showAdmissionProgressWidget = $hasAdmissionDashboardRole && !$hasAdminDashboardRole;
-		$showMonthCollectionCard = !$hasRecipientDashboardRole;
-		$showPendingRecoveryCard = !$hasRecipientDashboardRole;
+		$showIncomeChart = $canViewIncome && !$hasRecipientDashboardRole && !$hasAdmissionDashboardRole;
+		$showAdmissionProgressWidget = $canViewAdmissions && $hasAdmissionDashboardRole && !$hasAdminDashboardRole;
+		$showMonthCollectionCard = $canViewIncome && !$hasRecipientDashboardRole;
+		$showPendingRecoveryCard = $canViewLeads && !$hasRecipientDashboardRole;
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
@@ -42,6 +46,18 @@
 		$monthlyAdmissionCounts = collect($monthlyAdmissionsInsight['counts'] ?? [])->map(fn ($count) => (int) $count)->values();
 		$monthlyAdmissionMax = max(1, (int) $monthlyAdmissionCounts->max());
 		$admissionMonthDelta = $currentMonthAdmissions - $previousMonthAdmissions;
+		$comparisonChartTitle = $canViewLeads && $canViewAdmissions
+			? 'Current Month Leads vs Admissions'
+			: ($canViewLeads ? 'Current Month Leads' : 'Current Month Admissions');
+		$hasDashboardContent = $showIncomeChart
+			|| $showAdmissionProgressWidget
+			|| $canViewLeads
+			|| $canViewAdmissions
+			|| $showMonthCollectionCard
+			|| $showPendingRecoveryCard;
+		$statsColumnClass = $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12';
+		$statCardColumnClass = $hasRecipientDashboardRole ? 'col-12' : 'col-md-6';
+		$activityColumnClass = $canViewLeads && $canViewAdmissions ? 'col-xl-6' : 'col-xl-12';
 	@endphp
 	<div class="dashboard-shell">
 		<div id="dashboard-loader" class="dashboard-loader">
@@ -181,9 +197,10 @@
 				@endif
 			</div>
 			@endif
-			<div id="dashboard-stats-panel-column" class="col-xl-{{ $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12' }} pr-4 dashboard-stats-panel-column">
+			<div id="dashboard-stats-panel-column" class="col-xl-{{ $statsColumnClass }} pr-4 dashboard-stats-panel-column">
 				<div class="row dashboard-stats-cards-row">
-					<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+					@if($canViewLeads)
+					<div class="{{ $statCardColumnClass }} ">
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
@@ -194,7 +211,9 @@
 							</div>
 						</article>
 					</div><!--.col-->
-					<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+					@endif
+					@if($canViewAdmissions)
+					<div class="{{ $statCardColumnClass }} ">
 						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
@@ -205,8 +224,9 @@
 							</div>
 						</article>
 					</div><!--.col-->
+					@endif
 					@if($showMonthCollectionCard)
-						<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+						<div class="{{ $statCardColumnClass }} ">
 							<article class="statistic-box yellow">
 								<div class="stat-inner">
 									<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
@@ -219,7 +239,7 @@
 						</div><!--.col-->
 					@endif
 					@if($showPendingRecoveryCard)
-						<div class="{{ $hasRecipientDashboardRole ? 'col-12' : 'col-md-6' }} ">
+						<div class="{{ $statCardColumnClass }} ">
 							<article class="statistic-box green mr-1">
 								<div class="stat-inner m">
 									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
@@ -236,6 +256,7 @@
 		
 		
 	    </div>
+	@if($canViewLeads || $canViewAdmissions)
 <!--Current Month Charts-->
 	<div class="row pl-4 pr-3 tables-dashbord">
 		<div class="col-xl-12 pl-1 ml-1 mr-2 m-md-0 m-lg-0 current-month-chart-col">
@@ -244,7 +265,7 @@
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
-								<span class="month-chart-header-label">Current Month Leads vs Admissions</span>
+								<span class="month-chart-header-label">{{ $comparisonChartTitle }}</span>
 							</h3>
 						</div>
 						<div class="month-chart-header-actions">
@@ -276,10 +297,13 @@
 		</div>
 
 	</div>
+	@endif
 
+	@if($canViewLeads || $canViewAdmissions)
 <!--Daily Activity-->
 	<div class="row dashboard-equal-row pl-4 pr-3 mt-4  tables-dashbord ">
-		<div class="col-xl-6 d-flex pl-1 ml-1 mr-2 m-md-0 m-lg-0">
+		@if($canViewLeads)
+		<div class="{{ $activityColumnClass }} d-flex pl-1 ml-1 mr-2 m-md-0 m-lg-0">
 			<section class="box-typical box-typical-dashboard panel panel-default daily-activity-card dashboard-equal-card bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
@@ -347,8 +371,10 @@
 				</div>
 			</section>
 		</div>
+		@endif
 	<!--campus Month Charts-->
-		<div class="col-xl-6 d-flex pl-2 pr-4">
+		@if($canViewAdmissions)
+		<div class="{{ $activityColumnClass }} d-flex pl-2 pr-4">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card dashboard-equal-card  bg-gray-300">
 				<header class="box-typical-header panel-heading month-chart-header">
 					<div class="month-chart-header-content">
@@ -416,7 +442,29 @@
 				</div>
 			</section>
 		</div>
+		@endif
 	</div>
+	@endif
+	@if(!$hasDashboardContent)
+	<div class="row pl-4 pr-3 mt-4">
+		<div class="col-12">
+			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card bg-gray-300">
+				<header class="box-typical-header panel-heading month-chart-header">
+					<div class="month-chart-header-content">
+						<div class="month-chart-header-wrap">
+							<h3 class="form-label-dashboard month-chart-header-title">
+								<span class="month-chart-header-label">Dashboard Access</span>
+							</h3>
+						</div>
+					</div>
+				</header>
+				<div class="box-typical-body panel-body p-4">
+					<div class="comparison-empty-state">No dashboard data is available for your current permissions.</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	@endif
 	</div>
 	</div>
 @endsection
@@ -1596,6 +1644,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js"></script>
 	<script>
 		var dashboardData = @json($dashboard ?? []);
+		var dashboardAccessMap = @json($dashboardAccess ?? []);
 		var dashboardRefreshUrl = @json(route('dashboard.live-data', request()->query()));
 		var incomeRanges = @json($dashboard['incomeRanges'] ?? []);
 		var chartSeries = @json($dashboard['charts'] ?? []);
@@ -2106,8 +2155,10 @@
 			}
 
 			function buildComparisonChartData() {
-				var leadData = normalizeComparisonSeries(chartSeries.leads || {});
-				var admissionData = normalizeComparisonSeries(chartSeries.admissions || {});
+				var leadAllowed = !!dashboardAccessMap.leads;
+				var admissionAllowed = !!dashboardAccessMap.admissions;
+				var leadData = leadAllowed ? normalizeComparisonSeries(chartSeries.leads || {}) : [];
+				var admissionData = admissionAllowed ? normalizeComparisonSeries(chartSeries.admissions || {}) : [];
 				var categories = [];
 				var leadMap = {};
 				var admissionMap = {};
@@ -2139,21 +2190,23 @@
 
 				if (!categories.length) { categories = ['No Data']; }
 
-				var leadValues = categories.map(function (category) { return leadMap[category] || 0; });
-				var admissionValues = categories.map(function (category) { return admissionMap[category] || 0; });
+				var leadValues = leadAllowed ? categories.map(function (category) { return leadMap[category] || 0; }) : [];
+				var admissionValues = admissionAllowed ? categories.map(function (category) { return admissionMap[category] || 0; }) : [];
 				var isEmpty = !hasRealCategory || (!leadValues.some(Boolean) && !admissionValues.some(Boolean));
 
-				if (!leadValues.some(Boolean) && !admissionValues.some(Boolean)) {
+				if ((!leadValues.some(Boolean) && !admissionValues.some(Boolean)) || (!leadAllowed && !admissionAllowed)) {
 					categories = ['No Data'];
-					leadValues = [0];
-					admissionValues = [0];
+					leadValues = leadAllowed ? [0] : [];
+					admissionValues = admissionAllowed ? [0] : [];
 				}
 
 				return {
 					categories: categories,
 					leadValues: leadValues,
 					admissionValues: admissionValues,
-					isEmpty: isEmpty
+					leadAllowed: leadAllowed,
+					admissionAllowed: admissionAllowed,
+					isEmpty: isEmpty || (!leadAllowed && !admissionAllowed)
 				};
 			}
 
@@ -2162,12 +2215,29 @@
 
 				var comparison = buildComparisonChartData();
 				var chartElement = $('#lead-chart');
-				var tickValues = buildTicks(Math.max.apply(Math, comparison.leadValues.concat(comparison.admissionValues).concat([0])), 6);
+				var visibleValues = comparison.leadValues.concat(comparison.admissionValues).concat([0]);
+				var tickValues = buildTicks(Math.max.apply(Math, visibleValues), 6);
+				var chartColumns = [];
+				var chartColors = {};
+
+				if (comparison.leadAllowed) {
+					chartColumns.push(['Leads'].concat(comparison.leadValues));
+					chartColors.Leads = '#3b82f6';
+				}
+
+				if (comparison.admissionAllowed) {
+					chartColumns.push(['Admissions'].concat(comparison.admissionValues));
+					chartColors.Admissions = '#22c55e';
+				}
+
 				if (monthlyComparisonChart) { monthlyComparisonChart.destroy(); }
 				chartElement.empty();
 
 				if (comparison.isEmpty) {
-					chartElement.html('<div class="comparison-empty-state">No current month lead or admission data available.</div>');
+					var emptyMessage = comparison.leadAllowed && comparison.admissionAllowed
+						? 'No current month lead or admission data available.'
+						: (comparison.leadAllowed ? 'No current month lead data available.' : 'No current month admission data available.');
+					chartElement.html('<div class="comparison-empty-state">' + emptyMessage + '</div>');
 					return;
 				}
 
@@ -2175,9 +2245,9 @@
 					bindto: '#lead-chart',
 					size: { height: 320 },
 					data: {
-						columns: [['Leads'].concat(comparison.leadValues), ['Admissions'].concat(comparison.admissionValues)],
+						columns: chartColumns,
 						type: 'bar',
-						colors: { Leads: '#3b82f6', Admissions: '#22c55e' },
+						colors: chartColors,
 						labels: {
 							format: function (value) {
 								return value > 0 ? String(value) : '';
