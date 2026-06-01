@@ -11,6 +11,7 @@ use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\ProgramCampusDiscount;
 use App\Models\Registration;
+use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -23,16 +24,21 @@ use Throwable;
 
 class AdmissionController extends Controller
 {
+    use ResolvesCampusScope;
+
     public function create(Request $request): View
     {
         $lead = null;
         if ($request->filled('lead_id')) {
-            $lead = Lead::with(['campus', 'program'])->find($request->input('lead_id'));
+            $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
+            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
         }
 
-        $campuses = Campus::orderBy('name')->get();
+        $campuses = $this->campusOptionsForUser($request->user());
         $programs = Program::orderBy('title')->get();
-        $batches = Batch::orderBy('name')->get();
+        $batches = $this->scopeQueryToUserCampus(Batch::query(), $request->user())
+            ->orderBy('name')
+            ->get();
 
         $existingRegistration = $lead
             ? Registration::where('lead_id', $lead->id)->latest()->first()
@@ -95,14 +101,23 @@ class AdmissionController extends Controller
 
     public function previewNumbersAjax(Request $request): JsonResponse
     {
-        $campusId = $request->input('campus_id');
-        $batchId = $request->input('batch_id');
-        $leadId = $request->input('lead_id');
-        $campus = $campusId ? Campus::find($campusId) : null;
-        $batch = $batchId ? Batch::find($batchId) : null;
+        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
+        $batchId = $request->integer('batch_id');
+        $leadId = $request->integer('lead_id');
+        $campus = $campusId ? Campus::query()->find($campusId) : null;
+        $batch = $batchId
+            ? $this->scopeQueryToUserCampus(Batch::query(), $request->user())->find($batchId)
+            : null;
+
+        if ($campus && $batch && (int) $batch->campus_id !== (int) $campus->id) {
+            $batch = null;
+        }
 
         $registrationNumber = null;
         if ($leadId) {
+            $lead = Lead::query()->findOrFail($leadId);
+            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+
             $existing = Registration::where('lead_id', $leadId)->latest()->first();
             $registrationNumber = $existing?->registration_number;
         }
@@ -170,9 +185,24 @@ class AdmissionController extends Controller
         $validated['roll_number'] = $validated['roll_number'] ?? null;
         $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        if ($campusScopeId) {
+            $validated['campus_id'] = $campusScopeId;
+        }
+
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
             $program = Program::findOrFail($validated['program_id']);
+            $batch = Batch::query()
+                ->whereKey($validated['batch_id'])
+                ->where('campus_id', $campus->id)
+                ->first();
+
+            if (! $batch) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'batch_id' => ['The selected batch does not belong to the selected campus.'],
+                ]);
+            }
 
             $feePackage = $validated['fee_package'];
             $discountPercent = $validated['discount_percent'];
@@ -192,10 +222,13 @@ class AdmissionController extends Controller
 
             $lead = null;
             if (!empty($validated['lead_id'])) {
-                $lead = Lead::find($validated['lead_id']);
+                $lead = Lead::query()->findOrFail($validated['lead_id']);
+                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
             }
             if (!$lead) {
-                $lead = Lead::where('phone', $validated['phone'])->first();
+                $lead = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                    ->where('phone', $validated['phone'])
+                    ->first();
             }
 
             if (!$lead) {
@@ -333,7 +366,7 @@ class AdmissionController extends Controller
                 $registrationNumber = $this->previewNumbers($campus->code)['registration_number'];
             }
 
-            $batchForNumber = Batch::find($validated['batch_id']);
+            $batchForNumber = $batch;
             $providedRoll = $validated['roll_number'] ?? null;
             if ($providedRoll) {
                 $expectedPrefix = $campus->code . '-' . ($batchForNumber?->code ?? 'NB') . '-';
@@ -486,16 +519,19 @@ class AdmissionController extends Controller
 
     public function status(): View
     {
-        $admissions = Admission::with(['program', 'batch'])
+        $admissions = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
+            ->with(['program', 'batch'])
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
-        ->get();
+            ->get();
 
         return view('admission.status', compact('admissions'));
     }
 
     public function voucher(Admission $admission): View
     {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access admissions from another campus.');
+
         $admission->load(['program', 'campus', 'batch', 'registration.lead']);
 
         $fees = FeeCollection::query()

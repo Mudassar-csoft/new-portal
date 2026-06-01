@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Admission;
 use App\Models\Lead;
 use App\Models\Registration;
+use App\Support\ResolvesCampusScope;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StudentSearchController extends Controller
 {
+    use ResolvesCampusScope;
+
     public function index(Request $request): View
     {
         $query = trim((string) $request->query('q', ''));
@@ -21,7 +24,7 @@ class StudentSearchController extends Controller
         if ($query !== '') {
             $needle = '%' . $query . '%';
 
-            $admissions = Admission::query()
+            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
                 ->where(function ($q) use ($needle) {
                     $q->where('student_name', 'like', $needle)
@@ -37,7 +40,7 @@ class StudentSearchController extends Controller
                 ->limit(50)
                 ->get();
 
-            $registrations = Registration::query()
+            $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
                 ->where(function ($q) use ($needle) {
                     $q->where('student_name', 'like', $needle)
@@ -49,7 +52,7 @@ class StudentSearchController extends Controller
                 ->limit(50)
                 ->get();
 
-            $leads = Lead::query()
+            $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
                 ->where(function ($q) use ($needle) {
                     $q->where('name', 'like', $needle)

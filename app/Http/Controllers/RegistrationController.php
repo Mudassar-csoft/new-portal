@@ -8,6 +8,7 @@ use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\FeeCollection;
 use App\Models\Registration;
+use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -20,16 +21,22 @@ use Throwable;
 
 class RegistrationController extends Controller
 {
+    use ResolvesCampusScope;
+
     public function create(Request $request): View
     {
         $lead = null;
         if ($request->filled('lead_id')) {
-            $lead = Lead::with(['campus', 'program'])->find($request->input('lead_id'));
+            $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
+            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
         }
 
-        $campuses = Campus::orderBy('name')->get();
+        $campuses = $this->campusOptionsForUser($request->user());
         $programs = Program::orderBy('title')->get();
-        $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
+        $selectedCampusId = (int) ($this->effectiveCampusFilter(
+            (int) ($request->old('campus_id', $lead?->campus_id) ?? 0),
+            $request->user()
+        ) ?? 0);
         $selectedCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
             : null;
@@ -54,6 +61,11 @@ class RegistrationController extends Controller
             $this->registrationAttributes()
         );
 
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        if ($campusScopeId) {
+            $validated['campus_id'] = $campusScopeId;
+        }
+
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
 
@@ -64,10 +76,13 @@ class RegistrationController extends Controller
 
             $lead = null;
             if (!empty($validated['lead_id'])) {
-                $lead = Lead::find($validated['lead_id']);
+                $lead = Lead::query()->findOrFail($validated['lead_id']);
+                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
             }
             if (!$lead) {
-                $lead = Lead::where('phone', $validated['phone'])->first();
+                $lead = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                    ->where('phone', $validated['phone'])
+                    ->first();
             }
             if (!$lead) {
                 $lead = Lead::create([
@@ -211,13 +226,16 @@ class RegistrationController extends Controller
             'campus_id' => ['required', 'exists:campuses,id'],
         ]);
 
-        $campus = Campus::findOrFail($request->campus_id);
+        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
+        $campus = Campus::query()->whereKey($campusId)->firstOrFail();
+
         return response()->json($this->previewNumbers($campus->code));
     }
 
     public function status(): View
     {
-        $registrations = Registration::with(['program', 'admission'])
+        $registrations = $this->scopeQueryToUserCampus(Registration::query(), auth()->user())
+            ->with(['program', 'admission'])
             ->orderByDesc('registered_at')
             ->orderByDesc('id')
             ->get();
@@ -227,6 +245,8 @@ class RegistrationController extends Controller
 
     public function voucher(Registration $registration): View
     {
+        $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), auth()->user(), 'You are not allowed to access registrations from another campus.');
+
         $registration->load(['campus', 'program', 'lead']);
         return view('registration.voucher', compact('registration'));
     }

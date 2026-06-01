@@ -231,11 +231,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if ($can('registration.view') && Schema::hasTable('registrations')) {
-                $sidebarCounts['all_registrations'] = Registration::query()->count();
+                $sidebarCounts['all_registrations'] = $this->scopeQueryToUserCampus(
+                    Registration::query(),
+                    $user
+                )->count();
             }
 
             if (($can('admission.view') || $can('student.view')) && Schema::hasTable('admissions')) {
-                $admissionSummary = Admission::query()
+                $admissionSummary = $this->scopeQueryToUserCampus(Admission::query(), $user)
                     ->selectRaw('COUNT(*) as total')
                     ->selectRaw("SUM(CASE WHEN student_status = 'enrolled' THEN 1 ELSE 0 END) as student_active")
                     ->selectRaw("SUM(CASE WHEN student_status = 'frozen' THEN 1 ELSE 0 END) as student_frozen")
@@ -265,7 +268,10 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if ($can('student.view') && Schema::hasTable('student_attendances')) {
-                $sidebarCounts['student_attendance'] = StudentAttendance::query()
+                $sidebarCounts['student_attendance'] = $this->scopeQueryToUserCampus(
+                    StudentAttendance::query(),
+                    $user
+                )
                     ->whereDate('attendance_date', $today)
                     ->select('admission_id')
                     ->distinct()
@@ -352,6 +358,16 @@ class AppServiceProvider extends ServiceProvider
         return $query->when(
             $campusScopeId,
             fn (Builder $builder, int $campusId) => $builder->where('campus_id', $campusId)
+        );
+    }
+
+    private function scopeQueryToUserCampus(Builder $query, ?User $user, string $column = 'campus_id'): Builder
+    {
+        $campusScopeId = $this->userCampusScopeId($user);
+
+        return $query->when(
+            $campusScopeId,
+            fn (Builder $builder, int $campusId) => $builder->where($column, $campusId)
         );
     }
 

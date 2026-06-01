@@ -79,7 +79,7 @@
                                                     <span class="label label-info">{{ ucfirst($a->student_status ?? 'enrolled') }}</span>
                                                 </td> -->
                                                 <td class="text-right">
-                                                    <a href="{{ route('leads.show', $lead->id) }}" class="btn btn-primary">
+                                                    <a href="{{ $a->registration_id ? route('student.show', $a->registration_id) : route('admission.status') }}" class="btn btn-primary">
                                                         <!-- <i class="fa fa-eye"></i>  -->
                                                         Action
                                                     </a>

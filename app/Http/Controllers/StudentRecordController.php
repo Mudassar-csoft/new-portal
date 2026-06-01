@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admission;
 use App\Models\FeeCollection;
+use App\Support\ResolvesCampusScope;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,8 @@ use Yajra\DataTables\Facades\DataTables;
 
 class StudentRecordController extends Controller
 {
+    use ResolvesCampusScope;
+
     private const STATUS_OPTIONS = [
         'enrolled' => 'Enrolled',
         'concluded' => 'Concluded',
@@ -28,7 +31,7 @@ class StudentRecordController extends Controller
         $config = $this->resolveScope($scope);
 
         if ($request->ajax()) {
-            $query = Admission::query()
+            $query = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with([
                     'campus:id,code,name',
                     'program:id,code,title,name',
@@ -111,6 +114,8 @@ class StudentRecordController extends Controller
 
     public function show(\App\Models\Registration $registration): View
     {
+        $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), auth()->user(), 'You are not allowed to access student records from another campus.');
+
         $registration->load([
             'lead',
             'campus',
@@ -178,6 +183,8 @@ class StudentRecordController extends Controller
 
     public function collectInstallment(Request $request, FeeCollection $feeCollection): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($feeCollection->campus_id ?? 0), $request->user(), 'You are not allowed to update fee records from another campus.');
+
         $validated = $request->validate([
             'paid_amount' => ['required', 'numeric', 'min:0.01'],
         ]);
@@ -232,6 +239,8 @@ class StudentRecordController extends Controller
 
     public function updateFee(Request $request, FeeCollection $feeCollection): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($feeCollection->campus_id ?? 0), $request->user(), 'You are not allowed to update fee records from another campus.');
+
         $validated = $request->validate([
             'net_amount' => ['required', 'numeric', 'min:0'],
             'paid_at' => ['required', 'date'],
@@ -247,6 +256,8 @@ class StudentRecordController extends Controller
 
     public function updateStatus(Request $request, Admission $admission): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
         $validated = $request->validate([
             'status' => ['required', Rule::in(array_keys(self::STATUS_OPTIONS))],
         ]);
@@ -261,6 +272,8 @@ class StudentRecordController extends Controller
 
     public function markCertificateDelivered(Request $request, Admission $admission): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
         $validated = $request->validate([
             'certificate_delivery_notes' => ['nullable', 'string'],
         ]);

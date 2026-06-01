@@ -106,10 +106,7 @@
     $canUserView = $can('user.view');
     $canRoleCreate = $can('role.create', 'role.manage');
     $canRoleView = $can('role.view', 'role.manage');
-    $showUserModule = $canUserCreate
-        || $canUserView
-        || $canRoleCreate
-        || $canRoleView;
+    $showUserModule = $isAdmin;
 @endphp
 
 <div class="mobile-menu-left-overlay"></div>

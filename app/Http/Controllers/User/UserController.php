@@ -20,6 +20,8 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->ensureAdminAccess();
+
         if ($request->ajax()) {
             $scope = (string) $request->query('scope', 'active');
             $currentUser = $request->user();
@@ -90,6 +92,8 @@ class UserController extends Controller
 
     public function create(): View
     {
+        $this->ensureAdminAccess();
+
         $campuses = Campus::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
 
@@ -98,6 +102,8 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $validated = $request->validate([
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'name' => ['required', 'string', 'max:255'],
@@ -142,6 +148,8 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
+        $this->ensureAdminAccess();
+
         $campuses = Campus::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
         $permissionGroups = PermissionCatalog::grouped();
@@ -156,6 +164,8 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $validated = $request->validate([
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'name' => ['required', 'string', 'max:255'],
@@ -198,6 +208,8 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         if ($user->id === optional($request->user())->id) {
             return redirect()->route('users.index')
                 ->with('error', 'You cannot delete your own account.');
@@ -215,6 +227,8 @@ class UserController extends Controller
 
     public function restore(int $id): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $user = User::withoutGlobalScope('not_deleted')->findOrFail($id);
         $user->update(['at_deleted' => null]);
 
@@ -281,6 +295,11 @@ class UserController extends Controller
         }
 
         $user->permissions()->sync($permissionIds);
+    }
+
+    private function ensureAdminAccess(): void
+    {
+        abort_unless(auth()->user()?->isAdmin(), 403);
     }
 
 }

@@ -7,6 +7,7 @@ use App\Models\CoworkingRegistration;
 use App\Models\CoworkingRegistrationReceipt;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
+use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -24,14 +25,18 @@ use Throwable;
 
 class CoworkingRegistrationController extends Controller
 {
+    use ResolvesCampusScope;
+
     public function create(Request $request): View
     {
         $lead = null;
+        $campuses = $this->campusOptionsForUser($request->user(), ['id', 'code', 'city', 'city_abbr', 'name', 'title']);
+
         if ($request->filled('lead_id')) {
-            $lead = Lead::with(['campus', 'coworkingRegistration'])->find($request->input('lead_id'));
+            $lead = Lead::with(['campus', 'coworkingRegistration'])->findOrFail($request->integer('lead_id'));
+            $this->ensureResolvedLeadCampusAccess($lead, $campuses, $request->user());
         }
 
-        $campuses = Campus::query()->orderBy('name')->get(['id', 'code', 'city', 'city_abbr', 'name', 'title']);
         $selectedCampus = $this->resolveLeadCampus($lead, $campuses);
         $defaultRegistrationDate = old('registration_date', now()->toDateString());
         $preview = $selectedCampus
@@ -50,10 +55,12 @@ class CoworkingRegistrationController extends Controller
 
     public function edit(Request $request, CoworkingRegistration $coworkingRegistration): View
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to access coworking registrations from another campus.');
+
         $coworkingRegistration->load(['lead.campus', 'campus']);
 
         $lead = $coworkingRegistration->lead;
-        $campuses = Campus::query()->orderBy('name')->get(['id', 'code', 'city', 'city_abbr', 'name', 'title']);
+        $campuses = $this->campusOptionsForUser($request->user(), ['id', 'code', 'city', 'city_abbr', 'name', 'title']);
         $selectedCampus = $coworkingRegistration->campus
             ?? $this->resolveLeadCampus($lead, $campuses);
 
@@ -81,7 +88,8 @@ class CoworkingRegistrationController extends Controller
             'registration_date' => ['nullable', 'date'],
         ]);
 
-        $campus = Campus::query()->findOrFail($validated['campus_id']);
+        $campusId = $this->effectiveCampusFilter((int) $validated['campus_id'], $request->user());
+        $campus = Campus::query()->findOrFail($campusId);
         $registrationDate = $this->parseRegistrationDate($validated['registration_date'] ?? null);
 
         return response()->json(array_merge(
@@ -98,6 +106,11 @@ class CoworkingRegistrationController extends Controller
             $this->registrationAttributes()
         );
 
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        if ($campusScopeId) {
+            $validated['campus_id'] = $campusScopeId;
+        }
+
         try {
             $campus = Campus::query()->findOrFail($validated['campus_id']);
             $registrationDate = $this->parseRegistrationDate($validated['registration_date']);
@@ -106,6 +119,7 @@ class CoworkingRegistrationController extends Controller
             $lead = null;
             if (! empty($validated['lead_id'])) {
                 $lead = Lead::query()->with('coworkingRegistration')->find($validated['lead_id']);
+                $this->ensureResolvedLeadCampusAccess($lead, null, $request->user());
             }
 
             if ($lead && $lead->type !== 'coworking') {
@@ -224,11 +238,18 @@ class CoworkingRegistrationController extends Controller
 
     public function update(Request $request, CoworkingRegistration $coworkingRegistration): RedirectResponse|JsonResponse
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to update coworking registrations from another campus.');
+
         $validated = $request->validate(
             $this->registrationRules($coworkingRegistration),
             $this->registrationMessages(),
             $this->registrationAttributes()
         );
+
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        if ($campusScopeId) {
+            $validated['campus_id'] = $campusScopeId;
+        }
 
         try {
             $campus = Campus::query()->findOrFail($validated['campus_id']);
@@ -305,6 +326,8 @@ class CoworkingRegistrationController extends Controller
 
     public function collectCharge(Request $request, CoworkingRegistration $coworkingRegistration): RedirectResponse|Response|JsonResponse
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to update coworking registrations from another campus.');
+
         $validated = $request->validate([
             'charge_date' => ['required', 'date'],
             'charge_amount' => ['required', 'numeric', 'min:1'],
@@ -380,6 +403,8 @@ class CoworkingRegistrationController extends Controller
 
     public function deactivate(Request $request, CoworkingRegistration $coworkingRegistration): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to update coworking registrations from another campus.');
+
         $validated = $request->validate(
             $this->deactivationRules($coworkingRegistration),
             [],
@@ -466,6 +491,8 @@ class CoworkingRegistrationController extends Controller
 
     public function voucher(CoworkingRegistration $coworkingRegistration): View
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), auth()->user(), 'You are not allowed to access coworking registrations from another campus.');
+
         $coworkingRegistration->load(['campus', 'lead', 'receipts']);
 
         return view('coworking_registration.voucher', [
@@ -475,6 +502,8 @@ class CoworkingRegistrationController extends Controller
 
     public function show(CoworkingRegistration $coworkingRegistration): View
     {
+        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), auth()->user(), 'You are not allowed to access coworking registrations from another campus.');
+
         $coworkingRegistration->load([
             'campus',
             'lead.campus',
@@ -488,6 +517,8 @@ class CoworkingRegistrationController extends Controller
 
     public function receiptVoucher(CoworkingRegistrationReceipt $receipt): View
     {
+        $this->ensureCampusAccess((int) ($receipt->campus_id ?? 0), auth()->user(), 'You are not allowed to access coworking registrations from another campus.');
+
         $receipt->load(['campus', 'lead', 'coworkingRegistration']);
 
         return view('coworking_registration.receipt_voucher', compact('receipt'));
@@ -704,6 +735,24 @@ class CoworkingRegistrationController extends Controller
         return null;
     }
 
+    private function ensureResolvedLeadCampusAccess(?Lead $lead, ?Collection $campuses = null, $user = null): void
+    {
+        if (! $lead) {
+            return;
+        }
+
+        $resolvedCampusId = (int) ($lead->campus_id ?: $this->resolveLeadCampus(
+            $lead,
+            $campuses ?? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
+        )?->id);
+
+        $this->ensureCampusAccess(
+            $resolvedCampusId > 0 ? $resolvedCampusId : null,
+            $user,
+            'You are not allowed to use a lead from another campus.'
+        );
+    }
+
     private function isUniqueConstraint(QueryException $e): bool
     {
         $message = $e->getMessage();
@@ -876,4 +925,3 @@ class CoworkingRegistrationController extends Controller
         return implode(PHP_EOL, $lines);
     }
 }
-

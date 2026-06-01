@@ -8,6 +8,7 @@ use App\Models\Campus;
 use App\Models\Program;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceImportLog;
+use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -18,11 +19,13 @@ use Illuminate\View\View;
 
 class StudentAttendanceController extends Controller
 {
+    use ResolvesCampusScope;
+
     public function index(Request $request): View
     {
         $attendanceDate = $request->input('attendance_date', now()->toDateString());
 
-        $baseAdmissions = Admission::query()
+        $baseAdmissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
             ->with([
                 'campus:id,code,name',
                 'program:id,code,title,name',
@@ -35,7 +38,8 @@ class StudentAttendanceController extends Controller
         $this->applyAdmissionFilters($baseAdmissions, $request);
 
         $summaryAdmissions = clone $baseAdmissions;
-        $attendanceSummary = StudentAttendance::query()->whereDate('attendance_date', $attendanceDate);
+        $attendanceSummary = $this->scopeQueryToUserCampus(StudentAttendance::query(), $request->user())
+            ->whereDate('attendance_date', $attendanceDate);
         $this->applyAttendanceFilters($attendanceSummary, $request);
 
         $register = clone $baseAdmissions;
@@ -76,12 +80,14 @@ class StudentAttendanceController extends Controller
         return view('student.attendance.index', [
             'students' => $students,
             'imports' => StudentAttendanceImportLog::query()->latest()->limit(10)->get(),
-            'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name']),
+            'campuses' => $this->campusOptionsForUser($request->user(), ['id', 'code', 'name']),
             'programs' => Program::query()->orderByRaw('COALESCE(title, name)')->get(['id', 'code', 'title', 'name']),
-            'batches' => Batch::query()->orderBy('name')->get(['id', 'code', 'name']),
+            'batches' => $this->scopeQueryToUserCampus(Batch::query(), $request->user())
+                ->orderBy('name')
+                ->get(['id', 'code', 'name']),
             'filters' => [
                 'attendance_date' => $attendanceDate,
-                'campus_id' => $request->integer('campus_id') ?: null,
+                'campus_id' => $this->effectiveCampusFilter($request->integer('campus_id'), $request->user()),
                 'program_id' => $request->integer('program_id') ?: null,
                 'batch_id' => $request->integer('batch_id') ?: null,
                 'status' => $request->input('status'),
@@ -174,8 +180,10 @@ class StudentAttendanceController extends Controller
 
     private function applyAdmissionFilters(Builder $query, Request $request): void
     {
+        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
+
         $query
-            ->when($request->integer('campus_id'), fn (Builder $q, int $campusId) => $q->where('campus_id', $campusId))
+            ->when($campusId, fn (Builder $q, int $resolvedCampusId) => $q->where('campus_id', $resolvedCampusId))
             ->when($request->integer('program_id'), fn (Builder $q, int $programId) => $q->where('program_id', $programId))
             ->when($request->integer('batch_id'), fn (Builder $q, int $batchId) => $q->where('batch_id', $batchId))
             ->when($request->filled('search'), function (Builder $q) use ($request) {
@@ -192,8 +200,10 @@ class StudentAttendanceController extends Controller
 
     private function applyAttendanceFilters(Builder $query, Request $request): void
     {
+        $campusId = $this->effectiveCampusFilter($request->integer('campus_id'), $request->user());
+
         $query
-            ->when($request->integer('campus_id'), fn (Builder $q, int $campusId) => $q->where('campus_id', $campusId))
+            ->when($campusId, fn (Builder $q, int $resolvedCampusId) => $q->where('campus_id', $resolvedCampusId))
             ->when($request->integer('program_id'), fn (Builder $q, int $programId) => $q->where('program_id', $programId))
             ->when($request->integer('batch_id'), fn (Builder $q, int $batchId) => $q->where('batch_id', $batchId))
             ->when($request->filled('search'), function (Builder $q) use ($request) {
@@ -251,7 +261,8 @@ class StudentAttendanceController extends Controller
         $programCode = $this->resolveValue($row, ['program_code']);
         $batchCode = $this->resolveValue($row, ['batch_code']);
 
-        $query = Admission::query()->with(['batch:id,code,start_time']);
+        $query = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
+            ->with(['batch:id,code,start_time']);
 
         if ($rollNumber) {
             return $query->where('roll_number', $rollNumber)->first();

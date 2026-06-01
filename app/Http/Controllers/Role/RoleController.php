@@ -17,6 +17,8 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
+        $this->ensureAdminAccess();
+
         if ($request->ajax()) {
             $scope = (string) $request->query('scope', 'active');
 
@@ -57,6 +59,8 @@ class RoleController extends Controller
 
     public function create(): View
     {
+        $this->ensureAdminAccess();
+
         $permissionGroups = PermissionCatalog::grouped();
 
         return view('role.create', compact('permissionGroups'));
@@ -64,6 +68,8 @@ class RoleController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('roles', 'slug')],
@@ -94,6 +100,8 @@ class RoleController extends Controller
 
     public function edit(Role $role): View
     {
+        $this->ensureAdminAccess();
+
         $permissionGroups = PermissionCatalog::grouped();
         $role->load('permissions');
 
@@ -102,6 +110,8 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -128,6 +138,8 @@ class RoleController extends Controller
 
     public function destroy(Role $role): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         if ($role->is_system) {
             return redirect()->route('roles.index')
                 ->with('error', 'System roles cannot be deleted.');
@@ -145,9 +157,16 @@ class RoleController extends Controller
 
     public function restore(int $id): RedirectResponse
     {
+        $this->ensureAdminAccess();
+
         $role = Role::withoutGlobalScope('not_deleted')->findOrFail($id);
         $role->update(['at_deleted' => null]);
 
         return redirect()->route('roles.index')->with('status', 'Role restored.');
+    }
+
+    private function ensureAdminAccess(): void
+    {
+        abort_unless(auth()->user()?->isAdmin(), 403);
     }
 }

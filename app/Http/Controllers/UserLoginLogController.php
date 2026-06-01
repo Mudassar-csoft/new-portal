@@ -11,6 +11,8 @@ class UserLoginLogController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Http\JsonResponse
     {
+        abort_unless($request->user()?->isAdmin(), 403);
+
         if ($request->ajax()) {
             $query = UserLoginLog::query()->with('user');
 
