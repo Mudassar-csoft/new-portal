@@ -668,7 +668,7 @@
         }
 
         .student-profile-card {
-            overflow: hidden;
+            overflow: visible;
         }
 
         .profile-banner {
@@ -786,17 +786,16 @@
 
         .student-action-wrap .dropdown-menu {
             display: none;
-            min-width: 240px;
+            min-width: 200px;
             background: #fff;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
             padding: 10px 0;
-            /* margin-top: 8px; */
             position: absolute;
-            left: 50%;
-            transform: translateX(-36%);
-            top: -564%;
+            left: 88%;
+            transform: translateX(-50%);
+            top:-209px;
             z-index: 50;
             text-align: left;
         }
