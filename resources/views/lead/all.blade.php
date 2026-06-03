@@ -12,6 +12,7 @@
 			'enrolled' => 'Enrolled',
 			'not_interesting' => 'Not Interested',
 		];
+		$todayOnly = (bool) ($todayOnly ?? false);
 	@endphp
 
 	<div class="lead-status-shell">
@@ -36,6 +37,12 @@
 				</div>
 
 				<div class="box-typical-body panel-body follow-body">
+					@if($todayOnly)
+						<div class="lead-filter-banner">
+							<span>Showing today&apos;s leads only.</span>
+							<a href="{{ route('leads.index') }}" class="lead-filter-banner-link">View all leads</a>
+						</div>
+					@endif
 					<div class="follow-controls">
 						<div class="d-flex control-flow-show-bar" style="gap:0.5rem;align-items: center;">
 							<label class="">Show</label>
@@ -220,6 +227,32 @@
 		.follow-table .action-cell {
 			min-width: 110px;
 			white-space: nowrap;
+		}
+
+		.lead-filter-banner {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			margin-bottom: 16px;
+			padding: 12px 16px;
+			border: 1px solid #cfe0f6;
+			border-radius: 14px;
+			background: #f5f9ff;
+			color: #1f3558;
+			font-weight: 600;
+		}
+
+		.lead-filter-banner-link {
+			color: #0f88ff;
+			font-weight: 700;
+			text-decoration: none;
+		}
+
+		.lead-filter-banner-link:hover,
+		.lead-filter-banner-link:focus {
+			color: #0b6fd1;
+			text-decoration: none;
 		}
 .table-responsive {
     overflow: visible !important;  

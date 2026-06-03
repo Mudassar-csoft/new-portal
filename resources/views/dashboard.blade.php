@@ -206,11 +206,13 @@
 					<div class="{{ $statCardColumnClass }} ">
 						<article class="statistic-box red"  >
 							<div class="stat-inner">
-								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show total leads"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['totalLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="totalLeads" data-format="number" data-mask-mode="icon"></div>
-								<div class="caption mt-3">
-									<div class="caption-text">Total Leads</div>
-								</div>
+								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show today leads"><i class="fa fa-eye"></i></button>
+								<a href="{{ route('leads.index', ['today' => 1]) }}" class="stat-card-link" aria-label="Open today leads list">
+									<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['todayLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="todayLeads" data-format="number" data-mask-mode="icon"></div>
+									<div class="caption mt-3">
+										<div class="caption-text">Today Leads</div>
+									</div>
+								</a>
 							</div>
 						</article>
 					</div><!--.col-->
@@ -921,6 +923,20 @@
         .statistic-box .stat-inner {
             position: relative;
         }
+
+        .statistic-box .stat-card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .statistic-box .stat-card-link:hover,
+        .statistic-box .stat-card-link:focus {
+            color: inherit;
+            text-decoration: none;
+        }
+
 .statistic-box .number, 
 .statistic-box .caption{
     font-size:28px !important;
@@ -2108,7 +2124,7 @@
 
 			function renderStats(payload) {
 				var stats = (payload || {}).stats || {};
-				setStatValue('totalLeads', stats.totalLeads || 0, 'number');
+				setStatValue('todayLeads', stats.todayLeads || 0, 'number');
 				setStatValue('currentStudents', stats.currentStudents || 0, 'number');
 				setStatValue('currentMonthCollection', stats.currentMonthCollectionRaw || 0, 'currency');
 				setStatValue('currentMonthPending', stats.currentMonthPending || 0, 'number');

@@ -25,12 +25,19 @@ use Yajra\DataTables\Facades\DataTables;
 
 class LeadController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $leads = $this->trainingLeadQuery()
+        $todayOnly = $request->boolean('today');
+
+        $leadQuery = $this->trainingLeadQuery()
             ->with(['program'])
-            ->latest()
-            ->get();
+            ->latest();
+
+        if ($todayOnly) {
+            $leadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+
+        $leads = $leadQuery->get();
 
         $tabs = [
             'all' => 'All Leads',
@@ -55,7 +62,7 @@ class LeadController extends Controller
                 : $leads->where('status', $key)->count();
         }
 
-        return view('lead.all', compact('leads', 'tabs', 'badgeColors', 'tabCounts'));
+        return view('lead.all', compact('leads', 'tabs', 'badgeColors', 'tabCounts', 'todayOnly'));
     }
 
     public function create(Request $request): View|RedirectResponse

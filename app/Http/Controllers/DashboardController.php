@@ -108,6 +108,7 @@ class DashboardController extends Controller
     {
         return [
             'stats' => [
+                'todayLeads' => 0,
                 'totalLeads' => 0,
                 'currentStudents' => 0,
                 'currentMonthAdmissions' => 0,
@@ -221,6 +222,11 @@ class DashboardController extends Controller
         $previousMonthAdmissions = $canViewAdmissions ? $previousMonthAdmissions : 0;
 
         return [
+            'todayLeads' => $canViewLeads
+                ? $this->leadQueryForDashboard($campusId, $dashboardAccess)
+                    ->whereBetween('created_at', [$today, $today->copy()->endOfDay()])
+                    ->count()
+                : 0,
             'totalLeads' => $canViewLeads
                 ? $this->leadQueryForDashboard($campusId, $dashboardAccess)
                     ->count()

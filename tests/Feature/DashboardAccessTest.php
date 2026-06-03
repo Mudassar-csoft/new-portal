@@ -42,6 +42,7 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard.live-data', ['campus_id' => $betaCampus->id]))
             ->assertOk()
+            ->assertJsonPath('dashboard.stats.todayLeads', 0)
             ->assertJsonPath('dashboard.stats.totalLeads', 1)
             ->assertJsonPath('dashboard.stats.currentStudents', 1)
             ->assertJsonPath('dashboard.stats.currentMonthCollectionRaw', 1200);
@@ -66,6 +67,7 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($admin)
             ->get(route('dashboard.live-data', ['campus_id' => 0]))
             ->assertOk()
+            ->assertJsonPath('dashboard.stats.todayLeads', 0)
             ->assertJsonPath('dashboard.stats.totalLeads', 2)
             ->assertJsonPath('dashboard.stats.currentStudents', 2)
             ->assertJsonPath('dashboard.stats.currentMonthCollectionRaw', 3000);
@@ -73,6 +75,7 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($admin)
             ->get(route('dashboard.live-data', ['campus_id' => $betaCampus->id]))
             ->assertOk()
+            ->assertJsonPath('dashboard.stats.todayLeads', 0)
             ->assertJsonPath('dashboard.stats.totalLeads', 1)
             ->assertJsonPath('dashboard.stats.currentStudents', 1)
             ->assertJsonPath('dashboard.stats.currentMonthCollectionRaw', 1800);
@@ -104,7 +107,8 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Total Leads')
+            ->assertSee('Today Leads')
+            ->assertSee(route('leads.index', ['today' => 1]))
             ->assertSee('Recent Leads')
             ->assertSee('Current Month Leads')
             ->assertSee('Pending Recovery')
@@ -144,8 +148,77 @@ class DashboardAccessTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard.live-data'))
             ->assertOk()
+            ->assertJsonPath('dashboard.stats.todayLeads', 0)
             ->assertJsonPath('dashboard.stats.totalLeads', 1)
             ->assertJsonCount(1, 'dashboard.dailyActivity.rows');
+    }
+
+    public function test_dashboard_today_leads_link_opens_only_todays_leads_with_actions(): void
+    {
+        $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $otherCampus = $this->createCampus('Beta Campus', 'BET');
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([
+            $dashboardView->id,
+            $leadView->id,
+        ]);
+
+        $todayLead = Lead::query()->create([
+            'campus_id' => $campus->id,
+            'type' => 'training',
+            'name' => 'Today Lead',
+            'phone' => '03000000111',
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $yesterdayLead = Lead::query()->create([
+            'campus_id' => $campus->id,
+            'type' => 'training',
+            'name' => 'Yesterday Lead',
+            'phone' => '03000000112',
+            'status' => 'pending',
+        ]);
+        $yesterdayLead->forceFill([
+            'created_at' => now()->subDay(),
+            'updated_at' => now(),
+        ])->saveQuietly();
+
+        Lead::query()->create([
+            'campus_id' => $otherCampus->id,
+            'type' => 'training',
+            'name' => 'Other Campus Lead',
+            'phone' => '03000000113',
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard.live-data'))
+            ->assertOk()
+            ->assertJsonPath('dashboard.stats.todayLeads', 1)
+            ->assertJsonPath('dashboard.stats.totalLeads', 2);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(route('leads.index', ['today' => 1]));
+
+        $this->actingAs($user)
+            ->get(route('leads.index', ['today' => 1]))
+            ->assertOk()
+            ->assertSee('Showing today&apos;s leads only.', false)
+            ->assertSee('Today Lead')
+            ->assertSee(route('leads.show', $todayLead))
+            ->assertDontSee('Yesterday Lead')
+            ->assertDontSee('Other Campus Lead');
     }
 
     private function createPermission(string $resource, string $action, string $slug): Permission
@@ -174,9 +247,11 @@ class DashboardAccessTest extends TestCase
             'name' => 'Lead ' . $suffix,
             'phone' => '0300000000' . substr($suffix, 0, 1),
             'status' => 'pending',
+        ]);
+        $lead->forceFill([
             'created_at' => now()->subDay(),
             'updated_at' => now(),
-        ]);
+        ])->saveQuietly();
 
         $registration = Registration::query()->create([
             'lead_id' => $lead->id,
