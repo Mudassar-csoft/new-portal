@@ -515,7 +515,7 @@ class AdmissionController extends Controller
     public function status(): View
     {
         $admissions = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
-            ->with(['program', 'batch'])
+            ->with(['program', 'campus'])
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
             ->get();

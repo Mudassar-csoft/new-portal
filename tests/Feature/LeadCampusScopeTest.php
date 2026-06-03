@@ -61,6 +61,61 @@ class LeadCampusScopeTest extends TestCase
             ->assertDontSee('Beta Followup Lead');
     }
 
+    public function test_followups_grid_shows_last_follower_and_total_followups(): void
+    {
+        $followupView = $this->createPermission('lead', 'followup.view', 'lead.followup.view');
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+
+        $viewer = User::factory()->create([
+            'campus_id' => $alphaCampus->id,
+        ]);
+        $viewer->permissions()->sync([$followupView->id]);
+
+        $lead = $this->createTrainingLead($alphaCampus, 'Followup Count Lead', '03000000029');
+
+        $firstFollower = User::factory()->create(['name' => 'First Follower']);
+        $lastFollower = User::factory()->create(['name' => 'Final Followup User']);
+
+        $firstFollowup = LeadFollowup::query()->create([
+            'lead_id' => $lead->id,
+            'campus_id' => $alphaCampus->id,
+            'user_id' => $firstFollower->id,
+            'method' => 'call',
+            'probability' => 50,
+            'note' => 'First follow-up.',
+            'next_action_date' => now()->addDay()->toDateString(),
+            'stage' => 'contacted',
+            'lead_status' => $lead->status,
+        ]);
+        $firstFollowup->forceFill([
+            'created_at' => now()->subHour(),
+            'updated_at' => now()->subHour(),
+        ])->saveQuietly();
+
+        $lastFollowup = LeadFollowup::query()->create([
+            'lead_id' => $lead->id,
+            'campus_id' => $alphaCampus->id,
+            'user_id' => $lastFollower->id,
+            'method' => 'visit',
+            'probability' => 80,
+            'note' => 'Latest follow-up.',
+            'next_action_date' => now()->addDays(2)->toDateString(),
+            'stage' => 'branch_visited',
+            'lead_status' => $lead->status,
+        ]);
+        $lastFollowup->forceFill([
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->saveQuietly();
+
+        $this->actingAs($viewer)
+            ->get(route('leads.followups'))
+            ->assertOk()
+            ->assertSee('Final Followup User')
+            ->assertSee('class="followup-count text-center">2<', false)
+            ->assertSee('Followup Count Lead');
+    }
+
     public function test_non_admin_cannot_open_or_update_another_campus_lead(): void
     {
         $leadView = $this->createPermission('lead', 'view', 'lead.view');
