@@ -927,7 +927,7 @@ form label.required::after,
 	flex: 0 0 auto;
 }
 .select2-container--arrow, .select2-selection__rendered{
-	border: solid 1px #d8e2e7;
+	/* border: solid 1px #d8e2e7; */
 border-radius: .25rem;
 font-size: 16px !important;
 /* font-weight:600; */

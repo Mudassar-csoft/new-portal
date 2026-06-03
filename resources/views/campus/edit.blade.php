@@ -23,10 +23,10 @@
                                     Edit Campus / Franchise <span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
                                 </h2>
                             </div>
-                            <div class="tbl-cell text-right" style="width: 280px;">
+                            <!-- <div class="tbl-cell text-right" style="width: 280px;">
                                 <a href="{{ route('campus.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Campuses</a>
                                 <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">View Inventory</a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </header>

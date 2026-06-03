@@ -14,10 +14,7 @@
     <div class="user-shell">
         <div class="box-typical box-typical-dashboard panel panel-default user-card">
             <header class="box-typical-header panel-heading user-card-header">
-                <div>
-                    <p class="user-kicker mb-1">User Management</p>
-                    <h3 class="panel-title form-label mb-0">Create User</h3>
-                </div>
+                <h3 class="panel-title lead-title mb-0">Create User</h3>
             </header>
 
             <div class="box-typical-body panel-body user-body">
@@ -54,7 +51,7 @@
                                 name="email"
                                 id="email"
                                 class="form-control user-input @error('email') is-invalid @enderror"
-                                placeholder="alex@example.com"
+                                placeholder="admin@example.com"
                                 value="{{ old('email') }}"
                                 required
                             >
@@ -66,7 +63,7 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="password" class="form-label required">Password</label>
+                            <label for="password" class="form-label">Password</label>
                         </div>
                         <div class="user-form-field">
                             <div class="input-shell">
@@ -75,7 +72,7 @@
                                     name="password"
                                     id="password"
                                     class="form-control user-input user-input-password @error('password') is-invalid @enderror"
-                                    placeholder="Auto-generated password"
+                                    placeholder="********"
                                     autocomplete="new-password"
                                     required
                                 >
@@ -97,7 +94,7 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="password_confirmation" class="form-label required">Confirm Password</label>
+                            <label for="password_confirmation" class="form-label">Confirm Password</label>
                         </div>
                         <div class="user-form-field">
                             <div class="input-shell">
@@ -106,7 +103,7 @@
                                     name="password_confirmation"
                                     id="password_confirmation"
                                     class="form-control user-input user-input-confirm @error('password_confirmation') is-invalid @enderror"
-                                    placeholder="Repeat password"
+                                    placeholder="********"
                                     autocomplete="new-password"
                                     required
                                 >
@@ -132,9 +129,9 @@
                                 id="campus_id"
                                 class="form-control select2 select2-white @error('campus_id') is-invalid @enderror"
                                 style="width: 100%;"
-                                data-placeholder="Select campus"
+                                data-placeholder="- Select Campus -"
                             >
-                                <option value="">All Campuses</option>
+                                <option value="">- Select Campus -</option>
                                 @foreach($campuses as $campus)
                                     <option value="{{ $campus->id }}" @selected((string) old('campus_id') === (string) $campus->id)>{{ $campus->name }}</option>
                                 @endforeach
@@ -147,7 +144,7 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="role_id" class="form-label">Role</label>
+                            <label for="role_id" class="form-label">Roles</label>
                         </div>
                         <div class="user-form-field">
                             <select
@@ -174,9 +171,11 @@
                         </div>
                     </div>
 
-                    <div class="user-actions">
-                        <button type="submit" class="btn btn-inline btn-primary-outline user-action-primary">Create User</button>
-                        <a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline user-action-secondary">Cancel</a>
+                
+
+                    <div class="text-right" style="padding-right: 0px !important;">
+                        <button type="submit" class="btn btn-inline btn-primary-outline ">Create User</button>
+                        <a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline ">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -186,11 +185,10 @@
 
 @push('styles')
     <style>
-        .user-create-page {
-            overflow-x: hidden;
-        }
+        .user-create-page,
         .user-create-page .page-content {
             overflow-x: hidden;
+            background: #f8fbff;
         }
         .user-create-page .page-content > .container-fluid {
             max-width: 100% !important;
@@ -199,7 +197,7 @@
             overflow: visible !important;
         }
         .user-create-page .user-shell {
-            min-height: 100vh;
+            min-height: auto;
             padding: 24px;
             background:
                 radial-gradient(circle at top left, rgba(45, 120, 255, 0.09), transparent 26%),
@@ -213,58 +211,53 @@
             border-radius: 22px;
             overflow: hidden;
             box-shadow: 0 22px 50px rgba(20, 53, 93, 0.12);
-            background: #ffffff;
+            background: #fff;
         }
         .user-create-page .user-card-header {
-            padding: 28px 34px 22px;
+            padding: 22px 34px 18px;
             border-bottom: 1px solid #e8eef6;
             background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98));
         }
-        .user-create-page .user-kicker {
-            font-size: 12px;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: #7f93ac;
-            font-weight: 700;
-        }
         .user-create-page .user-card .panel-title {
             font-size: 32px !important;
-            line-height: 1.05;
-            font-weight: 700 !important;
-            color: #16324f;
+            line-height: 1.15;
+            font-weight: 400 !important;
+            color: #1d2f40;
+            letter-spacing: 0;
         }
         .user-create-page .user-body {
-            padding: 34px;
+            padding: 26px 34px 24px;
         }
         .user-create-page .user-form {
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 14px;
             width: 100%;
             max-width: 960px;
             margin: 0 auto;
         }
         .user-create-page .user-form-row {
             display: grid;
-            grid-template-columns: 200px minmax(0, 1fr);
-            gap: 24px;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 41px;
             align-items: start;
             width: 100%;
         }
         .user-create-page .user-form-label {
-            padding-top: 16px;
+            padding-top: 11px;
+            padding-left: 41px;
         }
-        .user-create-page .form-label {
+        /* .user-create-page .form-label {
             margin: 0;
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 700;
-            color: #17324b;
-            letter-spacing: 0.02em;
+            color: #15283a;
+            letter-spacing: 0;
             text-transform: uppercase;
-        }
+        } */
         .user-create-page .required::after {
             content: '*';
-            color: #f24f61;
+            color: #f00;
             margin-left: 4px;
         }
         .user-create-page .user-form-field,
@@ -275,20 +268,20 @@
         }
         .user-create-page .user-input,
         .user-create-page .select2-container--white .select2-selection--single {
-            min-height: 54px;
-            border: 1px solid #cfe0f1;
-            border-radius: 14px;
+            min-height: 50px;
+            border: 1px solid #d2dee9;
+            border-radius: 5px;
             background: #fff;
-            font-size: 15px;
-            color: #16324f;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            font-size: 20px;
+            color: #071526;
+            box-shadow: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
             max-width: 100%;
             box-sizing: border-box;
         }
         .user-create-page .user-input {
             width: 100%;
-            padding: 0 18px;
+            padding: 0 14px;
         }
         .user-create-page .user-input::placeholder {
             color: #8ca0b7;
@@ -296,70 +289,58 @@
         .user-create-page .user-input:focus,
         .user-create-page .select2-container--white.select2-container--focus .select2-selection--single,
         .user-create-page .select2-container--white.select2-container--open .select2-selection--single {
-            border-color: #2b78ff;
-            box-shadow: 0 0 0 4px rgba(43, 120, 255, 0.13);
+            border-color: #bcd3e8;
+            background: #e8f1ff;
+            box-shadow: none;
         }
         .user-create-page .input-shell {
             position: relative;
         }
         .user-create-page .input-shell-actions {
             position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
+            top: 0;
+            right: 0;
+            height: 37px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 0;
             z-index: 3;
         }
         .user-create-page .user-input-password {
-            padding-right: 132px;
+            padding-right: 70px;
+            background: #e8f1ff;
         }
         .user-create-page .user-input-confirm {
-            padding-right: 54px;
-        }
-        .user-create-page .inline-chip,
-        .user-create-page .inline-icon {
-            border: 0;
-            outline: 0;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            padding-right: 70px;
         }
         .user-create-page .inline-chip {
-            height: 34px;
-            padding: 0 14px;
-            border-radius: 999px;
-            background: #e7f0ff;
-            color: #1a66e0;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .user-create-page .inline-chip:hover,
-        .user-create-page .inline-chip:focus {
-            background: #d8e7ff;
-            transform: translateY(-1px);
+            display: none;
         }
         .user-create-page .inline-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: #f2f7fc;
-            color: #6d849f;
-            font-size: 15px;
+            width: 40px;
+            height: 50px;
+            border: 0;
+            border-radius: 0;
+            outline: 0;
+            background: #0ea5f4;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.2s ease;
         }
         .user-create-page .inline-icon:hover,
         .user-create-page .inline-icon:focus {
-            background: #e5f0ff;
-            color: #236be7;
-            transform: translateY(-1px);
+            background: #0086d8;
+            color: #fff;
+        }
+        .user-create-page .inline-icon .fa-eye,
+        .user-create-page .inline-icon .fa-eye-slash {
+            background: transparent !important;
+            padding: 0 !important;
+            color: #fff !important;
         }
         .user-create-page .field-error {
             margin-top: 8px;
@@ -375,45 +356,107 @@
         .user-create-page .select2-container--white .select2-selection--single {
             display: flex !important;
             align-items: center !important;
-            height: 54px !important;
-            min-height: 54px !important;
-            padding: 0 48px 0 16px !important;
-            border: 1px solid #cfe0f1 !important;
-            border-radius: 14px !important;
+            height: 39px !important;
+            min-height: 39px !important;
+            padding: 0 58px 0 14px !important;
+            /* border: 1px solid #d2dee9 !important; */
+            border-radius: 5px !important;
             background: #fff !important;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+            box-shadow: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-create-page .select2-container--white .select2-selection--single .select2-selection__rendered {
             width: 100% !important;
-            color: #16324f;
+            color: #15283a;
             line-height: 1.2 !important;
-            padding: 0 !important;
+            padding: 9px 0px 0px !important;
             margin: 0 !important;
+            font-size: 20px;
+			border: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__arrow,
         .user-create-page .select2-container--white .select2-selection--single .select2-selection__arrow {
             height: 100% !important;
-            right: 14px !important;
-            width: 20px !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: 31px !important;
+            border-radius: 0 5px 5px 0;
+            background: #d8e3eb !important;
+        }
+        .user-create-page .select2-container--default .select2-selection--single .select2-selection__arrow b,
+        .user-create-page .select2-container--white .select2-selection--single .select2-selection__arrow b {
+            border-color: #778796 transparent transparent transparent !important;
+        }
+        .user-create-page .select2-dropdown {
+            border-color: #d2dee9;
+        }
+        .user-create-page .account-activation {
+            margin-top: 18px;
+        }
+        .user-create-page .account-activation-title {
+            margin: 0 0 11px;
+            color: #15283a;
+            font-size: 19px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .user-create-page .account-activation-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 48px;
+            padding: 8px 16px;
+            border: 1px solid #bfd8fb;
+            border-radius: 8px;
+            background: #eaf3ff;
+            color: #0067d8;
+            font-size: 18px;
+            line-height: 1.35;
+        }
+        .user-create-page .account-activation-note i {
+            color: #0d73da;
+            font-size: 21px;
+            flex: 0 0 auto;
         }
         .user-create-page .user-actions {
             display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 18px;
-            padding-top: 8px;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 0;
         }
         .user-create-page .user-action-primary,
         .user-create-page .user-action-secondary {
-            width: 176px;
-            height: 48px;
-            border-radius: 12px;
-            font-size: 16px;
+            width: auto;
+            min-width: 112px;
+            height: 51px;
+            border-radius: 5px;
+            font-size: 20px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 0 22px;
+        }
+        .user-create-page .user-action-primary {
+            border-color: #0098ff !important;
+            color: #0098ff !important;
+            background: #fff !important;
+        }
+        .user-create-page .user-action-primary:hover,
+        .user-create-page .user-action-primary:focus {
+            background: #0098ff !important;
+            color: #fff !important;
+        }
+        .user-create-page .user-action-secondary {
+            border-color: #ff3347 !important;
+            color: #ff3347 !important;
+            background: #fff !important;
+        }
+        .user-create-page .user-action-secondary:hover,
+        .user-create-page .user-action-secondary:focus {
+            background: #ff3347 !important;
+            color: #fff !important;
         }
         @media (max-width: 900px) {
             .user-create-page .user-body {
@@ -421,10 +464,11 @@
             }
             .user-create-page .user-form-row {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 8px;
             }
             .user-create-page .user-form-label {
                 padding-top: 0;
+                padding-left: 0;
             }
         }
         @media (max-width: 640px) {
@@ -439,6 +483,10 @@
             .user-create-page .user-card .panel-title {
                 font-size: 26px !important;
             }
+            .user-create-page .account-activation-note {
+                align-items: flex-start;
+                font-size: 16px;
+            }
             .user-create-page .user-actions {
                 flex-direction: column;
             }
@@ -447,7 +495,7 @@
                 width: 100%;
             }
             .user-create-page .user-input-password {
-                padding-right: 122px;
+                padding-right: 70px;
             }
         }
     </style>
@@ -497,6 +545,7 @@
                         width: '100%',
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
+                        minimumResultsForSearch: 0,
                     });
 
                     $('#role_id').select2({
@@ -504,6 +553,7 @@
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
                         allowClear: true,
+                        minimumResultsForSearch: 0,
                     });
                 }
 

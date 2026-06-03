@@ -222,14 +222,15 @@
                     <span class="lbl">Registration Management</span>
                 </span>
                 <ul>
+                     @if($canRegistrationCreate)
+                        <!-- <li><a href="{{ route('registration.create') }}"><span class="lbl">Create Registration</span></a></li> -->
+                        <!-- <li><a href="{{ route('coworking-registrations.create') }}"><span class="lbl">Create Coworking Registration</span></a></li> -->
+                    @endif
                     @if($canRegistrationView)
-                        <li><a href="{{ route('registration.status') }}" class="stage-link"><span class="lbl">All Registration</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_registrations'] ?? 0)) }}</span></a></li>
-                        <li><a href="{{ route('voucher.preview') }}"><span class="lbl">Fee Voucher Preview</span></a></li>
+                    <!-- <li><a href="{{ route('voucher.preview') }}"><span class="lbl">Fee Voucher Preview</span></a></li> -->
+                    <li><a href="{{ route('registration.status') }}" class="stage-link"><span class="lbl">All Registration</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_registrations'] ?? 0)) }}</span></a></li>
                     @endif
-                    @if($canRegistrationCreate)
-                        <li><a href="{{ route('registration.create') }}"><span class="lbl">Create Registration</span></a></li>
-                        <li><a href="{{ route('coworking-registrations.create') }}"><span class="lbl">Create Coworking Registration</span></a></li>
-                    @endif
+                   
                 </ul>
             </li>
         @endif
@@ -241,11 +242,12 @@
                     <span class="lbl">Admission Management</span>
                 </span>
                 <ul>
-                    @if($canAdmissionView)
-                        <li><a href="{{ route('admission.status') }}" class="stage-link"><span class="lbl">All Admissions</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_admissions'] ?? 0)) }}</span></a></li>
-                    @endif
+                  
                     @if($canAdmissionCreate)
-                        <li><a href="{{ route('admission.create') }}"><span class="lbl">Create Admission</span></a></li>
+                        <!-- <li><a href="{{ route('admission.create') }}"><span class="lbl">Create Admission</span></a></li> -->
+                    @endif
+                      @if($canAdmissionView)
+                        <li><a href="{{ route('admission.status') }}" class="stage-link"><span class="lbl">All Admissions</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['all_admissions'] ?? 0)) }}</span></a></li>
                     @endif
                 </ul>
             </li>

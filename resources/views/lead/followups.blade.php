@@ -50,10 +50,13 @@
 								<tr>
 									<th>Sr</th>
 									<th>Name</th>
-									<th>Contact No</th>
-									<th>Status</th>
-									<th>{{ $interestHeading ?? 'Interested Course' }}</th>
+									<th>Contact</th>
+									<th>Origin</th>
 									<th>{{ ($type ?? 'training') === 'coworking' ? 'Branch' : 'Campus' }}</th>
+									<th>Create Date</th>
+									<th>Last Follower</th>
+									<th>Followup</th>
+									<!-- <th>{{ $interestHeading ?? 'Interested Course' }}</th> -->
 									<th class="text-left">Action</th>
 								</tr>
 							</thead>

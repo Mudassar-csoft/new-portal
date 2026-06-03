@@ -56,8 +56,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($quickLeads as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                    </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -89,8 +91,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($websiteEnrollments as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                    </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -122,8 +126,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($websiteAdmissions as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                    </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -155,8 +161,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($brochureDownloads as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                    </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -187,8 +195,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($FeeAlert as $webLead)
-                                  <tr class="notification-clickable" data-href="{{ route('web-leads.show', $webLead) }}">
-                                    <td>{{ $webLead->full_name }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                    </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -219,8 +229,10 @@
                               </thead>
                               <tbody>
                                 @foreach ($followupItems as $followup)
-                                  <tr class="notification-clickable" data-href="{{ route('leads.show', $followup->lead_id) }}">
-                                    <td>{{ $followup->lead->name ?? 'N/A' }}</td>
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                                    </td>
                                     <td>{{ optional($followup->next_action_date)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($followup->next_action_date)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
@@ -890,7 +902,7 @@ display: flex;
 	overflow: hidden;
 }
 .notif-accordion{
-	max-height: 392px;
+	max-height: 400px;
 	overflow-y: hidden;
 	padding: 12px;
 	background: #f7f9fc;
@@ -1041,12 +1053,15 @@ display: flex;
 .dropdown{
     position: relative;
 }
-.notification-clickable {
-	cursor: pointer;
+.notification-name-link {
+	color: #0082c6;
+	font-weight: 500;
+	text-decoration: none;
 }
 
-.notification-clickable:hover td {
-	background: #eef5ff;
+.notification-name-link:hover {
+	color: #0082c6;
+	text-decoration: underline;
 }
 
 .site-header .user-menu.dropdown{
@@ -1459,15 +1474,6 @@ document.addEventListener("DOMContentLoaded", function () {
         parentItem.classList.add('active');
         targetPanel.classList.add('show');
         this.setAttribute('aria-expanded', 'true');
-      }
-    });
-  });
-
-  document.querySelectorAll('.notification-clickable').forEach(function(row) {
-    row.addEventListener('click', function() {
-      var href = this.getAttribute('data-href');
-      if (href) {
-        window.location.href = href;
       }
     });
   });

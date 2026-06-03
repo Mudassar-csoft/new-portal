@@ -65,9 +65,13 @@
 								<tr>
 									<th>Sr</th>
 									<th>Name</th>
-									<th>Contact No</th>
+									<th>Program</th>
+									<th>Primary Contact</th>
+									<th>Campus Code</th>
+									<th>Created By</th>
 									<th>Status</th>
-									<th>Interested Course</th>
+									<th>Origin	</th>
+									<th>Follow Ups</th>
 									<th class="text-left">Action</th>
 								</tr>
 							</thead>
@@ -348,7 +352,7 @@
 			height:38px;
 		}
 		.select2-container--arrow .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--white .select2-selection--single .select2-selection__rendered {
-    border: solid 1px #d8e2e7;
+    /* border: solid 1px #d8e2e7; */
     -webkit-border-radius: .25rem;
     border-radius: .25rem;
     font-size: 1rem;

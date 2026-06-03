@@ -131,12 +131,17 @@
                             <thead>
                                 <tr>
                                     <th>Sr</th>
-                                    <th>Code</th>
-                                    <th>Batch Name</th>
+                                    <th> Batch Code</th>
                                     <th>Programme</th>
+                                    <th>Instructor</th>
                                     <th>Campus</th>
-                                    <th>Session</th>
-                                    <th>Status</th>
+                                    <th>start Date</th>
+                                    <th>End Date</th>
+                                    <th>Batch Timing</th>
+                                     <th>Session</th>
+                                    <th>No. of Students</th>
+                                    <th>lab</th>
+                                    <!-- <th>Status</th> -->
                                     <th class="text-left">Action</th>
                                 </tr>
                             </thead>
