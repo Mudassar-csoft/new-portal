@@ -58,9 +58,13 @@
 								<tr>
 									<th>Sr</th>
 									<th>Name</th>
-									<th>Contact No</th>
+									<th>Program</th>
+									<th>Primary Contact</th>
+									<th>Campus Code</th>
+									<th>Created By</th>
 									<th>Status</th>
-									<th>Interested Course</th>
+									<th>Origin	</th>
+									<th>Follow Ups</th>
 									<th class="text-left">Action</th>
 								</tr>
 							</thead>

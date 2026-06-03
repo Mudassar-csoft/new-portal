@@ -65,11 +65,11 @@
 							<tr>
 								<th>Sr</th>
 								<th>Name</th>
-								<th>Course</th>
-								<th>Batch</th>
+								<th>Course Title</th>
+								<th>Primary Contact</th>
+								<th>Campus Code</th>
 								<th>Date</th>
-								<th>Contact</th>
-								<th>City</th>
+								<!-- <th>City</th> -->
 								<th class="text-center">Actions</th>
 							</tr>
 						</thead>

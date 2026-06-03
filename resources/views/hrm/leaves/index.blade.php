@@ -148,7 +148,7 @@
                 <form method="POST" action="{{ route('hrm.leaves.balances.store') }}" class="mb-3 hrm-box">
                     @csrf
                     <div class="form-row " >
-                        <div class="form-group col-md-4 ">
+                        <div class="form-group col-lg-4 col-md-6 ">
                             <label class="form-label required" >Employee</label>
                             <select name="employee_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -157,7 +157,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label required" >Leave Type</label>
                             <select name="leave_type_id" class="form-control" required>
                                 <option value="">- Select -</option>
@@ -166,25 +166,26 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label required" >Year</label>
                             <input type="number" name="year" class="form-control" value="{{ now()->year }}" required>
                         </div>
+                       
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-3">
+                         <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label required" >Opening</label>
                             <input type="number" step="0.01" min="0" name="opening_balance" class="form-control">
                         </div>
-    <div class="form-group col-md-3">
+    <!-- <div class="form-group col-lg-4 col-md-6">
         <label class="form-label required" >Accrued</label>
         <input type="number" step="0.01" min="0" name="accrued" class="form-control">
-    </div>
-                        <div class="form-group col-md-3">
+    </div> -->
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label required" >Used</label>
                             <input type="number" step="0.01" min="0" name="used" class="form-control">
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-lg-4 col-md-6">
                             <label class="form-label required" >Encashed</label>
                             <input type="number" step="0.01" min="0" name="encashed" class="form-control">
                         </div>

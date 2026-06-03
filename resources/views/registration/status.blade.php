@@ -65,12 +65,12 @@
 							<tr>
 								<th>Sr</th>
 								<th>Name</th>
-								<th>Program</th>
-								<th>Reg. No</th>
+								<th>Primary Contact</th>
+								<th>Campus Code</th>
+								<th>Status</th>
 								<th>Date</th>
-								<th>Contact</th>
-								<th>Fee (Rs.)</th>
-								<th>Receipt</th>
+								<!-- <th>Fee (Rs.)</th>
+								<th>Receipt</th> -->
 								<th class="text-center">Actions</th>
 							</tr>
 						</thead>

@@ -78,12 +78,12 @@
                                     <th>Sr#</th>
                                     <th>Student</th>
                                     <th>Roll No</th>
-                                    <th>Registration No</th>
+                                    <th>Course</th>
+                                    <!-- <th>Registration No</th> -->
                                     <th>Campus</th>
-                                    <th>Programme</th>
-                                    <th>Admission Date</th>
                                     <th>Status</th>
-                                    <th>Certificate</th>
+                                    <th>Primary Contact</th>
+                                    <!-- <th>Certificate</th> -->
                                     <th class="text-right">Actions</th>
                                 </tr>
                             </thead>
