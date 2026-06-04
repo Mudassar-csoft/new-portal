@@ -18,7 +18,7 @@
             <header class="box-typical-header panel-heading user-card-header">
                 <div>
                     <!-- <p class="user-kicker mb-1">User Management</p> -->
-                    <h3 class="panel-title form-label mb-0">Edit User</h3>
+                    <h3 class="panel-title lead-title mb-0">Edit User</h3>
                 </div>
             </header>
 
