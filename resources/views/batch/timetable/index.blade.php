@@ -183,10 +183,10 @@
                                     </div>
 
                                     <div class="form-actions text-right" style="gap:8px; display:flex; justify-content:flex-end;">
-                                        @if($editingEntry)
-                                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Cancel Edit</a>
-                                        @endif
                                         <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">{{ $editingEntry ? 'Update Slot' : 'Add Slot' }}</button>
+                                        @if($editingEntry)
+                                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel Edit</a>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
@@ -445,7 +445,7 @@
             background: #f8fbff;
         }
 
-        .slot-time { font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .slot-time { font-weight: 500; color: #0f172a; margin-bottom: 4px; }
         .slot-title { color: #1e293b; margin-bottom: 2px; }
         .slot-meta { font-size: 12px; color: #64748b; }
 

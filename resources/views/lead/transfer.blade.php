@@ -40,11 +40,11 @@
                                 <input type="hidden" name="embed" value="1">
                             @endif
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label">Current Campus</label>
                                     <input type="text" class="form-control" value="{{ $lead->campus->name ?? 'N/A' }}" disabled>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label required">Transfer To</label>
                                     <select class="form-control @error('to_campus_id') is-invalid @enderror" name="to_campus_id" required>
                                         <option value="">- Select campus -</option>
