@@ -228,7 +228,7 @@ class RegistrationController extends Controller
     public function status(): View
     {
         $registrations = $this->scopeQueryToUserCampus(Registration::query(), auth()->user())
-            ->with(['program', 'admission'])
+            ->with(['campus', 'admission'])
             ->orderByDesc('registered_at')
             ->orderByDesc('id')
             ->get();

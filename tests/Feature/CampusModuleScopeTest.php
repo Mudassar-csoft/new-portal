@@ -51,6 +51,56 @@ class CampusModuleScopeTest extends TestCase
             ->assertDontSee('Beta Admission');
     }
 
+    public function test_registration_status_grid_matches_visible_headers(): void
+    {
+        $registrationView = $this->createPermission('registration', 'view', 'registration.view');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram();
+        $batch = $this->createBatch($alphaCampus, $program, 'ALP-B9');
+        $registration = $this->createRegistration($alphaCampus, $program, 'Aligned Registration', '03100000009');
+        $this->createAdmission($alphaCampus, $program, $batch, $registration, 'Aligned Registration', '03200000009');
+
+        $user = $this->createScopedUser($alphaCampus, [$registrationView]);
+
+        $this->actingAs($user)
+            ->get(route('registration.status'))
+            ->assertOk()
+            ->assertSee('Aligned Registration')
+            ->assertSee('03100000009')
+            ->assertSee('ALP')
+            ->assertSee('Enrolled')
+            ->assertSee(optional($registration->registered_at)->format('d-M-Y'))
+            ->assertDontSee($program->title)
+            ->assertDontSee($registration->registration_number)
+            ->assertDontSee($registration->receipt_number);
+    }
+
+    public function test_admission_status_grid_matches_visible_headers(): void
+    {
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram();
+        $batch = $this->createBatch($alphaCampus, $program, 'ALP-B8');
+        $registration = $this->createRegistration($alphaCampus, $program, 'Aligned Admission Registration', '03100000008');
+        $admission = $this->createAdmission($alphaCampus, $program, $batch, $registration, 'Aligned Admission', '03200000008');
+
+        $user = $this->createScopedUser($alphaCampus, [$admissionView]);
+
+        $this->actingAs($user)
+            ->get(route('admission.status'))
+            ->assertOk()
+            ->assertSee('Aligned Admission')
+            ->assertSee($program->title)
+            ->assertSee('03200000008')
+            ->assertSee('ALP')
+            ->assertSee(optional($admission->admission_date)->format('d-M-Y'))
+            ->assertDontSee($batch->name)
+            ->assertDontSee($batch->code)
+            ->assertDontSee($admission->city);
+    }
+
     public function test_non_admin_registration_create_form_shows_all_campuses_and_keeps_selected_campus(): void
     {
         $registrationCreate = $this->createPermission('registration', 'create', 'registration.create');

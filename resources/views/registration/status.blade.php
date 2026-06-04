@@ -78,6 +78,17 @@
 							@foreach ($registrations as $idx => $row)
 								@php
 									$regDate = optional($row->registered_at ?? $row->created_at)->format('Y-m-d');
+									$statusLabel = $row->admission
+										? 'Enrolled'
+										: ucfirst((string) ($row->status ?: 'registered'));
+									$statusClass = $row->admission
+										? 'label-success'
+										: match ((string) $row->status) {
+											'registered' => 'label-info',
+											'pending' => 'label-warning',
+											'cancelled', 'cancelled_registration' => 'label-danger',
+											default => 'label-default',
+										};
 								@endphp
 								<tr data-date="{{ $regDate }}">
 									<td class="text-center">{{ $idx + 1 }}</td>
@@ -86,13 +97,13 @@
 											{{ $row->student_name }}
 										</a>
 									</td>
-									<td>{{ $row->program?->title ?? $row->program?->name ?? '' }}</td>
-									<td>{{ $row->registration_number }}</td>
-									<td>{{ $regDate }}</td>
 									<td>{{ $row->phone }}</td>
-									<td>{{ $row->fee }}</td>
-									<td>{{ $row->receipt_number }}</td>
-									<td class=" action-cell">
+									<td>{{ $row->campus?->code ?? 'N/A' }}</td>
+									<td>
+										<span class="label {{ $statusClass }}">{{ $statusLabel }}</span>
+									</td>
+									<td>{{ optional($row->registered_at ?? $row->created_at)->format('d-M-Y') ?? 'N/A' }}</td>
+									<td class="action-cell">
 										@include('registration.partials.action', ['actionId' => 'reg-action-' . $idx, 'registration' => $row, 'leadId' => $row->lead_id])
 									</td>
 								</tr>

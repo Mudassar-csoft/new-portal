@@ -568,7 +568,13 @@ class LeadController extends Controller
             ? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
             : collect();
 
-        return LeadFollowup::with(['lead.program', 'lead.campus', 'lead.coworkingRegistration'])
+        return LeadFollowup::with([
+                'lead' => fn ($query) => $query->withCount('followups'),
+                'lead.program',
+                'lead.campus',
+                'lead.coworkingRegistration',
+                'user:id,name',
+            ])
             ->whereHas('lead', function (Builder $leadQuery) use ($type) {
                 if ($type === 'coworking') {
                     $leadQuery->coworking();
@@ -583,6 +589,8 @@ class LeadController extends Controller
             ->map(function (LeadFollowup $followup) use ($stageMap, $campusDirectory, $type) {
                 $followup->stage = $this->normalizeFollowupStage($type, $followup->stage);
                 $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+                $followup->followups_count = (int) ($followup->lead?->followups_count ?? 0);
+                $followup->last_follower_name = trim((string) ($followup->user?->name ?? '')) ?: 'System';
 
                 if ($type === 'coworking') {
                     $followup->branch_code = $this->resolveCoworkingBranchCode($followup->lead, $campusDirectory);
