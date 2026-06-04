@@ -1321,7 +1321,7 @@ select {
 		.page-content .tbl-typical th > div::before {
 			background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.38) 77%, rgba(255, 255, 255, 0.38) 100%) !important;
 		}
-
+		
 		.page-content .table,
 		.page-content .dataTables_wrapper table.dataTable,
 		.page-content .bootstrap-table .table,
@@ -1696,6 +1696,9 @@ padding: 110px 24px 24px;
 .Traing-head-selector{
 			width: 100%;
 		}
+		.dropdown.dropdown-notification.notif {
+  margin-right: 4px;
+}
 form .form-row,
 form .row {
 	padding-left: 6px !important;

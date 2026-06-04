@@ -171,14 +171,17 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'roles' => ['array'],
-            'roles.*' => ['exists:roles,id'],
+            'role_id' => ['nullable', 'exists:roles,id'],
+            'roles' => ['sometimes', 'array', 'max:1'],
+            'roles.*' => ['nullable', 'exists:roles,id'],
             'permissions' => ['array'],
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
+        $roleIds = $this->singleRoleIds($validated);
+
         // Prevent demoting the last admin
-        if ($this->wouldBeLastAdminDemotion($user, $validated['roles'] ?? [])) {
+        if ($this->wouldBeLastAdminDemotion($user, $roleIds)) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['roles' => 'You cannot remove the admin role from the only remaining admin user.']);
@@ -197,11 +200,11 @@ class UserController extends Controller
         $user->save();
 
         $user->roles()->sync(
-            collect($validated['roles'] ?? [])->mapWithKeys(fn ($id) => [
+            collect($roleIds)->mapWithKeys(fn ($id) => [
                 $id => ['assigned_by' => optional($request->user())->id],
             ])
         );
-        $this->syncUserPermissions($user, $validated['roles'] ?? [], $validated['permissions'] ?? []);
+        $this->syncUserPermissions($user, $roleIds, $validated['permissions'] ?? []);
 
         return redirect()->route('users.index')->with('status', 'User updated.');
     }

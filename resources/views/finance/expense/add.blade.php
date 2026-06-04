@@ -112,9 +112,9 @@
 
                     <input type="hidden" name="rent_id" id="rentIdField" value="{{ old('rent_id') }}">
 
-                    <div class="finance-source-card alert alert-info" id="expenseTypeHint">
+                    <!-- <div class="finance-source-card alert alert-info" id="expenseTypeHint">
                         Select campus and expense type to load rent or utility bill details.
-                    </div>
+                    </div> -->
 
                     <section class="finance-source-section d-none" id="rentSourceSection">
                         <div class="source-section-title">Building Rent</div>
@@ -527,7 +527,7 @@
                 currentRentData = null;
                 blockedRentMonths = {};
                 $('#rentIdField').val('');
-                $('#expenseTypeHint').removeClass('d-none alert-danger').addClass('alert-info').text('This expense type uses a manual amount and then goes to approval.');
+               / $('#expenseTypeHint').removeClass('d-none alert-danger').addClass('alert-info').text('This expense type uses a manual amount and then goes to approval.');
             }
 
             $('#campusSelect, #expenseTypeSelect').on('change', function () {
