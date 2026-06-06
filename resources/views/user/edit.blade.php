@@ -5,7 +5,10 @@
 
 @section('content')
     @php
-        $selectedRoleIds = collect(old('roles', $user->roles->modelKeys()))->map(fn ($id) => (int) $id);
+        $selectedRoleId = old('role_id');
+        if ($selectedRoleId === null) {
+            $selectedRoleId = collect(old('roles', $user->roles->modelKeys()))->filter()->first();
+        }
         $selectedPermissionIds = collect(old('permissions', $user->permissions->modelKeys()))->map(fn ($id) => (int) $id);
         $selectedCampusId = old('campus_id', $user->campus_id);
     @endphp
@@ -14,8 +17,8 @@
         <div class="box-typical box-typical-dashboard panel panel-default user-card">
             <header class="box-typical-header panel-heading user-card-header">
                 <div>
-                    <p class="user-kicker mb-1">User Management</p>
-                    <h3 class="panel-title form-label mb-0">Edit User</h3>
+                    <!-- <p class="user-kicker mb-1">User Management</p> -->
+                    <h3 class="panel-title lead-title mb-0">Edit User</h3>
                 </div>
             </header>
 
@@ -24,7 +27,7 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="user-form-row">
+                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="name" class="form-label required">Full Name</label>
                         </div>
@@ -43,7 +46,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="email" class="form-label required">Email Address</label>
@@ -54,7 +56,7 @@
                                 name="email"
                                 id="email"
                                 class="form-control user-input @error('email') is-invalid @enderror"
-                                placeholder="alex@example.com"
+                                placeholder="admin@example.com"
                                 value="{{ old('email', $user->email) }}"
                                 required
                             >
@@ -63,7 +65,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="password" class="form-label">Password</label>
@@ -74,11 +75,16 @@
                                     type="password"
                                     name="password"
                                     id="password"
-                                    class="form-control user-input user-input-confirm @error('password') is-invalid @enderror"
-                                    placeholder="Leave blank to keep current password"
+                                    class="form-control user-input user-input-password @error('password') is-invalid @enderror"
+                                    placeholder="********"
                                     autocomplete="new-password"
+                                    required
                                 >
                                 <div class="input-shell-actions">
+                                    <button class="inline-chip generate-password" type="button" aria-label="Generate password">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                        Auto
+                                    </button>
                                     <button class="inline-icon toggle-visibility" type="button" data-target="#password" aria-label="Show password">
                                         <i class="fa fa-eye"></i>
                                     </button>
@@ -89,7 +95,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
@@ -101,8 +106,9 @@
                                     name="password_confirmation"
                                     id="password_confirmation"
                                     class="form-control user-input user-input-confirm @error('password_confirmation') is-invalid @enderror"
-                                    placeholder="Repeat new password"
+                                    placeholder="********"
                                     autocomplete="new-password"
+                                    required
                                 >
                                 <div class="input-shell-actions">
                                     <button class="inline-icon toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
@@ -115,7 +121,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="campus_id" class="form-label">Campus</label>
@@ -126,9 +131,9 @@
                                 id="campus_id"
                                 class="form-control select2 select2-white @error('campus_id') is-invalid @enderror"
                                 style="width: 100%;"
-                                data-placeholder="Select campus"
+                                data-placeholder="- Select Campus -"
                             >
-                                <option value="">All Campuses</option>
+                                <option value="">- Select Campus -</option>
                                 @foreach($campuses as $campus)
                                     <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>{{ $campus->name }}</option>
                                 @endforeach
@@ -138,24 +143,26 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="roles" class="form-label">Roles</label>
+                            <label for="role_id" class="form-label">Roles</label>
                         </div>
                         <div class="user-form-field">
                             <select
-                                name="roles[]"
-                                id="roles"
-                                class="form-control select2 select2-white select2-roles @error('roles') is-invalid @enderror"
-                                multiple
+                                name="role_id"
+                                id="role_id"
+                                class="form-control select2 select2-white @error('role_id') is-invalid @enderror"
                                 style="width: 100%;"
-                                data-placeholder="Select roles"
+                                data-placeholder="Select role"
                             >
+                                <option value="">Select role</option>
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->id }}" data-slug="{{ $role->slug }}" @selected($selectedRoleIds->contains($role->id))>{{ $role->name }}</option>
+                                    <option value="{{ $role->id }}" @selected((string) $selectedRoleId === (string) $role->id)>{{ $role->name }}</option>
                                 @endforeach
                             </select>
+                            @error('role_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                             @error('roles')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
@@ -170,9 +177,9 @@
                         'selectedPermissionIds' => $selectedPermissionIds,
                     ])
 
-                    <div class="user-actions">
-                        <button type="submit" class="btn btn-inline btn-primary-outline user-action-primary">Save Changes</button>
-                        <a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline user-action-secondary">Cancel</a>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-inline btn-primary-outline ">Save Changes</button>
+                        <a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -195,26 +202,24 @@
             overflow: visible !important;
         }
         .user-edit-page .user-shell {
-            min-height: 100vh;
-            padding: 24px;
-            background:
-                radial-gradient(circle at top left, rgba(45, 120, 255, 0.09), transparent 26%),
-                linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+            min-height: auto;
+                padding: 0px 0px 0px 22px;
+           
             overflow-x: hidden;
         }
         .user-edit-page .user-card {
-            width: min(100%, 1080px);
+            
             margin: 0 auto;
             border: 1px solid #d9e4f0;
-            border-radius: 22px;
+            border-radius: 0px;
             overflow: hidden;
-            box-shadow: 0 22px 50px rgba(20, 53, 93, 0.12);
-            background: #ffffff;
+           
+            background: #fff;
         }
         .user-edit-page .user-card-header {
-            padding: 28px 34px 22px;
+            padding: 22px 34px 18px;
             border-bottom: 1px solid #e8eef6;
-            background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98));
+            /* background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98)); */
         }
         .user-edit-page .user-kicker {
             font-size: 12px;
@@ -225,42 +230,36 @@
         }
         .user-edit-page .user-card .panel-title {
             font-size: 32px !important;
-            line-height: 1.05;
-            font-weight: 700 !important;
-            color: #16324f;
+            line-height: 1.15;
+            font-weight: 400 !important;
+            color: #1d2f40;
+            letter-spacing: 0;
         }
         .user-edit-page .user-body {
-            padding: 34px;
+            padding: 26px 34px 24px;
         }
         .user-edit-page .user-form {
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 14px;
             width: 100%;
             max-width: 960px;
             margin: 0 auto;
         }
         .user-edit-page .user-form-row {
             display: grid;
-            grid-template-columns: 200px minmax(0, 1fr);
-            gap: 24px;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 41px;
             align-items: start;
             width: 100%;
         }
         .user-edit-page .user-form-label {
-            padding-top: 16px;
-        }
-        .user-edit-page .form-label {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
-            color: #17324b;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
+            padding-top: 11px;
+            padding-left: 41px;
         }
         .user-edit-page .required::after {
             content: '*';
-            color: #f24f61;
+            color: #f00;
             margin-left: 4px;
         }
         .user-edit-page .user-form-field,
@@ -272,20 +271,20 @@
         .user-edit-page .user-input,
         .user-edit-page .select2-container--white .select2-selection--single,
         .user-edit-page .select2-container--white .select2-selection--multiple {
-            min-height: 54px;
-            border: 1px solid #cfe0f1;
-            border-radius: 14px;
+            min-height: 50px;
+            border: 1px solid #d2dee9;
+            border-radius: 5px;
             background: #fff;
-            font-size: 15px;
-            color: #16324f;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            font-size: 20px;
+            color: #071526;
+            box-shadow: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
             max-width: 100%;
             box-sizing: border-box;
         }
         .user-edit-page .user-input {
             width: 100%;
-            padding: 0 18px;
+            padding: 0 14px;
         }
         .user-edit-page .user-input::placeholder {
             color: #8ca0b7;
@@ -294,45 +293,58 @@
         .user-edit-page .select2-container--white.select2-container--focus .select2-selection--single,
         .user-edit-page .select2-container--white.select2-container--open .select2-selection--single,
         .user-edit-page .select2-container--white.select2-container--focus .select2-selection--multiple {
-            border-color: #2b78ff;
-            box-shadow: 0 0 0 4px rgba(43, 120, 255, 0.13);
+            border-color: #bcd3e8;
+            background: #e8f1ff;
+            box-shadow: none;
         }
         .user-edit-page .input-shell {
             position: relative;
         }
         .user-edit-page .input-shell-actions {
             position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
+            top: 0;
+            right: 0;
+            height: 37px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 0;
             z-index: 3;
         }
+        .user-edit-page .user-input-password {
+            padding-right: 70px;
+            background: #e8f1ff;
+        }
         .user-edit-page .user-input-confirm {
-            padding-right: 54px;
+            padding-right: 70px;
+        }
+        .user-edit-page .inline-chip {
+            display: none;
         }
         .user-edit-page .inline-icon {
-            width: 34px;
-            height: 34px;
+            width: 40px;
+            height: 50px;
             border: 0;
+            border-radius: 0;
             outline: 0;
+            background: #0ea5f4;
+            color: #fff;
+            font-size: 20px;
             cursor: pointer;
-            border-radius: 50%;
-            background: #f2f7fc;
-            color: #6d849f;
-            font-size: 15px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            transition: background 0.2s ease;
         }
         .user-edit-page .inline-icon:hover,
         .user-edit-page .inline-icon:focus {
-            background: #e5f0ff;
-            color: #236be7;
-            transform: translateY(-1px);
+            background: #0086d8;
+            color: #fff;
+        }
+        .user-edit-page .inline-icon .fa-eye,
+        .user-edit-page .inline-icon .fa-eye-slash {
+            background: transparent !important;
+            padding: 0 !important;
+            color: #fff !important;
         }
         .user-edit-page .field-error {
             margin-top: 8px;
@@ -348,27 +360,35 @@
         .user-edit-page .select2-container--white .select2-selection--single {
             display: flex !important;
             align-items: center !important;
-            height: 54px !important;
-            min-height: 54px !important;
-            padding: 0 48px 0 16px !important;
-            border: 1px solid #cfe0f1 !important;
-            border-radius: 14px !important;
+            height: 39px !important;
+            min-height: 39px !important;
+            padding: 0 58px 0 14px !important;
+            border-radius: 5px !important;
             background: #fff !important;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+            box-shadow: none !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__rendered {
             width: 100% !important;
-            color: #16324f;
+            color: #15283a;
             line-height: 1.2 !important;
-            padding: 0 !important;
+            padding: 9px 0px 0px !important;
             margin: 0 !important;
+            font-size: 20px;
+            border: none !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__arrow,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__arrow {
             height: 100% !important;
-            right: 14px !important;
-            width: 20px !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: 31px !important;
+            border-radius: 0 5px 5px 0;
+            background: #d8e3eb !important;
+        }
+        .user-edit-page .select2-container--default .select2-selection--single .select2-selection__arrow b,
+        .user-edit-page .select2-container--white .select2-selection--single .select2-selection__arrow b {
+            border-color: #778796 transparent transparent transparent !important;
         }
         .user-edit-page .select2-container--white .select2-selection--multiple {
             height: auto;
@@ -439,10 +459,11 @@
             }
             .user-edit-page .user-form-row {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 8px;
             }
             .user-edit-page .user-form-label {
                 padding-top: 0;
+                padding-left: 0;
             }
         }
         @media (max-width: 640px) {
@@ -493,11 +514,12 @@
                         dropdownAutoWidth: false,
                     });
 
-                    $('#roles').select2({
+                    $('#role_id').select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
-                        closeOnSelect: false,
+                        allowClear: true,
+                        minimumResultsForSearch: 0,
                     });
                 }
 

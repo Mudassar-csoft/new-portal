@@ -40,7 +40,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="email" class="form-label required">Email Address</label>
@@ -60,7 +59,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="password" class="form-label">Password</label>
@@ -91,7 +89,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
@@ -118,7 +115,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="campus_id" class="form-label">Campus</label>
@@ -141,7 +137,6 @@
                             @enderror
                         </div>
                     </div>
-
                     <div class="user-form-row">
                         <div class="user-form-label">
                             <label for="role_id" class="form-label">Roles</label>
@@ -170,9 +165,6 @@
                             @enderror
                         </div>
                     </div>
-
-                
-
                     <div class="text-right" style="padding-right: 0px !important;">
                         <button type="submit" class="btn btn-inline btn-primary-outline ">Create User</button>
                         <a href="{{ route('users.index') }}" class="btn btn-inline btn-danger-outline ">Cancel</a>
@@ -188,7 +180,7 @@
         .user-create-page,
         .user-create-page .page-content {
             overflow-x: hidden;
-            background: #f8fbff;
+            /* background: #f8fbff; */
         }
         .user-create-page .page-content > .container-fluid {
             max-width: 100% !important;
@@ -198,20 +190,14 @@
         }
         .user-create-page .user-shell {
             min-height: auto;
-            padding: 24px;
-            background:
-                radial-gradient(circle at top left, rgba(45, 120, 255, 0.09), transparent 26%),
-                linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+            padding: 0px 0px 0px 7px;
             overflow-x: hidden;
         }
         .user-create-page .user-card {
-            width: min(100%, 1080px);
             margin: 0 auto;
-            border: 1px solid #d9e4f0;
-            border-radius: 22px;
-            overflow: hidden;
-            box-shadow: 0 22px 50px rgba(20, 53, 93, 0.12);
-            background: #fff;
+    border: 1px solid #d9e4f0;
+    border-radius: 0px;
+    overflow: hidden;
         }
         .user-create-page .user-card-header {
             padding: 22px 34px 18px;

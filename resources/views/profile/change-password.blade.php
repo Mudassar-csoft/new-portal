@@ -54,11 +54,11 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label class="form-label required">New Password</label>
                                 <input type="password" name="password" class="form-control" required autocomplete="new-password" placeholder="Min 8 characters">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label class="form-label required">Confirm New Password</label>
                                 <input type="password" name="password_confirmation" class="form-control" required autocomplete="new-password" placeholder="Repeat new password">
                             </div>

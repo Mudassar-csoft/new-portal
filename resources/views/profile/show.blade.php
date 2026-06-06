@@ -85,11 +85,11 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label class="form-label required">Full Name</label>
                                 <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label class="form-label required">Email</label>
                                 <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
                             </div>

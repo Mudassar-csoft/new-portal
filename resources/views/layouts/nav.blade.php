@@ -145,9 +145,14 @@
                                 @if($canLeadTransfers)
                                     <li><a href="{{ route('leads.transfer') }}" class="stage-link"><span class="lbl">Transferred Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_transfers'] ?? 0)) }}</span></a></li>
                                 @endif
+                                @if($canWebLeads)
+                                    <li><a href="{{ route('web-leads.index') }}"><span class="lbl">Web Leads</span></a></li>
+                                @endif
                                 @if($canLeadListing)
                                     <li><a href="{{ route('leads.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_all_leads'] ?? 0)) }}</span></a></li>
                                 @endif
+                                
+                 
                             </ul>
                         </li>
                     @endif
@@ -208,9 +213,6 @@
                         </ul>
                     </li>
 
-                    @if($canWebLeads)
-                        <li><a href="{{ route('web-leads.index') }}"><span class="lbl">Web Leads</span></a></li>
-                    @endif
                 </ul>
             </li>
         @endif
