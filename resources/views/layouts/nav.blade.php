@@ -472,13 +472,13 @@
                 </span>
                 <ul>
                     @if($canCertificateCreate)
-                        <li><a href="{{ route('certificate.create') }}" class="stage-link"><span class="lbl">Request Certificate</span></a></li>
+                        <!-- <li><a href="{{ route('certificate.create') }}" class="stage-link"><span class="lbl">Request Certificate</span></a></li> -->
                     @endif
                     @if($canCertificateView)
-                        <li><a href="{{ route('certificate.index', ['scope' => 'requested']) }}" class="stage-link"><span class="lbl">Request for Approval</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_requested'] ?? 0)) }}</span></a></li>
+                        <li><a href="{{ route('certificate.index', ['scope' => 'requested']) }}" class="stage-link"><span class="lbl">Pending for Approval</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_requested'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('certificate.index', ['scope' => 'approved']) }}" class="stage-link"><span class="lbl">Approved</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_approved'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('certificate.index', ['scope' => 'printing']) }}" class="stage-link"><span class="lbl">On Printing</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_printing'] ?? 0)) }}</span></a></li>
-                        <li><a href="{{ route('certificate.index', ['scope' => 'ready']) }}" class="stage-link"><span class="lbl">Ready</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_ready'] ?? 0)) }}</span></a></li>
+                        <li><a href="{{ route('certificate.index', ['scope' => 'ready']) }}" class="stage-link"><span class="lbl">Ready to Collect</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_ready'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('certificate.index', ['scope' => 'delivered']) }}" class="stage-link"><span class="lbl">Delivered</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_delivered'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('certificate.index') }}" class="stage-link"><span class="lbl">All Certificates</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certificate_all'] ?? 0)) }}</span></a></li>
                     @endif

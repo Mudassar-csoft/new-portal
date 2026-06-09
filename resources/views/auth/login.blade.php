@@ -161,15 +161,16 @@
 
 		.hero-copy {
 			position: absolute;
-			top: 68px;
-			left: 42px;
+			top: 107PX;
+			left: 45px;
 			right: 42px;
+			text-align: center;
 			z-index: 2;
 		}
 
 		.hero-title {
 			margin: 0;
-			font-size: clamp(28px, 3.6vw, 40px);
+			font-size: 32px;
 			font-weight: 800;
 			line-height: 1.05;
 			letter-spacing: -0.04em;
