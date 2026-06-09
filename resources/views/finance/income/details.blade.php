@@ -146,11 +146,11 @@
                             <tbody>
                                 @forelse($coworkingCharges as $charge)
                                     <tr>
-                                        <td>{{ $charge->voucher_number ?: 'N/A' }}</td>
-                                        <td>{{ $charge->student_name ?: ($charge->chargeType->name ?? 'Coworking') }}</td>
-                                        <td>{{ $charge->campus->code ?? 'N/A' }}</td>
-                                        <td>{{ optional($charge->paid_at)->format('Y-m-d') }}</td>
-                                        <td>Rs. {{ number_format((float) $charge->net_amount, 0) }}</td>
+                                        <td>{{ $charge->reference ?: 'N/A' }}</td>
+                                        <td>{{ $charge->source ?: 'Coworking' }}</td>
+                                        <td>{{ $charge->campus ?: 'N/A' }}</td>
+                                        <td>{{ $charge->date ?: 'N/A' }}</td>
+                                        <td>Rs. {{ number_format((float) $charge->amount, 0) }}</td>
                                     </tr>
                                 @empty
                                     <tr><td colspan="5" class="text-center text-muted">No coworking income found.</td></tr>
@@ -182,11 +182,11 @@
                             <tbody>
                                 @forelse($otherCharges as $charge)
                                     <tr>
-                                        <td>{{ $charge->voucher_number ?: 'N/A' }}</td>
-                                        <td>{{ $charge->chargeType->name ?? 'Other' }}</td>
-                                        <td>{{ $charge->campus->code ?? 'N/A' }}</td>
-                                        <td>{{ optional($charge->paid_at)->format('Y-m-d') }}</td>
-                                        <td>Rs. {{ number_format((float) $charge->net_amount, 0) }}</td>
+                                        <td>{{ $charge->reference ?: 'N/A' }}</td>
+                                        <td>{{ $charge->type ?: 'Other' }}</td>
+                                        <td>{{ $charge->campus ?: 'N/A' }}</td>
+                                        <td>{{ $charge->date ?: 'N/A' }}</td>
+                                        <td>Rs. {{ number_format((float) $charge->amount, 0) }}</td>
                                     </tr>
                                 @empty
                                     <tr><td colspan="5" class="text-center text-muted">No other income found.</td></tr>

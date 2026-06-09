@@ -7,6 +7,7 @@ use App\Models\Batch;
 use App\Models\BatchTimetable;
 use App\Models\Campus;
 use App\Models\Certificate;
+use App\Models\FinanceOtherCharge;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
@@ -47,6 +48,8 @@ class AppServiceProvider extends ServiceProvider
             $webLeadNotifications = [];
             $followupNotifications = collect();
             $followupNotificationCount = 0;
+            $invoiceOverdueNotifications = collect();
+            $invoiceOverdueNotificationCount = 0;
             $dashboardCampuses = collect();
             $activeDashboardCampus = null;
             $dashboardAllowsAllCampuses = (bool) ($currentUser?->isAdmin() ?? false);
@@ -117,6 +120,27 @@ class AppServiceProvider extends ServiceProvider
                     $followupNotificationCount = $followupNotifications->count();
                     $followupNotifications = $followupNotifications->take(5)->values();
                 }
+
+                if (($currentUser?->hasAnyPermission(['finance.receivable.view', 'finance.receivable.update', 'finance.receivable.create']) ?? false)
+                    && Schema::hasTable('finance_other_charges')
+                    && Schema::hasColumn('finance_other_charges', 'due_date')
+                    && Schema::hasColumn('finance_other_charges', 'balance_amount')
+                ) {
+                    FinanceOtherCharge::syncLifecycleStatuses();
+
+                    $overdueInvoices = $this->scopeQueryToUserCampus(
+                        FinanceOtherCharge::query()->with(['campus:id,code,name']),
+                        $currentUser
+                    )
+                        ->where('status', 'overdue');
+
+                    $invoiceOverdueNotificationCount = (clone $overdueInvoices)->count();
+                    $invoiceOverdueNotifications = (clone $overdueInvoices)
+                        ->orderBy('due_date')
+                        ->orderByDesc('id')
+                        ->take(5)
+                        ->get(['id', 'campus_id', 'invoice_number', 'student_name', 'due_date', 'balance_amount']);
+                }
             } catch (Throwable) {
                 // Keep empty notification data when the table is unavailable.
             }
@@ -128,6 +152,8 @@ class AppServiceProvider extends ServiceProvider
                 'webLeadNotificationTotal' => array_sum($webLeadNotificationCounts),
                 'followupNotifications' => $followupNotifications,
                 'followupNotificationCount' => $followupNotificationCount,
+                'invoiceOverdueNotifications' => $invoiceOverdueNotifications,
+                'invoiceOverdueNotificationCount' => $invoiceOverdueNotificationCount,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
                 'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
