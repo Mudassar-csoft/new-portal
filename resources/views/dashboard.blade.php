@@ -517,17 +517,17 @@
 			overflow: hidden;
 		}
 		.chart-statistic-box .chart-txt {
-    float: left;
-    width: 200px;
-    height: 314px;
-    padding: 15px 20px;
-    background: #304b58;
-    -webkit-border-radius: 8px 0 0 8px;
-    border-radius: 8px 0 0 8px;
-    color: #fff;
-    position: relative;
-    z-index: 5;
-}
+			float: left;
+			width: 200px;
+			height: 314px;
+			padding: 15px 20px;
+			background: #304b58;
+			-webkit-border-radius: 8px 0 0 8px;
+			border-radius: 8px 0 0 8px;
+			color: #fff;
+			position: relative;
+			z-index: 5;
+		}
 		.chart-statistic-box .chart-txt .chart-txt-top p:first-child {
 			display: flex;
 			align-items: baseline;
@@ -647,7 +647,7 @@
 			}
 
 			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container-in > div {
-				padding-left: 12px !important;
+				/* padding-left: 12px !important; */
 				padding-right: 18px !important;
 			}
 

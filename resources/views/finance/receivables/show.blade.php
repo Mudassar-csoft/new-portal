@@ -27,32 +27,38 @@
             </div>
         @endif
 
-        <div class="invoice-toolbar no-print">
-            <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-danger-outline">Back</a>
-            @if($canUpdateReceivables && (float) $charge->balance_amount > 0)
-                <button
-                    type="button"
-                    class="btn btn-inline btn-success"
-                    data-payment-trigger="invoice"
-                    data-charge-id="{{ $charge->id }}"
-                    data-payment-action="{{ route('finance.receivables.collect', $charge) }}"
-                    data-invoice-number="{{ $charge->invoice_number ?: ($charge->voucher_number ?: 'N/A') }}"
-                    data-customer-name="{{ $charge->student_name ?: 'N/A' }}"
-                    data-balance-amount="{{ number_format((float) $charge->balance_amount, 2, '.', '') }}"
-                    data-payment-ref-preview="{{ ($charge->campus->code ?? 'GEN') . '-RCV-' . now()->format('my') . '-AUTO' }}"
-                >
-                    Pay Now
-                </button>
-            @endif
-            <a href="{{ route('finance.receivables.print', $charge) }}" target="_blank" rel="noopener" class="btn btn-inline btn-primary-outline">Print</a>
-        </div>
+      
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card invoice-card">
-            <div class="box-typical-body panel-body">
-                <div class="invoice-head">
+            <div class="div d-flex justify-content-between align-items-center panel-heading finance-header">
+
+                    <h1 class="invoice-title">Invoice {{ $charge->invoice_number ?: ($charge->voucher_number ?: 'N/A') }}</h1>
+                <!-- <h2 class="invoice-kicker">Finance Management</h2> -->
+                <div class="invoice-toolbar no-print">
+                <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-danger-outline">Back</a>
+            
+                <a href="{{ route('finance.receivables.print', $charge) }}" target="_blank" rel="noopener" class="btn btn-inline btn-primary-outline">Print</a>
+                @if($canUpdateReceivables && (float) $charge->balance_amount > 0)
+                    <button
+                        type="button"
+                        class="btn btn-inline btn-primary"
+                        data-payment-trigger="invoice"
+                        data-charge-id="{{ $charge->id }}"
+                        data-payment-action="{{ route('finance.receivables.collect', $charge) }}"
+                        data-invoice-number="{{ $charge->invoice_number ?: ($charge->voucher_number ?: 'N/A') }}"
+                        data-customer-name="{{ $charge->student_name ?: 'N/A' }}"
+                        data-balance-amount="{{ number_format((float) $charge->balance_amount, 2, '.', '') }}"
+                        data-payment-ref-preview="{{ ($charge->campus->code ?? 'GEN') . '-RCV-' . now()->format('my') . '-AUTO' }}"
+                    >
+                        Pay Now
+                    </button>
+                @endif
+              </div>
+             </div>
+            <!-- <div class="box-typical-body panel-body "> -->
+                <div class="invoice-head pt-0 pl-4 pr-4 ">
                     <div>
-                        <div class="invoice-kicker">Finance Management</div>
-                        <h1 class="invoice-title">Invoice {{ $charge->invoice_number ?: ($charge->voucher_number ?: 'N/A') }}</h1>
+                      
                         <div class="invoice-meta-grid">
                             <div><strong>Status:</strong> <span class="badge {{ $statusColors[$charge->status] ?? 'badge-secondary' }}">{{ ucfirst($charge->status) }}</span></div>
                             <div><strong>Invoice Date:</strong> {{ optional($charge->invoice_date)->format('Y-m-d') ?: 'N/A' }}</div>
@@ -74,16 +80,17 @@
                 @endif
 
                 <div class="row invoice-address-row">
-                    <div class="col-lg-6 col-md-6">
+                    <div class="col-lg-6 col-md-6 pl-4">
                         <div class="invoice-address-card">
                             <div class="invoice-section-label">Bill To</div>
+                            <hr>
                             <div class="invoice-party-name">{{ $charge->student_name ?: 'N/A' }}</div>
                             <div>{{ $charge->bill_to_phone ?: 'No phone provided' }}</div>
                             <div>{{ $charge->bill_to_email ?: 'No email provided' }}</div>
                             <div>{{ $charge->bill_to_address ?: 'No address provided' }}</div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6">
+                    <div class="col-lg-6 col-md-6 pr-4">
                         <div class="invoice-address-card invoice-totals-box">
                             <div class="invoice-totals-line"><span>Subtotal</span><strong>Rs. {{ number_format((float) $charge->amount, 0) }}</strong></div>
                             <div class="invoice-totals-line"><span>Discount</span><strong>Rs. {{ number_format((float) $charge->discount_amount, 0) }}</strong></div>
