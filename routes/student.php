@@ -12,6 +12,6 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::post('/records/{admission}/status', [StudentRecordController::class, 'updateStatus'])->middleware('permission:student.update')->name('records.status');
     Route::post('/records/{admission}/certificate-delivered', [StudentRecordController::class, 'markCertificateDelivered'])->middleware('permission:student.update')->name('records.certificate-delivered');
     Route::get('/registration/{registration}', [StudentRecordController::class, 'show'])->middleware('permission:student.view')->name('show');
-    Route::post('/fee/{feeCollection}', [StudentRecordController::class, 'updateFee'])->middleware('permission:student.update')->name('fee.update');
+    Route::post('/fee/{feeCollection}', [StudentRecordController::class, 'updateFee'])->middleware(['permission:student.update', 'admin'])->name('fee.update');
     Route::post('/fee/{feeCollection}/collect', [StudentRecordController::class, 'collectInstallment'])->middleware('permission:student.update')->name('fee.collect');
 });

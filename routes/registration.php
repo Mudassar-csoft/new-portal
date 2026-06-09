@@ -31,10 +31,10 @@ Route::get('/coworking-registrations/preview', [CoworkingRegistrationController:
     ->middleware('permission:registration.view')
     ->name('coworking-registrations.preview');
 Route::get('/coworking-registrations/{coworkingRegistration}/edit', [CoworkingRegistrationController::class, 'edit'])
-    ->middleware('permission:registration.update')
+    ->middleware(['permission:registration.update', 'admin'])
     ->name('coworking-registrations.edit');
 Route::put('/coworking-registrations/{coworkingRegistration}', [CoworkingRegistrationController::class, 'update'])
-    ->middleware('permission:registration.update')
+    ->middleware(['permission:registration.update', 'admin'])
     ->name('coworking-registrations.update');
 Route::post('/coworking-registrations/{coworkingRegistration}/inactive', [CoworkingRegistrationController::class, 'deactivate'])
     ->middleware('permission:registration.update')

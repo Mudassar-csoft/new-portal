@@ -10,10 +10,12 @@
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
         @if(!$isDeleted)
-            <a class="dropdown-item lead-action-item" href="{{ route('roles.edit', $role) }}">
-                <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
-                <span class="lead-action-label">Edit</span>
-            </a>
+            @if(auth()->user()?->isAdmin())
+                <a class="dropdown-item lead-action-item" href="{{ route('roles.edit', $role) }}">
+                    <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
+                    <span class="lead-action-label">Edit</span>
+                </a>
+            @endif
             @if(!$isSystem)
                 <form action="{{ route('roles.destroy', $role) }}" method="POST" onsubmit="return confirm('Delete this role?')">
                     @csrf

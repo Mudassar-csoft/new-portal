@@ -3,6 +3,7 @@
 @section('title', 'Building Rent Setup')
 
 @section('content')
+    @php($canEditRent = $canUpdateRent && auth()->user()?->isAdmin())
     <div class="finance-shell">
         @if(session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
@@ -103,7 +104,7 @@
                             <th>Actual Amount</th>
                             <th>Advance</th>
                             <th>Status</th>
-                            @if($canUpdateRent)
+                            @if($canEditRent)
                                 <th>Action</th>
                             @endif
                         </tr>
@@ -123,7 +124,7 @@
                                         {{ $rent->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                 </td>
-                                @if($canUpdateRent)
+                                @if($canEditRent)
                                     <td class="rent-action-cell">
                                         <div class="dropdown rent-action-dropdown">
                                             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
@@ -138,7 +139,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $canUpdateRent ? 9 : 8 }}" class="text-center text-muted">No building rent record found.</td>
+                                <td colspan="{{ $canEditRent ? 9 : 8 }}" class="text-center text-muted">No building rent record found.</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -152,7 +153,7 @@
     </div>
 @endsection
 
-@if($canUpdateRent)
+@if($canEditRent)
     @push('modals')
         @foreach($rents as $rent)
             <div class="modal fade" id="editRentModal-{{ $rent->id }}" tabindex="-1" role="dialog" aria-labelledby="editRentModalLabel-{{ $rent->id }}" aria-hidden="true">

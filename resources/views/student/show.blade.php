@@ -11,6 +11,7 @@
         $studentSmsUrl = $studentPhone !== '' ? 'sms:' . $studentPhone : null;
         $studentEmailUrl = $studentEmail !== '' ? 'mailto:' . $studentEmail : null;
         $studentWhatsappUrl = $studentPhone !== '' ? 'https://wa.me/' . $studentPhone : null;
+        $canAdminEdit = auth()->user()?->isAdmin();
     @endphp
 
     <div class="student-detail-shell">
@@ -90,15 +91,17 @@
                                     </span>
                                     <span class="lead-action-label">Whatsapp</span>
                                 </a>
-                                <a class="dropdown-item lead-action-item {{ $studentLeadId ? '' : 'is-disabled' }}" href="{{ $studentLeadId ? route('leads.show', $studentLeadId) : '#' }}" @if(!$studentLeadId) aria-disabled="true" tabindex="-1" @endif>
-                                    <span class="lead-action-icon lead-icon-blue" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M3.75 20.25h4.5l11-11a1.6 1.6 0 0 0 0-2.25l-2.25-2.25a1.6 1.6 0 0 0-2.25 0l-11 11v4.5Z"/>
-                                            <path d="m13.5 6.5 4 4"/>
-                                        </svg>
-                                    </span>
-                                    <span class="lead-action-label">Edit</span>
-                                </a>
+                                @if($canAdminEdit)
+                                    <a class="dropdown-item lead-action-item {{ $studentLeadId ? '' : 'is-disabled' }}" href="{{ $studentLeadId ? route('leads.show', $studentLeadId) : '#' }}" @if(!$studentLeadId) aria-disabled="true" tabindex="-1" @endif>
+                                        <span class="lead-action-icon lead-icon-blue" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3.75 20.25h4.5l11-11a1.6 1.6 0 0 0 0-2.25l-2.25-2.25a1.6 1.6 0 0 0-2.25 0l-11 11v4.5Z"/>
+                                                <path d="m13.5 6.5 4 4"/>
+                                            </svg>
+                                        </span>
+                                        <span class="lead-action-label">Edit</span>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -244,15 +247,16 @@
                                             @else
                                                 <span class="btn btn-xs btn-default fee-action-btn disabled" title="Voucher not available"><i class="fa fa-file-text-o"></i></span>
                                             @endif
-                                            <button class="btn btn-xs btn-default fee-action-btn js-fee-edit fee-status-control fee-status-control--text p-2"
-                                                    type="button"
-                                                    data-fee-id="{{ $fee->id }}"
-                                                    data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
-                                                    data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
-                                                    data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
-                                                <!-- <i class="fa fa-pencil"></i>  -->
-                                                Edit
-                                            </button>
+                                            @if($canAdminEdit)
+                                                <button class="btn btn-xs btn-default fee-action-btn js-fee-edit fee-status-control fee-status-control--text p-2"
+                                                        type="button"
+                                                        data-fee-id="{{ $fee->id }}"
+                                                        data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
+                                                        data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
+                                                        data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
+                                                    Edit
+                                                </button>
+                                            @endif
                                         </td>
                                         <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
                                         <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>

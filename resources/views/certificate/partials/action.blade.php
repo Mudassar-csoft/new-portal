@@ -42,10 +42,12 @@
         Actions
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-        <a class="dropdown-item lead-action-item" href="{{ route('certificate.edit', $cert) }}">
-            <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
-            <span class="lead-action-label">Edit Remarks</span>
-        </a>
+        @if(auth()->user()?->isAdmin())
+            <a class="dropdown-item lead-action-item" href="{{ route('certificate.edit', $cert) }}">
+                <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
+                <span class="lead-action-label">Edit Remarks</span>
+            </a>
+        @endif
 
         @if($status === 'requested')
             <form method="POST" action="{{ route('certificate.approve', $cert) }}" onsubmit="return confirm('Approve this certificate request?');">

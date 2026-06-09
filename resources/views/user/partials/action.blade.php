@@ -97,19 +97,21 @@
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
         @if(!$isDeleted)
-            <a class="dropdown-item lead-action-item" href="{{ route('users.edit', $user) }}">
-                <span class="lead-action-icon lead-icon-blue" aria-hidden="true">
-                    <i class="fa fa-pencil"></i>
-                </span>
-                <span class="lead-action-label">Edit</span>
-            </a>
+            @if(auth()->user()?->isAdmin())
+                <a class="dropdown-item lead-action-item" href="{{ route('users.edit', $user) }}">
+                    <span class="lead-action-icon lead-icon-blue" aria-hidden="true">
+                        <i class="fa fa-pencil"></i>
+                    </span>
+                    <span class="lead-action-label">Edit</span>
+                </a>
 
-            <a class="dropdown-item lead-action-item" href="{{ route('users.edit', $user) }}">
-                <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                    <i class="fa fa-pencil"></i>
-                </span>
-                <span class="lead-action-label"> Assign/Update Permisison</span>
-            </a>
+                <a class="dropdown-item lead-action-item" href="{{ route('users.edit', $user) }}">
+                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                        <i class="fa fa-pencil"></i>
+                    </span>
+                    <span class="lead-action-label"> Assign/Update Permisison</span>
+                </a>
+            @endif
 
             <a class="dropdown-item lead-action-item is-disabled" href="#" aria-disabled="true" tabindex="-1">
                 <span class="lead-action-icon lead-icon-black" aria-hidden="true">
@@ -142,4 +144,3 @@
         @endif
     </div>
 </div>
-

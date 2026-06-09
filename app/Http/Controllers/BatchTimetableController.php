@@ -36,7 +36,7 @@ class BatchTimetableController extends Controller
             ->withQueryString();
 
         $editingEntry = null;
-        if ($request->integer('edit')) {
+        if ($request->user()?->isAdmin() && $request->integer('edit')) {
             $editingEntry = BatchTimetable::query()->with(['batch.program', 'batch.campus'])->find($request->integer('edit'));
         }
 

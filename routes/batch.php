@@ -10,10 +10,10 @@ Route::prefix('batch')->name('batch.')->group(function () {
     Route::post('/', [BatchController::class, 'store'])->middleware('permission:batch.create')->name('store');
     Route::get('/timetable', [BatchTimetableController::class, 'index'])->middleware('permission:batch-timetable.view')->name('timetable.index');
     Route::post('/timetable', [BatchTimetableController::class, 'store'])->middleware('permission:batch-timetable.create')->name('timetable.store');
-    Route::patch('/timetable/{timetable}', [BatchTimetableController::class, 'update'])->middleware('permission:batch-timetable.update')->name('timetable.update');
+    Route::patch('/timetable/{timetable}', [BatchTimetableController::class, 'update'])->middleware(['permission:batch-timetable.update', 'admin'])->name('timetable.update');
     Route::delete('/timetable/{timetable}', [BatchTimetableController::class, 'destroy'])->middleware('permission:batch-timetable.delete')->name('timetable.destroy');
-    Route::get('/{batch}/edit', [BatchController::class, 'edit'])->middleware('permission:batch.update')->name('edit');
-    Route::put('/{batch}', [BatchController::class, 'update'])->middleware('permission:batch.update')->name('update');
+    Route::get('/{batch}/edit', [BatchController::class, 'edit'])->middleware(['permission:batch.update', 'admin'])->name('edit');
+    Route::put('/{batch}', [BatchController::class, 'update'])->middleware(['permission:batch.update', 'admin'])->name('update');
     Route::patch('/{batch}/toggle-status', [BatchController::class, 'toggleStatus'])->middleware('permission:batch.update')->name('toggle-status');
     Route::delete('/{batch}', [BatchController::class, 'destroy'])->middleware('permission:batch.delete')->name('destroy');
 });

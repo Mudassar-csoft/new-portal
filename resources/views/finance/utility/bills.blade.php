@@ -3,6 +3,7 @@
 @section('title', 'Add Utility Bill')
 
 @section('content')
+    @php($canEditBills = $canUpdateBills && auth()->user()?->isAdmin())
     <div class="finance-shell">
         @if(session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
@@ -101,7 +102,7 @@
                                 <th>Company</th>
                                 <th>Bill Type</th>
                                 <th>Remarks</th>
-                                @if($canUpdateBills)
+                                @if($canEditBills)
                                     <th>Action</th>
                                 @endif
                             </tr>
@@ -115,7 +116,7 @@
                                     <td>{{ $bill->billType->company_name ?? '-' }}</td>
                                     <td>{{ $bill->billType->service_name ?? $bill->billType->display_name ?? $bill->billType->name ?? 'N/A' }}</td>
                                     <td>{{ $bill->remarks ?: '-' }}</td>
-                                    @if($canUpdateBills)
+                                    @if($canEditBills)
                                         <td class="utility-action-cell">
                                             <div class="dropdown utility-action-dropdown">
                                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
@@ -130,7 +131,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ $canUpdateBills ? 7 : 6 }}" class="text-center text-muted">No utility bills found.</td>
+                                    <td colspan="{{ $canEditBills ? 7 : 6 }}" class="text-center text-muted">No utility bills found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -143,7 +144,7 @@
         @endif
     </div>
 
-    @if($canUpdateBills)
+    @if($canEditBills)
         @push('modals')
             @foreach($bills as $bill)
                 <div class="modal fade" id="editUtilityBillModal-{{ $bill->id }}" tabindex="-1" role="dialog" aria-labelledby="editUtilityBillModalLabel-{{ $bill->id }}" aria-hidden="true">

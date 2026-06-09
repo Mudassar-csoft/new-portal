@@ -16,7 +16,7 @@ Route::prefix('hrm')->name('hrm.')->group(function () {
 
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
-    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->middleware('admin')->name('employees.update');
     Route::post('/employees/{employee}/status', [EmployeeController::class, 'updateStatus'])->name('employees.status');
 
     Route::get('/masters', [MasterController::class, 'index'])->name('masters.index');
@@ -57,4 +57,3 @@ Route::prefix('hrm')->name('hrm.')->group(function () {
     Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
     Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
 });
-

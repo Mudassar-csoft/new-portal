@@ -38,13 +38,13 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::post('/utility/pay', [UtilityController::class, 'payStore'])->middleware('permission:finance.utility.create')->name('utility.pay.store');
     Route::get('/utility/bills', [UtilityController::class, 'billsIndex'])->middleware('permission:finance.bill.view,finance.bill.create')->name('utility.bills');
     Route::post('/utility/bills', [UtilityController::class, 'billsStore'])->middleware('permission:finance.bill.create')->name('utility.bills.store');
-    Route::patch('/utility/bills/{bill}', [UtilityController::class, 'billsUpdate'])->middleware('permission:finance.bill.update,finance.utility.update')->name('utility.bills.update');
+    Route::patch('/utility/bills/{bill}', [UtilityController::class, 'billsUpdate'])->middleware(['permission:finance.bill.update,finance.utility.update', 'admin'])->name('utility.bills.update');
     Route::get('/utility/lookup', [UtilityController::class, 'lookup'])->middleware('permission:finance.bill.view,finance.utility.view')->name('utility.lookup');
     Route::get('/utility/types', [UtilityController::class, 'typesIndex'])->middleware('permission:finance.utility.view,finance.utility.create')->name('utility.types');
     Route::post('/utility/types', [UtilityController::class, 'typesStore'])->middleware('permission:finance.utility.create')->name('utility.types.store');
     Route::get('/rent/setup', [RentController::class, 'index'])->middleware('permission:finance.rent.view,finance.rent.create')->name('rent.index');
     Route::post('/rent/setup', [RentController::class, 'store'])->middleware('permission:finance.rent.create')->name('rent.store');
-    Route::patch('/rent/setup/{rent}', [RentController::class, 'update'])->middleware('permission:finance.rent.update')->name('rent.update');
+    Route::patch('/rent/setup/{rent}', [RentController::class, 'update'])->middleware(['permission:finance.rent.update', 'admin'])->name('rent.update');
 
     Route::get('/payees', [PayeeController::class, 'index'])->middleware('permission:finance.payee.view,finance.payee.create')->name('payees');
     Route::post('/payees', [PayeeController::class, 'store'])->middleware('permission:finance.payee.create')->name('payees.store');

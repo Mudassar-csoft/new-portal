@@ -1,6 +1,7 @@
 @php
     $actionId = $actionId ?? ('student-action-' . $admission->id);
     $registrationId = $admission->registration_id ?? optional($admission->registration)->id;
+    $canAdminEdit = auth()->user()?->isAdmin();
     $statusActions = [
         [
             'key' => 'frozen',
@@ -149,11 +150,13 @@
             <span class="lead-action-label">Transfer Campus &amp; Batch</span>
         </button>
 
-        <a class="dropdown-item lead-action-item {{ $registrationId ? '' : 'disabled' }}" href="{{ $registrationId ? route('student.show', $registrationId) : '#' }}" @if(!$registrationId) aria-disabled="true" tabindex="-1" @endif>
-            <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                <i class="fa fa-pencil-square-o"></i>
-            </span>
-            <span class="lead-action-label">Edit</span>
-        </a>
+        @if($canAdminEdit)
+            <a class="dropdown-item lead-action-item {{ $registrationId ? '' : 'disabled' }}" href="{{ $registrationId ? route('student.show', $registrationId) : '#' }}" @if(!$registrationId) aria-disabled="true" tabindex="-1" @endif>
+                <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                    <i class="fa fa-pencil-square-o"></i>
+                </span>
+                <span class="lead-action-label">Edit</span>
+            </a>
+        @endif
     </div>
 </div>

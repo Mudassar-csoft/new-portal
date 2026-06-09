@@ -74,6 +74,7 @@
             && $daysUntilNextDue !== null
             && $daysUntilNextDue >= 0
             && $daysUntilNextDue <= 2;
+        $canAdminEdit = auth()->user()?->isAdmin();
         $accountHistory = $receipts->map(function ($receipt) {
             $feeType = match ($receipt->receipt_type) {
                 'security_fee' => 'Security Fee',
@@ -189,9 +190,11 @@
                                     </button>
                                     
                                 @endif
-                                <a class="dropdown-item" href="{{ route('coworking-registrations.edit', $member) }}">
-                                    <i class="bi bi-pencil-square action-icon action-icon--dark"></i>Edit
-                                </a>
+                                @if($canAdminEdit)
+                                    <a class="dropdown-item" href="{{ route('coworking-registrations.edit', $member) }}">
+                                        <i class="bi bi-pencil-square action-icon action-icon--dark"></i>Edit
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
