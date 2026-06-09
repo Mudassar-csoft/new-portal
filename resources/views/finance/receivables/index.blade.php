@@ -34,7 +34,7 @@
             </div>
         @endunless
 
-        <div class="row finance-summary-row">
+        <!-- <div class="row finance-summary-row">
             <div class="col-lg-4 col-md-6">
                 <div class="invoice-summary-card tone-open">
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['outstanding'] ?? 0), 0) }}</div>
@@ -59,14 +59,14 @@
                     <div class="summary-label">Collected This Month</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         @if($canCreateReceivables && ($invoiceSchemaReady ?? true))
             <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                 <header class="box-typical-header panel-heading finance-header">
                     <div>
                         <h3 class="panel-title form-label mb-1">Invoice Generator</h3>
-                        <div class="text-muted small">Create an invoice now. Payments can be collected later from the Pay Now action.</div>
+                        <!-- <div class="text-muted small">Create an invoice now. Payments can be collected later from the Pay Now action.</div> -->
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
@@ -188,9 +188,9 @@
                             </table>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 p-3">
                             <button type="button" class="btn btn-inline btn-primary-outline" id="add-item-btn">Add Item</button>
-                            <div class="invoice-total-strip">
+                            <div class="invoice-total-strip d-flex ">
                                 <div><strong>Subtotal:</strong> <span id="invoice-subtotal">Rs. 0</span></div>
                                 <div><strong>Discount:</strong> <span id="invoice-discount-preview">Rs. 0</span></div>
                                 <div><strong>Invoice Total:</strong> <span id="invoice-total">Rs. 0</span></div>
@@ -231,13 +231,13 @@
                 <header class="box-typical-header panel-heading finance-header">
                     <div>
                         <h3 class="panel-title form-label mb-1">Invoices</h3>
-                        <div class="text-muted small">Track paid, unpaid, partial, and overdue invoices.</div>
+                        <!-- <div class="text-muted small">Track paid, unpaid, partial, and overdue invoices.</div> -->
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
                     <form class="mb-3" method="GET" action="{{ route('finance.receivables') }}">
                         <div class="form-row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label class="form-label">Campus</label>
                                 <select class="form-control" name="campus_id">
                                     <option value="">All Campuses</option>
@@ -268,14 +268,14 @@
                                     placeholder="Invoice #, customer, phone"
                                 >
                             </div>
-                            <div class="form-group d-flex col-md-2 align-items-end justify-content-end">
-                                <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Filter</button>
+                            <div class="form-group d-flex col-md-3 mt-4 p-2 align-items-end justify-content-end">
+                                <button type="submit" class="btn btn-inline btn-primary-outline mr-2 ">Filter</button>
                                 <a href="{{ route('finance.receivables') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                             </div>
                         </div>
                     </form>
 
-                    <div class="table-responsive">
+                    <div class="table-responsive receivables-list-table-wrap">
                         <table class="table table-bordered finance-table">
                             <thead>
                                 <tr>
@@ -419,6 +419,16 @@
         .tone-count { background: #975ce7; }
         .tone-collected { background: #1aa278; }
         .invoice-item-table-wrap { border: 1px solid #eef2f7; border-radius: 8px; overflow: hidden; }
+        .receivables-list-table-wrap {
+            overflow: visible;
+        }
+        .receivables-list-table-wrap .dropdown-menu {
+            z-index: 1050;
+        }
+        .receivables-list-table-wrap td:last-child,
+        .receivables-list-table-wrap th:last-child {
+            white-space: nowrap;
+        }
         .invoice-total-strip {
             display: grid;
             gap: 4px;
@@ -428,6 +438,9 @@
         @media (max-width: 760px) {
             .invoice-summary-card .summary-value { margin-top: 8px; font-size: 18px; }
             .invoice-total-strip { width: 100%; margin-top: 10px; }
+            .receivables-list-table-wrap {
+                overflow-x: auto;
+            }
         }
     </style>
 @endpush
