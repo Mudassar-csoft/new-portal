@@ -209,7 +209,7 @@
 								<button class="stat-eye stat-eye-inline" data-target="stat-1" aria-label="Show today leads"><i class="fa fa-eye"></i></button>
 								<a href="{{ route('leads.index', ['today' => 1]) }}" class="stat-card-link" aria-label="Open today leads list">
 									<div class="number stat-number fs-2xl" data-value="{{ number_format((int) ($stats['todayLeads'] ?? 0)) }}" data-target="stat-1" data-stat-key="todayLeads" data-format="number" data-mask-mode="icon"></div>
-									<div class="caption mt-3">
+									<div class="caption">
 										<div class="caption-text">Today Leads</div>
 									</div>
 								</a>
@@ -223,7 +223,7 @@
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
 								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-stat-key="currentStudents" data-format="number" data-mask-mode="icon"></div>
-								<div class="caption mt-3">
+								<div class="caption ">
 									<div class="caption-text">Current Students</div>
 								</div>
 							</div>
@@ -236,7 +236,7 @@
 								<div class="stat-inner">
 									<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
 									<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
-									<div class="caption mt-3">
+									<div class="caption ">
 										<div class="caption-text">{{ now()->format('F') }} Collection</div>
 									</div>
 								</div>
@@ -249,7 +249,7 @@
 								<div class="stat-inner m">
 									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
 									<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-stat-key="currentMonthPending" data-format="number" data-mask-mode="icon"></div>
-									<div class="caption mt-3 ">
+									<div class="caption ">
 										<div class="caption-text">Pending Recovery</div>
 									</div>
 								</div>
