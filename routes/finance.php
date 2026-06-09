@@ -49,7 +49,9 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::get('/payees', [PayeeController::class, 'index'])->middleware('permission:finance.payee.view,finance.payee.create')->name('payees');
     Route::post('/payees', [PayeeController::class, 'store'])->middleware('permission:finance.payee.create')->name('payees.store');
     Route::get('/payables', [ExpenseController::class, 'payables'])->middleware('permission:finance.payable.view')->name('payables');
-    Route::get('/receivables', [ReceivableController::class, 'index'])->middleware('permission:finance.receivable.view,finance.receivable.create')->name('receivables');
+    Route::get('/receivables', [ReceivableController::class, 'index'])->middleware('permission:finance.receivable.view,finance.receivable.create,finance.receivable.update')->name('receivables');
     Route::post('/receivables/manual-invoice', [ReceivableController::class, 'store'])->middleware('permission:finance.receivable.create')->name('receivables.store');
+    Route::get('/receivables/{charge}/print', [ReceivableController::class, 'print'])->middleware('permission:finance.receivable.view,finance.receivable.create,finance.receivable.update')->name('receivables.print');
+    Route::get('/receivables/{charge}', [ReceivableController::class, 'show'])->middleware('permission:finance.receivable.view,finance.receivable.create,finance.receivable.update')->name('receivables.show');
     Route::post('/receivables/{charge}/collect', [ReceivableController::class, 'collect'])->middleware('permission:finance.receivable.update')->name('receivables.collect');
 });

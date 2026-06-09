@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Campus;
 use App\Models\FinanceExpense;
 use App\Models\FinanceOtherCharge;
+use App\Models\FinanceOtherChargePayment;
 use App\Models\FinanceRoyalty;
 use App\Models\Registration;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -16,6 +18,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
@@ -26,17 +30,7 @@ class DashboardController extends Controller
             ->whereBetween('registered_at', [$from, $to])
             ->sum('net_payable');
 
-        $coWorkingCondition = "LOWER(COALESCE(charge_types.category, '')) = 'coworking'
-            OR LOWER(COALESCE(charge_types.name, '')) LIKE '%cowork%'";
-
-        $otherChargesBreakdown = FinanceOtherCharge::query()
-            ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
-            ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
-            ->where('finance_other_charges.status', 'paid')
-            ->whereBetween('finance_other_charges.paid_at', [$from, $to])
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN finance_other_charges.net_amount ELSE 0 END) as coworking_total")
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN 0 ELSE finance_other_charges.net_amount END) as other_total")
-            ->first();
+        $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
         $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
@@ -77,10 +71,7 @@ class DashboardController extends Controller
 
         $payables = $payablesPending + $payablesApproved;
 
-        $pendingOtherReceivables = (float) FinanceOtherCharge::query()
-            ->where('status', 'pending')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->sum('net_amount');
+        $pendingOtherReceivables = $this->pendingOtherReceivablesTotal($campusId);
 
         $pendingRoyaltyReceivables = (float) FinanceRoyalty::query()
             ->where('status', 'pending')
@@ -119,33 +110,7 @@ class DashboardController extends Controller
                         'sort_at' => $registration->registered_at?->timestamp ?? 0,
                     ])
             )
-            ->merge(
-                FinanceOtherCharge::query()
-                    ->with(['campus:id,code,name', 'chargeType:id,name,category'])
-                    ->where('status', 'paid')
-                    ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-                    ->whereBetween('paid_at', [$from, $to])
-                    ->latest('paid_at')
-                    ->limit(10)
-                    ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id'])
-                    ->map(function ($charge) {
-                        $isCoworking = $charge->chargeType
-                            && (
-                                strtolower((string) $charge->chargeType->category) === 'coworking'
-                                || str_contains(strtolower((string) $charge->chargeType->name), 'cowork')
-                            );
-
-                        return [
-                            'type' => $isCoworking ? 'Coworking Fee' : ($charge->chargeType->name ?: 'Other Income'),
-                            'reference' => $charge->voucher_number ?: 'N/A',
-                            'name' => $charge->student_name ?: ($charge->chargeType->name ?? 'N/A'),
-                            'campus' => $charge->campus->code ?? 'N/A',
-                            'date' => optional($charge->paid_at)->format('Y-m-d') ?: 'N/A',
-                            'amount' => (float) $charge->net_amount,
-                            'sort_at' => $charge->paid_at?->timestamp ?? 0,
-                        ];
-                    })
-            )
+            ->merge($this->recentOtherIncomeRows($campusId, $from, $to))
             ->merge(
                 FinanceRoyalty::query()
                     ->with(['campus:id,code,name'])
@@ -222,6 +187,8 @@ class DashboardController extends Controller
 
     public function incomeDetails(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
@@ -232,17 +199,7 @@ class DashboardController extends Controller
             ->whereBetween('registered_at', [$from, $to])
             ->sum('net_payable');
 
-        $coWorkingCondition = "LOWER(COALESCE(charge_types.category, '')) = 'coworking'
-            OR LOWER(COALESCE(charge_types.name, '')) LIKE '%cowork%'";
-
-        $otherChargesBreakdown = FinanceOtherCharge::query()
-            ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
-            ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
-            ->where('finance_other_charges.status', 'paid')
-            ->whereBetween('finance_other_charges.paid_at', [$from, $to])
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN finance_other_charges.net_amount ELSE 0 END) as coworking_total")
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN 0 ELSE finance_other_charges.net_amount END) as other_total")
-            ->first();
+        $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
         $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
@@ -253,13 +210,6 @@ class DashboardController extends Controller
             ->whereBetween('paid_at', [$from, $to])
             ->sum('amount');
 
-        $chargeTypeIsCoworking = function ($query): void {
-            $query->where(function ($inner): void {
-                $inner->whereRaw("LOWER(COALESCE(category, '')) = 'coworking'")
-                    ->orWhereRaw("LOWER(COALESCE(name, '')) LIKE '%cowork%'");
-            });
-        };
-
         $registrations = Registration::query()
             ->with(['campus:id,code,name'])
             ->where('status', 'registered')
@@ -269,23 +219,8 @@ class DashboardController extends Controller
             ->limit(100)
             ->get(['id', 'campus_id', 'registration_number', 'student_name', 'net_payable', 'registered_at']);
 
-        $paidChargesBase = FinanceOtherCharge::query()
-            ->with(['campus:id,code,name', 'chargeType:id,name,category'])
-            ->where('status', 'paid')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to]);
-
-        $coworkingCharges = (clone $paidChargesBase)
-            ->whereHas('chargeType', $chargeTypeIsCoworking)
-            ->orderByDesc('paid_at')
-            ->limit(100)
-            ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id']);
-
-        $otherCharges = (clone $paidChargesBase)
-            ->whereDoesntHave('chargeType', $chargeTypeIsCoworking)
-            ->orderByDesc('paid_at')
-            ->limit(100)
-            ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id']);
+        $coworkingCharges = $this->incomeChargeRows($campusId, $from, $to, true);
+        $otherCharges = $this->incomeChargeRows($campusId, $from, $to, false);
 
         $royalties = FinanceRoyalty::query()
             ->with(['campus:id,code,name'])
@@ -319,6 +254,8 @@ class DashboardController extends Controller
 
     public function expenseDetails(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
@@ -376,6 +313,8 @@ class DashboardController extends Controller
 
     public function payablesDetails(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
@@ -420,27 +359,20 @@ class DashboardController extends Controller
 
     public function receivablesDetails(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
 
-        $pendingOther = (float) FinanceOtherCharge::query()
-            ->where('status', 'pending')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->sum('net_amount');
+        $pendingOther = $this->pendingOtherReceivablesTotal($campusId);
 
         $pendingRoyalty = (float) FinanceRoyalty::query()
             ->where('status', 'pending')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->sum('amount');
 
-        $otherCharges = FinanceOtherCharge::query()
-            ->with(['campus:id,code,name', 'chargeType:id,name'])
-            ->where('status', 'pending')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->orderByDesc('id')
-            ->limit(150)
-            ->get(['id', 'campus_id', 'charge_type_id', 'student_name', 'voucher_number', 'net_amount', 'created_at']);
+        $otherCharges = $this->openOtherChargeRows($campusId);
 
         $royalties = FinanceRoyalty::query()
             ->with(['campus:id,code,name'])
@@ -469,6 +401,8 @@ class DashboardController extends Controller
 
     public function netCashflowDetails(Request $request): View
     {
+        FinanceOtherCharge::syncLifecycleStatuses();
+
         $campusId = $request->integer('campus_id') ?: null;
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
@@ -479,17 +413,7 @@ class DashboardController extends Controller
             ->whereBetween('registered_at', [$from, $to])
             ->sum('net_payable');
 
-        $coWorkingCondition = "LOWER(COALESCE(charge_types.category, '')) = 'coworking'
-            OR LOWER(COALESCE(charge_types.name, '')) LIKE '%cowork%'";
-
-        $otherChargesBreakdown = FinanceOtherCharge::query()
-            ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
-            ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
-            ->where('finance_other_charges.status', 'paid')
-            ->whereBetween('finance_other_charges.paid_at', [$from, $to])
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN finance_other_charges.net_amount ELSE 0 END) as coworking_total")
-            ->selectRaw("SUM(CASE WHEN {$coWorkingCondition} THEN 0 ELSE finance_other_charges.net_amount END) as other_total")
-            ->first();
+        $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
         $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
@@ -569,5 +493,227 @@ class DashboardController extends Controller
         } catch (\Throwable $e) {
             return $fallback->copy();
         }
+    }
+
+    private function invoiceSchemaReady(): bool
+    {
+        return FinanceOtherCharge::hasInvoiceSchema();
+    }
+
+    private function coWorkingCondition(): string
+    {
+        return "LOWER(COALESCE(charge_types.category, '')) = 'coworking'
+            OR LOWER(COALESCE(charge_types.name, '')) LIKE '%cowork%'";
+    }
+
+    private function otherChargesBreakdown(?int $campusId, Carbon $from, Carbon $to): object
+    {
+        $condition = $this->coWorkingCondition();
+
+        if ($this->invoiceSchemaReady()) {
+            return FinanceOtherChargePayment::query()
+                ->join('finance_other_charges', 'finance_other_charge_payments.finance_other_charge_id', '=', 'finance_other_charges.id')
+                ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
+                ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
+                ->whereBetween('finance_other_charge_payments.payment_date', [$from->toDateString(), $to->toDateString()])
+                ->selectRaw("SUM(CASE WHEN {$condition} THEN finance_other_charge_payments.amount ELSE 0 END) as coworking_total")
+                ->selectRaw("SUM(CASE WHEN {$condition} THEN 0 ELSE finance_other_charge_payments.amount END) as other_total")
+                ->first();
+        }
+
+        return FinanceOtherCharge::query()
+            ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
+            ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
+            ->where('finance_other_charges.status', 'paid')
+            ->whereBetween('finance_other_charges.paid_at', [$from, $to])
+            ->selectRaw("SUM(CASE WHEN {$condition} THEN finance_other_charges.net_amount ELSE 0 END) as coworking_total")
+            ->selectRaw("SUM(CASE WHEN {$condition} THEN 0 ELSE finance_other_charges.net_amount END) as other_total")
+            ->first();
+    }
+
+    private function pendingOtherReceivablesTotal(?int $campusId): float
+    {
+        if ($this->invoiceSchemaReady()) {
+            return (float) FinanceOtherCharge::query()
+                ->whereIn('status', ['pending', 'partial', 'overdue'])
+                ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+                ->sum('balance_amount');
+        }
+
+        return (float) FinanceOtherCharge::query()
+            ->where('status', 'pending')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->sum('net_amount');
+    }
+
+    private function recentOtherIncomeRows(?int $campusId, Carbon $from, Carbon $to): Collection
+    {
+        if ($this->invoiceSchemaReady()) {
+            return FinanceOtherChargePayment::query()
+                ->with(['charge.campus:id,code,name', 'charge.chargeType:id,name,category'])
+                ->whereHas('charge', fn ($q) => $q->when($campusId, fn ($inner) => $inner->where('campus_id', $campusId)))
+                ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
+                ->latest('payment_date')
+                ->limit(10)
+                ->get(['id', 'finance_other_charge_id', 'amount', 'payment_date'])
+                ->map(function (FinanceOtherChargePayment $payment) {
+                    $charge = $payment->charge;
+                    $isCoworking = $charge?->chargeType
+                        && (
+                            strtolower((string) $charge->chargeType->category) === 'coworking'
+                            || str_contains(strtolower((string) $charge->chargeType->name), 'cowork')
+                        );
+
+                    return [
+                        'type' => $isCoworking ? 'Coworking Fee' : ($charge?->chargeType->name ?: 'Other Income'),
+                        'reference' => $charge?->invoice_number ?: $charge?->voucher_number ?: 'N/A',
+                        'name' => $charge?->student_name ?: ($charge?->chargeType->name ?? 'N/A'),
+                        'campus' => $charge?->campus->code ?? 'N/A',
+                        'date' => optional($payment->payment_date)->format('Y-m-d') ?: 'N/A',
+                        'amount' => (float) $payment->amount,
+                        'sort_at' => $payment->payment_date?->timestamp ?? 0,
+                    ];
+                });
+        }
+
+        return FinanceOtherCharge::query()
+            ->with(['campus:id,code,name', 'chargeType:id,name,category'])
+            ->where('status', 'paid')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', [$from, $to])
+            ->latest('paid_at')
+            ->limit(10)
+            ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id'])
+            ->map(function (FinanceOtherCharge $charge) {
+                $isCoworking = $charge->chargeType
+                    && (
+                        strtolower((string) $charge->chargeType->category) === 'coworking'
+                        || str_contains(strtolower((string) $charge->chargeType->name), 'cowork')
+                    );
+
+                return [
+                    'type' => $isCoworking ? 'Coworking Fee' : ($charge->chargeType->name ?: 'Other Income'),
+                    'reference' => $charge->voucher_number ?: 'N/A',
+                    'name' => $charge->student_name ?: ($charge->chargeType->name ?? 'N/A'),
+                    'campus' => $charge->campus->code ?? 'N/A',
+                    'date' => optional($charge->paid_at)->format('Y-m-d') ?: 'N/A',
+                    'amount' => (float) $charge->net_amount,
+                    'sort_at' => $charge->paid_at?->timestamp ?? 0,
+                ];
+            });
+    }
+
+    private function incomeChargeRows(?int $campusId, Carbon $from, Carbon $to, bool $coworking): Collection
+    {
+        $chargeTypeIsCoworking = function ($query): void {
+            $query->where(function ($inner): void {
+                $inner->whereRaw("LOWER(COALESCE(category, '')) = 'coworking'")
+                    ->orWhereRaw("LOWER(COALESCE(name, '')) LIKE '%cowork%'");
+            });
+        };
+
+        if ($this->invoiceSchemaReady()) {
+            $payments = FinanceOtherChargePayment::query()
+                ->with(['charge.campus:id,code,name', 'charge.chargeType:id,name,category'])
+                ->whereHas('charge', fn ($q) => $q->when($campusId, fn ($inner) => $inner->where('campus_id', $campusId)))
+                ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()]);
+
+            $payments = $coworking
+                ? $payments->whereHas('charge.chargeType', $chargeTypeIsCoworking)
+                : $payments->whereDoesntHave('charge.chargeType', $chargeTypeIsCoworking);
+
+            return $payments
+                ->orderByDesc('payment_date')
+                ->limit(100)
+                ->get(['id', 'finance_other_charge_id', 'amount', 'payment_date'])
+                ->map(function (FinanceOtherChargePayment $payment) use ($coworking) {
+                    $charge = $payment->charge;
+
+                    return (object) [
+                        'reference' => $charge?->invoice_number ?: $charge?->voucher_number ?: 'N/A',
+                        $coworking ? 'source' : 'type' => $coworking
+                            ? ($charge?->student_name ?: ($charge?->chargeType->name ?? 'Coworking'))
+                            : ($charge?->chargeType->name ?? 'Other'),
+                        'campus' => $charge?->campus->code ?? 'N/A',
+                        'date' => optional($payment->payment_date)->format('Y-m-d') ?: 'N/A',
+                        'amount' => (float) $payment->amount,
+                    ];
+                });
+        }
+
+        $charges = FinanceOtherCharge::query()
+            ->with(['campus:id,code,name', 'chargeType:id,name,category'])
+            ->where('status', 'paid')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', [$from, $to]);
+
+        $charges = $coworking
+            ? $charges->whereHas('chargeType', $chargeTypeIsCoworking)
+            : $charges->whereDoesntHave('chargeType', $chargeTypeIsCoworking);
+
+        return $charges
+            ->orderByDesc('paid_at')
+            ->limit(100)
+            ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id'])
+            ->map(function (FinanceOtherCharge $charge) use ($coworking) {
+                return (object) [
+                    'reference' => $charge->voucher_number ?: 'N/A',
+                    $coworking ? 'source' : 'type' => $coworking
+                        ? ($charge->student_name ?: ($charge->chargeType->name ?? 'Coworking'))
+                        : ($charge->chargeType->name ?? 'Other'),
+                    'campus' => $charge->campus->code ?? 'N/A',
+                    'date' => optional($charge->paid_at)->format('Y-m-d') ?: 'N/A',
+                    'amount' => (float) $charge->net_amount,
+                ];
+            });
+    }
+
+    private function openOtherChargeRows(?int $campusId): Collection
+    {
+        if ($this->invoiceSchemaReady()) {
+            return FinanceOtherCharge::query()
+                ->with(['campus:id,code,name', 'chargeType:id,name'])
+                ->whereIn('status', ['pending', 'partial', 'overdue'])
+                ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+                ->orderByDesc('id')
+                ->limit(150)
+                ->get([
+                    'id',
+                    'campus_id',
+                    'charge_type_id',
+                    'student_name',
+                    'invoice_number',
+                    'voucher_number',
+                    'balance_amount',
+                    'invoice_date',
+                    'due_date',
+                    'status',
+                ]);
+        }
+
+        return FinanceOtherCharge::query()
+            ->with(['campus:id,code,name', 'chargeType:id,name'])
+            ->where('status', 'pending')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->orderByDesc('id')
+            ->limit(150)
+            ->get([
+                'id',
+                'campus_id',
+                'charge_type_id',
+                'student_name',
+                'voucher_number',
+                'net_amount',
+                'created_at',
+                'status',
+            ])
+            ->map(function (FinanceOtherCharge $charge) {
+                $charge->invoice_number = $charge->voucher_number;
+                $charge->balance_amount = $charge->net_amount;
+                $charge->invoice_date = $charge->created_at;
+                $charge->due_date = null;
+
+                return $charge;
+            });
     }
 }

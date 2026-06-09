@@ -22,7 +22,7 @@
                 <a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="font-icon-alarm"></i>
-                  @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0))
+                  @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0))
                   @if($notificationTotal > 0)
                     <span class="notification-total-badge" style="font-size:10px !important;">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
                   @endif
@@ -33,6 +33,7 @@
                   @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
                   @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
                   @php($FeeAlert = $webLeadNotifications['Fee_Alert'] ?? collect())
+                  @php($overdueInvoices = $invoiceOverdueNotifications ?? collect())
                   @php($followupItems = $followupNotifications ?? collect())
 
                   <div class="notif-accordion">
@@ -209,6 +210,44 @@
                         @endif
                       </div>
                     </div>
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-overdue-invoices" aria-expanded="false">
+                        <span>Overdue Invoices</span>
+                        <span class="count">{{ $invoiceOverdueNotificationCount ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-overdue-invoices">
+                        @if ($overdueInvoices->isEmpty())
+                          <div class="text-center p-4 text-muted">No overdue invoice notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Invoice</th>
+                                  <th>Due Date</th>
+                                  <th>Balance</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($overdueInvoices as $invoice)
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('finance.receivables.show', $invoice) }}">
+                                        {{ $invoice->invoice_number ?: 'Invoice' }}
+                                      </a>
+                                      <div class="text-muted">{{ $invoice->student_name ?: ($invoice->campus->code ?? 'N/A') }}</div>
+                                    </td>
+                                    <td>{{ optional($invoice->due_date)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>Rs. {{ number_format((float) $invoice->balance_amount, 0) }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
+
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
                         <span>Follow Up</span>

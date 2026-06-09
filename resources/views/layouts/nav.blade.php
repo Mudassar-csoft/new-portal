@@ -87,7 +87,7 @@
         || $canFinancePayroll;
     $canFinancePayees = $can('finance.payee.view', 'finance.payee.create');
     $canFinancePayables = $can('finance.payable.view');
-    $canFinanceReceivables = $can('finance.receivable.view', 'finance.receivable.create');
+    $canFinanceReceivables = $can('finance.receivable.view', 'finance.receivable.create', 'finance.receivable.update');
     $showFinanceModule = $canFinanceDashboard
         || $showFinanceExpenseMenu
         || $canFinancePayees
@@ -441,7 +441,7 @@
                         <li><a href="{{ route('finance.payables') }}" class="stage-link"><span class="lbl">Payables</span></a></li>
                     @endif
                     @if($canFinanceReceivables)
-                        <li><a href="{{ route('finance.receivables') }}" class="stage-link"><span class="lbl">Receivables</span></a></li>
+                        <li><a href="{{ route('finance.receivables') }}" class="stage-link"><span class="lbl">Invoices</span></a></li>
                     @endif
                 </ul>
             </li>

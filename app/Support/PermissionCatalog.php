@@ -185,7 +185,7 @@ class PermissionCatalog
             ['moduleKey' => 'finance-management', 'section' => 'Expense', 'sectionOrder' => 20, 'order' => 50, 'label' => 'Payroll', 'slugs' => ['finance.payroll.view']],
             ['moduleKey' => 'finance-management', 'section' => null, 'sectionOrder' => 30, 'order' => 10, 'label' => 'Supplier & Payee', 'slugs' => ['finance.payee.view']],
             ['moduleKey' => 'finance-management', 'section' => null, 'sectionOrder' => 30, 'order' => 20, 'label' => 'Payables', 'slugs' => ['finance.payable.view']],
-            ['moduleKey' => 'finance-management', 'section' => null, 'sectionOrder' => 30, 'order' => 30, 'label' => 'Receivables', 'slugs' => ['finance.receivable.view']],
+            ['moduleKey' => 'finance-management', 'section' => null, 'sectionOrder' => 30, 'order' => 30, 'label' => 'Invoices / Receivables', 'slugs' => ['finance.receivable.view']],
 
             ['moduleKey' => 'inventory-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Feed Campus Inventory', 'slugs' => ['inventory.create']],
             ['moduleKey' => 'inventory-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'Campus Stock Register', 'slugs' => ['inventory.view']],
@@ -329,10 +329,10 @@ class PermissionCatalog
             'finance.payable.update' => self::meta('finance-management', 'Payables', 'Update Payable', 70, 30),
             'finance.payable.delete' => self::meta('finance-management', 'Payables', 'Delete Payable', 70, 40),
 
-            'finance.receivable.view' => self::meta('finance-management', 'Receivables', 'Receivables', 80, 10),
-            'finance.receivable.create' => self::meta('finance-management', 'Receivables', 'Create Receivable', 80, 20),
-            'finance.receivable.update' => self::meta('finance-management', 'Receivables', 'Update Receivable', 80, 30),
-            'finance.receivable.delete' => self::meta('finance-management', 'Receivables', 'Delete Receivable', 80, 40),
+            'finance.receivable.view' => self::meta('finance-management', 'Receivables', 'Invoices / Receivables', 80, 10),
+            'finance.receivable.create' => self::meta('finance-management', 'Receivables', 'Create Invoice / Receivable', 80, 20),
+            'finance.receivable.update' => self::meta('finance-management', 'Receivables', 'Update Invoice / Receivable', 80, 30),
+            'finance.receivable.delete' => self::meta('finance-management', 'Receivables', 'Delete Invoice / Receivable', 80, 40),
 
             'hrm_dashboard.view' => self::meta('human-resources', 'HRM Dashboard', 'HRM Dashboard', 10, 10),
             'hrm_employee.view' => self::meta('human-resources', 'Employee Master / Profile', 'Employee Master / Profile', 20, 10),

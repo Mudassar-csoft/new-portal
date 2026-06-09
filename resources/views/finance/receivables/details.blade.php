@@ -13,6 +13,11 @@
         $otherCharges = $otherCharges ?? collect();
         $royalties = $royalties ?? collect();
         $campuses = $campuses ?? collect();
+        $statusColors = [
+            'pending' => 'badge-warning',
+            'partial' => 'badge-info',
+            'overdue' => 'badge-danger',
+        ];
     @endphp
 
     <div class="finance-shell">
@@ -55,7 +60,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="receivable-card tone-other">
                     <div class="receivable-value">Rs. {{ number_format((float) ($summary['pending_other'] ?? 0), 0) }}</div>
-                    <div class="receivable-label">Pending Other Charges</div>
+                    <div class="receivable-label">Open Invoice Balance</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -76,32 +81,34 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Pending Other Charges</h3>
+                        <h3 class="panel-title">Open Invoices</h3>
                     </header>
                     <div class="box-typical-body panel-body table-responsive">
                         <table class="table table-bordered finance-table">
                             <thead>
                                 <tr>
-                                    <th>Voucher</th>
+                                    <th>Invoice</th>
                                     <th>Type</th>
-                                    <th>Source</th>
+                                    <th>Customer</th>
                                     <th>Campus</th>
-                                    <th>Date</th>
-                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Balance</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($otherCharges as $charge)
                                     <tr>
-                                        <td>{{ $charge->voucher_number ?: 'N/A' }}</td>
+                                        <td>{{ $charge->invoice_number ?: ($charge->voucher_number ?: 'N/A') }}</td>
                                         <td>{{ $charge->chargeType->name ?? 'Other' }}</td>
                                         <td>{{ $charge->student_name ?: '-' }}</td>
                                         <td>{{ $charge->campus->code ?? 'N/A' }}</td>
-                                        <td>{{ optional($charge->created_at)->format('Y-m-d') }}</td>
-                                        <td>Rs. {{ number_format((float) $charge->net_amount, 0) }}</td>
+                                        <td>{{ optional($charge->due_date)->format('Y-m-d') ?: 'N/A' }}</td>
+                                        <td><span class="badge {{ $statusColors[$charge->status] ?? 'badge-secondary' }}">{{ ucfirst($charge->status) }}</span></td>
+                                        <td>Rs. {{ number_format((float) $charge->balance_amount, 0) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="6" class="text-center text-muted">No pending charge receivables found.</td></tr>
+                                    <tr><td colspan="7" class="text-center text-muted">No open invoices found.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
