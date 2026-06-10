@@ -17,6 +17,7 @@ class Lead extends Model
         'campus_id',
         'program_id',
         'assigned_user_id',
+        'created_by',
         'type',
         'name',
         'email',
@@ -45,6 +46,11 @@ class Lead extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_user_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function followups(): HasMany

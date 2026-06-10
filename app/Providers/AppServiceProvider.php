@@ -16,6 +16,7 @@ use App\Models\Registration;
 use App\Models\StudentAttendance;
 use App\Models\User;
 use App\Models\WebLead;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -114,6 +115,11 @@ class AppServiceProvider extends ServiceProvider
                         ->orderBy('next_action_date')
                         ->latest('id')
                         ->get()
+                        ->map(function (LeadFollowup $followup) {
+                            $followup->notification_due_at = $this->resolveFollowupNotificationDateTime($followup);
+
+                            return $followup;
+                        })
                         ->unique('lead_id')
                         ->values();
 
@@ -406,5 +412,56 @@ class AppServiceProvider extends ServiceProvider
         $campusId = (int) ($user->campus_id ?? 0);
 
         return $campusId > 0 ? $campusId : null;
+    }
+
+    private function resolveFollowupNotificationDateTime(LeadFollowup $followup): ?Carbon
+    {
+        $nextActionAt = $followup->next_action_date instanceof Carbon
+            ? $followup->next_action_date->copy()
+            : null;
+
+        $leadNextFollowupAt = $this->parseNotificationDateTime(
+            data_get($followup->lead?->details, 'next_followup_at')
+        );
+
+        if (! $nextActionAt) {
+            return $leadNextFollowupAt;
+        }
+
+        if (
+            $leadNextFollowupAt
+            && $nextActionAt->format('H:i:s') === '00:00:00'
+            && $leadNextFollowupAt->isSameDay($nextActionAt)
+        ) {
+            return $leadNextFollowupAt;
+        }
+
+        return $nextActionAt;
+    }
+
+    private function parseNotificationDateTime(mixed $value): ?Carbon
+    {
+        $stringValue = trim((string) $value);
+        if ($stringValue === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'] as $format) {
+            try {
+                $dateTime = Carbon::createFromFormat($format, $stringValue);
+
+                return $format === 'Y-m-d'
+                    ? $dateTime->startOfDay()
+                    : $dateTime;
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        try {
+            return Carbon::parse($stringValue);
+        } catch (Throwable) {
+            return null;
+        }
     }
 }

@@ -311,17 +311,15 @@
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('student.records.index', ['scope' => $scope]) }}",
-                order: [[7, 'desc']],
+                order: [],
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'student_name', name: 'student_name' },
                     { data: 'roll_number', name: 'roll_number' },
-                    { data: 'registration_number', name: 'registration_number' },
-                    { data: 'campus_code', name: 'campus_code', orderable: false },
                     { data: 'program_name', name: 'program_name', orderable: false },
-                    { data: 'admission_date', name: 'admission_date' },
+                    { data: 'campus_code', name: 'campus_code', orderable: false },
                     { data: 'status_badge', name: 'student_status', orderable: false, searchable: false },
-                    { data: 'certificate_status', name: 'certificate_status', orderable: false, searchable: false },
+                    { data: 'phone', name: 'phone' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
                 ]
             });

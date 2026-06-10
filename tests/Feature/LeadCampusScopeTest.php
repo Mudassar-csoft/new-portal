@@ -221,6 +221,64 @@ class LeadCampusScopeTest extends TestCase
         ]);
     }
 
+    public function test_lead_index_shows_values_under_the_matching_grid_columns(): void
+    {
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = Program::query()->create([
+            'name' => 'Grid Programme',
+            'title' => 'Grid Programme',
+            'code' => 'GRD101',
+            'program_type' => 'bootcamp',
+            'fee' => 50000,
+            'duration_weeks' => 12,
+            'installments' => 3,
+            'status' => 'active',
+        ]);
+
+        $assignedUser = User::factory()->create([
+            'name' => 'Assigned Counsellor',
+        ]);
+        $creatorUser = User::factory()->create([
+            'name' => 'Lead Creator',
+        ]);
+
+        $viewer = User::factory()->create([
+            'campus_id' => $alphaCampus->id,
+        ]);
+        $viewer->permissions()->sync([$leadView->id]);
+
+        $lead = Lead::query()->create([
+            'campus_id' => $alphaCampus->id,
+            'program_id' => $program->id,
+            'assigned_user_id' => $assignedUser->id,
+            'created_by' => $creatorUser->id,
+            'type' => 'training',
+            'name' => 'Grid Column Lead',
+            'email' => 'grid-column@example.test',
+            'phone' => '03000000031',
+            'city' => 'Lahore',
+            'origin' => 'Website',
+            'marketing_source' => 'Website',
+            'status' => 'pending',
+        ]);
+
+        $this->createFollowup($lead, $alphaCampus, 'contacted');
+        $this->createFollowup($lead, $alphaCampus, 'need_analysis');
+
+        $this->actingAs($viewer)
+            ->get(route('leads.index'))
+            ->assertOk()
+            ->assertSee('Grid Column Lead')
+            ->assertSee('Grid Programme')
+            ->assertSee('03000000031')
+            ->assertSee('ALP')
+            ->assertSee('Lead Creator')
+            ->assertDontSee('Assigned Counsellor')
+            ->assertSee('Website')
+            ->assertSee('class="text-center">2<', false);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([
@@ -239,9 +297,9 @@ class LeadCampusScopeTest extends TestCase
         ]);
     }
 
-    private function createTrainingLead(Campus $campus, string $name, string $phone): Lead
+    private function createTrainingLead(Campus $campus, string $name, string $phone, array $overrides = []): Lead
     {
-        return Lead::query()->create([
+        return Lead::query()->create(array_merge([
             'campus_id' => $campus->id,
             'type' => 'training',
             'name' => $name,
@@ -251,7 +309,7 @@ class LeadCampusScopeTest extends TestCase
             'origin' => 'Referral',
             'marketing_source' => 'Referral',
             'status' => 'pending',
-        ]);
+        ], $overrides));
     }
 
     private function createFollowup(Lead $lead, Campus $campus, string $stage): LeadFollowup

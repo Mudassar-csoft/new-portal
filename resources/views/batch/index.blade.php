@@ -17,12 +17,6 @@
             'completed' => 'badge-default',
         ];
 
-        $statusLabelClasses = [
-            'active' => 'label-success',
-            'inactive' => 'label-default',
-            'completed' => 'label-primary',
-            'cancelled' => 'label-danger',
-        ];
     @endphp
 
     <div class="lead-status-shell">
@@ -131,17 +125,16 @@
                             <thead>
                                 <tr>
                                     <th>Sr</th>
-                                    <th> Batch Code</th>
+                                    <th>Batch Code</th>
                                     <th>Programme</th>
                                     <th>Instructor</th>
                                     <th>Campus</th>
-                                    <th>start Date</th>
+                                    <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Batch Timing</th>
-                                     <th>Session</th>
+                                    <th>Session</th>
                                     <th>No. of Students</th>
-                                    <th>lab</th>
-                                    <!-- <th>Status</th> -->
+                                    <th>Lab</th>
                                     <th class="text-left">Action</th>
                                 </tr>
                             </thead>
@@ -150,26 +143,31 @@
                                     @php
                                         $rowIndex = ($batches->firstItem() ?? 0) + $idx;
                                         $statusKey = $batch->status ?? 'active';
+                                        $startDate = $batch->start_date?->format('d-M-Y') ?? 'N/A';
+                                        $endDate = $batch->end_date?->format('d-M-Y') ?? 'N/A';
+                                        $batchTiming = ($batch->start_time && $batch->end_time)
+                                            ? \Illuminate\Support\Carbon::parse($batch->start_time)->format('h:i A') . ' - ' . \Illuminate\Support\Carbon::parse($batch->end_time)->format('h:i A')
+                                            : 'N/A';
                                     @endphp
                                     <tr data-status="{{ $statusKey }}">
                                         <td class="text-center">{{ $rowIndex }}</td>
                                         <td>{{ $batch->code }}</td>
-                                        <td>{{ $batch->name }}</td>
                                         <td>{{ $batch->program?->title ?? $batch->program?->name ?? 'N/A' }}</td>
+                                        <td>{{ $batch->instructor ?? 'N/A' }}</td>
                                         <td>{{ $batch->campus?->code ?? $batch->campus?->name ?? 'N/A' }}</td>
+                                        <td>{{ $startDate }}</td>
+                                        <td>{{ $endDate }}</td>
+                                        <td>{{ $batchTiming }}</td>
                                         <td>{{ ucfirst($batch->session ?? 'n/a') }}</td>
-                                        <td>
-                                            <span class="label {{ $statusLabelClasses[$statusKey] ?? 'label-default' }}">
-                                                {{ ucfirst($statusKey) }}
-                                            </span>
-                                        </td>
+                                        <td class="text-center">{{ $batch->admissions_count }}</td>
+                                        <td>{{ $batch->lab ?: 'N/A' }}</td>
                                         <td class="action-cell">
                                             @include('batch.partials.action', ['actionId' => 'batch-action-' . $batch->id])
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted">No batches found for the selected filters.</td>
+                                        <td colspan="12" class="text-center text-muted">No batches found for the selected filters.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

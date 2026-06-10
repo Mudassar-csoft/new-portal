@@ -82,6 +82,7 @@ class RegistrationController extends Controller
                 $lead = Lead::create([
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],
+                    'created_by' => $request->user()?->id,
                     'type' => null,
                     'name' => $validated['student_name'],
                     'email' => $validated['email'],

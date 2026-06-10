@@ -1,12 +1,18 @@
 @extends('layouts.theme')
 
-@section('title', 'New Lead')
+@section('title', $formTitle ?? 'New Lead')
 
 @section('content')
 	@php
 		$leadPrefill = $leadPrefill ?? [];
 		$prefillCountry = old('details.country', data_get($leadPrefill, 'details.country', 'Pakistan'));
 		$prefillCity = old('city', $leadPrefill['city'] ?? 'Faisalabad');
+		$formAction = $formAction ?? route('leads.store');
+		$formMethod = strtoupper((string) ($formMethod ?? 'POST'));
+		$formTitle = $formTitle ?? 'Create New Lead';
+		$formSubmitLabel = $formSubmitLabel ?? 'Create Lead';
+		$cancelUrl = $cancelUrl ?? url()->previous();
+		$leadTypeSelectEnabled = (bool) ($leadTypeSelectEnabled ?? true);
 		$selectedWebLeadId = request('web_lead') ?: ($webLead->id ?? null);
 		$leadTypeOptions = [
 			'training' => 'Training',
@@ -28,7 +34,7 @@
 						<div class="tbl-row">
 							<div class="tbl-cell tbl-cell-title p-0 m-0">
 								<h2 class="panel-title lead-title">
-									Create New Lead
+									{{ $formTitle }}
 									<span class="ml-2">(All fields marked with <span class="text-danger semibold">*</span> are required)</span>
 								</h2>
 							</div>
@@ -36,7 +42,11 @@
 								<select
 									id="leadTypeSelect"
 									class="form-control lead-type-select"
-									onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }"
+									@if($leadTypeSelectEnabled)
+										onchange="var selectedOption=this.options[this.selectedIndex]; if(selectedOption && selectedOption.dataset.url){ window.location.href=selectedOption.dataset.url; }"
+									@else
+										disabled
+									@endif
 								>
 									@foreach($leadTypeOptions as $leadTypeValue => $leadTypeLabel)
 										<option
@@ -62,16 +72,19 @@
 						</div>
 					@endif
 
-					<form method="POST" action="{{ route('leads.store') }}" id="lead-create-form" class="lead-form-shell">
+					<form method="POST" action="{{ $formAction }}" id="lead-create-form" class="lead-form-shell">
 						@csrf
+						@if($formMethod !== 'POST')
+							@method($formMethod)
+						@endif
 						<input type="hidden" name="web_lead_id" value="{{ old('web_lead_id', $webLead->id ?? null) }}">
 						<input type="hidden" name="type" id="lead-type-field" value="{{ $selectedLeadType }}">
 
 						@include('lead.' . $selectedLeadType)
 
 						<div class="form-actions lead-actions mb-2 mt-3 text-right">
-							<button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">Create Lead</button>
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem;">Cancel</a>
+							<button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">{{ $formSubmitLabel }}</button>
+							<a href="{{ $cancelUrl }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem;">Cancel</a>
 						</div>
 					</form>
 				</div>

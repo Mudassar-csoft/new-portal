@@ -137,6 +137,7 @@ class CoworkingRegistrationController extends Controller
             $result = DB::transaction(function () use ($validated, $campus, $registrationDate, $nextDueDate, $lead, $request) {
                 $resolvedLead = $lead ?: Lead::query()->create([
                     'campus_id' => $campus->id,
+                    'created_by' => $request->user()?->id,
                     'type' => 'coworking',
                     'name' => $validated['full_name'],
                     'email' => $validated['email'],

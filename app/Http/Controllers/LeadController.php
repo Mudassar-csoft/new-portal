@@ -30,7 +30,12 @@ class LeadController extends Controller
         $todayOnly = $request->boolean('today');
 
         $leadQuery = $this->trainingLeadQuery()
-            ->with(['program'])
+            ->with([
+                'program',
+                'campus',
+                'createdBy:id,name',
+            ])
+            ->withCount('followups')
             ->latest();
 
         if ($todayOnly) {
@@ -86,13 +91,31 @@ class LeadController extends Controller
             $leadPrefill = $this->buildWebLeadPrefill($webLead);
         }
 
-        $campuses = Campus::query()
-            ->orderBy('name')
-            ->get();
-        $programs = Program::orderBy('title')->get();
-        $origins = ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'];
-        $marketingSources = ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'];
-        return view('lead.create', compact('campuses', 'programs', 'origins', 'marketingSources', 'webLead', 'leadPrefill'));
+        return view('lead.create', array_merge(
+            $this->leadFormOptions(),
+            compact('webLead', 'leadPrefill')
+        ));
+    }
+
+    public function edit(Request $request, Lead $lead): View
+    {
+        $this->ensureLeadCampusAccess($lead);
+        abort_unless($request->user()?->isAdmin(), 403);
+
+        return view('lead.create', array_merge(
+            $this->leadFormOptions(),
+            [
+                'lead' => $lead,
+                'webLead' => null,
+                'leadPrefill' => $this->buildLeadPrefillFromLead($lead),
+                'formAction' => route('leads.update', $lead),
+                'formMethod' => 'PUT',
+                'formTitle' => 'Edit Lead',
+                'formSubmitLabel' => 'Update Lead',
+                'cancelUrl' => route('leads.show', $lead),
+                'leadTypeSelectEnabled' => false,
+            ]
+        ));
     }
 
     public function store(Request $request): RedirectResponse
@@ -121,14 +144,20 @@ class LeadController extends Controller
         try {
             $details = $validated['details'] ?? [];
             $initialProbability = $details['probability'] ?? null;
-            $initialNext = $details['next_followup_at'] ?? null;
-            $initialNextDate = filled($initialNext) ? Carbon::createFromFormat('Y-m-d\TH:i', $initialNext)->toDateString() : null;
+            $initialNextAt = $this->normalizeFollowupDateTime($details['next_followup_at'] ?? null);
             $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
+
+            if ($initialNextAt) {
+                $details['next_followup_at'] = $initialNextAt->format('Y-m-d\TH:i');
+            } else {
+                unset($details['next_followup_at']);
+            }
 
             $lead = Lead::create([
                 'campus_id' => $validated['campus_id'] ?? null,
                 'program_id' => $validated['program_id'] ?? null,
                 'assigned_user_id' => $validated['assigned_user_id'] ?? null,
+                'created_by' => $request->user()?->id,
                 'type' => $validated['type'] ?? null,
                 'name' => $validated['name'] ?? null,
                 'email' => $validated['email'] ?? null,
@@ -147,7 +176,7 @@ class LeadController extends Controller
                 'note' => 'Initial follow-up created automatically.',
                 'method' => null,
                 'probability' => $initialProbability,
-                'next_action_date' => $initialNextDate,
+                'next_action_date' => $initialNextAt,
                 'stage' => $initialStage,
                 'lead_status' => 'pending',
             ]);
@@ -170,6 +199,67 @@ class LeadController extends Controller
         }
     }
 
+    public function update(Request $request, Lead $lead): RedirectResponse
+    {
+        $this->ensureLeadCampusAccess($lead);
+        abort_unless($request->user()?->isAdmin(), 403);
+
+        $request->merge([
+            'type' => $lead->type,
+        ]);
+
+        $validated = $request->validate(
+            $this->leadStoreRules($lead->type, $lead),
+            $this->leadStoreMessages(),
+            $this->leadStoreAttributes()
+        );
+
+        $lead->update([
+            'campus_id' => $validated['campus_id'] ?? null,
+            'program_id' => $validated['program_id'] ?? null,
+            'assigned_user_id' => $validated['assigned_user_id'] ?? $lead->assigned_user_id,
+            'type' => $lead->type,
+            'name' => $validated['name'] ?? null,
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'origin' => $validated['origin'] ?? null,
+            'marketing_source' => $validated['marketing_source'] ?? null,
+            'details' => $validated['details'] ?? [],
+        ]);
+
+        return Redirect::route('leads.show', $lead)->with('status', 'Lead updated successfully.');
+    }
+
+    public function markNotInterested(Request $request, Lead $lead): RedirectResponse
+    {
+        $this->ensureLeadCampusAccess($lead);
+
+        if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
+            return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '.');
+        }
+
+        $lead->update([
+            'status' => 'not_interesting',
+        ]);
+
+        $this->syncLeadNextFollowupAt($lead, null);
+
+        LeadFollowup::create([
+            'lead_id' => $lead->id,
+            'campus_id' => $this->resolveLeadCampusScopeId($lead),
+            'user_id' => $request->user()?->id,
+            'method' => null,
+            'probability' => null,
+            'note' => 'Lead marked as not interested from the actions menu.',
+            'next_action_date' => null,
+            'stage' => 'not_interesting',
+            'lead_status' => 'not_interesting',
+        ]);
+
+        return Redirect::back()->with('status', 'Lead marked as not interested.');
+    }
+
     public function addFollowup(Request $request, Lead $lead): RedirectResponse
     {
         $this->ensureLeadCampusAccess($lead);
@@ -186,12 +276,18 @@ class LeadController extends Controller
         $canUpdateLeadProfile = $currentStage === 'new';
         $usesTrainingConversionFlow = $this->usesTrainingConversionFlow($lead->type);
         $allowedStages = array_keys($this->followupStageConfig($lead->type)['stageMap']);
+        $selectedStage = (string) $request->input('stage');
+        $usesMinimalFields = in_array($selectedStage, ['registered', 'not_interesting', 'enroll'], true);
 
         $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'method' => ['required', 'string', 'max:50'],
-            'probability' => ['required', 'integer', 'min:1', 'max:100'],
-            'note' => ['nullable', 'string'],
+            'probability' => $usesMinimalFields
+                ? ['nullable', 'integer', 'min:1', 'max:100']
+                : ['required', 'integer', 'min:1', 'max:100'],
+            'note' => $selectedStage === 'not_interesting'
+                ? ['required', 'string']
+                : ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in($allowedStages)],
         ];
@@ -238,6 +334,9 @@ class LeadController extends Controller
             $followupCampusId = $this->resolveCoworkingCampus($lead)?->id;
         }
 
+        $nextActionAt = $this->normalizeFollowupDateTime($validated['next_action_date'] ?? null);
+        $leadStatusAfterFollowup = $this->resolveLeadStatusForFollowupStage($lead, $validated['stage']);
+
         LeadFollowup::create([
             'lead_id' => $lead->id,
             'campus_id' => $followupCampusId,
@@ -245,18 +344,19 @@ class LeadController extends Controller
             'method' => $validated['method'] ?? null,
             'probability' => $validated['probability'] ?? null,
             'note' => $validated['note'] ?? null,
-            'next_action_date' => $validated['next_action_date'] ?? null,
+            'next_action_date' => $nextActionAt,
             'stage' => $validated['stage'],
-            'lead_status' => $lead->status,
+            'lead_status' => $leadStatusAfterFollowup,
         ]);
+
+        $this->syncLeadNextFollowupAt(
+            $lead,
+            in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true) ? null : $nextActionAt
+        );
 
         if (in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true)) {
             $lead->update([
-                'status' => match ($validated['stage']) {
-                    'registered' => 'registered',
-                    'enroll' => 'enrolled',
-                    default => 'not_interesting',
-                },
+                'status' => $leadStatusAfterFollowup,
             ]);
         }
 
@@ -364,8 +464,8 @@ class LeadController extends Controller
     {
         $this->ensureLeadCampusAccess($lead);
 
-        if (in_array($lead->status, ['registered', 'enrolled'], true)) {
-            abort(403, 'Registered or enrolled leads cannot be transferred.');
+        if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
+            abort(403, 'Closed leads cannot be transferred.');
         }
         $campuses = Campus::orderBy('name')->get();
         return view('lead.transfer', compact('lead', 'campuses'));
@@ -375,8 +475,8 @@ class LeadController extends Controller
     {
         $this->ensureLeadCampusAccess($lead);
 
-        if (in_array($lead->status, ['registered', 'enrolled'], true)) {
-            $message = 'Registered or enrolled leads cannot be transferred.';
+        if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
+            $message = 'Closed leads cannot be transferred.';
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -830,6 +930,16 @@ class LeadController extends Controller
             : ['registered', 'not_interesting', 'enrolled'];
     }
 
+    private function resolveLeadStatusForFollowupStage(Lead $lead, string $stage): string
+    {
+        return match ($stage) {
+            'registered' => 'registered',
+            'enroll' => 'enrolled',
+            'not_interesting' => 'not_interesting',
+            default => (string) ($lead->status ?? 'pending'),
+        };
+    }
+
     private function normalizeFollowupStage(?string $type, ?string $stage): string
     {
         $normalizedStage = trim((string) $stage);
@@ -887,6 +997,75 @@ class LeadController extends Controller
         if ($leadUpdates !== []) {
             $lead->update($leadUpdates);
         }
+    }
+
+    private function syncLeadNextFollowupAt(Lead $lead, ?Carbon $nextActionAt): void
+    {
+        $details = $lead->details ?? [];
+
+        if ($nextActionAt) {
+            $details['next_followup_at'] = $nextActionAt->format('Y-m-d\TH:i');
+        } else {
+            unset($details['next_followup_at']);
+        }
+
+        if ($details !== ($lead->details ?? [])) {
+            $lead->update(['details' => $details]);
+        }
+    }
+
+    private function normalizeFollowupDateTime(mixed $value): ?Carbon
+    {
+        if ($value instanceof Carbon) {
+            return $value->copy();
+        }
+
+        $stringValue = trim((string) $value);
+        if ($stringValue === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'] as $format) {
+            try {
+                $dateTime = Carbon::createFromFormat($format, $stringValue);
+
+                return $format === 'Y-m-d'
+                    ? $dateTime->startOfDay()
+                    : $dateTime;
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        return Carbon::parse($stringValue);
+    }
+
+    private function leadFormOptions(): array
+    {
+        return [
+            'campuses' => Campus::query()
+                ->orderBy('name')
+                ->get(),
+            'programs' => Program::orderBy('title')->get(),
+            'origins' => ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'],
+            'marketingSources' => ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'],
+        ];
+    }
+
+    private function buildLeadPrefillFromLead(Lead $lead): array
+    {
+        return [
+            'type' => $lead->type,
+            'name' => $lead->name,
+            'email' => $lead->email,
+            'phone' => $lead->phone,
+            'city' => $lead->city,
+            'origin' => $lead->origin,
+            'marketing_source' => $lead->marketing_source,
+            'campus_id' => $lead->campus_id,
+            'program_id' => $lead->program_id,
+            'details' => $lead->details ?? [],
+        ];
     }
 
     private function buildWebLeadPrefill(WebLead $webLead): array
@@ -966,7 +1145,7 @@ class LeadController extends Controller
             ->value('id');
     }
 
-    private function leadStoreRules(string $type): array
+    private function leadStoreRules(string $type, ?Lead $lead = null): array
     {
         $rules = [
             'web_lead_id' => ['nullable', 'exists:web_leads,id'],
@@ -974,7 +1153,7 @@ class LeadController extends Controller
             'type' => ['required', Rule::in(['training', 'certification', 'coworking', 'study_abroad'])],
             'name' => ['required', 'string', 'min:3', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:leads,phone'],
+            'phone' => ['required', 'regex:/^03\d{9}$/', Rule::unique('leads', 'phone')->ignore($lead?->id)],
             'city' => ['nullable', 'string', 'max:255'],
             'origin' => ['required', 'string', 'max:255'],
             'marketing_source' => ['required', 'string', 'max:255'],
