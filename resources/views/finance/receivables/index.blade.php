@@ -213,10 +213,10 @@
                             <textarea name="terms" class="form-control" rows="2" placeholder="Payment terms or billing conditions">{{ old('terms') }}</textarea>
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label class="form-label">Internal Remarks</label>
                             <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}" placeholder="Internal invoice remarks">
-                        </div>
+                        </div> -->
 
                         <div class="text-right mt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline">Create Invoice</button>

@@ -285,7 +285,7 @@
                 </span>
                 <ul>
                     @if($canBatchCreate)
-                        <li><a href="{{ route('batch.create') }}" class="stage-link"><span class="lbl">Create Batch</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_create'] ?? 0)) }}</span></a></li>
+                        <li><a href="{{ route('batch.create') }}" class="stage-link"><span class="lbl">Create Batch</span></a></li>
                     @endif
                     @if($canBatchView)
                         <li><a href="{{ route('batch.index', ['scope' => 'upcoming']) }}" class="stage-link"><span class="lbl">Upcoming</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['batch_upcoming'] ?? 0)) }}</span></a></li>
@@ -330,7 +330,7 @@
                 </span>
                 <ul>
                     @if($canCampusCreate)
-                        <li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_create'] ?? 0)) }}</span></a></li>
+                        <li><a href="{{ route('campus.create') }}" class="stage-link"><span class="lbl">Create Campus / Franchise</span></a></li>
                     @endif
                     @if($canCampusView)
                         <li><a href="{{ route('campus.index', ['scope' => 'campuses']) }}" class="stage-link"><span class="lbl">All Campuses</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_company'] ?? 0)) }}</span></a></li>

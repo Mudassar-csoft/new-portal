@@ -96,7 +96,7 @@
 		.field-error {
 			margin-top: 6px;
 			font-size: 12px;
-			color: #fff6f6;
+			color: red;
 		}
 
 		.form-meta {

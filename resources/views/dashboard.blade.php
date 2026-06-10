@@ -410,7 +410,7 @@
 						</div>
 					</div>
 				</header>
-				<div class="box-typical-body panel-body">
+				<div class="box-typical-body panel-body-admssion">
 					<table class="tbl-typical daily-activity-table admission-activity-table">
 						<thead>
 							<tr>
@@ -1113,6 +1113,13 @@
             max-height: none !important;
             height: auto;
             overflow: hidden !important;
+            padding: 0px;
+        }
+		
+        .panel-body-admssion  {
+            max-height: none !important;
+            height: auto;
+            overflow: auto !important;
             padding: 0px;
         }
         .dashboard-equal-row > [class*="col-"] {
