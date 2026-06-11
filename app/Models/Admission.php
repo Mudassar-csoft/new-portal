@@ -83,4 +83,9 @@ class Admission extends Model
     {
         return $this->hasMany(StudentAttendance::class);
     }
+
+    public function feeCollections(): HasMany
+    {
+        return $this->hasMany(FeeCollection::class);
+    }
 }

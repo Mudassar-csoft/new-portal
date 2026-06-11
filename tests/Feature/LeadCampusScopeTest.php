@@ -37,6 +37,49 @@ class LeadCampusScopeTest extends TestCase
             ->assertDontSee('Beta Lead');
     }
 
+    public function test_training_leads_sidebar_shows_today_leads_link_for_same_grid_page(): void
+    {
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+
+        $user = User::factory()->create([
+            'campus_id' => $alphaCampus->id,
+        ]);
+        $user->permissions()->sync([$leadView->id]);
+
+        $todayLead = $this->createTrainingLead($alphaCampus, 'Today Sidebar Lead', '03000000041');
+        $todayLead->forceFill([
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->saveQuietly();
+
+        $yesterdayLead = $this->createTrainingLead($alphaCampus, 'Yesterday Sidebar Lead', '03000000042');
+        $yesterdayLead->forceFill([
+            'created_at' => now()->subDay(),
+            'updated_at' => now(),
+        ])->saveQuietly();
+
+        $otherCampusLead = $this->createTrainingLead($betaCampus, 'Other Campus Sidebar Lead', '03000000043');
+        $otherCampusLead->forceFill([
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->saveQuietly();
+
+        $this->actingAs($user)
+            ->get(route('leads.index'))
+            ->assertOk()
+            ->assertSee('Today Leads')
+            ->assertSee(route('leads.index', ['today' => 1]), false);
+
+        $this->actingAs($user)
+            ->get(route('leads.index', ['today' => 1]))
+            ->assertOk()
+            ->assertSee('Today Sidebar Lead')
+            ->assertDontSee('Yesterday Sidebar Lead')
+            ->assertDontSee('Other Campus Sidebar Lead');
+    }
+
     public function test_non_admin_followups_only_list_current_campus_training_leads(): void
     {
         $followupView = $this->createPermission('lead', 'followup.view', 'lead.followup.view');

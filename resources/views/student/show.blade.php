@@ -53,7 +53,7 @@
                                 Action <span class="caret"></span>
                             </button>
                             <div class="dropdown-menu student-action-menu" aria-labelledby="student-action-{{ $registration->id }}">
-                                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['lead_id' => $studentLeadId]) }}">
+                                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_registration_id' => $registration->id, 'source_admission_id' => optional($admission)->id]) }}">
                                     <span class="lead-action-icon lead-icon-black" aria-hidden="true">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>

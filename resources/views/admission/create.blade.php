@@ -33,13 +33,24 @@
 					@if(!empty($lead))
 						<input type="hidden" name="lead_id" value="{{ $lead->id }}">
 					@endif
+					@if(!empty($sourceRegistration))
+						<input type="hidden" name="source_registration_id" value="{{ $sourceRegistration->id }}">
+					@endif
+					@if(!empty($sourceAdmission))
+						<input type="hidden" name="source_admission_id" value="{{ $sourceAdmission->id }}">
+					@endif
+					@if(!empty($isAnotherCourseEnrollment))
+						<div class="alert alert-info admission-prefill-alert">
+							Previous student details were loaded. Select a different course to create the new admission.
+						</div>
+					@endif
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Campus</label>
 							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
 								<option value="">- Select -</option>
 								@foreach($campuses ?? [] as $campus)
-									<option value="{{ $campus->id }}" {{ old('campus_id', $lead->campus_id ?? '') == $campus->id ? 'selected' : '' }}>
+									<option value="{{ $campus->id }}" {{ old('campus_id', $formDefaults['campus_id'] ?? '') == $campus->id ? 'selected' : '' }}>
 										{{ $campus->code ?? $campus->name }} - {{ $campus->name }}
 									</option>
 								@endforeach
@@ -59,11 +70,14 @@
 										data-fee-raw="{{ (float) ($program->fee ?? 0) }}"
 										data-installments="{{ (int) ($program->installments ?? 1) }}"
 										data-duration="{{ $program->duration_weeks / 4 }}"
-										@selected(old('program_id', $lead->program_id ?? '') == $program->id)>
+										@selected(old('program_id', $formDefaults['program_id'] ?? '') == $program->id)>
 										{{ $program->title ?? $program->name }}
 									</option>
 								@endforeach
 							</select>
+							@if(!empty($isAnotherCourseEnrollment))
+								<div class="field-help">The current enrolled course is hidden here. Choose another course.</div>
+							@endif
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -94,7 +108,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Student Name (As per CNIC)</label>
-							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" value="{{ old('student_name', $lead->name ?? '') }}" placeholder="Enter full name" required>
+							<input type="text" class="form-control @error('student_name') is-invalid @enderror" name="student_name" value="{{ old('student_name', $formDefaults['student_name'] ?? '') }}" placeholder="Enter full name" required>
 							@error('student_name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -104,28 +118,28 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label required">Primary Contact Number</label>
-							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $lead->phone ?? '') }}" placeholder="03XXXXXXXXX" required>
+							<input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $formDefaults['phone'] ?? '') }}" placeholder="03XXXXXXXXX" required>
 							@error('phone')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Guardian Name</label>
-							<input type="text" class="form-control @error('guardian_name') is-invalid @enderror" name="guardian_name" value="{{ old('guardian_name') }}" placeholder="Enter guardian name" required>
+							<input type="text" class="form-control @error('guardian_name') is-invalid @enderror" name="guardian_name" value="{{ old('guardian_name', $formDefaults['guardian_name'] ?? '') }}" placeholder="Enter guardian name" required>
 							@error('guardian_name')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Guardian Contact Number</label>
-							<input type="text" class="form-control @error('guardian_phone') is-invalid @enderror" name="guardian_phone" value="{{ old('guardian_phone') }}" placeholder="03XXXXXXXXX" required>
+							<input type="text" class="form-control @error('guardian_phone') is-invalid @enderror" name="guardian_phone" value="{{ old('guardian_phone', $formDefaults['guardian_phone'] ?? '') }}" placeholder="03XXXXXXXXX" required>
 							@error('guardian_phone')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">National Identity Card (CNIC)</label>
-							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic') }}" placeholder="Numbers only" required>
+							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic', $formDefaults['cnic'] ?? '') }}" placeholder="Numbers only" required>
 							@error('cnic')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -135,21 +149,21 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label">Email Address</label>
-							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $lead->email ?? '') }}" placeholder="Enter email address" required>
+							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $formDefaults['email'] ?? '') }}" placeholder="Enter email address" required>
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Education</label>
-							<input type="text" class="form-control @error('education') is-invalid @enderror" name="education" value="{{ old('education') }}" placeholder="Enter education" required>
+							<input type="text" class="form-control @error('education') is-invalid @enderror" name="education" value="{{ old('education', $formDefaults['education'] ?? '') }}" placeholder="Enter education" required>
 							@error('education')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Date of Birth</label>
-							<input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" name="date_of_birth" value="{{ old('date_of_birth') }}" required>
+							<input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" name="date_of_birth" value="{{ old('date_of_birth', $formDefaults['date_of_birth'] ?? '') }}" required>
 							@error('date_of_birth')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -165,7 +179,7 @@
 											id="admission-gender-male"
 											name="gender"
 											value="male"
-											@checked(old('gender', 'male') === 'male')>
+											@checked(old('gender', $formDefaults['gender'] ?? 'male') === 'male')>
 										<label class="form-check-label  mb-0 mt-0" for="admission-gender-male">
 											Male
 										</label>
@@ -178,7 +192,7 @@
 											id="admission-gender-female"
 											name="gender"
 											value="female"
-											@checked(old('gender') === 'female')>
+											@checked(old('gender', $formDefaults['gender'] ?? 'male') === 'female')>
 										<label class="form-check-label  mt-0 mb-0" for="admission-gender-female">
 											Female
 										</label>
@@ -191,7 +205,7 @@
 											id="admission-gender-other"
 											name="gender"
 											value="other"
-											@checked(old('gender') === 'other')>
+											@checked(old('gender', $formDefaults['gender'] ?? 'male') === 'other')>
 										<label class="form-check-label  mt-0 mb-0" for="admission-gender-other">
 											Other
 										</label>
@@ -232,7 +246,7 @@
 					<div class="form-row">
 					<div class="form-group col-12">
 						<label class="form-label required">Postal Address</label>
-						<textarea class="form-control admission-textarea-address @error('postal_address') is-invalid @enderror" name="postal_address" rows="1" placeholder="Enter complete postal address..." required>{{ old('postal_address') }}</textarea>
+						<textarea class="form-control admission-textarea-address @error('postal_address') is-invalid @enderror" name="postal_address" rows="1" placeholder="Enter complete postal address..." required>{{ old('postal_address', $formDefaults['postal_address'] ?? '') }}</textarea>
 						@error('postal_address')
 							<div class="field-error">{{ $message }}</div>
 						@enderror
@@ -391,7 +405,7 @@
 					<div class="form-row">
 						<div class="form-group col-12">
 							<label class="form-label required">Remarks</label>
-							<textarea class="form-control admission-textarea-remarks @error('remarks') is-invalid @enderror" name="remarks" rows="1" placeholder="Remarks" required>{{ old('remarks') }}</textarea>
+							<textarea class="form-control admission-textarea-remarks @error('remarks') is-invalid @enderror" name="remarks" rows="1" placeholder="Remarks" required>{{ old('remarks', $formDefaults['remarks'] ?? '') }}</textarea>
 							@error('remarks')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -461,6 +475,17 @@
 		.required::after {
 			content: ' *';
 			color: #e53935;
+		}
+
+		.admission-prefill-alert {
+			margin-bottom: 16px;
+			border-radius: 10px;
+		}
+
+		.field-help {
+			margin-top: 6px;
+			font-size: 12px;
+			color: #54667a;
 		}
 
 		.admission-form .form-row {
@@ -1003,19 +1028,21 @@
 			const rollNumberEl = document.getElementById('admission-roll-number');
 			const receiptNumberEl = document.getElementById('admission-receipt-number');
 			const batchEl = document.querySelector('select[name="batch_id"]');
-			const leadId = @json(optional($lead)->id);
+			const leadId = @json(!empty($isAnotherCourseEnrollment) ? null : optional($lead)->id);
 			const previewUrl = @json(route('admission.preview-numbers'));
 			const existingRegFromServer = @json($existingRegistration?->registration_number);
 
 			function refreshPreviewNumbers() {
 				const campusId = campusEl.value;
 				const batchId = batchEl ? batchEl.value : '';
+				const programId = programEl.value;
 				if (!batchId) {
 					rollNumberEl.value = '';
 				}
 				if (!campusId) return;
 				const params = new URLSearchParams({ campus_id: campusId });
 				if (batchId) params.append('batch_id', batchId);
+				if (programId) params.append('program_id', programId);
 				if (leadId) params.append('lead_id', leadId);
 				fetch(previewUrl + '?' + params.toString(), {
 					headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },

@@ -176,6 +176,7 @@ class AppServiceProvider extends ServiceProvider
             'training_followups' => 0,
             'training_transfers' => 0,
             'training_all_leads' => 0,
+            'training_today_leads' => 0,
             'training_web_leads' => 0,
             'coworking_followups' => 0,
             'all_registrations' => 0,
@@ -240,6 +241,13 @@ class AppServiceProvider extends ServiceProvider
                     Lead::query()->training(),
                     $user
                 )->count();
+
+                $sidebarCounts['training_today_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->training(),
+                    $user
+                )
+                    ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                    ->count();
             }
 
             if ($can('lead.followup.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
