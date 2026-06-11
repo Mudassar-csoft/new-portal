@@ -88,6 +88,9 @@ class AdmissionController extends Controller
                 ->values();
         }
 
+        $availableProgramCount = $programs->count();
+        $hasAlternativePrograms = $availableProgramCount > 0;
+
         $programMap = $programs->mapWithKeys(fn ($p) => [
             (string) $p->id => [
                 'fee' => (float) ($p->fee ?? 0),
@@ -142,6 +145,8 @@ class AdmissionController extends Controller
             'formDefaults',
             'isAnotherCourseEnrollment',
             'disallowedProgramIds',
+            'availableProgramCount',
+            'hasAlternativePrograms',
             'existingRegistration',
             'programMap',
             'discountMap',

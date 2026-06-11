@@ -40,9 +40,15 @@
 						<input type="hidden" name="source_admission_id" value="{{ $sourceAdmission->id }}">
 					@endif
 					@if(!empty($isAnotherCourseEnrollment))
-						<div class="alert alert-info admission-prefill-alert">
-							Previous student details were loaded. Select a different course to create the new admission.
-						</div>
+						@if(!empty($hasAlternativePrograms))
+							<div class="admission-prefill-alert">
+								Student details were loaded from the previous admission. Choose a new course to continue.
+							</div>
+						@else
+							<div class="admission-prefill-alert admission-prefill-alert--warning">
+								Student details were loaded, but no other course is available for enrollment right now.
+							</div>
+						@endif
 					@endif
 					<div class="form-row">
 						<div class="form-group col-md-3">
@@ -61,7 +67,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Course</label>
-							<select class="form-control training-course-select @error('program_id') is-invalid @enderror" name="program_id" required>
+							<select class="form-control training-course-select @error('program_id') is-invalid @enderror" name="program_id" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms)) required>
 								<option value="">-Select-</option>
 								@foreach($programs ?? [] as $program)
 									<option value="{{ $program->id }}"
@@ -76,7 +82,13 @@
 								@endforeach
 							</select>
 							@if(!empty($isAnotherCourseEnrollment))
-								<div class="field-help">The current enrolled course is hidden here. Choose another course.</div>
+								<div class="field-help">
+									@if(!empty($hasAlternativePrograms))
+										The current enrolled course is hidden here. Choose another course.
+									@else
+										No other course is available to select.
+									@endif
+								</div>
 							@endif
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
@@ -430,7 +442,7 @@
 
 						<div  class="form-actions mb-2 mt-3 text-right">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;"> Admission Now</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Admission Now</button>
 
 							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem; ">Cancel</a>
 						</div>
@@ -480,6 +492,18 @@
 		.admission-prefill-alert {
 			margin-bottom: 16px;
 			border-radius: 10px;
+			padding: 12px 16px;
+			border: 1px solid #cae5ff;
+			background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 100%);
+			color: #135898;
+			font-size: 14px;
+			font-weight: 600;
+		}
+
+		.admission-prefill-alert--warning {
+			border-color: #f5d18b;
+			background: linear-gradient(135deg, #fffaf0 0%, #fff4db 100%);
+			color: #8a5b00;
 		}
 
 		.field-help {
