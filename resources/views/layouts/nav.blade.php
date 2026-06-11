@@ -310,7 +310,7 @@
                 </span>
                 <ul>
                     @if($canProgrammeCreate)
-                        <li><a href="{{ route('program.create') }}" class="stage-link"><span class="lbl">Create Program</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_create'] ?? 0)) }}</span></a></li>
+                        <li><a href="{{ route('program.create') }}" class="stage-link"><span class="lbl">Create Program</span></a></li>
                     @endif
                     @if($canProgrammeView)
                         <li><a href="{{ route('program.index', ['scope' => 'ongoing']) }}" class="stage-link"><span class="lbl">Ongoing</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['program_ongoing'] ?? 0)) }}</span></a></li>
