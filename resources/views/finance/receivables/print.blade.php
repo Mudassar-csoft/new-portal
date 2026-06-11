@@ -243,7 +243,7 @@
             display: block;
             color: #4b4b4b;
             line-height: 1.35;
-            white-space: pre-line;
+            /* white-space: pre-line; */
             word-break: break-word;
         }
 
@@ -350,8 +350,8 @@
 
         .approved-block {
             position: absolute;
-            right: 22px;
-            bottom: 42mm;
+            right: 66px;
+            bottom: 57mm    ;
             width: 54mm;
             color: #222;
             text-align: left;
@@ -359,24 +359,26 @@
         }
 
         .approved-label {
-            font-size: 5.6mm;
+            font-size: 16px;
             font-weight: 400;
-            margin-bottom: 12mm;
+            margin-bottom: 35px;
+            text-align: end;
         }
 
         .signature-line {
             border-top: 1px solid #2b2b2b;
             padding-top: 3mm;
+            text-align: right;
         }
 
         .signature-name {
-            font-size: 6.8mm;
+            font-size: 16px;
             line-height: 1.1;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .signature-title {
-            margin-top: 1.8mm;
+            margin-top: 14px;
             font-size: 4mm;
         }
 
