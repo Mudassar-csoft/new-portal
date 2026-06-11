@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FinanceOtherCharge;
+use App\Models\LeadFollowup;
 use App\Models\WebLead;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -53,7 +57,7 @@ class WebLeadController extends Controller
     public function index(Request $request): View
     {
         $webLeads = WebLead::query()
-            ->whereIn('status', [WebLead::STATUS_NEW, WebLead::STATUS_NOT_INTERESTED])
+            ->where('status', WebLead::STATUS_NEW)
             ->with(['convertedLead', 'handledBy'])
             ->latest('submitted_at')
             ->latest('id')
@@ -64,7 +68,7 @@ class WebLeadController extends Controller
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Website Enrollment',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
             WebLead::SOURCE_BROCHURE_DOWNLOAD => 'Brochure Download',
-            'web_not_interest' => 'Web Not Interest',
+            WebLead::SOURCE_FEE_ALERT => 'Fee Alert',
         ];
 
         $badgeColors = [
@@ -72,25 +76,25 @@ class WebLeadController extends Controller
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'badge-success',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'badge-info',
             WebLead::SOURCE_BROCHURE_DOWNLOAD => 'badge-warning',
-            'web_not_interest' => 'badge-danger',
+            WebLead::SOURCE_FEE_ALERT => 'badge-secondary',
         ];
 
         $tabCounts = [];
         foreach ($tabs as $sourceType => $label) {
-            $tabCounts[$sourceType] = $sourceType === 'web_not_interest'
-                ? $webLeads->where('status', WebLead::STATUS_NOT_INTERESTED)->count()
-                : $webLeads
-                    ->where('status', WebLead::STATUS_NEW)
-                    ->where('source_type', $sourceType)
-                    ->count();
+            $tabCounts[$sourceType] = $webLeads
+                ->where('status', WebLead::STATUS_NEW)
+                ->where('source_type', $sourceType)
+                ->count();
         }
+
+        $notificationTabs = $this->notificationTabs($tabs, $tabCounts);
 
         $activeTab = $request->string('tab')->toString();
         if (! array_key_exists($activeTab, $tabs)) {
             $activeTab = array_key_first($tabs);
         }
 
-        return view('web_leads.index', compact('webLeads', 'tabs', 'badgeColors', 'tabCounts', 'activeTab'));
+        return view('web_leads.index', compact('webLeads', 'tabs', 'badgeColors', 'tabCounts', 'activeTab', 'notificationTabs'));
     }
 
     public function show(WebLead $webLead): View
@@ -115,7 +119,7 @@ class WebLeadController extends Controller
         ]);
 
         return redirect()
-            ->route('web-leads.index', ['tab' => 'web_not_interest'])
+            ->route('web-leads.index')
             ->with('status', 'Web lead marked as not interested.');
     }
 
@@ -149,6 +153,7 @@ class WebLeadController extends Controller
             'website enrollment', 'website enrollement' => WebLead::SOURCE_WEBSITE_ENROLLMENT,
             'website admission' => WebLead::SOURCE_WEBSITE_ADMISSION,
             'brochure', 'brochure download' => WebLead::SOURCE_BROCHURE_DOWNLOAD,
+            'feealert', 'fee alert', 'fee_alert', 'fee-alert' => WebLead::SOURCE_FEE_ALERT,
             default => Str::of($value)->trim()->lower()->replace([' ', '-'], '_')->toString(),
         };
     }
@@ -185,5 +190,79 @@ class WebLeadController extends Controller
         $providedToken = (string) $request->header('X-Web-Lead-Token', '');
 
         abort_unless(hash_equals($expectedToken, $providedToken), 401, 'Invalid web lead token.');
+    }
+
+    private function notificationTabs(array $tabs, array $tabCounts): array
+    {
+        $notificationTabs = [];
+
+        foreach ($tabs as $key => $label) {
+            $notificationTabs[$key] = [
+                'label' => $label,
+                'count' => $tabCounts[$key] ?? 0,
+                'url' => route('web-leads.index', ['tab' => $key]),
+                'external' => false,
+            ];
+        }
+
+        $notificationTabs['overdue_invoices'] = [
+            'label' => 'Overdue Invoices',
+            'count' => $this->overdueInvoiceCount(),
+            'url' => route('finance.receivables', ['status' => 'overdue']),
+            'external' => true,
+        ];
+
+        $notificationTabs['follow_up'] = [
+            'label' => 'Follow Up',
+            'count' => $this->followupNotificationCount(),
+            'url' => route('leads.followups'),
+            'external' => true,
+        ];
+
+        return $notificationTabs;
+    }
+
+    private function overdueInvoiceCount(): int
+    {
+        if (! Schema::hasTable('finance_other_charges')
+            || ! Schema::hasColumn('finance_other_charges', 'status')
+            || ! Schema::hasColumn('finance_other_charges', 'balance_amount')
+        ) {
+            return 0;
+        }
+
+        FinanceOtherCharge::syncLifecycleStatuses();
+
+        return (int) $this->scopeQueryToCurrentUserCampus(FinanceOtherCharge::query())
+            ->where('status', 'overdue')
+            ->count();
+    }
+
+    private function followupNotificationCount(): int
+    {
+        if (! Schema::hasTable('lead_followups') || ! Schema::hasTable('leads')) {
+            return 0;
+        }
+
+        return (int) LeadFollowup::query()
+            ->whereNotNull('next_action_date')
+            ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeQueryToCurrentUserCampus($leadQuery->training()))
+            ->distinct('lead_id')
+            ->count('lead_id');
+    }
+
+    private function scopeQueryToCurrentUserCampus(Builder $query): Builder
+    {
+        $user = auth()->user();
+
+        if (! $user || $user->isAdmin()) {
+            return $query;
+        }
+
+        $campusId = (int) ($user->campus_id ?? 0);
+
+        return $campusId > 0
+            ? $query->where('campus_id', $campusId)
+            : $query;
     }
 }

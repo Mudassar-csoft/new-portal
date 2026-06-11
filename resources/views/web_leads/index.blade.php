@@ -21,11 +21,18 @@
 		<div id="web-lead-content" class="follow-content p-0 m-0">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
 				<div class="follow-tab-bar m-0 pt-3 small" style="gap:2px;">
-					@foreach ($tabs as $key => $label)
-						<div class="follow-tab {{ $activeTab === $key ? 'active' : '' }}" data-tab="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
-							<span class="label-text">{{ $label }}</span>
-							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-						</div>
+					@foreach (($notificationTabs ?? []) as $key => $tab)
+						@if($tab['external'] ?? false)
+							<a class="follow-tab notification-link-tab" href="{{ $tab['url'] }}" data-external-tab="true" style="display: flex; align-items: center; gap: 3px;">
+								<span class="label-text">{{ $tab['label'] }}</span>
+								<span class="badge {{ $badgeColors[$key] ?? 'badge-danger' }}">{{ $tab['count'] ?? 0 }}</span>
+							</a>
+						@else
+							<div class="follow-tab {{ $activeTab === $key ? 'active' : '' }}" data-tab="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
+								<span class="label-text">{{ $tab['label'] }}</span>
+								<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tab['count'] ?? 0 }}</span>
+							</div>
+						@endif
 					@endforeach
 				</div>
 
@@ -65,7 +72,7 @@
 								@foreach ($webLeads as $idx => $webLead)
 									@php
 										$actionId = 'web-lead-action-' . Str::slug($webLead->full_name ?: 'web-lead') . '-' . $loop->iteration;
-										$rowTab = $webLead->status === WebLead::STATUS_NOT_INTERESTED ? 'web_not_interest' : $webLead->source_type;
+										$rowTab = $webLead->source_type;
 									@endphp
 									<tr data-tab="{{ $rowTab }}">
 										<td class="text-start">{{ $idx + 1 }}</td>
@@ -231,6 +238,13 @@
 			white-space: nowrap;
 		}
 
+		.notification-link-tab,
+		.notification-link-tab:hover,
+		.notification-link-tab:focus {
+			color: inherit;
+			text-decoration: none !important;
+		}
+
 		.table a {
 			border-bottom: none !important;
 		}
@@ -302,6 +316,10 @@
 				var tabs = document.querySelectorAll('.follow-tab');
 				tabs.forEach(function (tab) {
 					tab.addEventListener('click', function () {
+						if (this.getAttribute('data-external-tab') === 'true') {
+							return;
+						}
+
 						tabs.forEach(function (t) { t.classList.remove('active'); });
 						this.classList.add('active');
 						filterByStatus(this.getAttribute('data-tab'));

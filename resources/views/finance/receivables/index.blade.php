@@ -315,7 +315,7 @@
                                             <span class="badge {{ $statusColors[$charge->status] ?? 'badge-secondary' }}">{{ ucfirst($charge->status) }}</span>
                                         </td>
                                         <td>
-                                            <div class="dropdown">
+                                            <div class="dropdown invoice-action-dropdown">
                                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                                                     Action
                                                 </button>
@@ -424,6 +424,11 @@
         }
         .receivables-list-table-wrap .dropdown-menu {
             z-index: 1050;
+        }
+        .invoice-floating-menu {
+            position: fixed !important;
+            z-index: 99999 !important;
+            min-width: 180px;
         }
         .receivables-list-table-wrap td:last-child,
         .receivables-list-table-wrap th:last-child {
@@ -588,6 +593,128 @@
             }
 
             recalculateTotals();
+
+            var activeInvoiceMenu = null;
+            var activeInvoiceButton = null;
+
+            function restoreInvoiceMenu() {
+                if (!activeInvoiceMenu) {
+                    return;
+                }
+
+                var parent = activeInvoiceMenu.__invoiceDropdownParent;
+                if (parent) {
+                    parent.appendChild(activeInvoiceMenu);
+                }
+
+                activeInvoiceMenu.classList.remove('invoice-floating-menu', 'show');
+                activeInvoiceMenu.removeAttribute('style');
+
+                if (activeInvoiceButton) {
+                    activeInvoiceButton.setAttribute('aria-expanded', 'false');
+                    var dropdown = activeInvoiceButton.closest('.invoice-action-dropdown');
+                    if (dropdown) {
+                        dropdown.classList.remove('show', 'open');
+                    }
+                }
+
+                activeInvoiceMenu = null;
+                activeInvoiceButton = null;
+            }
+
+            function positionInvoiceMenu(menu, button) {
+                var rect = button.getBoundingClientRect();
+                var menuWidth = menu.offsetWidth || 180;
+                var menuHeight = menu.offsetHeight || 120;
+                var left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8));
+                var top = rect.bottom + 4;
+
+                if (top + menuHeight > window.innerHeight - 8) {
+                    top = Math.max(8, rect.top - menuHeight - 4);
+                }
+
+                menu.style.top = top + 'px';
+                menu.style.left = left + 'px';
+                menu.style.right = 'auto';
+                menu.style.transform = 'none';
+            }
+
+            function floatInvoiceMenu(button) {
+                var dropdown = button.closest('.invoice-action-dropdown');
+                var menu = dropdown ? dropdown.querySelector('.dropdown-menu') : null;
+
+                if (!dropdown || !menu) {
+                    return;
+                }
+
+                if (activeInvoiceMenu && activeInvoiceMenu !== menu) {
+                    restoreInvoiceMenu();
+                }
+
+                menu.__invoiceDropdownParent = dropdown;
+                activeInvoiceMenu = menu;
+                activeInvoiceButton = button;
+
+                document.body.appendChild(menu);
+                menu.classList.add('invoice-floating-menu', 'show');
+                button.setAttribute('aria-expanded', 'true');
+                dropdown.classList.add('show');
+                positionInvoiceMenu(menu, button);
+            }
+
+            document.querySelectorAll('.invoice-action-dropdown .dropdown-toggle').forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    if (activeInvoiceButton === this && activeInvoiceMenu) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        restoreInvoiceMenu();
+                        return;
+                    }
+
+                    var clickedButton = this;
+
+                    setTimeout(function () {
+                        var dropdown = clickedButton.closest('.invoice-action-dropdown');
+                        var menu = dropdown ? dropdown.querySelector('.dropdown-menu') : activeInvoiceMenu;
+
+                        if (!menu || (activeInvoiceMenu === menu && !menu.classList.contains('show'))) {
+                            restoreInvoiceMenu();
+                            return;
+                        }
+
+                        floatInvoiceMenu(clickedButton);
+                    }, 0);
+                }, true);
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!activeInvoiceMenu) {
+                    return;
+                }
+
+                if (activeInvoiceMenu.contains(event.target) && event.target.closest('.dropdown-item')) {
+                    setTimeout(restoreInvoiceMenu, 0);
+                    return;
+                }
+
+                if (activeInvoiceMenu.contains(event.target) || (activeInvoiceButton && activeInvoiceButton.contains(event.target))) {
+                    return;
+                }
+
+                restoreInvoiceMenu();
+            });
+
+            window.addEventListener('resize', function () {
+                if (activeInvoiceMenu && activeInvoiceButton) {
+                    positionInvoiceMenu(activeInvoiceMenu, activeInvoiceButton);
+                }
+            });
+
+            window.addEventListener('scroll', function () {
+                if (activeInvoiceMenu && activeInvoiceButton) {
+                    positionInvoiceMenu(activeInvoiceMenu, activeInvoiceButton);
+                }
+            }, true);
         });
     </script>
 @endpush
