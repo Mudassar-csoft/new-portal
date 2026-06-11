@@ -150,10 +150,10 @@
 			text-decoration: none;
 		}
 		.student-name-link--pending {
-			color: #54667a;
+			color: #0a6fd1;
 		}
 		.student-name-link--pending:hover {
-			color: #1f2d3d;
+			color: #0a6fd1;
 			border-bottom-color: #54667a;
 		}
 		.table-responsive {

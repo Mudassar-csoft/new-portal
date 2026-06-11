@@ -36,7 +36,7 @@
                 <div class="modal-header">
                     <div>
                         <h5 class="modal-title" id="invoice-payment-modal-title">Pay Invoice</h5>
-                        <div class="text-muted small">Collect payment after invoice creation using the selected method.</div>
+                        <!-- <div class="text-muted small">Collect payment after invoice creation using the selected method.</div> -->
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -48,12 +48,12 @@
 
                     <div class="invoice-payment-modal-summary">
                         <div>
-                            <div class="summary-kicker">Invoice</div>
-                            <div class="summary-value" data-payment-summary="invoice">{{ $paymentInvoiceNumber }}</div>
+                            <!-- <div class="summary-kicker">Invoice</div> -->
                             <div class="summary-subtitle" data-payment-summary="customer">{{ $paymentCustomerName }}</div>
+                            <div class="summary-value" data-payment-summary="invoice">{{ $paymentInvoiceNumber }}</div>
                         </div>
                         <div class="text-right">
-                            <div class="summary-kicker">Outstanding Balance</div>
+                            <!-- <div class="summary-kicker">Outstanding Balance</div> -->
                             <div class="summary-value text-primary" data-payment-summary="balance">Rs. {{ number_format($paymentBalanceAmount, 0) }}</div>
                         </div>
                     </div>
@@ -169,14 +169,18 @@
                 margin-bottom: 4px;
             }
             .invoice-payment-modal-summary .summary-value {
-                font-size: 22px;
-                font-weight: 700;
+                font-size: 16px;
+                font-weight: 600;
                 color: #0f172a;
                 line-height: 1.15;
             }
             .invoice-payment-modal-summary .summary-subtitle {
                 margin-top: 4px;
                 color: #475569;
+                font-weight: 600;
+                font-size: 16px;
+
+
             }
             @media (max-width: 760px) {
                 .invoice-payment-modal-summary {
