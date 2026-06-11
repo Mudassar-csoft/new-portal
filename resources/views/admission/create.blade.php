@@ -151,7 +151,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">National Identity Card (CNIC)</label>
-							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic', $formDefaults['cnic'] ?? '') }}" placeholder="Numbers only" required>
+							<input type="text" class="form-control @error('cnic') is-invalid @enderror" name="cnic" value="{{ old('cnic', $formDefaults['cnic'] ?? '') }}" placeholder="13 digits without dashes" pattern="[0-9]{13}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);" required>
 							@error('cnic')
 								<div class="field-error">{{ $message }}</div>
 							@enderror

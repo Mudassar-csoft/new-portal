@@ -236,6 +236,51 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
             ->assertJsonValidationErrors(['program_id']);
     }
 
+    public function test_admission_store_normalizes_dashed_cnic_before_saving(): void
+    {
+        $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
+
+        $campus = $this->createCampus('Epsilon Campus', 'EPS');
+        $program = $this->createProgram('TRN407', 'CNIC Normalization Course');
+        $batch = $this->createBatch($campus, $program, 'EPS-B1');
+        $user = $this->createScopedUser($campus, [$admissionCreate]);
+
+        $this->actingAs($user)
+            ->postJson(route('admission.store'), [
+                'campus_id' => $campus->id,
+                'program_id' => $program->id,
+                'batch_id' => $batch->id,
+                'student_name' => 'Dashed CNIC Student',
+                'phone' => '03200000141',
+                'guardian_name' => 'Guardian Dashed',
+                'guardian_phone' => '03200000666',
+                'cnic' => '35202-1234567-1',
+                'passport_number' => 'PASS1411',
+                'email' => 'dashed.cnic.student@example.test',
+                'education' => 'Intermediate',
+                'date_of_birth' => '2001-01-01',
+                'gender' => 'male',
+                'country' => 'Pakistan',
+                'city' => 'Lahore',
+                'area' => 'Johar Town',
+                'postal_address' => '66 Dashed Street, Lahore',
+                'admission_date' => now()->toDateString(),
+                'fee_type' => 'full',
+                'remarks' => 'Store admission with dashed CNIC.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'Admission created successfully.');
+
+        $this->assertDatabaseHas('registrations', [
+            'student_name' => 'Dashed CNIC Student',
+            'cnic' => '3520212345671',
+        ]);
+        $this->assertDatabaseHas('admissions', [
+            'student_name' => 'Dashed CNIC Student',
+            'cnic' => '3520212345671',
+        ]);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([

@@ -202,6 +202,10 @@ class AdmissionController extends Controller
 
     public function store(Request $request): \Illuminate\Http\Response|RedirectResponse|JsonResponse
     {
+        $request->merge([
+            'cnic' => preg_replace('/\D+/', '', (string) $request->input('cnic')),
+        ]);
+
         $validated = $request->validate([
             'lead_id' => ['nullable', 'exists:leads,id'],
             'source_registration_id' => ['nullable', 'exists:registrations,id'],
@@ -213,7 +217,7 @@ class AdmissionController extends Controller
             'phone' => ['required', 'regex:/^03\d{9}$/'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'guardian_phone' => ['required', 'string', 'max:50'],
-            'cnic' => ['required', 'string', 'max:50'],
+            'cnic' => ['required', 'regex:/^\d{13}$/'],
             'passport_number' => ['nullable', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'education' => ['required', 'string', 'max:255'],
@@ -233,6 +237,8 @@ class AdmissionController extends Controller
             'fee_type' => ['required', 'in:full,installments'],
             'remarks' => ['required', 'string', 'max:1000'],
             'receipt_number' => ['nullable', 'string', 'max:100'],
+        ], [
+            'cnic.regex' => 'The CNIC must be exactly 13 digits.',
         ]);
 
         $validated['country'] = $validated['country'] ?? null;
