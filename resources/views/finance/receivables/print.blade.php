@@ -107,7 +107,8 @@
             min-width: 0;
             display: flex;
             align-items: center;
-            margin-left: 30px;
+            margin-left: 30px !important;
+            margin-right: -17mm;
         }
 
         .invoice-to-title {
@@ -154,40 +155,33 @@
         }
 
         .summary-grid {
-            margin-top: 4mm;
+            margin-top: 5mm;
             width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid #d8e2e7;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, auto));
+            column-gap: 12mm;
+            padding: 1mm 0 0mm;
+            /* border-bottom: 1px solid #f0f0f0; */
+            background: #fff;
         }
 
         .summary-label {
-            background: #00a8ff;
-            color: #20262d;
-            border: 1px solid #d8e2e7;
-            padding: 3mm 3.2mm;
-            font-size: 3.7mm;
+            color: #2e2e32;
+            font-size: 3.9mm;
             font-weight: 700;
-            text-align: left;
-            vertical-align: middle;
+            line-height: 1.1;
+            letter-spacing: 0;
+            white-space: nowrap;
         }
 
         .summary-value {
-            border: 1px solid #d8e2e7;
-            padding: 3mm 3.2mm;
-            font-size: 3.7mm;
+            margin-top: 2.2mm;
+            color: #2e2e32;
+            font-size: 14px;
             font-weight: 700;
-            line-height: 1.1;
+            line-height: 1.12;
+            letter-spacing: 0;
             word-break: break-word;
-            vertical-align: top;
-        }
-
-        .summary-meta {
-            margin-top: 1.2mm;
-            font-size: 3.2mm;
-            color: #5a5a5a;
-            font-weight: 400;
         }
 
         .items-table {
@@ -544,30 +538,24 @@
             @endif
         </section>
 
-        <table class="summary-grid">
-            <thead>
-                <tr>
-                    <th class="summary-label">Total Due</th>
-                    <th class="summary-label">Invoice No.</th>
-                    <th class="summary-label">Date</th>
-                    <th class="summary-label">Account</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="summary-value">{{ number_format((float) $charge->net_amount, 0) }}</td>
-                    <td class="summary-value">
-                        {{ $invoiceNumber }}
-                        <!-- <div class="summary-meta">Campus: {{ $charge->campus->code ?? 'N/A' }}</div> -->
-                    </td>
-                    <td class="summary-value">{{ $invoiceDate }}</td>
-                    <td class="summary-value">
-                        {{ $accountLabel }}
-                        <!-- <div class="summary-meta">Due: {{ $dueDate }} <br> Status: {{ $statusLabel }}</div> -->
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <section class="summary-grid" aria-label="Invoice summary">
+            <div class="summary-item">
+                <div class="summary-label">Total Due </div>
+                <div class="summary-value">{{ number_format((float) $charge->net_amount, 0) }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Invoice No.</div>
+                <div class="summary-value">{{ $invoiceNumber }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Date </div>
+                <div class="summary-value">{{ $invoiceDate }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Account </div>
+                <div class="summary-value">{{ $accountLabel }}</div>
+            </div>
+        </section>
 
         <table class="items-table">
             <colgroup>
