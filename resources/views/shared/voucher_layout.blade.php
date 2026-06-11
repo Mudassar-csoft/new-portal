@@ -11,6 +11,8 @@
     $rollNo = $rollNo ?? '-';
     $campusCode = $campusCode ?? '-';
     $campusName = $campusName ?? 'Branch';
+    $showRegistrationFeeRow = $showRegistrationFeeRow ?? true;
+    $showCourseTuitionFeeRow = $showCourseTuitionFeeRow ?? true;
     $registrationFee = (float) ($registrationFee ?? 0);
     $courseTuitionFee = (float) ($courseTuitionFee ?? 0);
     $examFee = (float) ($examFee ?? 0);
@@ -29,10 +31,13 @@
             return '-';
         }
 
-        return $currency . ' ' . number_format((float) $amount, 0, '.', '');
+        $normalizedAmount = round((float) $amount, 2);
+        $decimals = abs($normalizedAmount - floor($normalizedAmount)) > 0 ? 2 : 0;
+
+        return $currency . ' ' . number_format($normalizedAmount, $decimals, '.', ',');
     };
 
-    $amountWordsSeed = number_format($totalPaid, 2, '.', '');
+    $amountInWords = \App\Support\AmountToWords::forRupees($totalPaid);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -258,14 +263,18 @@
                     <div class="charges-wrap">
                         <table class="charges-table">
                             <tbody>
-                                <tr>
-                                    <td>Registration Fee</td>
-                                    <td>{{ $formatAmount($registrationFee) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Course Tuition Fee</td>
-                                    <td>{{ $formatAmount($courseTuitionFee) }}</td>
-                                </tr>
+                                @if($showRegistrationFeeRow)
+                                    <tr>
+                                        <td>Registration Fee</td>
+                                        <td>{{ $formatAmount($registrationFee) }}</td>
+                                    </tr>
+                                @endif
+                                @if($showCourseTuitionFeeRow)
+                                    <tr>
+                                        <td>Course Tuition Fee</td>
+                                        <td>{{ $formatAmount($courseTuitionFee) }}</td>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <td>Exam Fee</td>
                                     <td>{{ $formatAmount($examFee) }}</td>
@@ -311,7 +320,7 @@
                         <tr>
                             <td>
                                 Amount in Words:
-                                <span class="amountInWords" data-amount="{{ $amountWordsSeed }}"></span>
+                                <span class="amountInWords">{{ $amountInWords }}</span>
                                 Only.
                             </td>
                         </tr>
@@ -338,64 +347,7 @@
     </div>
 
     <script>
-        function numberToWords(number) {
-            var digit = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-            var elevenSeries = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            var countingByTens = ['Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-            var shortScale = ['', 'Thousand', 'Million', 'Billion', 'Trillion'];
-
-            number = String(number).replace(/[\, ]/g, '');
-            if (number !== String(parseFloat(number))) {
-                return 'Zero';
-            }
-
-            var decimalIndex = number.indexOf('.');
-            if (decimalIndex === -1) {
-                decimalIndex = number.length;
-            }
-
-            if (decimalIndex > 15) {
-                return 'Amount Too Large';
-            }
-
-            var digits = number.split('');
-            var words = '';
-            var scaleIndex = 0;
-
-            for (var i = 0; i < decimalIndex; i++) {
-                if ((decimalIndex - i) % 3 === 2) {
-                    if (digits[i] === '1') {
-                        words += elevenSeries[Number(digits[i + 1])] + ' ';
-                        i++;
-                        scaleIndex = 1;
-                    } else if (digits[i] !== '0') {
-                        words += countingByTens[digits[i] - 2] + ' ';
-                        scaleIndex = 1;
-                    }
-                } else if (digits[i] !== '0') {
-                    words += digit[digits[i]] + ' ';
-                    if ((decimalIndex - i) % 3 === 0) {
-                        words += 'Hundred ';
-                    }
-                    scaleIndex = 1;
-                }
-
-                if ((decimalIndex - i) % 3 === 1) {
-                    if (scaleIndex) {
-                        words += shortScale[(decimalIndex - i - 1) / 3] + ' ';
-                    }
-                    scaleIndex = 0;
-                }
-            }
-
-            return words.replace(/\s+/g, ' ').trim() || 'Zero';
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.amountInWords').forEach(function (element) {
-                element.textContent = numberToWords(element.getAttribute('data-amount'));
-            });
-
             window.print();
         });
     </script>

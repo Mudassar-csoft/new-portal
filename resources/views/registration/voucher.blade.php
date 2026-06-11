@@ -12,6 +12,7 @@
     $rollNo = optional($reg->admission)->roll_number ?? '-';
     $campusCode = optional($reg->campus)->code ?? '-';
     $campusName = optional($reg->campus)->name ?? 'Branch';
+    $showCourseTuitionFeeRow = false;
     $registrationFee = (float) ($reg->fee ?? 0);
     $courseTuitionFee = 0;
     $examFee = 0;

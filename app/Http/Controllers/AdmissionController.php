@@ -649,16 +649,14 @@ class AdmissionController extends Controller
         $admission->load(['program', 'campus', 'batch', 'registration.lead']);
 
         $fees = FeeCollection::query()
-            ->where(function ($q) use ($admission) {
-                $q->where('admission_id', $admission->id)
-                    ->orWhere('registration_id', $admission->registration_id);
-            })
+            ->where('admission_id', $admission->id)
+            ->where('fee_type', 'admission')
             ->where('status', 'paid')
             ->get();
 
-        $registrationFeeTotal = (float) $fees->where('fee_type', 'registration')->sum('net_amount');
-        $admissionFeeTotal = (float) $fees->where('fee_type', 'admission')->sum('net_amount');
-        $totalPaid = $registrationFeeTotal + $admissionFeeTotal;
+        $registrationFeeTotal = 0.0;
+        $admissionFeeTotal = (float) $fees->sum('net_amount');
+        $totalPaid = $admissionFeeTotal;
 
         return view('admission.voucher', compact(
             'admission',
