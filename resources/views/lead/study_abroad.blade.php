@@ -7,21 +7,21 @@
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Full Name (As Per CNIC)</label>
-            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name') }}">
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name" value="{{ old('name', $leadPrefill['name'] ?? '') }}">
             @error('name')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Primary Contact Number</label>
-            <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone') }}">
+            <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone', $leadPrefill['phone'] ?? '') }}">
             @error('phone')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label">Email Adress</label>
-            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email') }}">
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email', $leadPrefill['email'] ?? '') }}">
             @error('email')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -154,14 +154,14 @@
         </div>
          <div class="form-group col-lg-3 col-md-6">
             <label class="form-label">Area</label>
-            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Area" value="{{ old('details.area') }}">
+            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Area" value="{{ old('details.area', data_get($leadPrefill, 'details.area')) }}">
             @error('details.area')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
           <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Date Of Birth</label>
-            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
+            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at', data_get($leadPrefill, 'details.next_followup_at')) }}">
             @error('')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -170,13 +170,13 @@
     <div class="form-row">
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label" for="qualification">Academic Qualification</label>
-            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Academic Qualification" value="{{ old('details.area') }}">
+            <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Academic Qualification" value="{{ old('details.area', data_get($leadPrefill, 'details.area')) }}">
  
          </div>
      
          <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Degree Completion Date</label>
-            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at') }}">
+            <input type="datetime-local" name="details[next_followup_at]" class="form-control @error('details.next_followup_at') is-invalid @enderror" value="{{ old('details.next_followup_at', data_get($leadPrefill, 'details.next_followup_at')) }}">
             @error('')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -186,7 +186,7 @@
       <!-- Academic Performance -->
       <div class="form-group col-lg-3 col-md-6">
         <label class="form-label" for="grades">Academic Grades/CGPA</label>
-        <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Grades/CGPA" value="{{ old('details.area') }}">
+        <input type="text" name="details[area]" class="form-control @error('details.area') is-invalid @enderror" placeholder="Enter Grades/CGPA" value="{{ old('details.area', data_get($leadPrefill, 'details.area')) }}">
 
       </div>
 
@@ -225,14 +225,14 @@
         </div> -->
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Destination Country</label>
-            <input type="text" name="details[preferred_country]" class="form-control @error('details.preferred_country') is-invalid @enderror" placeholder="Preferred Country" value="{{ old('details.preferred_country') }}">
+            <input type="text" name="details[preferred_country]" class="form-control @error('details.preferred_country') is-invalid @enderror" placeholder="Preferred Country" value="{{ old('details.preferred_country', data_get($leadPrefill, 'details.preferred_country')) }}">
             @error('details.preferred_country')
                 <div class="field-error">{{ $message }}</div>
             @enderror
         </div>
         <div class="form-group col-lg-3 col-md-6">
             <label class="form-label required">Preferred Study Program</label>
-            <input type="text" name="details[preferred_study_program]" class="form-control @error('details.preferred_study_program') is-invalid @enderror" placeholder="Preferred Program" value="{{ old('details.preferred_study_program') }}">
+            <input type="text" name="details[preferred_study_program]" class="form-control @error('details.preferred_study_program') is-invalid @enderror" placeholder="Preferred Program" value="{{ old('details.preferred_study_program', data_get($leadPrefill, 'details.preferred_study_program')) }}">
             @error('details.preferred_study_program')
                 <div class="field-error">{{ $message }}</div>
             @enderror
@@ -290,7 +290,7 @@
     <div class="form-row">
         <div class="form-group col-12">
             <label class="form-label required">Remarks</label>
-            <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks') }}</textarea>
+            <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks')) }}</textarea>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror

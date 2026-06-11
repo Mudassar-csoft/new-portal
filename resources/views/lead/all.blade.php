@@ -81,33 +81,39 @@
 										$actionId = 'action-' . Str::slug($row->name ?? 'lead') . '-' . $loop->iteration;
 										$statusKey = $row->status ?? 'pending';
 										$statusLabel = $statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
+										$labelClass = match ($statusKey) {
+											'pending' => 'label-primary',
+											'registered' => 'label-info',
+											'enrolled' => 'label-warning',
+											'not_interesting' => 'label-danger',
+											default => 'label-default',
+										};
 									@endphp
 									<tr data-status="{{ $statusKey }}">
 										<td class="text-center">{{ $idx + 1 }}</td>
-										<td>{{ $row->name ?? 'N/A' }}</td>
-										<td>{{ $row->phone ?? 'N/A' }}</td>
 										<td>
-											@php
-												$labelClass = match ($statusKey) {
-													'pending' => 'label-primary',
-													'registered' => 'label-info',
-													'enrolled' => 'label-warning',
-													'not_interesting' => 'label-danger',
-													default => 'label-default',
-												};
-											@endphp
+											<a href="{{ route('leads.show', $row) }}" class="lead-link">
+												{{ $row->name ?? 'N/A' }}
+											</a>
+										</td>
+										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
+										<td>{{ $row->phone ?? 'N/A' }}</td>
+										<td>{{ $row->campus?->code ?? $row->campus?->name ?? 'N/A' }}</td>
+										<td>{{ $row->createdBy?->name ?? 'Unknown' }}</td>
+										<td>
 											<span class="label {{ $labelClass }}">
 												{{ $statusLabel }}
 											</span>
 										</td>
-										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
+										<td>{{ $row->origin ?? 'N/A' }}</td>
+										<td class="text-center">{{ (int) ($row->followups_count ?? 0) }}</td>
 										<td class=" action-cell">
 											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row])
 										</td>
 									</tr>
 								@empty
 									<tr>
-										<td colspan="6" class="text-center text-muted">No training leads found.</td>
+										<td colspan="10" class="text-center text-muted">No training leads found.</td>
 									</tr>
 								@endforelse
 							</tbody>

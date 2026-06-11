@@ -7,7 +7,7 @@
 	$editOnly = (bool) ($editOnly ?? false);
 	$canRegister = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
 	$canEnroll = !$isCoworkingLead && $leadStatus === 'registered';
-	$canTransfer = !in_array($leadStatus, ['registered', 'enrolled'], true);
+	$canTransfer = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
 	$registrationRoute = $isCoworkingLead
 		? route('coworking-registrations.create', ['lead_id' => $leadId])
 		: route('registration.create', ['lead_id' => $leadId]);
@@ -17,6 +17,8 @@
 	$registrationModalTitle = $isCoworkingLead
 		? 'Create New Coworking Space Registration (All fields marked with * are required)'
 		: 'Create New Registration (All fields marked with * are required)';
+	$canMarkNotInterested = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true)
+		&& auth()->user()?->hasAnyPermission('lead.followup.update');
 	$canAdminEdit = auth()->user()?->isAdmin();
 @endphp
 
@@ -40,11 +42,13 @@
 				z-index: auto !important;
 			}
 
-			.follow-action-dropdown .dropdown-item.lead-action-item {
+			.follow-action-dropdown .dropdown-item.lead-action-item,
+			.follow-action-dropdown form button.dropdown-item.lead-action-item {
 				display: flex !important;
 				align-items: center;
 				justify-content: flex-start;
 				gap: 8px;
+				width: 100%;
 				text-align: left !important;
 				padding: 5px 18px !important;
 				color: #303740 !important;
@@ -57,7 +61,9 @@
 			}
 
 			.follow-action-dropdown .dropdown-item.lead-action-item:hover,
-			.follow-action-dropdown .dropdown-item.lead-action-item:focus {
+			.follow-action-dropdown .dropdown-item.lead-action-item:focus,
+			.follow-action-dropdown form button.dropdown-item.lead-action-item:hover,
+			.follow-action-dropdown form button.dropdown-item.lead-action-item:focus {
 				background: #f7fafc !important;
 				color: #222b33 !important;
 				text-decoration: none;
@@ -117,6 +123,10 @@
 
 			.follow-action-dropdown .lead-action-item.lead-action-danger .lead-action-label {
 				color: #303740 !important;
+			}
+
+			.follow-action-dropdown form {
+				margin: 0;
 			}
 		</style>
 	@endpush
@@ -224,18 +234,23 @@
 					</span><span class="lead-action-label">Transfer Lead</span>
 				</a>
 			@endif
-			<a class="dropdown-item lead-action-item lead-action-danger" href="#">
-				<span class="lead-action-icon lead-icon-red" aria-hidden="true">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M9.4 2.75h5.2l6.65 6.65v5.2l-6.65 6.65H9.4l-6.65-6.65V9.4z"/>
-						<path d="m9 9 6 6"/>
-						<path d="m15 9-6 6"/>
-					</svg>
-				</span><span class="lead-action-label">Not Interested</span>
-			</a>
+			@if($canMarkNotInterested && !empty($leadId))
+				<form method="POST" action="{{ route('leads.not-interested', $leadId) }}" onsubmit="return confirm('Mark this lead as not interested?');">
+					@csrf
+					<button type="submit" class="dropdown-item lead-action-item lead-action-danger">
+						<span class="lead-action-icon lead-icon-red" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M9.4 2.75h5.2l6.65 6.65v5.2l-6.65 6.65H9.4l-6.65-6.65V9.4z"/>
+								<path d="m9 9 6 6"/>
+								<path d="m15 9-6 6"/>
+							</svg>
+						</span><span class="lead-action-label">Not Interested</span>
+					</button>
+				</form>
+			@endif
 		@endif
 		@if($canAdminEdit)
-			<a class="dropdown-item lead-action-item" href="#">
+			<a class="dropdown-item lead-action-item" href="{{ !empty($leadId) ? route('leads.edit', $leadId) : '#' }}">
 				<span class="lead-action-icon lead-icon-black" aria-hidden="true">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
 						<path d="M3.75 20.25h4.5l11-11a1.6 1.6 0 0 0 0-2.25l-2.25-2.25a1.6 1.6 0 0 0-2.25 0l-11 11v4.5Z"/>

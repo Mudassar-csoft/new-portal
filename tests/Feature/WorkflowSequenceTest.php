@@ -72,6 +72,7 @@ class WorkflowSequenceTest extends TestCase
 
         $this->assertSame('training', $lead->type);
         $this->assertSame('pending', $lead->status);
+        $this->assertSame($admin->id, $lead->created_by);
         $this->assertDatabaseHas('lead_followups', [
             'lead_id' => $lead->id,
             'stage' => 'contacted',

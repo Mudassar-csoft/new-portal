@@ -1236,6 +1236,33 @@
 			});
 		}
 
+		function syncRequiredState(field, shouldRequire) {
+			if (!field || field.type === 'hidden') {
+				return;
+			}
+
+			if (field.dataset.originalRequired === undefined) {
+				field.dataset.originalRequired = field.required ? '1' : '0';
+			}
+
+			field.required = shouldRequire && field.dataset.originalRequired === '1';
+		}
+
+		function syncContainerAvailability(container, enabled) {
+			if (!container) {
+				return;
+			}
+
+			container.querySelectorAll('input, select, textarea').forEach(function (field) {
+				if (field.type === 'hidden') {
+					return;
+				}
+
+				syncRequiredState(field, enabled);
+				field.disabled = !enabled;
+			});
+		}
+
 		window.handleFollowupStageChange = function (element) {
 			const stageField = $('#followup-stage');
 			const nextStage = String(element ? element.value : (stageField ? stageField.value : '')).trim().toLowerCase();
@@ -1269,6 +1296,7 @@
 			const registrationLink = $('#registration-link');
 			const admissionLink = $('#admission-link');
 			const completionFields = $('#lead-completion-fields');
+			const noteField = form ? form.querySelector('[name="note"]') : null;
 
 			if (registrationLink) {
 				registrationLink.classList.toggle('d-none', !isRegistrationStage);
@@ -1280,10 +1308,17 @@
 
 			$$('.followup-hide-on-close').forEach(function (element) {
 				element.style.display = useMinimalFields ? 'none' : '';
+				syncContainerAvailability(element, !useMinimalFields);
 			});
 
 			if (completionFields) {
 				completionFields.style.display = useMinimalFields ? 'none' : '';
+				syncContainerAvailability(completionFields, !useMinimalFields);
+			}
+
+			if (noteField) {
+				syncRequiredState(noteField, !isModalStage);
+				noteField.disabled = false;
 			}
 		}
 

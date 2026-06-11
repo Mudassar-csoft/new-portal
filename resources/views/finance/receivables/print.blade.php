@@ -533,7 +533,6 @@
 
         <section class="bill-to">
             <div class="bill-to-name">{{ $charge->student_name ?: 'N/A' }}</div>
-          
             @if($charge->bill_to_phone)
                 <div class="bill-to-line">Phone : {{ $charge->bill_to_phone }}</div>
             @endif
@@ -543,7 +542,6 @@
             @if($charge->bill_to_address)
                 <div class="bill-to-line">Address: {{ $charge->bill_to_address }}</div>
             @endif
-            
         </section>
 
         <table class="summary-grid">

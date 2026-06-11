@@ -149,6 +149,7 @@
                                     <li><a href="{{ route('web-leads.index') }}"><span class="lbl">Web Leads</span></a></li>
                                 @endif
                                 @if($canLeadListing)
+                                    <li><a href="{{ route('leads.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_today_leads'] ?? 0)) }}</span></a></li>
                                     <li><a href="{{ route('leads.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['training_all_leads'] ?? 0)) }}</span></a></li>
                                 @endif
                                 

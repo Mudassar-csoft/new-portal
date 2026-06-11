@@ -46,6 +46,7 @@ class StudentRecordController extends Controller
                 ->addIndexColumn()
                 ->editColumn('student_name', fn (Admission $admission) => e($admission->student_name ?: 'N/A'))
                 ->editColumn('roll_number', fn (Admission $admission) => e($admission->roll_number ?: 'N/A'))
+                ->editColumn('phone', fn (Admission $admission) => e($admission->phone ?: 'N/A'))
                 ->editColumn('registration_number', fn (Admission $admission) => e($admission->registration_number ?: optional($admission->registration)->registration_number ?: 'N/A'))
                 ->editColumn('admission_date', fn (Admission $admission) => optional($admission->admission_date)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('campus_code', fn (Admission $admission) => e(optional($admission->campus)->code ?? optional($admission->campus)->name ?? 'N/A'))

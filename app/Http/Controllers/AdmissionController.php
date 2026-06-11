@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
@@ -29,22 +30,63 @@ class AdmissionController extends Controller
     public function create(Request $request): View
     {
         $lead = null;
+        $sourceRegistration = null;
+        $sourceAdmission = null;
+
+        if ($request->filled('source_admission_id')) {
+            $sourceAdmission = Admission::query()
+                ->with(['registration.lead', 'campus', 'program', 'batch'])
+                ->findOrFail($request->integer('source_admission_id'));
+
+            $this->ensureCampusAccess((int) ($sourceAdmission->campus_id ?? 0), $request->user(), 'You are not allowed to use a student admission from another campus.');
+            $sourceRegistration = $sourceAdmission->registration;
+        }
+
+        if ($request->filled('source_registration_id')) {
+            $sourceRegistration = Registration::query()
+                ->with(['lead', 'campus', 'program', 'admission'])
+                ->findOrFail($request->integer('source_registration_id'));
+
+            $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
+        }
+
         if ($request->filled('lead_id')) {
             $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
             $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
         }
 
+        if (! $lead) {
+            $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
+        }
+
         $campuses = Campus::query()
             ->orderBy('name')
             ->get();
-        $programs = Program::orderBy('title')->get();
+        $programs = Program::query()->orderBy('title')->get();
         $batches = Batch::query()
             ->orderBy('name')
             ->get();
 
-        $existingRegistration = $lead
-            ? Registration::where('lead_id', $lead->id)->latest()->first()
+        $isAnotherCourseEnrollment = (bool) ($sourceRegistration || $sourceAdmission);
+        $formDefaults = $this->buildAdmissionFormDefaults($lead, $sourceRegistration, $sourceAdmission, $isAnotherCourseEnrollment);
+        $selectedProgramId = (int) ($request->old('program_id', $formDefaults['program_id'] ?? 0) ?? 0);
+        $existingRegistration = ($lead && ! $isAnotherCourseEnrollment)
+            ? Registration::query()
+                ->where('lead_id', $lead->id)
+                ->when($selectedProgramId > 0, fn ($query) => $query->where('program_id', $selectedProgramId))
+                ->latest()
+                ->first()
             : null;
+
+        $disallowedProgramIds = $isAnotherCourseEnrollment
+            ? $this->resolveStudentProgramIds($lead, $sourceRegistration, $sourceAdmission)
+            : [];
+
+        if ($disallowedProgramIds !== []) {
+            $programs = $programs
+                ->reject(fn (Program $program) => in_array((int) $program->id, $disallowedProgramIds, true))
+                ->values();
+        }
 
         $programMap = $programs->mapWithKeys(fn ($p) => [
             (string) $p->id => [
@@ -73,7 +115,10 @@ class AdmissionController extends Controller
             'end_time' => $b->end_time,
         ])->values()->toArray();
 
-        $previewCampus = $lead?->campus ?? $campuses->first();
+        $selectedCampusId = (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0);
+        $previewCampus = $selectedCampusId > 0
+            ? $campuses->firstWhere('id', $selectedCampusId)
+            : ($sourceAdmission?->campus ?? $sourceRegistration?->campus ?? $lead?->campus ?? $campuses->first());
         $previewBatch = $previewCampus
             ? $batches->first(fn ($b) => (int) $b->campus_id === (int) $previewCampus->id)
             : null;
@@ -92,6 +137,11 @@ class AdmissionController extends Controller
             'batches',
             'batchList',
             'lead',
+            'sourceRegistration',
+            'sourceAdmission',
+            'formDefaults',
+            'isAnotherCourseEnrollment',
+            'disallowedProgramIds',
             'existingRegistration',
             'programMap',
             'discountMap',
@@ -106,6 +156,7 @@ class AdmissionController extends Controller
         $campusId = $request->integer('campus_id');
         $batchId = $request->integer('batch_id');
         $leadId = $request->integer('lead_id');
+        $programId = $request->integer('program_id');
         $campus = $campusId ? Campus::query()->find($campusId) : null;
         $batch = $batchId ? Batch::query()->find($batchId) : null;
 
@@ -118,7 +169,11 @@ class AdmissionController extends Controller
             $lead = Lead::query()->findOrFail($leadId);
             $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
 
-            $existing = Registration::where('lead_id', $leadId)->latest()->first();
+            $existing = Registration::query()
+                ->where('lead_id', $leadId)
+                ->when($programId, fn ($query, int $selectedProgramId) => $query->where('program_id', $selectedProgramId))
+                ->latest()
+                ->first();
             $registrationNumber = $existing?->registration_number;
         }
         if (!$registrationNumber && $campus) {
@@ -144,14 +199,16 @@ class AdmissionController extends Controller
     {
         $validated = $request->validate([
             'lead_id' => ['nullable', 'exists:leads,id'],
+            'source_registration_id' => ['nullable', 'exists:registrations,id'],
+            'source_admission_id' => ['nullable', 'exists:admissions,id'],
             'campus_id' => ['required', 'exists:campuses,id'],
             'program_id' => ['required', 'exists:programs,id'],
             'batch_id' => ['required', 'exists:batches,id'],
             'student_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:admissions,phone'],
+            'phone' => ['required', 'regex:/^03\d{9}$/'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'guardian_phone' => ['required', 'string', 'max:50'],
-            'cnic' => ['required', 'string', 'max:50', 'unique:admissions,cnic'],
+            'cnic' => ['required', 'string', 'max:50'],
             'passport_number' => ['nullable', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'education' => ['required', 'string', 'max:255'],
@@ -215,10 +272,29 @@ class AdmissionController extends Controller
             $discountAmount = $discountAmount ?? 0;
             $discountedFee = $discountedFee ?? ($feePackage - $discountAmount);
 
+            $sourceAdmission = !empty($validated['source_admission_id'])
+                ? Admission::query()->with(['registration.lead'])->findOrFail($validated['source_admission_id'])
+                : null;
+            $sourceRegistration = !empty($validated['source_registration_id'])
+                ? Registration::query()->with(['lead', 'admission'])->findOrFail($validated['source_registration_id'])
+                : ($sourceAdmission?->registration);
+
+            if ($sourceAdmission) {
+                $this->ensureCampusAccess((int) ($sourceAdmission->campus_id ?? 0), $request->user(), 'You are not allowed to use a student admission from another campus.');
+            }
+
+            if ($sourceRegistration) {
+                $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
+            }
+
+            $isAnotherCourseEnrollment = (bool) ($sourceAdmission || $sourceRegistration);
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
                 $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+            }
+            if (! $lead) {
+                $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
             }
             if (!$lead) {
                 $lead = Lead::query()
@@ -226,10 +302,17 @@ class AdmissionController extends Controller
                     ->first();
             }
 
+            if ($this->studentAlreadyHasProgramAdmission($validated['program_id'], $lead, $validated['phone'], $validated['cnic'])) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'program_id' => ['This student is already enrolled in the selected course. Please choose a different course.'],
+                ]);
+            }
+
             if (!$lead) {
                 $lead = Lead::create([
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],
+                    'created_by' => $request->user()?->id,
                     'type' => null,
                     'name' => $validated['student_name'],
                     'email' => $validated['email'],
@@ -264,17 +347,28 @@ class AdmissionController extends Controller
                     'lead_status' => 'pending',
                 ]);
             } else {
-                $lead->update([
-                    'campus_id' => $validated['campus_id'],
-                    'program_id' => $validated['program_id'],
+                $leadUpdates = [
                     'name' => $validated['student_name'],
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],
                     'city' => $validated['city'],
-                ]);
+                ];
+
+                if (! $isAnotherCourseEnrollment) {
+                    $leadUpdates['campus_id'] = $validated['campus_id'];
+                    $leadUpdates['program_id'] = $validated['program_id'];
+                }
+
+                $lead->update($leadUpdates);
             }
 
-            $registration = Registration::where('lead_id', $lead->id)->latest()->first();
+            $registration = (! $isAnotherCourseEnrollment && $lead)
+                ? Registration::query()
+                    ->where('lead_id', $lead->id)
+                    ->where('program_id', $validated['program_id'])
+                    ->latest()
+                    ->first()
+                : null;
             if (!$registration) {
                 $regNumbers = $this->previewNumbers($campus->code);
                 $registration = Registration::create([
@@ -285,7 +379,16 @@ class AdmissionController extends Controller
                     'receipt_number' => $regNumbers['receipt_number'],
                     'student_name' => $validated['student_name'],
                     'phone' => $validated['phone'],
+                    'guardian_name' => $validated['guardian_name'],
+                    'guardian_phone' => $validated['guardian_phone'],
+                    'cnic' => $validated['cnic'],
+                    'passport_number' => $validated['passport_number'] ?? null,
                     'email' => $validated['email'],
+                    'education' => $validated['education'],
+                    'date_of_birth' => $validated['date_of_birth'],
+                    'gender' => $validated['gender'],
+                    'address' => $validated['postal_address'],
+                    'remarks' => $validated['remarks'],
                     'fee' => 2000,
                     'discount' => 0,
                     'net_payable' => 2000,
@@ -320,7 +423,16 @@ class AdmissionController extends Controller
                     'program_id' => $validated['program_id'],
                     'student_name' => $validated['student_name'],
                     'phone' => $validated['phone'],
+                    'guardian_name' => $validated['guardian_name'],
+                    'guardian_phone' => $validated['guardian_phone'],
+                    'cnic' => $validated['cnic'],
+                    'passport_number' => $validated['passport_number'] ?? null,
                     'email' => $validated['email'],
+                    'education' => $validated['education'],
+                    'date_of_birth' => $validated['date_of_birth'],
+                    'gender' => $validated['gender'],
+                    'address' => $validated['postal_address'],
+                    'remarks' => $validated['remarks'],
                 ]);
             }
 
@@ -497,6 +609,8 @@ class AdmissionController extends Controller
                 'heading' => 'Admission Enrolled',
                 'message' => 'Admission saved. Opening the fee voucher in a new tab...',
             ]);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (Throwable $e) {
             report($e);
 
@@ -516,6 +630,11 @@ class AdmissionController extends Controller
     {
         $admissions = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
             ->with(['program', 'campus'])
+            ->withCount([
+                'feeCollections as pending_admission_fee_count' => fn ($query) => $query
+                    ->where('fee_type', 'admission')
+                    ->where('status', 'pending'),
+            ])
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
             ->get();
@@ -651,5 +770,145 @@ class AdmissionController extends Controller
         }
 
         throw new RuntimeException('Unable to generate unique admission numbers after ' . $maxAttempts . ' attempts.');
+    }
+
+    private function buildAdmissionFormDefaults(
+        ?Lead $lead,
+        ?Registration $sourceRegistration,
+        ?Admission $sourceAdmission,
+        bool $isAnotherCourseEnrollment
+    ): array {
+        $leadDetails = $lead?->details ?? [];
+
+        $defaults = [
+            'campus_id' => $lead?->campus_id,
+            'program_id' => $isAnotherCourseEnrollment ? null : $lead?->program_id,
+            'student_name' => $lead?->name,
+            'phone' => $lead?->phone,
+            'guardian_name' => data_get($leadDetails, 'guardian_name'),
+            'guardian_phone' => data_get($leadDetails, 'guardian_phone'),
+            'cnic' => data_get($leadDetails, 'cnic'),
+            'passport_number' => data_get($leadDetails, 'passport_number'),
+            'email' => $lead?->email,
+            'education' => data_get($leadDetails, 'education'),
+            'date_of_birth' => data_get($leadDetails, 'date_of_birth'),
+            'gender' => data_get($leadDetails, 'gender', 'male'),
+            'country' => data_get($leadDetails, 'country'),
+            'city' => $lead?->city,
+            'area' => data_get($leadDetails, 'area'),
+            'postal_address' => data_get($leadDetails, 'postal_address', data_get($leadDetails, 'address')),
+            'remarks' => data_get($leadDetails, 'remarks'),
+        ];
+
+        if ($sourceRegistration) {
+            $defaults = array_merge($defaults, [
+                'campus_id' => $sourceRegistration->campus_id,
+                'student_name' => $sourceRegistration->student_name,
+                'phone' => $sourceRegistration->phone,
+                'guardian_name' => $sourceRegistration->guardian_name,
+                'guardian_phone' => $sourceRegistration->guardian_phone,
+                'cnic' => $sourceRegistration->cnic,
+                'passport_number' => $sourceRegistration->passport_number,
+                'email' => $sourceRegistration->email,
+                'education' => $sourceRegistration->education,
+                'date_of_birth' => optional($sourceRegistration->date_of_birth)->format('Y-m-d'),
+                'gender' => $sourceRegistration->gender,
+                'postal_address' => $sourceRegistration->address,
+                'remarks' => $sourceRegistration->remarks,
+            ]);
+        }
+
+        if ($sourceAdmission) {
+            $defaults = array_merge($defaults, [
+                'campus_id' => $sourceAdmission->campus_id,
+                'student_name' => $sourceAdmission->student_name,
+                'phone' => $sourceAdmission->phone,
+                'guardian_name' => $sourceAdmission->guardian_name,
+                'guardian_phone' => $sourceAdmission->guardian_phone,
+                'cnic' => $sourceAdmission->cnic,
+                'passport_number' => $sourceAdmission->passport_number,
+                'email' => $sourceAdmission->email,
+                'education' => $sourceAdmission->education,
+                'date_of_birth' => optional($sourceAdmission->date_of_birth)->format('Y-m-d'),
+                'gender' => $sourceAdmission->gender,
+                'country' => $sourceAdmission->country,
+                'city' => $sourceAdmission->city,
+                'area' => $sourceAdmission->area,
+                'postal_address' => $sourceAdmission->postal_address,
+                'remarks' => $sourceAdmission->remarks,
+            ]);
+        }
+
+        if ($isAnotherCourseEnrollment) {
+            $defaults['program_id'] = null;
+        }
+
+        return $defaults;
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function resolveStudentProgramIds(?Lead $lead, ?Registration $sourceRegistration, ?Admission $sourceAdmission): array
+    {
+        $phone = $sourceAdmission?->phone ?? $sourceRegistration?->phone ?? $lead?->phone;
+        $cnic = $sourceAdmission?->cnic ?? $sourceRegistration?->cnic ?? data_get($lead?->details, 'cnic');
+
+        $query = Admission::query()->whereNotNull('program_id');
+
+        $query->where(function ($builder) use ($lead, $phone, $cnic) {
+            $hasConstraint = false;
+
+            if ($lead?->id) {
+                $builder->orWhereHas('registration', fn ($registrationQuery) => $registrationQuery->where('lead_id', $lead->id));
+                $hasConstraint = true;
+            }
+
+            if (filled($phone)) {
+                $builder->orWhere('phone', $phone);
+                $hasConstraint = true;
+            }
+
+            if (filled($cnic)) {
+                $builder->orWhere('cnic', $cnic);
+                $hasConstraint = true;
+            }
+
+            if (! $hasConstraint) {
+                $builder->whereRaw('1 = 0');
+            }
+        });
+
+        return $query->distinct()->pluck('program_id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    private function studentAlreadyHasProgramAdmission(int $programId, ?Lead $lead, ?string $phone, ?string $cnic): bool
+    {
+        $query = Admission::query()->where('program_id', $programId);
+
+        $query->where(function ($builder) use ($lead, $phone, $cnic) {
+            $hasConstraint = false;
+
+            if ($lead?->id) {
+                $builder->orWhereHas('registration', fn ($registrationQuery) => $registrationQuery->where('lead_id', $lead->id));
+                $hasConstraint = true;
+            }
+
+            if (filled($phone)) {
+                $builder->orWhere('phone', $phone);
+                $hasConstraint = true;
+            }
+
+            if (filled($cnic)) {
+                $builder->orWhere('cnic', $cnic);
+                $hasConstraint = true;
+            }
+
+            if (! $hasConstraint) {
+                $builder->whereRaw('1 = 0');
+            }
+        });
+
+        return $query->exists();
     }
 }

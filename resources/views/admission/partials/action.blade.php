@@ -1,8 +1,10 @@
 @php
 	$actionId = $actionId ?? ('adm-action-' . uniqid());
 	$admission = $admission ?? null;
-	$leadId = $leadId ?? ($admission->lead_id ?? null);
+	$registrationId = $admission->registration_id ?? null;
 	$canAdminEdit = auth()->user()?->isAdmin();
+	$canViewStudent = auth()->user()?->hasAnyPermission(['student.view']) ?? false;
+	$showCollectFeeInstallment = $admission && $registrationId && $canViewStudent && (int) ($admission->pending_admission_fee_count ?? 0) > 0;
 @endphp
 
 @once
@@ -84,17 +86,19 @@
 		Actions
 	</button>
 	<div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-		<a class="dropdown-item lead-action-item" href="#">
-			<span class="lead-action-icon lead-icon-blue" aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="3" y="6.5" width="18" height="11" rx="2"></rect>
-					<path d="M7 10.5h10"></path>
-					<path d="M8 6.5V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1.5"></path>
-				</svg>
-			</span><span class="lead-action-label">Collect Fee Installment</span>
-		</a>
+		@if($showCollectFeeInstallment)
+			<a class="dropdown-item lead-action-item" href="{{ route('student.show', $registrationId) }}">
+				<span class="lead-action-icon lead-icon-blue" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="3" y="6.5" width="18" height="11" rx="2"></rect>
+						<path d="M7 10.5h10"></path>
+						<path d="M8 6.5V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1.5"></path>
+					</svg>
+				</span><span class="lead-action-label">Collect Fee Installment</span>
+			</a>
+		@endif
 
-		<a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['lead_id' => $leadId]) }}">
+		<a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_admission_id' => $admission?->id, 'source_registration_id' => $registrationId]) }}">
 			<span class="lead-action-icon lead-icon-cyan" aria-hidden="true">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>

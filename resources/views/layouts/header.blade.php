@@ -268,12 +268,13 @@
                               </thead>
                               <tbody>
                                 @foreach ($followupItems as $followup)
+                                  @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
                                   <tr>
                                     <td>
                                       <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
                                     </td>
-                                    <td>{{ optional($followup->next_action_date)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($followup->next_action_date)->format('h:i A') ?? 'N/A' }}</td>
+                                    <td>{{ optional($notificationDueAt)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($notificationDueAt)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>
