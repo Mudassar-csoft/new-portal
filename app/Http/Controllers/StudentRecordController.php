@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admission;
 use App\Models\FeeCollection;
 use App\Support\ResolvesCampusScope;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -201,6 +202,9 @@ class StudentRecordController extends Controller
         $feeCollection->update([
             'amount' => $paid,
             'net_amount' => $paid,
+            'receipt_number' => $feeCollection->fee_type === 'admission' && $feeCollection->admission_id
+                ? $this->generateFeeReceiptNumber($feeCollection)
+                : $feeCollection->receipt_number,
             'status' => 'paid',
             'paid_at' => now(),
         ]);
@@ -352,5 +356,26 @@ class StudentRecordController extends Controller
                 'description' => 'All admitted students regardless of current status.',
             ],
         };
+    }
+
+    private function generateFeeReceiptNumber(FeeCollection $feeCollection): string
+    {
+        $campusCode = $feeCollection->campus?->code
+            ?? optional($feeCollection->admission?->campus)->code
+            ?? optional($feeCollection->registration?->campus)->code
+            ?? 'GEN';
+
+        $prefix = $campusCode . '-' . Carbon::now()->format('my') . '-';
+        $next = FeeCollection::query()
+            ->where('receipt_number', 'like', $prefix . '%')
+            ->get(['receipt_number'])
+            ->map(function (FeeCollection $row) use ($prefix) {
+                $tail = substr((string) $row->receipt_number, strlen($prefix));
+
+                return ctype_digit($tail) ? (int) $tail : 0;
+            })
+            ->max();
+
+        return $prefix . str_pad((string) (((int) $next) + 1), 6, '0', STR_PAD_LEFT);
     }
 }

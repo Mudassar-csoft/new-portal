@@ -642,24 +642,46 @@ class AdmissionController extends Controller
         return view('admission.status', compact('admissions'));
     }
 
-    public function voucher(Admission $admission): View
+    public function voucher(Request $request, Admission $admission): View
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access admissions from another campus.');
 
         $admission->load(['program', 'campus', 'batch', 'registration.lead']);
 
-        $fees = FeeCollection::query()
+        $paidFees = FeeCollection::query()
             ->where('admission_id', $admission->id)
             ->where('fee_type', 'admission')
             ->where('status', 'paid')
+            ->orderBy('paid_at')
+            ->orderBy('installment_no')
+            ->orderBy('id')
             ->get();
 
+        $selectedFee = null;
+
+        if ($request->filled('fee_collection')) {
+            $selectedFee = $paidFees->firstWhere('id', $request->integer('fee_collection'));
+            abort_unless($selectedFee, 404);
+        }
+
+        if (! $selectedFee) {
+            $selectedFee = $paidFees
+                ->where('receipt_number', $admission->receipt_number)
+                ->sortBy(fn (FeeCollection $fee) => [
+                    optional($fee->paid_at)->timestamp ?? 0,
+                    (int) ($fee->installment_no ?? 0),
+                    $fee->id,
+                ])
+                ->first() ?? $paidFees->first();
+        }
+
         $registrationFeeTotal = 0.0;
-        $admissionFeeTotal = (float) $fees->sum('net_amount');
+        $admissionFeeTotal = (float) ($selectedFee?->net_amount ?? 0);
         $totalPaid = $admissionFeeTotal;
 
         return view('admission.voucher', compact(
             'admission',
+            'selectedFee',
             'registrationFeeTotal',
             'admissionFeeTotal',
             'totalPaid'

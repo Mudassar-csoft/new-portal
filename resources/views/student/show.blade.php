@@ -215,7 +215,7 @@
                                     @php
                                         $voucherUrl = $fee->fee_type === 'registration'
                                             ? route('registration.voucher', $registration)
-                                            : ($admission ? route('admission.voucher', $admission) : null);
+                                            : ($admission ? route('admission.voucher', ['admission' => $admission, 'fee_collection' => $fee->id]) : null);
                                     @endphp
                                     <tr>
                                         <td>{{ $fee->fee_type === 'registration' ? 'Registration Fee' : ($admission?->program?->title ?? $registration->program?->title ?? '—') }}</td>

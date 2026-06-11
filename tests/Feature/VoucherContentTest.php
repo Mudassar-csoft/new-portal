@@ -79,6 +79,75 @@ class VoucherContentTest extends TestCase
             ->assertSee('Two Thousand Rupees');
     }
 
+    public function test_admission_voucher_can_show_a_specific_paid_installment_only(): void
+    {
+        $admin = $this->createAdminUser();
+        $this->actingAs($admin);
+
+        ['campus' => $campus, 'program' => $program, 'registration' => $registration, 'admission' => $admission] = $this->createStudentRecords();
+
+        $firstInstallment = FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'fee_type' => 'admission',
+            'installment_no' => 1,
+            'installments_total' => 3,
+            'amount' => 16000,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => 16000,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'paid',
+            'paid_at' => now()->subDay(),
+        ]);
+
+        $secondInstallment = FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'fee_type' => 'admission',
+            'installment_no' => 2,
+            'installments_total' => 3,
+            'amount' => 16000,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => 16000,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'pending',
+            'due_at' => now()->addMonth()->toDateString(),
+        ]);
+
+        $this->post(route('student.fee.collect', $secondInstallment), [
+            'paid_amount' => 14000,
+        ])->assertRedirect();
+
+        $secondInstallment->refresh();
+
+        $this->assertSame('paid', $secondInstallment->status);
+        $this->assertSame(14000.0, (float) $secondInstallment->net_amount);
+        $this->assertNotSame($admission->receipt_number, $secondInstallment->receipt_number);
+
+        $this->get(route('admission.voucher', ['admission' => $admission, 'fee_collection' => $secondInstallment->id]))
+            ->assertOk()
+            ->assertSee($secondInstallment->receipt_number)
+            ->assertSee('Rs. 14,000')
+            ->assertSee('Fourteen Thousand Rupees')
+            ->assertSee('>2<', false)
+            ->assertDontSee('Rs. 16,000');
+
+        $this->get(route('admission.voucher', $admission))
+            ->assertOk()
+            ->assertSee($firstInstallment->receipt_number)
+            ->assertSee('Rs. 16,000')
+            ->assertDontSee('Rs. 30,000')
+            ->assertDontSee('Rs. 14,000');
+    }
+
     /**
      * @return array{campus: Campus, program: Program, batch: Batch, lead: Lead, registration: Registration, admission: Admission}
      */
