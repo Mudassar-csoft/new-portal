@@ -54,10 +54,11 @@
                                     <th>Name</th>
                                     <th>Space Type</th>
                                     <th>Primary Contact</th>
-                                    <th>Campus Code</th>
+                                    <!-- <th>Campus Code</th> -->
                                     <th>{{ ($type ?? 'training') === 'coworking' ? 'Campus Code' : 'Campus' }}</th>
                                     <th>Create By</th>
-                                    <th>Last Follower</th>
+                                    <th> Status</th>
+                                    <th>Origin</th>
                                     <th>Followups</th>
                                     <th class="text-left">Action</th>
                                 </tr>

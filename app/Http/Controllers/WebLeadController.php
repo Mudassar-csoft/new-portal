@@ -213,7 +213,7 @@ class WebLeadController extends Controller
         ];
 
         $notificationTabs['follow_up'] = [
-            'label' => 'Follow Up',
+            'label' => 'Lead Follow Up',
             'count' => $this->followupNotificationCount(),
             'url' => route('leads.followups'),
             'external' => true,
