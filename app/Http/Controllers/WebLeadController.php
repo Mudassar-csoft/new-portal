@@ -65,10 +65,10 @@ class WebLeadController extends Controller
 
         $tabs = [
             WebLead::SOURCE_QUICK_LEAD => 'Quick Lead',
-            WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Website Enrollment',
+            WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Course Enrollment',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
             WebLead::SOURCE_BROCHURE_DOWNLOAD => 'Brochure Download',
-            WebLead::SOURCE_FEE_ALERT => 'Fee Alert',
+            WebLead::SOURCE_FEE_ALERT => 'Pending Fee Alert',
         ];
 
         $badgeColors = [

@@ -118,7 +118,7 @@
                                         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                                             Action
                                         </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
+                                            <div class="dropdown-menu dropdown-menu-right show dropdown-menu-upward" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, -100%, 0px);">
                                                 @if($canManagePayroll && $expense->status === 'pending')
                                                     <form method="POST" action="{{ route('finance.expense.approve', $expense) }}">
                                                         @csrf
@@ -172,7 +172,9 @@
     display:flex;
 
 }
-    
+    .finance-payee-actions{
+        top: 0px !important;
+    }
 
 .select2-container--arrow .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--single .select2-selection__rendered,

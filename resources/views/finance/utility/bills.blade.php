@@ -97,14 +97,15 @@
                         <thead>
                             <tr>
                                 <th>Sr#</th>
-                                <th>Reference</th>
+                                <th>Reference Number</th>
                                 <th>Campus</th>
-                                <th>Company</th>
+                                <!-- <th>Company</th> -->
                                 <th>Bill Type</th>
-                                <th>Remarks</th>
-                                @if($canEditBills)
+                                <!-- <th>Remarks</th> -->
+                                <!-- @if($canEditBills)
                                     <th>Action</th>
-                                @endif
+                                @endif -->
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,11 +114,11 @@
                                     <td>{{ $bills->firstItem() + $index }}</td>
                                     <td>{{ $bill->reference_number }}</td>
                                     <td>{{ $bill->campus->code ?? 'N/A' }}</td>
-                                    <td>{{ $bill->billType->company_name ?? '-' }}</td>
+                                    <!-- <td>{{ $bill->billType->company_name ?? '-' }}</td> -->
                                     <td>{{ $bill->billType->service_name ?? $bill->billType->display_name ?? $bill->billType->name ?? 'N/A' }}</td>
-                                    <td>{{ $bill->remarks ?: '-' }}</td>
+                                    <!-- <td>{{ $bill->remarks ?: '-' }}</td> -->
                                     @if($canEditBills)
-                                        <td class="utility-action-cell">
+                                        <!-- <td class="utility-action-cell">
                                             <div class="dropdown utility-action-dropdown">
                                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                                                     Action
@@ -126,8 +127,9 @@
                                                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editUtilityBillModal-{{ $bill->id }}">Edit</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     @endif
+                                    <td>{{ optional($bill->created_at)->format('d-M-Y') }}</td>
                                 </tr>
                             @empty
                                 <tr>

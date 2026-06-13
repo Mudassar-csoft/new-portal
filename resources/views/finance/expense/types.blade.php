@@ -53,9 +53,10 @@
                         <tr>
                             <th>Sr#</th>
                             <th>Type Name</th>
-                            <th>Category</th>
-                            <th>Status</th>
+                            <!-- <th>Category</th>
+                            <th>Status</th> -->
                             <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -63,13 +64,28 @@
                             <tr>
                                 <td>{{ $types->firstItem() + $index }}</td>
                                 <td>{{ $type->name }}</td>
-                                <td>{{ ucfirst($type->category ?? 'general') }}</td>
+                                <!-- <td>{{ ucfirst($type->category ?? 'general') }}</td>
                                 <td>
                                     <span class="badge {{ $type->is_active ? 'badge-success' : 'badge-secondary' }}">
                                         {{ $type->is_active ? 'Active' : 'Inactive' }}
                                     </span>
-                                </td>
+                                </td> -->
                                 <td>{{ optional($type->created_at)->format('d-M-Y') }}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" href="{{ route('finance.expense.type.edit', $type) }}">Edit</a>
+                                            <form method="POST" action="{{ route('finance.expense.type.delete', $type) }}" onsubmit="return confirm('Are you sure you want to delete this expense type?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="dropdown-item text-danger" type="submit">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
