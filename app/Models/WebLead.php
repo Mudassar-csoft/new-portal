@@ -15,6 +15,7 @@ class WebLead extends Model
     public const SOURCE_WEBSITE_ENROLLMENT = 'website_enrollment';
     public const SOURCE_WEBSITE_ADMISSION = 'website_admission';
     public const SOURCE_BROCHURE_DOWNLOAD = 'brochure_download';
+    public const SOURCE_FEE_ALERT = 'Fee_Alert';
 
     public const STATUS_NEW = 'new';
     public const STATUS_NOT_INTERESTED = 'not_interested';
@@ -55,6 +56,7 @@ class WebLead extends Model
             self::SOURCE_WEBSITE_ENROLLMENT => 'Website Enrollments',
             self::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
             self::SOURCE_BROCHURE_DOWNLOAD => 'Brochure Downloads',
+            self::SOURCE_FEE_ALERT => 'Fee Alert',
         ];
     }
 
