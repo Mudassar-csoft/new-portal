@@ -1021,12 +1021,27 @@ display: flex;
 }
 .notif-accordion-panel .notification-table{
 	margin-bottom: 0;
+	table-layout: fixed;
+	width: 100%;
 }
 .notif-accordion-panel .notification-table thead th{
 	position: sticky;
 	top: 0;
 	background: #f9fbfd;
 	z-index: 1;
+}
+.notif-accordion-panel .notification-table thead,
+.notif-accordion-panel .notification-table tbody,
+.notif-accordion-panel .notification-table tr{
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}
+.notif-accordion-panel .notification-table tbody{
+	display: block;
+	max-height: 90px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 /* .site-logo img{
     transition:0.3s;

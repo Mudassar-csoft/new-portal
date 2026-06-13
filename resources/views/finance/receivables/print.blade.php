@@ -81,7 +81,7 @@
         }
 
         .brand-logo {
-            width: 100px;
+            width: 323px;
             height: 100px;
             display: block;
         }
@@ -107,7 +107,8 @@
             min-width: 0;
             display: flex;
             align-items: center;
-            margin-left: 30px;
+            margin-left: 30px !important;
+            margin-right: -17mm;
         }
 
         .invoice-to-title {
@@ -154,40 +155,33 @@
         }
 
         .summary-grid {
-            margin-top: 4mm;
+            margin-top: 5mm;
             width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid #d8e2e7;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, auto));
+            column-gap: 12mm;
+            padding: 1mm 0 0mm;
+            /* border-bottom: 1px solid #f0f0f0; */
+            background: #fff;
         }
 
         .summary-label {
-            background: #00a8ff;
-            color: #20262d;
-            border: 1px solid #d8e2e7;
-            padding: 3mm 3.2mm;
-            font-size: 3.7mm;
+            color: #2e2e32;
+            font-size: 3.9mm;
             font-weight: 700;
-            text-align: left;
-            vertical-align: middle;
+            line-height: 1.1;
+            letter-spacing: 0;
+            white-space: nowrap;
         }
 
         .summary-value {
-            border: 1px solid #d8e2e7;
-            padding: 3mm 3.2mm;
-            font-size: 3.7mm;
+            margin-top: 2.2mm;
+            color: #2e2e32;
+            font-size: 14px;
             font-weight: 700;
-            line-height: 1.1;
+            line-height: 1.12;
+            letter-spacing: 0;
             word-break: break-word;
-            vertical-align: top;
-        }
-
-        .summary-meta {
-            margin-top: 1.2mm;
-            font-size: 3.2mm;
-            color: #5a5a5a;
-            font-weight: 400;
         }
 
         .items-table {
@@ -352,7 +346,7 @@
             position: absolute;
             right: 66px;
             bottom: 57mm    ;
-            width: 54mm;
+            width: 33mm;
             color: #222;
             text-align: left;
             z-index: 2;
@@ -362,7 +356,7 @@
             font-size: 16px;
             font-weight: 400;
             margin-bottom: 35px;
-            text-align: end;
+            text-align: center;
         }
 
         .signature-line {
@@ -372,14 +366,14 @@
         }
 
         .signature-name {
-            font-size: 16px;
+            font-size: 20px;
             line-height: 1.1;
             font-weight: 600;
         }
 
         .signature-title {
             margin-top: 14px;
-            font-size: 4mm;
+            font-size: 14px;
         }
 
         .contact-footer {
@@ -430,7 +424,7 @@
             right: -46mm;
             bottom: -18mm;
             width: 155mm;
-            height: 74mm;
+            height: 71mm;
             z-index: 1;
             pointer-events: none;
         }
@@ -441,19 +435,19 @@
         }
 
         .shape-gray-top {
-            left: 12mm;
+            left: 43mm;
             top: 0;
-            width: 66mm;
+            width: 31mm;
             height: 34mm;
             background: #bfc5c8;
             transform: skewX(-45deg);
         }
 
         .shape-gray-bottom {
-            left: 12mm;
+            left: 39mm;
             top: 34mm;
-            width: 66mm;
-            height: 34mm;
+            width: 31mm;
+            height: 26mm;
             background: #dfe4e6;
             transform: skewX(45deg);
         }
@@ -514,13 +508,13 @@
 
     <main class="sheet d-flex">
         <header class="brand-header">
-            <img class="brand-logo" src="{{ asset('theme/img/Career-Institute-logo.webp') }}" alt="Career Institute">
-            <div class="brand-services">
+            <img class="brand-logo" src="{{ asset('theme/img/Career-updated-logo.png') }}" alt="Career Institute">
+            <!-- <div class="brand-services">
                 <div>Trainings</div>
                 <div>Certification Exam Center</div>
                 <div>Study Abroad</div>
                 <div>Coworking Space</div>
-            </div>
+            </div> -->
             <section class="invoice-hero ml-5">
             <!-- <div class="invoice-to-title">Invoice To</div> -->
             <div class="invoice-title-band">Invoice</div>
@@ -544,30 +538,24 @@
             @endif
         </section>
 
-        <table class="summary-grid border-1-gray">
-            <thead>
-                <tr>
-                    <th class="summary-label">Invoice No.</th>
-                    <th class="summary-label">Account</th>
-                    <th class="summary-label">Date</th>
-                    <th class="summary-label">Total Due</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="summary-value">
-                        {{ $invoiceNumber }}
-                        <div class="summary-meta">Campus: {{ $charge->campus->code ?? 'N/A' }}</div>
-                    </td>
-                    <td class="summary-value">
-                        {{ $accountLabel }}
-                        <div class="summary-meta">Due: {{ $dueDate }} <br> Status: {{ $statusLabel }}</div>
-                    </td>
-                    <td class="summary-value">{{ $invoiceDate }}</td>
-                    <td class="summary-value">{{ number_format((float) $charge->net_amount, 0) }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <section class="summary-grid" aria-label="Invoice summary">
+            <div class="summary-item">
+                <div class="summary-label">Total Due </div>
+                <div class="summary-value">{{ number_format((float) $charge->net_amount, 0) }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Invoice No.</div>
+                <div class="summary-value">{{ $invoiceNumber }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Date </div>
+                <div class="summary-value">{{ $invoiceDate }}</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">Account </div>
+                <div class="summary-value">{{ $accountLabel }}</div>
+            </div>
+        </section>
 
         <table class="items-table">
             <colgroup>
@@ -591,12 +579,12 @@
                     <tr>
                         <td>
                             <span class="description-title">{{ $item->description }}</span>
-                            <span class="description-subtitle">
+                            <!-- <span class="description-subtitle">
                                 Charge Type: {{ $charge->chargeType->name ?? 'Invoice Item' }}
                                 @if($charge->remarks)
 {{ $charge->remarks }}
                                 @endif
-                            </span>
+                            </span> -->
                         </td>
                         <td class="text-center">{{ rtrim(rtrim(number_format((float) $item->quantity, 2, '.', ''), '0'), '.') }}</td>
                         <td class="text-right">{{ number_format((float) $item->line_total, 0) }}</td>
@@ -618,7 +606,7 @@
             </tbody>
         </table>
 
-        <section class="tracking-panel">
+        <!-- <section class="tracking-panel">
             <div class="tracking-title">
                 Invoice Tracking
                 <span>Use this section to confirm whether the invoice is still open or already settled.</span>
@@ -639,7 +627,7 @@
                 <div class="tracking-stat-label">Last Payment</div>
                 <div class="tracking-stat-value">{{ $lastPaymentDate }}</div>
             </div>
-        </section>
+        </section> -->
 
         <section class="bottom-grid">
             <div class="notes-panel">
