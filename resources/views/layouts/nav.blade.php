@@ -167,6 +167,11 @@
                             <ul>
                                 @if($canLeadCoworkingView)
                                     <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Today's Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Successfully Registered</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Not Interested</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Transfer Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl"> All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
                                 @endif
                             </ul>
                         </li>
