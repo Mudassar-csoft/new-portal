@@ -37,6 +37,45 @@
                   @php($followupItems = $followupNotifications ?? collect())
 
                   <div class="notif-accordion">
+
+                    
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
+                        <span>Leads Follow Up</span>
+                        <span class="count">{{ $followupNotificationCount ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-follow-up">
+                        @if ($followupItems->isEmpty())
+                          <div class="text-center p-4 text-muted">No Follow Up notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($followupItems as $followup)
+                                  @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
+                                  <tr>
+                                    <td>
+                                      <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                                    </td>
+                                    <td>{{ optional($notificationDueAt)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($notificationDueAt)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                      </div>
+                    </div>
+
+
                     <div class="notif-accordion-item notif-hover-card active">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="true">
                         <span>Quick Leads</span>
@@ -183,7 +222,7 @@
                       </button>
                       <div class="notif-accordion-panel" id="notif-fee-alert">
                         @if ($FeeAlert->isEmpty())
-                          <div class="text-center p-4 text-muted">No Fee Alert notifications.</div>
+                          <div class="text-center p-4 text-muted">No Pending Fee Alert notifications.</div>
                         @else
                           <div class="table-responsive">
                             <table class="table table-sm mb-0 notification-table">
@@ -248,41 +287,6 @@
                       </div>
                     </div>
 
-                    <div class="notif-accordion-item notif-hover-card">
-                      <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
-                        <span>Leads Follow Up</span>
-                        <span class="count">{{ $followupNotificationCount ?? 0 }}</span>
-                      </button>
-                      <div class="notif-accordion-panel" id="notif-follow-up">
-                        @if ($followupItems->isEmpty())
-                          <div class="text-center p-4 text-muted">No Follow Up notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($followupItems as $followup)
-                                  @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
-                                  <tr>
-                                    <td>
-                                      <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
-                                    </td>
-                                    <td>{{ optional($notificationDueAt)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($notificationDueAt)->format('h:i A') ?? 'N/A' }}</td>
-                                  </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
-                          </div>
-                        @endif
-                      </div>
-                    </div>
                   </div>
 
                   <div class="dropdown-menu-notif-more">
@@ -1021,27 +1025,12 @@ display: flex;
 }
 .notif-accordion-panel .notification-table{
 	margin-bottom: 0;
-	table-layout: fixed;
-	width: 100%;
 }
 .notif-accordion-panel .notification-table thead th{
 	position: sticky;
 	top: 0;
 	background: #f9fbfd;
 	z-index: 1;
-}
-.notif-accordion-panel .notification-table thead,
-.notif-accordion-panel .notification-table tbody,
-.notif-accordion-panel .notification-table tr{
-	display: table;
-	width: 100%;
-	table-layout: fixed;
-}
-.notif-accordion-panel .notification-table tbody{
-	display: block;
-	max-height: 90px;
-	overflow-y: auto;
-	overflow-x: hidden;
 }
 /* .site-logo img{
     transition:0.3s;
