@@ -8,7 +8,9 @@ use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -191,52 +193,47 @@ class StudentRecordController extends Controller
             'paid_amount' => ['required', 'numeric', 'min:0.01'],
         ]);
 
-        if ($feeCollection->status === 'paid') {
-            return back()->with('status', 'Installment already collected.');
-        }
-
         $paid = round((float) $validated['paid_amount'], 2);
-        $original = round((float) $feeCollection->net_amount, 2);
-        $diff = round($original - $paid, 2);
+        try {
+            $alreadyCollected = false;
 
-        $feeCollection->update([
-            'amount' => $paid,
-            'net_amount' => $paid,
-            'receipt_number' => $feeCollection->fee_type === 'admission' && $feeCollection->admission_id
-                ? $this->generateFeeReceiptNumber($feeCollection)
-                : $feeCollection->receipt_number,
-            'status' => 'paid',
-            'paid_at' => now(),
-        ]);
+            DB::transaction(function () use ($feeCollection, $paid, &$alreadyCollected) {
+                $lockedFee = FeeCollection::query()
+                    ->with(['campus', 'admission.campus', 'registration.campus'])
+                    ->lockForUpdate()
+                    ->findOrFail($feeCollection->id);
 
-        if ($diff !== 0.0 && $feeCollection->admission_id) {
-            $nextPending = FeeCollection::query()
-                ->where('admission_id', $feeCollection->admission_id)
-                ->where('fee_type', 'admission')
-                ->where('status', 'pending')
-                ->when($feeCollection->installment_no, function ($q) use ($feeCollection) {
-                    $q->where('installment_no', '>', $feeCollection->installment_no);
-                })
-                ->orderBy('installment_no')
-                ->get();
-
-            $remainder = $diff;
-            foreach ($nextPending as $next) {
-                if ($remainder === 0.0) {
-                    break;
+                if ($lockedFee->status === 'paid') {
+                    $alreadyCollected = true;
+                    return;
                 }
-                $newAmount = round((float) $next->net_amount + $remainder, 2);
-                if ($newAmount <= 0) {
-                    $remainder = $newAmount;
-                    $next->delete();
-                } else {
-                    $next->update([
-                        'amount' => $newAmount,
-                        'net_amount' => $newAmount,
-                    ]);
-                    $remainder = 0.0;
-                }
+
+                $original = round((float) $lockedFee->net_amount, 2);
+                $diff = round($original - $paid, 2);
+                $nextPending = $this->nextPendingAdmissionInstallmentsQuery($lockedFee)
+                    ->lockForUpdate()
+                    ->get();
+
+                $this->ensureInstallmentDifferenceCanBeDistributed($diff, $nextPending);
+
+                $lockedFee->update([
+                    'amount' => $paid,
+                    'net_amount' => $paid,
+                    'receipt_number' => $lockedFee->fee_type === 'admission' && $lockedFee->admission_id
+                        ? $this->generateFeeReceiptNumber($lockedFee)
+                        : $lockedFee->receipt_number,
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                ]);
+
+                $this->redistributeInstallmentDifference($nextPending, $diff);
+            });
+
+            if ($alreadyCollected) {
+                return back()->with('status', 'Installment already collected.');
             }
+        } catch (ValidationException $e) {
+            return back()->with('error', collect($e->errors())->flatten()->first() ?: 'Unable to collect installment.');
         }
 
         return back()->with('status', 'Installment collected.');
@@ -377,5 +374,84 @@ class StudentRecordController extends Controller
             ->max();
 
         return $prefix . str_pad((string) (((int) $next) + 1), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function nextPendingAdmissionInstallmentsQuery(FeeCollection $feeCollection)
+    {
+        return FeeCollection::query()
+            ->where('admission_id', $feeCollection->admission_id)
+            ->where('fee_type', 'admission')
+            ->where('status', 'pending')
+            ->where('id', '!=', $feeCollection->id)
+            ->when($feeCollection->installment_no, function ($query) use ($feeCollection) {
+                $query->where('installment_no', '>', $feeCollection->installment_no);
+            })
+            ->orderBy('installment_no')
+            ->orderBy('id');
+    }
+
+    private function ensureInstallmentDifferenceCanBeDistributed(float $diff, $nextPendingInstallments): void
+    {
+        if ($diff === 0.0) {
+            return;
+        }
+
+        if ($nextPendingInstallments->isEmpty()) {
+            throw ValidationException::withMessages([
+                'paid_amount' => ['Exact installment amount is required because no next pending installment is available.'],
+            ]);
+        }
+
+        if ($diff < 0.0) {
+            $remainingScheduled = round($nextPendingInstallments->sum(fn (FeeCollection $fee) => (float) $fee->net_amount), 2);
+
+            if ($remainingScheduled + 0.00001 < abs($diff)) {
+                throw ValidationException::withMessages([
+                    'paid_amount' => ['Paid amount cannot exceed the remaining scheduled installment balance.'],
+                ]);
+            }
+        }
+    }
+
+    private function redistributeInstallmentDifference($nextPendingInstallments, float $diff): void
+    {
+        if ($diff === 0.0 || $nextPendingInstallments->isEmpty()) {
+            return;
+        }
+
+        $remainder = $diff;
+
+        foreach ($nextPendingInstallments as $nextPendingInstallment) {
+            if ($remainder === 0.0) {
+                break;
+            }
+
+            if ($remainder > 0.0) {
+                $newAmount = round((float) $nextPendingInstallment->net_amount + $remainder, 2);
+
+                $nextPendingInstallment->update([
+                    'amount' => $newAmount,
+                    'net_amount' => $newAmount,
+                ]);
+
+                $remainder = 0.0;
+                break;
+            }
+
+            $newAmount = round((float) $nextPendingInstallment->net_amount + $remainder, 2);
+
+            if ($newAmount <= 0.0) {
+                $remainder = $newAmount;
+                $nextPendingInstallment->delete();
+                continue;
+            }
+
+            $nextPendingInstallment->update([
+                'amount' => $newAmount,
+                'net_amount' => $newAmount,
+            ]);
+
+            $remainder = 0.0;
+        }
     }
 }

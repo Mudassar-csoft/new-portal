@@ -101,7 +101,7 @@ class DashboardController extends Controller
                     ->limit(10)
                     ->get(['id', 'campus_id', 'registration_number', 'student_name', 'net_payable', 'registered_at'])
                     ->map(fn ($registration) => [
-                        'type' => 'Admission Fee',
+                        'type' => 'Registration Fee',
                         'reference' => $registration->registration_number ?: 'N/A',
                         'name' => $registration->student_name ?: 'N/A',
                         'campus' => $registration->campus->code ?? 'N/A',
@@ -167,7 +167,7 @@ class DashboardController extends Controller
                 'net_cashflow' => $totalIncome - $totalExpense,
             ],
             'incomeMix' => [
-                'admission_fee' => (float) $registrationIncome,
+                'registration_fee' => (float) $registrationIncome,
                 'coworking_fee' => $coWorkingIncome,
                 'franchise_royalty' => $franchiseRoyaltyIncome,
                 'other_income' => $otherIncome,
@@ -179,7 +179,23 @@ class DashboardController extends Controller
                 'asset' => (float) ($expenseByCategory['asset'] ?? 0),
                 'payroll' => (float) ($expenseByCategory['payroll'] ?? 0),
                 'general' => (float) ($expenseByCategory['general'] ?? 0),
+                'reversed' => $expenseReversed,
             ],
+            'incomeSourceChart' => $this->buildChartSourceRows([
+                'Registration Fee' => (float) $registrationIncome,
+                'Coworking Fee' => $coWorkingIncome,
+                'Franchise Royalty' => $franchiseRoyaltyIncome,
+                'Other Income' => $otherIncome,
+            ]),
+            'expenseSourceChart' => $this->buildChartSourceRows([
+                'Rent' => (float) ($expenseByCategory['rent'] ?? 0),
+                'Utility' => (float) ($expenseByCategory['utility'] ?? 0),
+                'Marketing' => (float) ($expenseByCategory['marketing'] ?? 0),
+                'Asset' => (float) ($expenseByCategory['asset'] ?? 0),
+                'Payroll' => (float) ($expenseByCategory['payroll'] ?? 0),
+                'General' => (float) ($expenseByCategory['general'] ?? 0),
+                'Reversed' => $expenseReversed,
+            ]),
             'recentIncomeRows' => $recentIncomeRows,
             'recentExpenseRows' => $recentExpenseRows,
         ]);
@@ -239,7 +255,7 @@ class DashboardController extends Controller
                 'to' => $to->toDateString(),
             ],
             'summary' => [
-                'admission_fee' => $registrationIncome,
+                'registration_fee' => $registrationIncome,
                 'coworking_fee' => $coWorkingIncome,
                 'franchise_royalty' => $franchiseRoyaltyIncome,
                 'other_income' => $otherIncome,
@@ -465,7 +481,7 @@ class DashboardController extends Controller
                 'net_cashflow' => $netCashflow,
             ],
             'incomeComponents' => [
-                ['label' => 'Admission Fee', 'amount' => $registrationIncome],
+                ['label' => 'Registration Fee', 'amount' => $registrationIncome],
                 ['label' => 'Coworking Fee', 'amount' => $coWorkingIncome],
                 ['label' => 'Franchise Royalty', 'amount' => $franchiseRoyaltyIncome],
                 ['label' => 'Other Income', 'amount' => $otherIncome],
@@ -493,6 +509,18 @@ class DashboardController extends Controller
         } catch (\Throwable $e) {
             return $fallback->copy();
         }
+    }
+
+    private function buildChartSourceRows(array $sources): array
+    {
+        return collect($sources)
+            ->map(fn ($amount, $label) => [
+                'label' => $label,
+                'amount' => round((float) $amount, 2),
+            ])
+            ->filter(fn (array $row) => $row['amount'] > 0)
+            ->values()
+            ->all();
     }
 
     private function invoiceSchemaReady(): bool

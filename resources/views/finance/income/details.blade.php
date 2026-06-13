@@ -5,7 +5,7 @@
 @section('content')
     @php
         $summary = $summary ?? [
-            'admission_fee' => 0,
+            'registration_fee' => 0,
             'coworking_fee' => 0,
             'franchise_royalty' => 0,
             'other_income' => 0,
@@ -61,8 +61,8 @@
         <div class="row finance-summary-row">
             <div class="col-lg-4 col-md-6">
                 <div class="income-summary-card tone-admission">
-                    <div class="summary-value">Rs. {{ number_format((float) ($summary['admission_fee'] ?? 0), 0) }}</div>
-                    <div class="summary-label">Admission Fee</div>
+                    <div class="summary-value">Rs. {{ number_format((float) ($summary['registration_fee'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Registration Fee</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -96,7 +96,7 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Admission Income</h3>
+                        <h3 class="panel-title">Registration Income</h3>
                     </header>
                     <div class="box-typical-body panel-body table-responsive">
                         <table class="table table-bordered finance-table">
@@ -119,7 +119,7 @@
                                         <td>Rs. {{ number_format((float) $registration->net_payable, 0) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="5" class="text-center text-muted">No admission income found.</td></tr>
+                                    <tr><td colspan="5" class="text-center text-muted">No registration income found.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

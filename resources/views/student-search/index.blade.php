@@ -19,7 +19,7 @@
                             </div>
                             <div class="tbl-cell text-right" style="min-width: 360px;">
                                 <form method="GET" action="{{ route('student-search.index') }}" class="inline-search-form">
-                                    <input type="text" name="q" value="{{ $query }}" class="form-control form-control-sm" placeholder="Name, phone, roll no, reg no, email...">
+                                    <input type="text" name="q" value="{{ $query }}" class="form-control form-control-sm" placeholder="Name, phone, CNIC, roll no, reg no, email...">
                                     <button type="submit" class="btn btn-sm btn-primary-outline">Search</button>
                                 </form>
                             </div>
@@ -31,7 +31,7 @@
                     @if($query === '')
                         <div class="search-empty">
                             <i class="fa fa-search" style="font-size: 32px; color: #cbd5e1;"></i>
-                            <p>Enter a name, phone number, roll number, or registration number to find a student.</p>
+                            <p>Enter a name, phone number, CNIC, roll number, or registration number to find a student.</p>
                         </div>
                     @elseif($totalMatches === 0)
                         <div class="search-empty">

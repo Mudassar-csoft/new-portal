@@ -39,17 +39,6 @@
 					@if(!empty($sourceAdmission))
 						<input type="hidden" name="source_admission_id" value="{{ $sourceAdmission->id }}">
 					@endif
-					@if(!empty($isAnotherCourseEnrollment))
-						@if(!empty($hasAlternativePrograms))
-							<div class="admission-prefill-alert">
-								Student details were loaded from the previous admission. Choose a new course to continue.
-							</div>
-						@else
-							<div class="admission-prefill-alert admission-prefill-alert--warning">
-								Student details were loaded, but no other course is available for enrollment right now.
-							</div>
-						@endif
-					@endif
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Campus</label>
@@ -81,15 +70,6 @@
 									</option>
 								@endforeach
 							</select>
-							@if(!empty($isAnotherCourseEnrollment))
-								<div class="field-help">
-									@if(!empty($hasAlternativePrograms))
-										The current enrolled course is hidden here. Choose another course.
-									@else
-										No other course is available to select.
-									@endif
-								</div>
-							@endif
 							@error('program_id')
 								<div class="field-error">{{ $message }}</div>
 							@enderror

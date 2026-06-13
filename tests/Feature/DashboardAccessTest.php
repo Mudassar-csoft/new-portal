@@ -221,6 +221,120 @@ class DashboardAccessTest extends TestCase
             ->assertDontSee('Other Campus Lead');
     }
 
+    public function test_dashboard_recent_leads_show_name_as_link_and_date_without_time(): void
+    {
+        $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([
+            $dashboardView->id,
+            $leadView->id,
+        ]);
+
+        $createdAt = now()->copy()->setDate(2026, 6, 10)->setTime(14, 26, 0);
+        $lead = Lead::query()->create([
+            'campus_id' => $campus->id,
+            'type' => 'training',
+            'name' => 'Linked Dashboard Lead',
+            'phone' => '03000000999',
+            'status' => 'pending',
+        ]);
+        $lead->forceFill([
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
+        ])->saveQuietly();
+
+        $this->actingAs($user)
+            ->get(route('dashboard.live-data'))
+            ->assertOk()
+            ->assertJsonPath('dashboard.dailyActivity.rows.0.student_name', 'Linked Dashboard Lead')
+            ->assertJsonPath('dashboard.dailyActivity.rows.0.detail_url', route('leads.show', $lead))
+            ->assertJsonPath('dashboard.dailyActivity.rows.0.date_label', '10-Jun-2026');
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(route('leads.show', $lead))
+            ->assertSee('Linked Dashboard Lead')
+            ->assertSee('10-Jun-2026');
+    }
+
+    public function test_dashboard_recent_admissions_show_name_as_student_registration_link(): void
+    {
+        $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([
+            $dashboardView->id,
+            $admissionView->id,
+            $studentView->id,
+        ]);
+
+        $this->seedDashboardRecords($campus, 'gamma', 2200);
+
+        $registration = Registration::query()->where('campus_id', $campus->id)->latest('id')->firstOrFail();
+
+        $this->actingAs($user)
+            ->get(route('dashboard.live-data'))
+            ->assertOk()
+            ->assertJsonPath('dashboard.admissionsActivity.rows.0.student_name', 'Student gamma')
+            ->assertJsonPath('dashboard.admissionsActivity.rows.0.detail_url', route('student.show', $registration))
+            ->assertJsonPath('dashboard.admissionsActivity.rows.0.date_label', now()->format('d-M-Y'));
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(route('student.show', $registration))
+            ->assertSee('Student gamma');
+    }
+
+    public function test_dashboard_recent_leads_use_student_registration_link_for_registered_and_enrolled_statuses(): void
+    {
+        $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
+        $leadView = $this->createPermission('lead', 'view', 'lead.view');
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([
+            $dashboardView->id,
+            $leadView->id,
+            $studentView->id,
+        ]);
+
+        $this->seedDashboardRecords($campus, 'delta', 2400);
+
+        $lead = Lead::query()->where('campus_id', $campus->id)->latest('id')->firstOrFail();
+        $registration = Registration::query()->where('campus_id', $campus->id)->latest('id')->firstOrFail();
+
+        foreach (['registered', 'enrolled'] as $status) {
+            $lead->update(['status' => $status]);
+
+            $this->actingAs($user)
+                ->get(route('dashboard.live-data'))
+                ->assertOk()
+                ->assertJsonPath('dashboard.dailyActivity.rows.0.student_name', 'Lead delta')
+                ->assertJsonPath('dashboard.dailyActivity.rows.0.detail_url', route('student.show', $registration));
+        }
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee(route('student.show', $registration))
+            ->assertDontSee(route('leads.show', $lead), false);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([
