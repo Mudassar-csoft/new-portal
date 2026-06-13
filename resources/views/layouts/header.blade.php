@@ -579,7 +579,7 @@
                                       </div> -->
 							<div class="site-header-search-container">
 								 <form class="site-header-search" method="GET" action="{{ route('student-search.index') }}">
-	                                <input type="text" name="q" class="site-header-search-input" placeholder="Name, phone, roll no..." value="{{ request()->routeIs('student-search.index') ? request()->query('q') : '' }}" autocomplete="off"/>
+	                                <input type="text" name="q" class="site-header-search-input" placeholder="Name, phone, roll no, Cnic ..." value="{{ request()->routeIs('student-search.index') ? request()->query('q') : '' }}" autocomplete="off"/>
 	                                <button type="submit" class="site-header-search-btn">
 	                                    <span class="font-icon-search"></span>
 	                                </button>
@@ -1054,7 +1054,7 @@ display: flex;
 .notification-table th{
 	text-align:left !important;
   padding: 8px 3px !important;
-  text-wrap: wrap !important;
+  text-wrap: nowrap !important;
   max-width:100px;
 }
 .lead-tabs {

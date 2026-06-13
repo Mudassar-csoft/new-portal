@@ -131,7 +131,7 @@
         
         </div>
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark"> Country </label>
+            <label class="form-label small fw-semibold text-dark required"> Country </label>
             <select id="lead-country-select"
                     name="details[country]"
                     class="form-select form-select-sm @error('details.country') is-invalid @enderror">
