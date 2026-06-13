@@ -111,16 +111,16 @@
 								</div>
 								<table class="tbl-data">
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today Collection</td>
-										<td class="price color-purple collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today</td>
+										<td class="price  collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly Collection</td>
-										<td class="price color-yellow collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly</td>
+										<td class="price collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly Collection</td>
-										<td class="price color-lime collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly</td>
+										<td class="price  collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 									</tr>
 								</table>
 							</div>
@@ -266,7 +266,7 @@
 	<div class="row pl-4 pr-3 tables-dashbord">
 		<div class="col-xl-12 pl-1 ml-1 mr-2 m-md-0 m-lg-0 current-month-chart-col">
 			<section class="box-typical box-typical-dashboard panel panel-default month-chart-card  bg-gray-300 ">
-				<header class="box-typical-header panel-heading month-chart-header">
+				<header class="box-typical-header panel-heading month-chart-header ">
 					<div class="month-chart-header-content">
 						<div class="month-chart-header-wrap">
 							<h3 class="form-label-dashboard month-chart-header-title">
@@ -296,7 +296,7 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body">
-					<div id="lead-chart"></div>
+					<div id="lead-chart" style="font-size:12px !important;"></div>
 				</div>
 			</section>
 		</div>
@@ -986,7 +986,7 @@
             top: 12px !important;
             transform: none !important;
             width: 32px;
-            height: 32px;
+            height: 32px !important;
         }
 
         .stat-number[data-mask-mode="icon"] {

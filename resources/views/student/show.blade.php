@@ -205,12 +205,12 @@
                             <thead>
                                 <tr>
                                     <th>Course Title</th>
-                                    <th>Fee Type</th>
                                     <th>Registeration</th>
                                     <th>Installment</th>
-                                    <th>Fee Status</th>
                                     <th>Due Date</th>
                                     <th>Collected At</th>
+                                    <th>Fee Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -236,49 +236,48 @@
                                     @endphp
                                     <tr>
                                         <td>{{ $fee->fee_type === 'registration' ? 'Registration Fee' : ($admission?->program?->title ?? $registration->program?->title ?? '—') }}</td>
-                                        <td>{{ ucfirst($fee->fee_type ?? '—') }}</td>
                                         <td>{{ number_format((float) ($fee->net_amount ?? $fee->amount ?? 0), 0) }}</td>
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
-                                        <td class="fee-status-cell">
+                                        
+                                    <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
+                                    <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>
+                                   <td class="fee-status-cell">
                                             @if($fee->status === 'paid')
-                                                <span class="label label-primary p-2 fee-status-control fee-status-control--text">Paid</span>
+                                            <span class="label label-primary p-2 fee-status-control fee-status-control--text">Paid</span>
                                             @elseif($fee->status === 'pending')
-                                                <button type="button"
-                                                        class="label label-warning js-fee-collect fee-status-control fee-status-control--text"
-                                                        title="Collect installment"
-                                                        data-fee-id="{{ $fee->id }}"
-                                                        data-fee-amount="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
-                                                        data-fee-receipt="{{ $fee->receipt_number ?? '' }}"
-                                                        data-fee-installment-no="{{ $fee->installment_no ?? '' }}"
-                                                        data-fee-can-redistribute="{{ $nextPendingInstallment ? 1 : 0 }}"
-                                                        data-fee-next-installment-no="{{ $nextPendingInstallment->installment_no ?? '' }}"
-                                                        style="border:0;cursor:pointer;">
-                                                    Pending
-                                                </button>
-                                            @else
-                                                <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
-                                            @endif
-                                            @if($voucherUrl)
-                                                <a class="btn btn-xs btn-warning fee-action-btn fee-status-control fee-status-control--icon p-2"
-                                                  title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
-                                                    <i class="bi bi-menu-button-wide"></i>
-                                                </a>
-                                            @else
-                                                <span class="btn btn-xs btn-default fee-action-btn disabled" title="Voucher not available"><i class="fa fa-file-text-o"></i></span>
-                                            @endif
-                                            @if($canAdminEdit)
-                                                <button class="btn btn-xs btn-default fee-action-btn js-fee-edit fee-status-control fee-status-control--text p-2"
-                                                        type="button"
-                                                        data-fee-id="{{ $fee->id }}"
-                                                        data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
-                                                        data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
-                                                        data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
-                                                    Edit
-                                                </button>
-                                            @endif
+                                            <button type="button"
+                                            class="label label-warning js-fee-collect fee-status-control fee-status-control--text"
+                                            title="Collect installment"
+                                            data-fee-id="{{ $fee->id }}"
+                                            data-fee-amount="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
+                                            data-fee-receipt="{{ $fee->receipt_number ?? '' }}"
+                                            data-fee-installment-no="{{ $fee->installment_no ?? '' }}"
+                                            style="border:0;cursor:pointer;">
+                                            Pending
+                                             </button>
+                                             @else
+                                             <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
+                                             @endif
+                                       
                                         </td>
-                                        <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
-                                        <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>
+                                    <td> @if($voucherUrl)
+                                        <a class="btn btn-xs btn-warning fee-action-btn fee-status-control fee-status-control--icon p-2"
+                                        title="View Voucher" href="{{ $voucherUrl }}" target="_blank" rel="noopener">
+                                        <i class="bi bi-menu-button-wide"></i>
+                                    </a>
+                                    @else
+                                    <span class="btn btn-xs btn-default fee-action-btn disabled" title="Voucher not available"><i class="fa fa-file-text-o"></i></span>
+                                    @endif
+                                    @if($canAdminEdit)
+                                    <button class="btn btn-xs btn-default fee-action-btn js-fee-edit fee-status-control fee-status-control--text p-2"
+                                    type="button"
+                                    data-fee-id="{{ $fee->id }}"
+                                    data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
+                                    data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
+                                    data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
+                                    Edit
+                                </button>
+                                @endif</td>
                                     </tr>
                                 @empty
                                     <tr>

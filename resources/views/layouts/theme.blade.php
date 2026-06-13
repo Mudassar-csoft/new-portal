@@ -778,7 +778,7 @@ margin: 0 !important;
 .form-label{
     margin-bottom: 6px;
     margin-top: 6px;
-    font-size: 13.8px !important;
+    font-size: 12.8px !important;
     color: #343a40 !important;
     text-transform: uppercase;
     font-weight: 600;
@@ -1663,6 +1663,7 @@ overflow: hidden;
 
 .box-typical.box-typical-dashboard {
 margin-bottom:  10px !important;
+border: 1px solid #dbe4ed !important;
 }
 
 .box-typical.box-typical-dashboard .box-typical-header {

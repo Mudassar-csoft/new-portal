@@ -1043,7 +1043,7 @@ display: flex;
 .notification-table th{
 	text-align:left !important;
   padding: 8px 3px !important;
-  text-wrap: wrap !important;
+  text-wrap: nowrap !important;
   max-width:100px;
 }
 .lead-tabs {

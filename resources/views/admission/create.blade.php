@@ -422,7 +422,7 @@
 
 						<div  class="form-actions mb-2 mt-3 text-right">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Admission Now</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Confirm Admission</button>
 
 							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem; ">Cancel</a>
 						</div>
