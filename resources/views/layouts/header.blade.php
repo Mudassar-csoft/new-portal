@@ -74,12 +74,12 @@
 
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-enrollments" aria-expanded="false">
-                        <span>Website Enrollments</span>
+                        <span>Course Enrollment</span>
                         <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
                       </button>
                       <div class="notif-accordion-panel" id="notif-enrollments">
                         @if ($websiteEnrollments->isEmpty())
-                          <div class="text-center p-4 text-muted">No website enrollments notifications.</div>
+                          <div class="text-center p-4 text-muted">No course enrollment notifications.</div>
                         @else
                           <div class="table-responsive">
                             <table class="table table-sm mb-0 notification-table">
@@ -178,7 +178,7 @@
                     </div>
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-fee-alert" aria-expanded="false">
-                        <span>Fee Alert</span>
+                        <span>Pending Fee Alert</span>
                         <span class="count">{{ $webLeadNotificationCounts['Fee_Alert'] ?? 0 }}</span>
                       </button>
                       <div class="notif-accordion-panel" id="notif-fee-alert">
@@ -250,7 +250,7 @@
 
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
-                        <span>Follow Up</span>
+                        <span>Leads Follow Up</span>
                         <span class="count">{{ $followupNotificationCount ?? 0 }}</span>
                       </button>
                       <div class="notif-accordion-panel" id="notif-follow-up">
