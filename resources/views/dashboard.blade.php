@@ -358,7 +358,11 @@
 										</span>
 									</td>
 									<td>
-										<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@if(!empty($row['detail_url']))
+											<a href="{{ $row['detail_url'] }}" class="daily-student-name daily-student-name-link">{{ $row['student_name'] ?? 'N/A' }}</a>
+										@else
+											<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@endif
 										@if(!empty($row['show_campus']))
 											<div class="daily-student-campus">{{ $row['campus'] ?? 'Campus' }}</div>
 										@endif
@@ -429,7 +433,11 @@
 										</span>
 									</td>
 									<td>
-										<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@if(!empty($row['detail_url']))
+											<a href="{{ $row['detail_url'] }}" class="daily-student-name daily-student-name-link">{{ $row['student_name'] ?? 'N/A' }}</a>
+										@else
+											<div class="daily-student-name">{{ $row['student_name'] ?? 'N/A' }}</div>
+										@endif
 										@if(!empty($row['show_campus']))
 											<div class="daily-student-campus">{{ $row['campus'] ?? 'Campus' }}</div>
 										@endif
@@ -1479,6 +1487,16 @@
             font-weight: 600;
             text-align: left;
         }
+        .daily-student-name-link {
+            display: inline-block;
+            color: #0a6fd1;
+            text-decoration: none;
+        }
+        .daily-student-name-link:hover,
+        .daily-student-name-link:focus {
+            color: #08589f;
+            text-decoration: underline;
+        }
         .daily-student-campus {
             margin-top: 4px;
             color: #8a9aaa;
@@ -2152,7 +2170,10 @@
 
 				return rows.map(function (row) {
 					var campusLine = row && row.show_campus ? '<div class="daily-student-campus">' + escapeHtml(row.campus || 'Campus') + '</div>' : '';
-					return '<tr><td><span class="daily-status-badge daily-status-badge--' + escapeHtml(row.status_tone || 'primary') + '">' + escapeHtml(row.status_label || defaultStatus) + '</span></td><td><div class="daily-student-name">' + escapeHtml(row.student_name || 'N/A') + '</div>' + campusLine + '</td><td class="daily-phone">' + escapeHtml(row.phone || 'N/A') + '</td><td class="daily-date">' + escapeHtml(row.date_label || 'N/A') + '</td></tr>';
+					var studentNameHtml = row && row.detail_url
+						? '<a href="' + escapeHtml(row.detail_url) + '" class="daily-student-name daily-student-name-link">' + escapeHtml(row.student_name || 'N/A') + '</a>'
+						: '<div class="daily-student-name">' + escapeHtml(row.student_name || 'N/A') + '</div>';
+					return '<tr><td><span class="daily-status-badge daily-status-badge--' + escapeHtml(row.status_tone || 'primary') + '">' + escapeHtml(row.status_label || defaultStatus) + '</span></td><td>' + studentNameHtml + campusLine + '</td><td class="daily-phone">' + escapeHtml(row.phone || 'N/A') + '</td><td class="daily-date">' + escapeHtml(row.date_label || 'N/A') + '</td></tr>';
 				}).join('');
 			}
 

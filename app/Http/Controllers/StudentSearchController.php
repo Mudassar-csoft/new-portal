@@ -16,6 +16,7 @@ class StudentSearchController extends Controller
     public function index(Request $request): View
     {
         $query = trim((string) $request->query('q', ''));
+        $normalizedDigits = preg_replace('/\D+/', '', $query);
 
         $admissions = collect();
         $registrations = collect();
@@ -23,10 +24,11 @@ class StudentSearchController extends Controller
 
         if ($query !== '') {
             $needle = '%' . $query . '%';
+            $normalizedDigitsNeedle = $normalizedDigits !== '' ? '%' . $normalizedDigits . '%' : null;
 
             $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
-                ->where(function ($q) use ($needle) {
+                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('student_name', 'like', $needle)
                         ->orWhere('phone', 'like', $needle)
                         ->orWhere('roll_number', 'like', $needle)
@@ -34,6 +36,10 @@ class StudentSearchController extends Controller
                         ->orWhere('cnic', 'like', $needle)
                         ->orWhere('email', 'like', $needle)
                         ->orWhere('guardian_phone', 'like', $needle);
+
+                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                        $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                    }
                 })
                 ->orderByDesc('admission_date')
                 ->orderByDesc('id')
@@ -42,11 +48,16 @@ class StudentSearchController extends Controller
 
             $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                ->where(function ($q) use ($needle) {
+                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('student_name', 'like', $needle)
                         ->orWhere('phone', 'like', $needle)
+                        ->orWhere('cnic', 'like', $needle)
                         ->orWhere('registration_number', 'like', $needle)
                         ->orWhere('receipt_number', 'like', $needle);
+
+                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                        $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                    }
                 })
                 ->orderByDesc('id')
                 ->limit(50)

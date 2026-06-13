@@ -68,6 +68,16 @@ class Lead extends Model
         return $this->hasOne(CoworkingRegistration::class);
     }
 
+    public function registrations(): HasMany
+    {
+        return $this->hasMany(Registration::class);
+    }
+
+    public function latestRegistration(): HasOne
+    {
+        return $this->hasOne(Registration::class)->latestOfMany();
+    }
+
     public function scopeTraining(Builder $query): Builder
     {
         return $query->where('type', 'training');
