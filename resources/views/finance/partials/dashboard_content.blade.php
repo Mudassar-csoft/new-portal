@@ -6,8 +6,8 @@
         'receivables' => 0,
         'net_cashflow' => 0,
     ];
-    $incomeMix = $incomeMix ?? [];
-    $expenseMix = $expenseMix ?? [];
+    $incomeSourceChart = $incomeSourceChart ?? [];
+    $expenseSourceChart = $expenseSourceChart ?? [];
     $filters = $filters ?? [
         'campus_id' => null,
         'from' => now()->startOfMonth()->toDateString(),
@@ -157,7 +157,7 @@
                     <div class="month-chart-header-content">
                         <div class="month-chart-header-wrap">
                             <h3 class="panel-title month-chart-header-title">
-                                <h3 class="month-chart-header-label">Income</h3>
+                                <h3 class="month-chart-header-label">Income Sources</h3>
                             </h3>
                         </div>
                         <div class="month-chart-header-actions">
@@ -184,7 +184,7 @@
                     <div class="month-chart-header-content">
                         <div class="month-chart-header-wrap">
                             <h3 class="panel-title month-chart-header-title">
-                                <h3 class="month-chart-header-label">Expense</h3>
+                                <h3 class="month-chart-header-label">Expense Sources</h3>
                             </h3>
                         </div>
                         <div class="month-chart-header-actions">
@@ -777,35 +777,54 @@
             }
 
             var stats = @json($stats);
-            var incomeMix = @json($incomeMix);
-            var expenseMix = @json($expenseMix);
+            var incomeSourceChart = @json($incomeSourceChart);
+            var expenseSourceChart = @json($expenseSourceChart);
+
+            function buildSourceColumns(rows, fallbackLabel) {
+                var columns = (rows || []).map(function (row) {
+                    return [row.label, Number(row.amount || 0)];
+                }).filter(function (row) {
+                    return row[1] > 0;
+                });
+
+                if (columns.length === 0) {
+                    return [[fallbackLabel, 1]];
+                }
+
+                return columns;
+            }
 
             c3.generate({
                 bindto: '#finance-income-chart',
                 data: {
-                    columns: [
-                        ['Income', Number(stats.total_income || 0)]
-                    ],
-                    type: 'donut',
+                    columns: buildSourceColumns(incomeSourceChart, 'No Income'),
+                    type: 'pie',
                     colors: {
-                        Income: '#22c55e'
+                        'Registration Fee': '#16a34a',
+                        'Coworking Fee': '#0ea5e9',
+                        'Franchise Royalty': '#dc2626',
+                        'Other Income': '#f59e0b',
+                        'No Income': '#9ca3af'
                     }
-                },
-                donut: { title: 'Income' }
+                }
             });
 
             c3.generate({
                 bindto: '#finance-expense-chart',
                 data: {
-                    columns: [
-                        ['Expense', Number(stats.total_expense || 0)]
-                    ],
-                    type: 'donut',
+                    columns: buildSourceColumns(expenseSourceChart, 'No Expense'),
+                    type: 'pie',
                     colors: {
-                        Expense: '#ef4444'
+                        'Rent': '#475569',
+                        'Utility': '#0ea5e9',
+                        'Marketing': '#f97316',
+                        'Asset': '#8b5cf6',
+                        'Payroll': '#ef4444',
+                        'General': '#22c55e',
+                        'Reversed': '#e11d48',
+                        'No Expense': '#9ca3af'
                     }
-                },
-                donut: { title: 'Expense' }
+                }
             });
 
             c3.generate({
@@ -834,49 +853,6 @@
                     }
                 },
                 donut: { title: 'Payables' }
-            });
-
-            var incomeSourceColumns = [
-                ['Admission Fee', Number(incomeMix.admission_fee || 0)],
-                ['Coworking Fee', Number(incomeMix.coworking_fee || 0)],
-                ['Franchise Royalty', Number(incomeMix.franchise_royalty || 0)],
-                ['Other Income', Number(incomeMix.other_income || 0)]
-            ].filter(function (row) { return row[1] > 0; });
-
-            if (incomeSourceColumns.length === 0) {
-                incomeSourceColumns = [['No Data', 1]];
-            }
-
-            c3.generate({
-                bindto: '#finance-income-source-chart',
-                data: {
-                    columns: incomeSourceColumns,
-                    type: 'donut',
-                    colors: {
-                        'Admission Fee': '#16a34a',
-                        'Coworking Fee': '#0ea5e9',
-                        'Franchise Royalty': '#dc2626',
-                        'Other Income': '#f59e0b',
-                        'No Data': '#9ca3af'
-                    }
-                },
-                donut: { title: 'Income' }
-            });
-
-            var mixColumns = Object.keys(expenseMix || {}).map(function (key) {
-                return [key.charAt(0).toUpperCase() + key.slice(1), Number(expenseMix[key] || 0)];
-            }).filter(function (row) { return row[1] > 0; });
-
-            if (mixColumns.length === 0) {
-                mixColumns = [['No Data', 1]];
-            }
-
-            c3.generate({
-                bindto: '#finance-expense-mix-chart',
-                data: {
-                    columns: mixColumns,
-                    type: 'pie'
-                }
             });
         });
     </script>

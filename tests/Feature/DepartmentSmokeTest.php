@@ -22,6 +22,19 @@ class DepartmentSmokeTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_profile_pages_do_not_render_sidebar_menu(): void
+    {
+        $this->actingAs($this->createAdminUser());
+
+        $this->get(route('profile.show'))
+            ->assertOk()
+            ->assertDontSee('side-menu-list', false);
+
+        $this->get(route('profile.change-password'))
+            ->assertOk()
+            ->assertDontSee('side-menu-list', false);
+    }
+
     /**
      * @return array<string, array{0: string, 1?: array<string, mixed>}>
      */

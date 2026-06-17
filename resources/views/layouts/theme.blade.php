@@ -2017,6 +2017,11 @@ margin-left: 0;
 			padding-right: 57px !important;
 		}
 
+		.profile-no-sidebar .page-content {
+			padding-left: 15px !important;
+			padding-right: 15px !important;
+		}
+
 		.with-side-menu .page-content {
 			padding-left: 38px !important;
 		}
@@ -2044,6 +2049,11 @@ margin-left: 0;
 			body.sidebar-hidden .page-content,
 			.menu-left-hidden .page-content {
 				padding-left: 15px !important;
+			}
+
+			.profile-no-sidebar .page-content {
+				padding-left: 15px !important;
+				padding-right: 15px !important;
 			}
 
 			body.with-side-menu .page-content > .container-fluid,
@@ -2091,11 +2101,14 @@ margin-left: 0;
 
 @php
 	$isMainDashboardPage = request()->routeIs('dashboard') && in_array(optional(request()->route())->uri(), ['', '/'], true);
+	$hideSidebarForPage = request()->routeIs('profile.*');
 @endphp
-<body class="with-side-menu control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }} {{ trim($__env->yieldContent('body_class')) }}">
+<body class="{{ $hideSidebarForPage ? 'profile-no-sidebar' : 'with-side-menu' }} control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }} {{ trim($__env->yieldContent('body_class')) }}">
 
 	@include('layouts.header')
-	@include('layouts.nav')
+	@if(!$hideSidebarForPage)
+		@include('layouts.nav')
+	@endif
 
 	<div class="page-content">
 		<div class="container-fluid">

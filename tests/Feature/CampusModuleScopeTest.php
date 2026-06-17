@@ -252,6 +252,27 @@ class CampusModuleScopeTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_student_search_finds_registered_students_by_cnic(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = $this->createProgram();
+
+        $alphaRegistration = $this->createRegistration($alphaCampus, $program, 'CNIC Search Registration', '03100000014');
+        $this->createRegistration($betaCampus, $program, 'Other Campus Registration', '03100000015');
+
+        $user = $this->createScopedUser($alphaCampus, [$studentView]);
+        $dashedCnic = substr($alphaRegistration->cnic, 0, 5) . '-' . substr($alphaRegistration->cnic, 5, 7) . '-' . substr($alphaRegistration->cnic, 12);
+
+        $this->actingAs($user)
+            ->get(route('student-search.index', ['q' => $dashedCnic]))
+            ->assertOk()
+            ->assertSee('CNIC Search Registration')
+            ->assertDontSee('Other Campus Registration');
+    }
+
     public function test_non_admin_student_updates_and_coworking_registration_access_are_campus_scoped(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');

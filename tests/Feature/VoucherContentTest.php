@@ -122,15 +122,35 @@ class VoucherContentTest extends TestCase
             'due_at' => now()->addMonth()->toDateString(),
         ]);
 
+        $thirdInstallment = FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'fee_type' => 'admission',
+            'installment_no' => 3,
+            'installments_total' => 3,
+            'amount' => 16000,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => 16000,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'pending',
+            'due_at' => now()->addMonths(2)->toDateString(),
+        ]);
+
         $this->post(route('student.fee.collect', $secondInstallment), [
             'paid_amount' => 14000,
         ])->assertRedirect();
 
         $secondInstallment->refresh();
+        $thirdInstallment->refresh();
 
         $this->assertSame('paid', $secondInstallment->status);
         $this->assertSame(14000.0, (float) $secondInstallment->net_amount);
         $this->assertNotSame($admission->receipt_number, $secondInstallment->receipt_number);
+        $this->assertSame(18000.0, (float) $thirdInstallment->net_amount);
 
         $this->get(route('admission.voucher', ['admission' => $admission, 'fee_collection' => $secondInstallment->id]))
             ->assertOk()
@@ -146,6 +166,43 @@ class VoucherContentTest extends TestCase
             ->assertSee('Rs. 16,000')
             ->assertDontSee('Rs. 30,000')
             ->assertDontSee('Rs. 14,000');
+    }
+
+    public function test_collect_installment_rejects_short_payment_when_no_next_pending_installment_exists(): void
+    {
+        $admin = $this->createAdminUser();
+        $this->actingAs($admin);
+
+        ['campus' => $campus, 'program' => $program, 'registration' => $registration, 'admission' => $admission] = $this->createStudentRecords();
+
+        $finalInstallment = FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'fee_type' => 'admission',
+            'installment_no' => 2,
+            'installments_total' => 2,
+            'amount' => 16000,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => 16000,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'pending',
+            'due_at' => now()->addMonth()->toDateString(),
+        ]);
+
+        $this->post(route('student.fee.collect', $finalInstallment), [
+            'paid_amount' => 14000,
+        ])->assertRedirect()
+            ->assertSessionHas('error', 'Exact installment amount is required because no next pending installment is available.');
+
+        $finalInstallment->refresh();
+
+        $this->assertSame('pending', $finalInstallment->status);
+        $this->assertSame(16000.0, (float) $finalInstallment->net_amount);
+        $this->assertSame($admission->receipt_number, $finalInstallment->receipt_number);
     }
 
     /**

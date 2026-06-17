@@ -253,7 +253,10 @@ class DashboardController extends Controller
     private function buildDailyActivity(?int $campusId = null, array $dashboardAccess = []): array
     {
         $rows = $this->leadQueryForDashboard($campusId, $dashboardAccess)
-            ->with('campus:id,code,name')
+            ->with([
+                'campus:id,code,name',
+                'registrations:id,lead_id',
+            ])
             ->latest('created_at')
             ->latest('id')
             ->limit(12)
@@ -262,11 +265,17 @@ class DashboardController extends Controller
                 $campusLabel = optional($lead->campus)->code
                     ?: optional($lead->campus)->name
                     ?: 'Campus';
+                $status = (string) $lead->status;
+                $registrationId = $lead->registrations->sortByDesc('id')->first()?->id;
+                $detailUrl = in_array($status, ['registered', 'enrolled'], true) && $registrationId
+                    ? route('student.show', $registrationId)
+                    : route('leads.show', $lead);
 
                 return [
                     'status_label' => $this->formatLeadStatusLabel($lead->status),
                     'status_tone' => $this->leadStatusTone($lead->status),
                     'student_name' => $lead->name ?: 'N/A',
+                    'detail_url' => $detailUrl,
                     'phone' => $lead->phone ?: 'N/A',
                     'date_label' => $this->formatDashboardDate($lead->created_at),
                     'campus' => $campusLabel,
@@ -296,7 +305,7 @@ class DashboardController extends Controller
             ->latest('admission_date')
             ->latest('id')
             ->limit(12)
-            ->get(['id', 'campus_id', 'student_name', 'phone', 'student_status', 'admission_date'])
+            ->get(['id', 'registration_id', 'campus_id', 'student_name', 'phone', 'student_status', 'admission_date'])
             ->map(function (Admission $admission) use ($campusId) {
                 $campusLabel = optional($admission->campus)->code
                     ?: optional($admission->campus)->name
@@ -306,6 +315,7 @@ class DashboardController extends Controller
                     'status_label' => $this->formatAdmissionStatusLabel($admission->student_status),
                     'status_tone' => $this->admissionStatusTone($admission->student_status),
                     'student_name' => $admission->student_name ?: 'N/A',
+                    'detail_url' => $admission->registration_id ? route('student.show', $admission->registration_id) : null,
                     'phone' => $admission->phone ?: 'N/A',
                     'date_label' => $this->formatDashboardDate($admission->admission_date),
                     'campus' => $campusLabel,
@@ -375,17 +385,7 @@ class DashboardController extends Controller
             return 'N/A';
         }
 
-        $date = Carbon::parse($timestamp);
-
-        if ($date->isToday()) {
-            return 'Today ' . $date->format('H:i');
-        }
-
-        if ($date->isYesterday()) {
-            return 'Yesterday ' . $date->format('H:i');
-        }
-
-        return $date->format('d-M H:i');
+        return Carbon::parse($timestamp)->format('d-M-Y');
     }
 
     /**

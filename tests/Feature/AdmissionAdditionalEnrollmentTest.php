@@ -98,7 +98,8 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
                 'source_registration_id' => $registration->id,
             ]))
             ->assertOk()
-            ->assertSee('Student details were loaded from the previous admission.')
+            ->assertDontSee('Student details were loaded from the previous admission.')
+            ->assertDontSee('The current enrolled course is hidden here. Choose another course.')
             ->assertSee('value="Source Student"', false)
             ->assertSee('value="03200000111"', false)
             ->assertSee('value="Guardian Source"', false)

@@ -18,6 +18,9 @@
         @if(session('status'))
             <div class="student-flash">{{ session('status') }}</div>
         @endif
+        @if(session('error'))
+            <div class="student-flash student-flash--error">{{ session('error') }}</div>
+        @endif
 
         <!-- <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
@@ -216,6 +219,20 @@
                                         $voucherUrl = $fee->fee_type === 'registration'
                                             ? route('registration.voucher', $registration)
                                             : ($admission ? route('admission.voucher', ['admission' => $admission, 'fee_collection' => $fee->id]) : null);
+                                        $nextPendingInstallment = $fee->fee_type === 'admission'
+                                            ? $feeCollections
+                                                ->filter(function ($candidate) use ($fee) {
+                                                    return (int) $candidate->id !== (int) $fee->id
+                                                        && $candidate->fee_type === 'admission'
+                                                        && (int) ($candidate->admission_id ?? 0) === (int) ($fee->admission_id ?? 0)
+                                                        && $candidate->status === 'pending'
+                                                        && (int) ($candidate->installment_no ?? 0) > (int) ($fee->installment_no ?? 0);
+                                                })
+                                                ->sortBy(function ($candidate) {
+                                                    return sprintf('%06d-%06d', (int) ($candidate->installment_no ?? 999999), (int) $candidate->id);
+                                                })
+                                                ->first()
+                                            : null;
                                     @endphp
                                     <tr>
                                         <td>{{ $fee->fee_type === 'registration' ? 'Registration Fee' : ($admission?->program?->title ?? $registration->program?->title ?? '—') }}</td>
@@ -680,6 +697,11 @@
             margin-bottom: 12px;
             font-size: 13px;
         }
+        .student-flash--error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
 
         .badge-pill-icon { text-decoration: none; }
         .badge-pill-icon:hover { background: #e0931a; color: #fff; }
@@ -874,6 +896,8 @@
             const collectRemainingHint = document.getElementById('fee_collect_remaining_hint');
             const collectReceipt = document.getElementById('fee_collect_receipt');
             const feeCollectBase = @json(url('/student/fee'));
+            let collectCanRedistribute = false;
+            let collectNextInstallmentNo = '';
 
             function ordinal(n) {
                 const s = ['th', 'st', 'nd', 'rd'];
@@ -886,6 +910,8 @@
                 const amount = parseFloat(btn.getAttribute('data-fee-amount')) || 0;
                 const receipt = btn.getAttribute('data-fee-receipt') || '';
                 const installmentNo = btn.getAttribute('data-fee-installment-no');
+                collectCanRedistribute = btn.getAttribute('data-fee-can-redistribute') === '1';
+                collectNextInstallmentNo = btn.getAttribute('data-fee-next-installment-no') || '';
                 collectForm.action = feeCollectBase + '/' + id + '/collect';
                 collectAmount.value = amount.toFixed(2);
                 collectAmountLabel.textContent = installmentNo
@@ -908,11 +934,21 @@
                 const diff = Math.round((amt - paid) * 100) / 100;
                 collectRemaining.value = diff.toFixed(2);
                 if (diff > 0) {
-                    collectRemainingHint.textContent = 'Shortfall of ' + diff.toFixed(2) + ' will be added to the next installment.';
-                    collectRemainingHint.style.color = '#d97706';
+                    if (collectCanRedistribute && collectNextInstallmentNo) {
+                        collectRemainingHint.textContent = 'Shortfall of ' + diff.toFixed(2) + ' will be added to the ' + ordinal(parseInt(collectNextInstallmentNo, 10)) + ' installment.';
+                        collectRemainingHint.style.color = '#d97706';
+                    } else {
+                        collectRemainingHint.textContent = 'Exact installment amount is required because no next pending installment is available.';
+                        collectRemainingHint.style.color = '#dc2626';
+                    }
                 } else if (diff < 0) {
-                    collectRemainingHint.textContent = 'Excess of ' + Math.abs(diff).toFixed(2) + ' will be deducted from the next installment (next installments are removed if fully covered).';
-                    collectRemainingHint.style.color = '#0a96cc';
+                    if (collectCanRedistribute) {
+                        collectRemainingHint.textContent = 'Excess of ' + Math.abs(diff).toFixed(2) + ' will be deducted from the next pending installment(s).';
+                        collectRemainingHint.style.color = '#0a96cc';
+                    } else {
+                        collectRemainingHint.textContent = 'Exact installment amount is required because no next pending installment is available.';
+                        collectRemainingHint.style.color = '#dc2626';
+                    }
                 } else {
                     collectRemainingHint.textContent = 'Exact installment amount.';
                     collectRemainingHint.style.color = '#16a34a';
@@ -925,6 +961,26 @@
                 el.addEventListener('click', closeCollectModal);
             });
             collectPaid.addEventListener('input', updateCollectRemaining);
+            collectForm.addEventListener('submit', function (event) {
+                const amt = parseFloat(collectAmount.value) || 0;
+                const paid = parseFloat(collectPaid.value) || 0;
+                const diff = Math.round((amt - paid) * 100) / 100;
+
+                if (diff !== 0 && !collectCanRedistribute) {
+                    event.preventDefault();
+                    const message = 'Exact installment amount is required because no next pending installment is available.';
+
+                    if (window.swal) {
+                        swal({
+                            title: 'Error',
+                            text: message,
+                            type: 'error'
+                        });
+                    } else {
+                        window.alert(message);
+                    }
+                }
+            });
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && collectModal.classList.contains('is-open')) {
                     closeCollectModal();
