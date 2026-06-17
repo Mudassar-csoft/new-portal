@@ -189,6 +189,9 @@
 
 @push('styles')
     <style>
+        *{
+            font-size:16px !important;
+        }
         .user-edit-page {
             overflow-x: hidden;
         }
@@ -420,6 +423,9 @@
             font-size: 13px;
             font-weight: 600;
             position: relative;
+        }
+        .form-label{
+`           font-size:16px !important; 
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
             position: static;

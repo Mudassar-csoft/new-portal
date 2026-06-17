@@ -11,7 +11,7 @@
         <div class="box-typical box-typical-dashboard panel panel-default role-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0">Edit Role</h3>
+                    <h3 class="panel-title mb-0 form-label-role">Edit Role</h3>
                 </div>
                 <a href="{{ route('roles.index') }}" class="btn btn-default">Back</a>
             </header>
@@ -20,30 +20,40 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="form-row text-center">
-                        <div class="form-group col-md-6">
-                            <label class="required">Name</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $role->name) }}" placeholder="Admin" required>
+                     <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label class="required form-label-role">Name</label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin" required>
                             @error('name')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Slug</label>
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $role->slug) }}" placeholder="admin" disabled>
-                            <small class="text-muted">Role slug stays fixed after creation.</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label class="form-label-role">Slug</label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
                             @error('slug')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description', $role->description) }}</textarea>
-                        @error('description')
-                            <div class="field-error">{{ $message }}</div>
-                        @enderror
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label class="form-label-role">Description</label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="field-error ">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     @include('user.partials.direct-permissions', [
@@ -65,6 +75,16 @@
 
 @push('styles')
     <style>
+        .form-label-role {
+            font-size: 14px !important;
+            margin-bottom: 6px;
+    margin-top: 6px;
+    
+    color: #343a40 !important;
+    text-transform: uppercase;
+    font-weight: 600;
+
+        }
         .required::after {
             content: '*';
             color: #e74c3c;

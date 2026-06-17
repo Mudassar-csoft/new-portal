@@ -11,7 +11,7 @@
         <div class="box-typical box-typical-dashboard panel panel-default user-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
                 <div>
-                    <h3 class="panel-title mb-0 form-label">Create Role</h3>
+                    <h3 class="panel-title mb-0 form-label-role">Create Role</h3>
                 </div>
             </header>
             <div class="box-typical-body panel-body user-body">
@@ -20,7 +20,7 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-2">
-                            <label class="required form-label">Name</label>
+                            <label class="required form-label-role">Name</label>
                         </div>
                         <div class="form-group col-md-10">
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin" required>
@@ -32,7 +32,7 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-2">
-                            <label class="form-label">Slug</label>
+                            <label class="form-label-role">Slug</label>
                         </div>
                         <div class="form-group col-md-10">
                             <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
@@ -44,12 +44,12 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-2">
-                            <label class="form-label">Description</label>
+                            <label class="form-label-role">Description</label>
                         </div>
                         <div class="form-group col-md-10">
                             <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
                             @error('description')
-                                <div class="field-error">{{ $message }}</div>
+                                <div class="field-error ">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -73,6 +73,16 @@
 
 @push('styles')
     <style>
+        .form-label-role{
+            font-size: 14px !important;
+            margin-bottom: 6px;
+            margin-top: 6px;
+            
+            color: #343a40 !important;
+            text-transform: uppercase;
+            font-weight: 600;
+
+        }
         .required::after {
             content: '*';
             color: #e74c3c;
