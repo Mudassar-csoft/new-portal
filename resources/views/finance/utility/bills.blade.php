@@ -232,19 +232,22 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        <hr>
                         <div class="modal-body">
                             <div class="alert alert-danger d-none" id="quickBillTypeError"></div>
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label">Company Name</label>
                                     <input type="text" name="company_name" class="form-control" placeholder="FESCO">
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label required">Bill Type</label>
                                     <input type="text" name="service_name" class="form-control" placeholder="Electricity" required>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+
                                 <label class="form-label">Default Payee</label>
                                 <select name="payee_id" class="form-control">
                                     <option value="">- Select -</option>
@@ -253,6 +256,8 @@
                                     @endforeach
                                 </select>
                             </div>
+                                </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-inline btn-danger-outline" data-dismiss="modal">Close</button>
@@ -274,6 +279,9 @@
         .input-group .btn { height: 32px; line-height: 1; }
         .utility-action-cell { min-width: 100px; }
         .utility-action-dropdown .dropdown-menu { min-width: 140px; }
+        .modal-title{
+            padding: 10px 25px 0px 25px;
+        }
     </style>
 @endpush
 
