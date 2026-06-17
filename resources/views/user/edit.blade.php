@@ -129,7 +129,7 @@
                             <select
                                 name="campus_id"
                                 id="campus_id"
-                                class="form-control select2 select2-white @error('campus_id') is-invalid @enderror"
+                                class="form-control select2  @error('campus_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="- Select Campus -"
                             >
@@ -151,11 +151,11 @@
                             <select
                                 name="role_id"
                                 id="role_id"
-                                class="form-control select2 select2-white @error('role_id') is-invalid @enderror"
+                                class="form-control select2  @error('role_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="Select role"
                             >
-                                <option value="">Select role</option>
+                                <option value="">- Select role -</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}" @selected((string) $selectedRoleId === (string) $role->id)>{{ $role->name }}</option>
                                 @endforeach
@@ -272,7 +272,7 @@
         .user-edit-page .select2-container--white .select2-selection--single,
         .user-edit-page .select2-container--white .select2-selection--multiple {
             min-height: 50px;
-            border: 1px solid #d2dee9;
+            border: 1px solid #d2dee9 !important;
             border-radius: 5px;
             background: #fff;
             font-size: 20px;
@@ -366,6 +366,7 @@
             border-radius: 5px !important;
             background: #fff !important;
             box-shadow: none !important;
+            border: 1px solid #d2dee9 !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__rendered {
