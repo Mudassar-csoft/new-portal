@@ -23,7 +23,7 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="name" class="form-label required">Full Name</label>
+                            <label for="name" class="form-label-role required">Full Name</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -42,7 +42,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email" class="form-label required">Email Address</label>
+                            <label for="email" class="form-label-role required">Email Address</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -61,7 +61,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password" class="form-label-role">Password</label>
                         </div>
                         <div class="user-form-field">
                             <div class="input-shell">
@@ -91,7 +91,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="password_confirmation" class="form-label">Confirm Password</label>
+                            <label for="password_confirmation" class="form-label-role">Confirm Password</label>
                         </div>
                         <div class="user-form-field">
                             <div class="input-shell">
@@ -117,7 +117,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="campus_id" class="form-label">Campus</label>
+                            <label for="campus_id" class="form-label-role">Campus</label>
                         </div>
                         <div class="user-form-field">
                             <select
@@ -139,7 +139,7 @@
                         </div>
                         <div class="user-form-row">
                             <div class="user-form-label">
-                                <label for="role_id" class="form-label">Roles</label>
+                                <label for="role_id" class="form-label-role">Roles</label>
                             </div>
                             <div class="user-form-field">
                                 <select
@@ -181,6 +181,16 @@
         .user-create-page .page-content {
             overflow-x: hidden;
             /* background: #f8fbff; */
+        }
+        .form-label-role{
+            font-size: 14px !important;
+            margin-bottom: 6px;
+            margin-top: 6px;
+            
+            color: #343a40 !important;
+            text-transform: uppercase;
+            font-weight: 600;
+
         }
         .user-create-page .page-content > .container-fluid {
             max-width: 100% !important;
