@@ -23,7 +23,7 @@
                 <header class="box-typical-header panel-heading finance-header">
                     <div>
                         <h3 class="panel-title">Building Rent Setup</h3>
-                        <p class="text-muted mb-0">Add the active rent record for each campus so expense requests can fetch the correct monthly amount.</p>
+                        <!-- <p class="text-muted mb-0">Add the active rent record for each campus so expense requests can fetch the correct monthly amount.</p> -->
                     </div>
                     <div class="finance-header-actions">
                         <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Create Expense Request</a>

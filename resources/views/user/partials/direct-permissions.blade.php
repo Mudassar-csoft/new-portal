@@ -69,6 +69,9 @@
                 border-radius: 6px;
                 background: #fff;
             }
+            .form-label{
+                text-transform: none !important;
+            }
             .permission-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -96,7 +99,7 @@
                 font-size: 12px;
                 font-weight: 700;
                 letter-spacing: 0.08em;
-                text-transform: uppercase;
+                /* text-transform: uppercase; */
                 color: #7f93ac;
             }
             .perm-item {

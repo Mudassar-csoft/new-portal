@@ -97,7 +97,7 @@
             @endforeach
         </select>
     </div>
-    <div class="form-group col-lg-3 col-md-6 ">
+    <div class="form-group col-lg-4 col-md-6 ">
         <label class="form-label required d-block">Campus Type</label>
         <div class=" campus-type-options mt-2 pl-0 pr-0 d-flex  justify-content-between">
             @foreach($typeOptions as $key => $label)
