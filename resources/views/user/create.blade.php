@@ -147,7 +147,7 @@
                                     id="role_id"
                                     class="form-control select2  @error('role_id') is-invalid @enderror"
                                     style="width: 100%;"
-                                    data-placeholder="Select role"
+                                    data-placeholder="- Select Role -"
                                 >
                                     <option value="">Select role</option>
                                     @foreach($roles as $role)
@@ -337,7 +337,7 @@
         .user-create-page .select2-container {
             width: 100% !important;
             max-width: 100% !important;
-            border: 1px solid #d2dee9 !important;
+            /* border: 1px solid #d2dee9 !important; */
         }
         .user-create-page .select2-container--default .select2-selection--single,
         .user-create-page .select2-container--white .select2-selection--single {
