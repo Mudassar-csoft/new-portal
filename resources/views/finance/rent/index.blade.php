@@ -26,8 +26,8 @@
                         <!-- <p class="text-muted mb-0">Add the active rent record for each campus so expense requests can fetch the correct monthly amount.</p> -->
                     </div>
                     <div class="finance-header-actions">
-                        <a href="{{ route('finance.expense.add') }}" class="btn btn-primary btn-sm">Create Expense Request</a>
-                        <a href="{{ route('finance.expense.rent') }}" class="btn btn-danger btn-sm">Rent Expense List</a>
+                        <a href="{{ route('finance.expense.add') }}" class="btn btn-primary-outline btn-sm">Create Expense Request</a>
+                        <a href="{{ route('finance.expense.rent') }}" class="btn btn-danger-outline btn-sm">Rent Expense List</a>
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
