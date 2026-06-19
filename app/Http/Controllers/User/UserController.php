@@ -176,7 +176,7 @@ class UserController extends Controller
             'campuses' => $campuses,
             'roles' => $roles,
             'permissionGroups' => $permissionGroups,
-            'emailDomain' => self::EMAIL_DOMAIN,
+            'emailDomain' => $this->extractEmailDomain($user->email),
             'emailLocal' => $this->extractEmailLocalPart($user->email),
         ]);
     }
@@ -197,7 +197,7 @@ class UserController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        $email = $this->buildInstitutionEmail($validated['email_local']);
+        $email = $this->buildInstitutionEmail($validated['email_local'], $this->extractEmailDomain($user->email));
         if ($this->emailExists($email, $user->id)) {
             return redirect()->back()
                 ->withInput()
@@ -331,14 +331,19 @@ class UserController extends Controller
         abort_unless(auth()->user()?->isAdmin(), 403);
     }
 
-    private function buildInstitutionEmail(string $emailLocal): string
+    private function buildInstitutionEmail(string $emailLocal, ?string $domain = null): string
     {
-        return $this->extractEmailLocalPart(trim($emailLocal)) . '@' . self::EMAIL_DOMAIN;
+        return $this->extractEmailLocalPart(trim($emailLocal)) . '@' . ($domain ?: self::EMAIL_DOMAIN);
     }
 
     private function extractEmailLocalPart(string $email): string
     {
         return explode('@', trim($email), 2)[0];
+    }
+
+    private function extractEmailDomain(string $email): string
+    {
+        return explode('@', trim($email), 2)[1] ?? self::EMAIL_DOMAIN;
     }
 
     private function emailExists(string $email, ?int $ignoreUserId = null): bool
