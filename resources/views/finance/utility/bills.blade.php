@@ -23,7 +23,7 @@
                 <header class="box-typical-header panel-heading finance-header">
                     <div>
                         <h3 class="panel-title">Bill Management <span class="text-muted">|</span> Add Utility Bill</h3>
-                        <p class="text-muted mb-0">Add campus utility bill master details only. Payment amount will be entered later from the expense request form.</p>
+                        <!-- <p class="text-muted mb-0">Add campus utility bill master details only. Payment amount will be entered later from the expense request form.</p> -->
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
@@ -41,7 +41,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-lg-4 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Bill Type</label>
                                 <div class="input-group">
                                     <select name="bill_type_id" id="billTypeSelect" class="form-control utility-bill-type-select" data-company-target="#billCompanyName" required>
@@ -68,7 +68,7 @@
                                 <label class="form-label">Company Name</label>
                                 <input type="text" id="billCompanyName" class="form-control" readonly>
                             </div>
-                            <div class="form-group col-lg-2 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Reference Number</label>
                                 <input type="text" name="reference_number" class="form-control" value="{{ old('reference_number') }}" required>
                             </div>
@@ -232,19 +232,22 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        <hr>
                         <div class="modal-body">
                             <div class="alert alert-danger d-none" id="quickBillTypeError"></div>
                             <div class="form-row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label">Company Name</label>
                                     <input type="text" name="company_name" class="form-control" placeholder="FESCO">
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-12">
                                     <label class="form-label required">Bill Type</label>
                                     <input type="text" name="service_name" class="form-control" placeholder="Electricity" required>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+
                                 <label class="form-label">Default Payee</label>
                                 <select name="payee_id" class="form-control">
                                     <option value="">- Select -</option>
@@ -253,6 +256,8 @@
                                     @endforeach
                                 </select>
                             </div>
+                                </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-inline btn-danger-outline" data-dismiss="modal">Close</button>
@@ -274,6 +279,9 @@
         .input-group .btn { height: 32px; line-height: 1; }
         .utility-action-cell { min-width: 100px; }
         .utility-action-dropdown .dropdown-menu { min-width: 140px; }
+        .modal-title{
+            padding: 10px 25px 0px 25px;
+        }
     </style>
 @endpush
 

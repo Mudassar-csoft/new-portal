@@ -6,7 +6,7 @@
 @endphp
 
 <div class="form-section">
-    <div class="section-title form-label">{{ $sectionTitle }}</div>
+    <div class="section-title form-label-role">{{ $sectionTitle }}</div>
     @if($helperText)
         <p class="permission-helper text-muted">{{ $helperText }}</p>
     @endif
@@ -69,6 +69,9 @@
                 border-radius: 6px;
                 background: #fff;
             }
+            .form-label{
+                font-size: 16px !important;
+            }
             .permission-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -96,7 +99,7 @@
                 font-size: 12px;
                 font-weight: 700;
                 letter-spacing: 0.08em;
-                text-transform: uppercase;
+                /* text-transform: uppercase; */
                 color: #7f93ac;
             }
             .perm-item {

@@ -220,7 +220,7 @@ $(document).ready(function(){
 	// Auto-apply Select2 to standard selects unless explicitly opted out
 	$('select').not(
 		'.select2, .select2-icon, .select2-arrow, .select2-no-search-arrow, ' +
-		'.select2-no-search-default, .select2-white, .select2-photo, ' +
+		'.select2-no-search-default, .select2-photo, ' +
 		'.bootstrap-select, .manual'
 	).addClass('select2');
 

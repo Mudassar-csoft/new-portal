@@ -157,7 +157,7 @@
                     <div class="month-chart-header-content">
                         <div class="month-chart-header-wrap">
                             <h3 class="panel-title month-chart-header-title">
-                                <h3 class="month-chart-header-label">Income Sources</h3>
+                                <h3 class="month-chart-header-label">Income</h3>
                             </h3>
                         </div>
                         <div class="month-chart-header-actions">
@@ -184,7 +184,7 @@
                     <div class="month-chart-header-content">
                         <div class="month-chart-header-wrap">
                             <h3 class="panel-title month-chart-header-title">
-                                <h3 class="month-chart-header-label">Expense Sources</h3>
+                                <h3 class="month-chart-header-label">Expense</h3>
                             </h3>
                         </div>
                         <div class="month-chart-header-actions">

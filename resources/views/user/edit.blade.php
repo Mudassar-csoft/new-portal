@@ -29,7 +29,7 @@
 
                      <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="name" class="form-label required">Full Name</label>
+                            <label for="name" class="form-label-role required">Full Name</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -48,7 +48,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email" class="form-label required">Email Address</label>
+                            <label for="email" class="form-label-role required">Email Address</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -97,7 +97,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="password_confirmation" class="form-label">Confirm Password</label>
+                            <label for="password_confirmation" class="form-label-role">Confirm Password</label>
                         </div>
                         <div class="user-form-field">
                             <div class="input-shell">
@@ -123,13 +123,13 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="campus_id" class="form-label">Campus</label>
+                            <label for="campus_id" class="form-label-role">Campus</label>
                         </div>
                         <div class="user-form-field">
                             <select
                                 name="campus_id"
                                 id="campus_id"
-                                class="form-control select2 select2-white @error('campus_id') is-invalid @enderror"
+                                class="form-control select2  @error('campus_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="- Select Campus -"
                             >
@@ -145,17 +145,17 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="role_id" class="form-label">Roles</label>
+                            <label for="role_id" class="form-label-role">Roles</label>
                         </div>
                         <div class="user-form-field">
                             <select
                                 name="role_id"
                                 id="role_id"
-                                class="form-control select2 select2-white @error('role_id') is-invalid @enderror"
+                                class="form-control select2  @error('role_id') is-invalid @enderror"
                                 style="width: 100%;"
                                 data-placeholder="Select role"
                             >
-                                <option value="">Select role</option>
+                                <option value="">- Select role -</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}" @selected((string) $selectedRoleId === (string) $role->id)>{{ $role->name }}</option>
                                 @endforeach
@@ -189,6 +189,16 @@
 
 @push('styles')
     <style>
+        .form-label-role{
+            font-size: 14px !important;
+            margin-bottom: 6px;
+            margin-top: 6px;
+            
+            color: #343a40 !important;
+            text-transform: uppercase;
+            font-weight: 600;
+
+        }
         .user-edit-page {
             overflow-x: hidden;
         }
@@ -272,7 +282,7 @@
         .user-edit-page .select2-container--white .select2-selection--single,
         .user-edit-page .select2-container--white .select2-selection--multiple {
             min-height: 50px;
-            border: 1px solid #d2dee9;
+            border: 1px solid #d2dee9 !important;
             border-radius: 5px;
             background: #fff;
             font-size: 20px;
@@ -366,6 +376,7 @@
             border-radius: 5px !important;
             background: #fff !important;
             box-shadow: none !important;
+            border: 1px solid #d2dee9 !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__rendered {
@@ -419,6 +430,9 @@
             font-size: 13px;
             font-weight: 600;
             position: relative;
+        }
+        .form-label{
+`           font-size:16px !important; 
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
             position: static;
