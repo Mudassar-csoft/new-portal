@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campus;
+use App\Models\CoworkingRegistrationReceipt;
+use App\Models\FeeCollection;
 use App\Models\FinanceExpense;
 use App\Models\FinanceOtherCharge;
 use App\Models\FinanceOtherChargePayment;
 use App\Models\FinanceRoyalty;
-use App\Models\Registration;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -24,27 +25,26 @@ class DashboardController extends Controller
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
 
-        $registrationIncome = Registration::query()
-            ->where('status', 'registered')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('registered_at', [$from, $to])
-            ->sum('net_payable');
+        $feeBreakdown = $this->paidFeeBreakdown($campusId, $from, $to);
+        $registrationIncome = (float) ($feeBreakdown->registration_total ?? 0);
+        $admissionIncome = (float) ($feeBreakdown->admission_total ?? 0);
 
         $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
-        $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
+        $coWorkingIncome = $this->coworkingReceiptIncome($campusId, $from, $to)
+            + (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
 
         $franchiseRoyaltyIncome = (float) FinanceRoyalty::query()
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
             ->sum('amount');
 
-        $totalIncome = (float) $registrationIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome;
+        $totalIncome = $registrationIncome + $admissionIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome;
 
         $expenseApprovedPaid = (float) FinanceExpense::query()
-            ->whereIn('status', ['approved', 'paid'])
+            ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->sum('amount');
@@ -82,7 +82,7 @@ class DashboardController extends Controller
 
         $expenseByCategory = FinanceExpense::query()
             ->selectRaw('category, SUM(amount) as total')
-            ->whereIn('status', ['approved', 'paid'])
+            ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->groupBy('category')
@@ -91,32 +91,15 @@ class DashboardController extends Controller
         $recentIncomeRows = collect();
 
         $recentIncomeRows = $recentIncomeRows
-            ->merge(
-                Registration::query()
-                    ->with(['campus:id,code,name'])
-                    ->where('status', 'registered')
-                    ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-                    ->whereBetween('registered_at', [$from, $to])
-                    ->latest('registered_at')
-                    ->limit(10)
-                    ->get(['id', 'campus_id', 'registration_number', 'student_name', 'net_payable', 'registered_at'])
-                    ->map(fn ($registration) => [
-                        'type' => 'Registration Fee',
-                        'reference' => $registration->registration_number ?: 'N/A',
-                        'name' => $registration->student_name ?: 'N/A',
-                        'campus' => $registration->campus->code ?? 'N/A',
-                        'date' => optional($registration->registered_at)->format('Y-m-d') ?: 'N/A',
-                        'amount' => (float) $registration->net_payable,
-                        'sort_at' => $registration->registered_at?->timestamp ?? 0,
-                    ])
-            )
+            ->merge($this->recentFeeIncomeRows($campusId, $from, $to))
+            ->merge($this->recentCoworkingReceiptRows($campusId, $from, $to))
             ->merge($this->recentOtherIncomeRows($campusId, $from, $to))
             ->merge(
                 FinanceRoyalty::query()
                     ->with(['campus:id,code,name'])
                     ->where('status', 'paid')
                     ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-                    ->whereBetween('paid_at', [$from, $to])
+                    ->whereBetween('paid_at', $this->timestampRange($from, $to))
                     ->latest('paid_at')
                     ->limit(10)
                     ->get(['id', 'campus_id', 'amount', 'paid_at', 'remarks'])
@@ -136,7 +119,7 @@ class DashboardController extends Controller
 
         $recentExpenseRows = FinanceExpense::query()
             ->with(['campus:id,code,name', 'payee:id,full_name', 'expenseType:id,name'])
-            ->whereIn('status', ['approved', 'paid', 'reversed'])
+            ->whereIn('status', ['paid', 'reversed'])
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->latest('payment_date')
@@ -167,6 +150,7 @@ class DashboardController extends Controller
                 'net_cashflow' => $totalIncome - $totalExpense,
             ],
             'incomeMix' => [
+                'admission_fee' => $admissionIncome,
                 'registration_fee' => (float) $registrationIncome,
                 'coworking_fee' => $coWorkingIncome,
                 'franchise_royalty' => $franchiseRoyaltyIncome,
@@ -182,10 +166,11 @@ class DashboardController extends Controller
                 'reversed' => $expenseReversed,
             ],
             'incomeSourceChart' => $this->buildChartSourceRows([
+                'Admission Fee' => $admissionIncome,
                 'Registration Fee' => (float) $registrationIncome,
                 'Coworking Fee' => $coWorkingIncome,
                 'Franchise Royalty' => $franchiseRoyaltyIncome,
-                'Other Income' => $otherIncome,
+                'Invoice Collections' => $otherIncome,
             ]),
             'expenseSourceChart' => $this->buildChartSourceRows([
                 'Rent' => (float) ($expenseByCategory['rent'] ?? 0),
@@ -209,40 +194,35 @@ class DashboardController extends Controller
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
 
-        $registrationIncome = (float) Registration::query()
-            ->where('status', 'registered')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('registered_at', [$from, $to])
-            ->sum('net_payable');
+        $feeBreakdown = $this->paidFeeBreakdown($campusId, $from, $to);
+        $registrationIncome = (float) ($feeBreakdown->registration_total ?? 0);
+        $admissionIncome = (float) ($feeBreakdown->admission_total ?? 0);
 
         $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
-        $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
+        $coWorkingIncome = $this->coworkingReceiptIncome($campusId, $from, $to)
+            + (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
 
         $franchiseRoyaltyIncome = (float) FinanceRoyalty::query()
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
             ->sum('amount');
 
-        $registrations = Registration::query()
-            ->with(['campus:id,code,name'])
-            ->where('status', 'registered')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('registered_at', [$from, $to])
-            ->orderByDesc('registered_at')
-            ->limit(100)
-            ->get(['id', 'campus_id', 'registration_number', 'student_name', 'net_payable', 'registered_at']);
-
-        $coworkingCharges = $this->incomeChargeRows($campusId, $from, $to, true);
+        $registrationFees = $this->paidFeeRows($campusId, $from, $to, 'registration');
+        $admissionFees = $this->paidFeeRows($campusId, $from, $to, 'admission');
+        $coworkingCharges = $this->coworkingReceiptRows($campusId, $from, $to)
+            ->concat($this->incomeChargeRows($campusId, $from, $to, true))
+            ->sortByDesc('sort_at')
+            ->values();
         $otherCharges = $this->incomeChargeRows($campusId, $from, $to, false);
 
         $royalties = FinanceRoyalty::query()
             ->with(['campus:id,code,name'])
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
             ->orderByDesc('paid_at')
             ->limit(100)
             ->get(['id', 'campus_id', 'amount', 'paid_at', 'due_date', 'remarks']);
@@ -255,13 +235,15 @@ class DashboardController extends Controller
                 'to' => $to->toDateString(),
             ],
             'summary' => [
+                'admission_fee' => $admissionIncome,
                 'registration_fee' => $registrationIncome,
                 'coworking_fee' => $coWorkingIncome,
                 'franchise_royalty' => $franchiseRoyaltyIncome,
                 'other_income' => $otherIncome,
-                'total_income' => $registrationIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome,
+                'total_income' => $admissionIncome + $registrationIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome,
             ],
-            'registrations' => $registrations,
+            'registrationFees' => $registrationFees,
+            'admissionFees' => $admissionFees,
             'coworkingCharges' => $coworkingCharges,
             'otherCharges' => $otherCharges,
             'royalties' => $royalties,
@@ -278,7 +260,7 @@ class DashboardController extends Controller
 
         $expenseByCategory = FinanceExpense::query()
             ->selectRaw('category, SUM(amount) as total')
-            ->whereIn('status', ['approved', 'paid'])
+            ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->groupBy('category')
@@ -304,7 +286,7 @@ class DashboardController extends Controller
 
         $expenses = FinanceExpense::query()
             ->with(['campus:id,code,name', 'payee:id,full_name', 'expenseType:id,name'])
-            ->whereIn('status', ['approved', 'paid', 'reversed'])
+            ->whereIn('status', ['paid', 'reversed'])
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->orderByDesc('payment_date')
@@ -423,28 +405,27 @@ class DashboardController extends Controller
         $from = $this->resolveDate($request->input('from'), now()->startOfMonth());
         $to = $this->resolveDate($request->input('to'), now()->endOfMonth());
 
-        $registrationIncome = (float) Registration::query()
-            ->where('status', 'registered')
-            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('registered_at', [$from, $to])
-            ->sum('net_payable');
+        $feeBreakdown = $this->paidFeeBreakdown($campusId, $from, $to);
+        $registrationIncome = (float) ($feeBreakdown->registration_total ?? 0);
+        $admissionIncome = (float) ($feeBreakdown->admission_total ?? 0);
 
         $otherChargesBreakdown = $this->otherChargesBreakdown($campusId, $from, $to);
 
-        $coWorkingIncome = (float) ($otherChargesBreakdown->coworking_total ?? 0);
+        $coWorkingIncome = $this->coworkingReceiptIncome($campusId, $from, $to)
+            + (float) ($otherChargesBreakdown->coworking_total ?? 0);
         $otherIncome = (float) ($otherChargesBreakdown->other_total ?? 0);
 
         $franchiseRoyaltyIncome = (float) FinanceRoyalty::query()
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
             ->sum('amount');
 
-        $totalIncome = $registrationIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome;
+        $totalIncome = $admissionIncome + $registrationIncome + $coWorkingIncome + $franchiseRoyaltyIncome + $otherIncome;
 
         $expenseByCategory = FinanceExpense::query()
             ->selectRaw('category, SUM(amount) as total')
-            ->whereIn('status', ['approved', 'paid'])
+            ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
             ->groupBy('category')
@@ -481,10 +462,11 @@ class DashboardController extends Controller
                 'net_cashflow' => $netCashflow,
             ],
             'incomeComponents' => [
+                ['label' => 'Admission Fee', 'amount' => $admissionIncome],
                 ['label' => 'Registration Fee', 'amount' => $registrationIncome],
                 ['label' => 'Coworking Fee', 'amount' => $coWorkingIncome],
                 ['label' => 'Franchise Royalty', 'amount' => $franchiseRoyaltyIncome],
-                ['label' => 'Other Income', 'amount' => $otherIncome],
+                ['label' => 'Invoice Collections', 'amount' => $otherIncome],
             ],
             'expenseComponents' => [
                 ['label' => 'Rent', 'amount' => (float) ($expenseByCategory['rent'] ?? 0)],
@@ -509,6 +491,14 @@ class DashboardController extends Controller
         } catch (\Throwable $e) {
             return $fallback->copy();
         }
+    }
+
+    private function timestampRange(Carbon $from, Carbon $to): array
+    {
+        return [
+            $from->copy()->startOfDay(),
+            $to->copy()->endOfDay(),
+        ];
     }
 
     private function buildChartSourceRows(array $sources): array
@@ -553,7 +543,7 @@ class DashboardController extends Controller
             ->leftJoin('finance_charge_types as charge_types', 'finance_other_charges.charge_type_id', '=', 'charge_types.id')
             ->when($campusId, fn ($q) => $q->where('finance_other_charges.campus_id', $campusId))
             ->where('finance_other_charges.status', 'paid')
-            ->whereBetween('finance_other_charges.paid_at', [$from, $to])
+            ->whereBetween('finance_other_charges.paid_at', $this->timestampRange($from, $to))
             ->selectRaw("SUM(CASE WHEN {$condition} THEN finance_other_charges.net_amount ELSE 0 END) as coworking_total")
             ->selectRaw("SUM(CASE WHEN {$condition} THEN 0 ELSE finance_other_charges.net_amount END) as other_total")
             ->first();
@@ -572,6 +562,124 @@ class DashboardController extends Controller
             ->where('status', 'pending')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
             ->sum('net_amount');
+    }
+
+    private function paidFeeBreakdown(?int $campusId, Carbon $from, Carbon $to): object
+    {
+        return FeeCollection::query()
+            ->where('status', 'paid')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
+            ->selectRaw("SUM(CASE WHEN fee_type = 'registration' THEN net_amount ELSE 0 END) as registration_total")
+            ->selectRaw("SUM(CASE WHEN fee_type = 'admission' THEN net_amount ELSE 0 END) as admission_total")
+            ->first();
+    }
+
+    private function paidFeeRows(?int $campusId, Carbon $from, Carbon $to, string $feeType): Collection
+    {
+        return FeeCollection::query()
+            ->with(['campus:id,code,name', 'registration:id,registration_number,student_name', 'admission:id,roll_number,student_name'])
+            ->where('fee_type', $feeType)
+            ->where('status', 'paid')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
+            ->orderByDesc('paid_at')
+            ->limit(100)
+            ->get([
+                'id',
+                'campus_id',
+                'registration_id',
+                'admission_id',
+                'receipt_number',
+                'net_amount',
+                'paid_at',
+                'installment_no',
+            ])
+            ->map(function (FeeCollection $feeCollection) use ($feeType) {
+                $studentName = $feeCollection->admission?->student_name
+                    ?? $feeCollection->registration?->student_name
+                    ?? 'Student';
+
+                return (object) [
+                    'reference' => $feeCollection->receipt_number ?: 'N/A',
+                    'student' => $studentName,
+                    'campus' => $feeCollection->campus->code ?? 'N/A',
+                    'date' => optional($feeCollection->paid_at)->format('Y-m-d') ?: 'N/A',
+                    'amount' => (float) $feeCollection->net_amount,
+                    'type' => ucfirst($feeType) . ' Fee',
+                    'meta' => $feeType === 'admission'
+                        ? ('Installment ' . ((int) ($feeCollection->installment_no ?? 1)))
+                        : ($feeCollection->registration?->registration_number ?: 'Registration'),
+                    'sort_at' => $feeCollection->paid_at?->timestamp ?? 0,
+                ];
+            });
+    }
+
+    private function recentFeeIncomeRows(?int $campusId, Carbon $from, Carbon $to): Collection
+    {
+        return $this->paidFeeRows($campusId, $from, $to, 'registration')
+            ->concat($this->paidFeeRows($campusId, $from, $to, 'admission'))
+            ->sortByDesc('sort_at')
+            ->take(10)
+            ->map(fn ($row) => [
+                'type' => $row->type,
+                'reference' => $row->reference,
+                'name' => $row->student,
+                'campus' => $row->campus,
+                'date' => $row->date,
+                'amount' => $row->amount,
+                'sort_at' => $row->sort_at,
+            ])
+            ->values();
+    }
+
+    private function coworkingReceiptIncome(?int $campusId, Carbon $from, Carbon $to): float
+    {
+        return (float) CoworkingRegistrationReceipt::query()
+            ->where('receipt_type', 'coworking_charge')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
+            ->sum('amount');
+    }
+
+    private function coworkingReceiptRows(?int $campusId, Carbon $from, Carbon $to): Collection
+    {
+        return CoworkingRegistrationReceipt::query()
+            ->with(['campus:id,code,name', 'coworkingRegistration:id,full_name'])
+            ->where('receipt_type', 'coworking_charge')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
+            ->orderByDesc('paid_at')
+            ->limit(100)
+            ->get(['id', 'campus_id', 'coworking_registration_id', 'receipt_number', 'amount', 'paid_at'])
+            ->map(fn (CoworkingRegistrationReceipt $receipt) => (object) [
+                'reference' => $receipt->receipt_number ?: 'N/A',
+                'source' => $receipt->coworkingRegistration?->full_name ?: 'Coworking Member',
+                'campus' => $receipt->campus->code ?? 'N/A',
+                'date' => optional($receipt->paid_at)->format('Y-m-d') ?: 'N/A',
+                'amount' => (float) $receipt->amount,
+                'sort_at' => $receipt->paid_at?->timestamp ?? 0,
+            ]);
+    }
+
+    private function recentCoworkingReceiptRows(?int $campusId, Carbon $from, Carbon $to): Collection
+    {
+        return $this->coworkingReceiptRows($campusId, $from, $to)
+            ->take(10)
+            ->map(fn ($row) => [
+                'type' => 'Coworking Fee',
+                'reference' => $row->reference,
+                'name' => $row->source,
+                'campus' => $row->campus,
+                'date' => $row->date,
+                'amount' => $row->amount,
+                'sort_at' => $row->sort_at,
+            ])
+            ->values();
     }
 
     private function recentOtherIncomeRows(?int $campusId, Carbon $from, Carbon $to): Collection
@@ -608,7 +716,7 @@ class DashboardController extends Controller
             ->with(['campus:id,code,name', 'chargeType:id,name,category'])
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to])
+            ->whereBetween('paid_at', $this->timestampRange($from, $to))
             ->latest('paid_at')
             ->limit(10)
             ->get(['id', 'campus_id', 'student_name', 'net_amount', 'paid_at', 'voucher_number', 'charge_type_id'])
@@ -665,6 +773,7 @@ class DashboardController extends Controller
                         'campus' => $charge?->campus->code ?? 'N/A',
                         'date' => optional($payment->payment_date)->format('Y-m-d') ?: 'N/A',
                         'amount' => (float) $payment->amount,
+                        'sort_at' => $payment->payment_date?->timestamp ?? 0,
                     ];
                 });
         }
@@ -673,7 +782,7 @@ class DashboardController extends Controller
             ->with(['campus:id,code,name', 'chargeType:id,name,category'])
             ->where('status', 'paid')
             ->when($campusId, fn ($q) => $q->where('campus_id', $campusId))
-            ->whereBetween('paid_at', [$from, $to]);
+            ->whereBetween('paid_at', $this->timestampRange($from, $to));
 
         $charges = $coworking
             ? $charges->whereHas('chargeType', $chargeTypeIsCoworking)
@@ -692,6 +801,7 @@ class DashboardController extends Controller
                     'campus' => $charge->campus->code ?? 'N/A',
                     'date' => optional($charge->paid_at)->format('Y-m-d') ?: 'N/A',
                     'amount' => (float) $charge->net_amount,
+                    'sort_at' => $charge->paid_at?->timestamp ?? 0,
                 ];
             });
     }

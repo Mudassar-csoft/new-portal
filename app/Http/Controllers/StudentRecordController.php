@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admission;
 use App\Models\FeeCollection;
+use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -168,7 +169,7 @@ class StudentRecordController extends Controller
         $discount = (float) ($registration->discount ?? 0);
         $net = (float) ($registration->net_payable ?? ($amount - $discount));
 
-        FeeCollection::create([
+        $registrationFee = FeeCollection::create([
             'lead_id' => $registration->lead_id,
             'registration_id' => $registration->id,
             'campus_id' => $registration->campus_id,
@@ -183,6 +184,8 @@ class StudentRecordController extends Controller
             'paid_at' => $registration->registered_at ?? $registration->created_at,
             'notes' => 'Registration fee backfilled from registration record.',
         ]);
+
+        app(FinanceAccountingService::class)->syncFeeCollection($registrationFee);
     }
 
     public function collectInstallment(Request $request, FeeCollection $feeCollection): RedirectResponse
@@ -232,6 +235,8 @@ class StudentRecordController extends Controller
             if ($alreadyCollected) {
                 return back()->with('status', 'Installment already collected.');
             }
+
+            app(FinanceAccountingService::class)->syncFeeCollection($feeCollection->fresh());
         } catch (ValidationException $e) {
             return back()->with('error', collect($e->errors())->flatten()->first() ?: 'Unable to collect installment.');
         }
@@ -252,6 +257,10 @@ class StudentRecordController extends Controller
             'net_amount' => $validated['net_amount'],
             'paid_at' => $validated['paid_at'],
         ]);
+
+        if ($feeCollection->status === 'paid' && $feeCollection->paid_at) {
+            app(FinanceAccountingService::class)->syncFeeCollection($feeCollection->fresh());
+        }
 
         return back()->with('status', 'Fee details updated.');
     }

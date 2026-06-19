@@ -800,10 +800,11 @@
                     columns: buildSourceColumns(incomeSourceChart, 'No Income'),
                     type: 'pie',
                     colors: {
+                        'Admission Fee': '#f35f62',
                         'Registration Fee': '#16a34a',
                         'Coworking Fee': '#0ea5e9',
                         'Franchise Royalty': '#dc2626',
-                        'Other Income': '#f59e0b',
+                        'Invoice Collections': '#f59e0b',
                         'No Income': '#9ca3af'
                     }
                 }

@@ -7,6 +7,7 @@ use App\Models\CoworkingRegistration;
 use App\Models\CoworkingRegistrationReceipt;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
+use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -200,6 +201,9 @@ class CoworkingRegistrationController extends Controller
                 return compact('registration', 'securityReceipt', 'chargeReceipt', 'resolvedLead');
             });
 
+            app(FinanceAccountingService::class)->syncCoworkingReceipt($result['securityReceipt']);
+            app(FinanceAccountingService::class)->syncCoworkingReceipt($result['chargeReceipt']);
+
             $voucherUrls = [
                 route('coworking-registrations.voucher', $result['registration']),
                 route('coworking-registrations.receipts.voucher', $result['securityReceipt']),
@@ -299,6 +303,13 @@ class CoworkingRegistrationController extends Controller
                 }
             });
 
+            $coworkingRegistration->refresh();
+            $coworkingRegistration->receipts()
+                ->whereIn('receipt_type', ['security_fee', 'coworking_charge'])
+                ->whereNotNull('paid_at')
+                ->get()
+                ->each(fn (CoworkingRegistrationReceipt $receipt) => app(FinanceAccountingService::class)->syncCoworkingReceipt($receipt));
+
             $status = 'Coworking registration updated successfully.';
 
             if ($request->expectsJson()) {
@@ -372,6 +383,8 @@ class CoworkingRegistrationController extends Controller
                 ]);
             });
 
+            app(FinanceAccountingService::class)->syncCoworkingReceipt($chargeReceipt);
+
             $coworkingRegistration->update([
                 'next_due_date' => $nextDueDate->toDateString(),
             ]);
@@ -419,7 +432,9 @@ class CoworkingRegistrationController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($validated, $coworkingRegistration, $request) {
+            $refundReceipt = null;
+
+            DB::transaction(function () use ($validated, $coworkingRegistration, $request, &$refundReceipt) {
                 $leaveDate = Carbon::parse($validated['leave_date'])->startOfDay();
                 $snapshot = $this->buildDeactivationSnapshot($coworkingRegistration, $leaveDate, (float) $validated['damage_deduction_amount']);
                 $campus = $coworkingRegistration->campus ?? $coworkingRegistration->lead?->campus;
@@ -475,6 +490,10 @@ class CoworkingRegistrationController extends Controller
                     ]);
                 }
             });
+
+            if ($refundReceipt) {
+                app(FinanceAccountingService::class)->syncCoworkingReceipt($refundReceipt);
+            }
 
             return redirect()
                 ->route('coworking-registrations.show', $coworkingRegistration)

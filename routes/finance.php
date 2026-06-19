@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Finance\DashboardController;
+use App\Http\Controllers\Finance\AccountingController;
 use App\Http\Controllers\Finance\ExpenseController;
 use App\Http\Controllers\Finance\PayeeController;
 use App\Http\Controllers\Finance\PayrollController;
@@ -17,12 +18,17 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::get('/dashboard/payables', [DashboardController::class, 'payablesDetails'])->middleware('permission:finance.dashboard.view')->name('dashboard.payables');
     Route::get('/dashboard/receivables', [DashboardController::class, 'receivablesDetails'])->middleware('permission:finance.dashboard.view')->name('dashboard.receivables');
     Route::get('/dashboard/net-cashflow', [DashboardController::class, 'netCashflowDetails'])->middleware('permission:finance.dashboard.view')->name('dashboard.netcashflow');
+    Route::get('/journal', [AccountingController::class, 'journal'])->middleware('permission:finance.dashboard.view')->name('journal');
+    Route::get('/ledger', [AccountingController::class, 'ledger'])->middleware('permission:finance.dashboard.view')->name('ledger');
 
     Route::get('/expense/add', [ExpenseController::class, 'addForm'])->middleware('permission:finance.expense.create')->name('expense.add');
     Route::post('/expense/add', [ExpenseController::class, 'store'])->middleware('permission:finance.expense.create')->name('expense.store');
     Route::get('/expense/rent-meta', [ExpenseController::class, 'rentMeta'])->middleware('permission:finance.expense.create,finance.rent.view')->name('expense.rentMeta');
     Route::get('/expense/types', [ExpenseController::class, 'typesIndex'])->middleware('permission:finance.expense.view,finance.expense.create')->name('expense.types');
     Route::post('/expense/types', [ExpenseController::class, 'typesStore'])->middleware('permission:finance.expense.create')->name('expense.types.store');
+    Route::get('/expense/types/{expenseType}/edit', [ExpenseController::class, 'typesEdit'])->middleware('permission:finance.expense.update')->name('expense.type.edit');
+    Route::put('/expense/types/{expenseType}', [ExpenseController::class, 'typesUpdate'])->middleware('permission:finance.expense.update')->name('expense.type.update');
+    Route::delete('/expense/types/{expenseType}', [ExpenseController::class, 'typesDelete'])->middleware('permission:finance.expense.update')->name('expense.type.delete');
     Route::get('/expense/rent', [ExpenseController::class, 'list'])->middleware('permission:finance.expense.view,finance.rent.view')->defaults('category', 'rent')->name('expense.rent');
     Route::get('/expense/marketing', [ExpenseController::class, 'list'])->middleware('permission:finance.expense.view')->defaults('category', 'marketing')->name('expense.marketing');
     Route::get('/expense/assets', [ExpenseController::class, 'list'])->middleware('permission:finance.expense.view')->defaults('category', 'asset')->name('expense.assets');
@@ -42,6 +48,9 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::get('/utility/lookup', [UtilityController::class, 'lookup'])->middleware('permission:finance.bill.view,finance.utility.view')->name('utility.lookup');
     Route::get('/utility/types', [UtilityController::class, 'typesIndex'])->middleware('permission:finance.utility.view,finance.utility.create')->name('utility.types');
     Route::post('/utility/types', [UtilityController::class, 'typesStore'])->middleware('permission:finance.utility.create')->name('utility.types.store');
+    Route::get('/utility/types/{billType}/edit', [UtilityController::class, 'typesEdit'])->middleware('permission:finance.utility.update')->name('utility.type.edit');
+    Route::put('/utility/types/{billType}', [UtilityController::class, 'typesUpdate'])->middleware('permission:finance.utility.update')->name('utility.type.update');
+    Route::delete('/utility/types/{billType}', [UtilityController::class, 'typesDelete'])->middleware('permission:finance.utility.update')->name('utility.type.delete');
     Route::get('/rent/setup', [RentController::class, 'index'])->middleware('permission:finance.rent.view,finance.rent.create')->name('rent.index');
     Route::post('/rent/setup', [RentController::class, 'store'])->middleware('permission:finance.rent.create')->name('rent.store');
     Route::patch('/rent/setup/{rent}', [RentController::class, 'update'])->middleware(['permission:finance.rent.update', 'admin'])->name('rent.update');

@@ -7,6 +7,9 @@
         @if(session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
         @endif
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
         @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -58,11 +61,9 @@
                         <thead>
                         <tr>
                             <th>Sr#</th>
-                            <!-- <th>Company</th>
-                            <th>Bill Type</th>
-                            <th>Display Name</th> -->
+                            <th>Type Name</th>
                             <th>Payee</th>
-                            <!-- <th>Status</th> -->
+                            <th>Status</th>
                             <th>Date</th>
                             <th>Actions</th>
                         </tr>
@@ -71,9 +72,7 @@
                         @forelse($types as $index => $type)
                             <tr>
                                 <td>{{ $types->firstItem() + $index }}</td>
-                                <!-- <td>{{ $type->company_name ?? '-' }}</td>
-                                <td>{{ $type->service_name ?? $type->name }}</td>
-                                <td>{{ $type->display_name }}</td> -->
+                                <td>{{ $type->display_name }}</td>
                                 <td>{{ $type->payee->full_name ?? 'N/A' }}</td>
                                 <td>
                                     <span class="badge {{ $type->is_active ? 'badge-success' : 'badge-secondary' }}">
@@ -82,19 +81,23 @@
                                 </td>
                                 <td>{{ optional($type->created_at)->format('d-M-Y') }}</td>
                                 <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
-                                            Action
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="{{ route('finance.utility.type.edit', $type) }}">Edit</a>
-                                            <form method="POST" action="{{ route('finance.utility.type.delete', $type) }}" onsubmit="return confirm('Are you sure you want to delete this utility type?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="dropdown-item text-danger" type="submit">Delete</button>
-                                            </form>
+                                    @if($canManageBillTypes)
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                                                Action
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="{{ route('finance.utility.type.edit', $type) }}">Edit</a>
+                                                <form method="POST" action="{{ route('finance.utility.type.delete', $type) }}" onsubmit="return confirm('Are you sure you want to delete this utility type?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="dropdown-item text-danger" type="submit">Delete</button>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

@@ -396,6 +396,8 @@
                 <ul>
                     @if($canFinanceDashboard)
                         <li><a href="{{ route('finance.dashboard') }}" class="stage-link"><span class="lbl">Dashboard</span></a></li>
+                        <li><a href="{{ route('finance.journal') }}" class="stage-link"><span class="lbl">Journal</span></a></li>
+                        <li><a href="{{ route('finance.ledger') }}" class="stage-link"><span class="lbl">Ledger</span></a></li>
                     @endif
 
                     @if($showFinanceExpenseMenu)

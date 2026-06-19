@@ -8,6 +8,7 @@ use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\FeeCollection;
 use App\Models\Registration;
+use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -142,7 +143,7 @@ class RegistrationController extends Controller
                 ->where('fee_type', 'registration')
                 ->exists();
             if (!$hasRegistrationFee) {
-                FeeCollection::create([
+                $registrationFee = FeeCollection::create([
                     'lead_id' => $registration->lead_id,
                     'registration_id' => $registration->id,
                     'campus_id' => $registration->campus_id,
@@ -158,6 +159,8 @@ class RegistrationController extends Controller
                     'created_by' => $request->user()?->id,
                     'notes' => 'Registration fee collected.',
                 ]);
+
+                app(FinanceAccountingService::class)->syncFeeCollection($registrationFee);
             }
 
             if ($registration->lead_id) {

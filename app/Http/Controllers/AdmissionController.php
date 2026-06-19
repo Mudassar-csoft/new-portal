@@ -11,6 +11,7 @@ use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\ProgramCampusDiscount;
 use App\Models\Registration;
+use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -411,7 +412,7 @@ class AdmissionController extends Controller
                     ->where('fee_type', 'registration')
                     ->exists();
                 if (!$hasRegistrationFee) {
-                    FeeCollection::create([
+                    $registrationFee = FeeCollection::create([
                         'lead_id' => $lead->id,
                         'registration_id' => $registration->id,
                         'campus_id' => $validated['campus_id'],
@@ -427,6 +428,8 @@ class AdmissionController extends Controller
                         'created_by' => $request->user()?->id,
                         'notes' => 'Registration fee auto-collected during admission.',
                     ]);
+
+                    app(FinanceAccountingService::class)->syncFeeCollection($registrationFee);
                 }
             } else {
                 $registration->update([
@@ -580,7 +583,7 @@ class AdmissionController extends Controller
                     $isInstallment = $feeType === 'installments';
                     $isPaid = !$isInstallment || $isFirstInstallment;
 
-                    FeeCollection::create([
+                    $feeCollection = FeeCollection::create([
                         'lead_id' => $lead?->id,
                         'registration_id' => $registration?->id,
                         'admission_id' => $admission->id,
@@ -604,6 +607,10 @@ class AdmissionController extends Controller
                             ? ($isInstallment ? 'First installment paid at admission.' : 'Admission fee collected.')
                             : 'Installment ' . ($index + 1) . ' scheduled.',
                     ]);
+
+                    if ($isPaid) {
+                        app(FinanceAccountingService::class)->syncFeeCollection($feeCollection);
+                    }
                 }
             }
 

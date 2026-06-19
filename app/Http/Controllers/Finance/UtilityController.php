@@ -27,6 +27,7 @@ class UtilityController extends Controller
             'types' => FinanceBillType::query()->with('payee')->orderBy('name')->paginate(30),
             'payees' => FinancePayee::query()->where('status', 'active')->orderBy('full_name')->get(),
             'canCreateBillTypes' => $this->canCreateBillTypes($request),
+            'canManageBillTypes' => $this->canManageBillTypes($request),
             'canViewBillTypes' => $this->canViewBillTypes($request),
         ]);
     }
@@ -63,6 +64,49 @@ class UtilityController extends Controller
         }
 
         return back()->with('status', 'Bill type added.');
+    }
+
+    public function typesEdit(FinanceBillType $billType): View
+    {
+        return view('finance.utility.edit-type', [
+            'type' => $billType,
+            'payees' => FinancePayee::query()->where('status', 'active')->orderBy('full_name')->get(),
+        ]);
+    }
+
+    public function typesUpdate(Request $request, FinanceBillType $billType): RedirectResponse
+    {
+        $validated = $request->validate([
+            'company_name' => ['nullable', 'string', 'max:150'],
+            'service_name' => ['required', 'string', 'max:150'],
+            'payee_id' => ['nullable', 'exists:finance_payees,id'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $name = trim(implode(' - ', array_filter([$validated['company_name'] ?? null, $validated['service_name']])));
+
+        $billType->update([
+            'name' => $name,
+            'company_name' => $validated['company_name'] ?? null,
+            'service_name' => $validated['service_name'],
+            'payee_id' => $validated['payee_id'] ?? null,
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return redirect()
+            ->route('finance.utility.types')
+            ->with('status', 'Bill type updated successfully.');
+    }
+
+    public function typesDelete(FinanceBillType $billType): RedirectResponse
+    {
+        if ($billType->bills()->exists()) {
+            return back()->with('error', 'This bill type is already linked to utility bills and cannot be deleted.');
+        }
+
+        $billType->delete();
+
+        return back()->with('status', 'Bill type deleted successfully.');
     }
 
     public function billsIndex(Request $request): View
@@ -273,6 +317,11 @@ class UtilityController extends Controller
     private function canCreateBillTypes(Request $request): bool
     {
         return $request->user()?->hasAnyPermission(['finance.utility.create']) ?? false;
+    }
+
+    private function canManageBillTypes(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.utility.update']) ?? false;
     }
 
     private function canViewBills(Request $request): bool

@@ -11,6 +11,7 @@ use App\Models\FinanceBuildingRent;
 use App\Models\FinanceExpense;
 use App\Models\FinanceExpenseType;
 use App\Models\FinancePayee;
+use App\Services\FinanceAccountingService;
 use App\Support\AccessMap;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -273,7 +274,7 @@ class ExpenseController extends Controller
         }
 
         if ($oldStatus === 'paid') {
-            FinanceExpense::create([
+            $reversalExpense = FinanceExpense::create([
                 'campus_id' => $expense->campus_id,
                 'payee_id' => $expense->payee_id,
                 'expense_type_id' => $expense->expense_type_id,
@@ -299,6 +300,8 @@ class ExpenseController extends Controller
                 'approved_at' => now(),
                 'is_reversal' => true,
             ]);
+
+            app(FinanceAccountingService::class)->syncExpense($reversalExpense);
         }
 
         return back()->with('status', 'Expense rejected.');
@@ -394,6 +397,8 @@ class ExpenseController extends Controller
             }
         }
 
+        app(FinanceAccountingService::class)->syncExpense($expense->fresh());
+
         return back()->with('status', 'Expense paid successfully.');
     }
 
@@ -405,6 +410,7 @@ class ExpenseController extends Controller
             'types' => FinanceExpenseType::query()->orderBy('name')->paginate(30),
             'categories' => $this->categories,
             'canCreateExpenseTypes' => $this->canCreateExpenseTypes($request),
+            'canManageExpenseTypes' => $this->canManageExpenseTypes($request),
             'canViewExpenseTypes' => $this->canViewExpenseTypes($request),
         ]);
     }
@@ -434,6 +440,44 @@ class ExpenseController extends Controller
         }
 
         return back()->with('status', 'Expense type added.');
+    }
+
+    public function typesEdit(FinanceExpenseType $expenseType): View
+    {
+        return view('finance.expense.edit-type', [
+            'type' => $expenseType,
+            'categories' => $this->categories,
+        ]);
+    }
+
+    public function typesUpdate(Request $request, FinanceExpenseType $expenseType): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150', Rule::unique('finance_expense_types', 'name')->ignore($expenseType->id)],
+            'category' => ['nullable', Rule::in($this->categories)],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $expenseType->update([
+            'name' => $validated['name'],
+            'category' => $validated['category'] ?? 'general',
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return redirect()
+            ->route('finance.expense.types')
+            ->with('status', 'Expense type updated successfully.');
+    }
+
+    public function typesDelete(FinanceExpenseType $expenseType): RedirectResponse
+    {
+        if ($expenseType->expenses()->exists()) {
+            return back()->with('error', 'This expense type is already linked to expense records and cannot be deleted.');
+        }
+
+        $expenseType->delete();
+
+        return back()->with('status', 'Expense type deleted successfully.');
     }
 
     public function payables(Request $request): View
@@ -588,6 +632,11 @@ class ExpenseController extends Controller
     protected function canCreateExpenseTypes(Request $request): bool
     {
         return $request->user()?->hasAnyPermission(['finance.expense.create']) ?? false;
+    }
+
+    protected function canManageExpenseTypes(Request $request): bool
+    {
+        return $request->user()?->hasAnyPermission(['finance.expense.update']) ?? false;
     }
 
     protected function storeAttachment(?UploadedFile $file): ?string

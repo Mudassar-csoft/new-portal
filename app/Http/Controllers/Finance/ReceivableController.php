@@ -7,6 +7,7 @@ use App\Models\Campus;
 use App\Models\FinanceChargeType;
 use App\Models\FinanceOtherCharge;
 use App\Models\FinanceOtherChargePayment;
+use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -187,6 +188,8 @@ class ReceivableController extends Controller
             return $charge->fresh(['campus', 'chargeType']);
         });
 
+        app(FinanceAccountingService::class)->syncInvoiceIssue($charge);
+
         return redirect()
             ->route('finance.receivables.show', $charge)
             ->with('status', 'Invoice created successfully.');
@@ -229,12 +232,14 @@ class ReceivableController extends Controller
             ]);
         }
 
-        $this->recordPayment(
+        $payment = $this->recordPayment(
             $charge,
             $validated,
             $request->file('attachment'),
             $request->user()?->id
         );
+
+        app(FinanceAccountingService::class)->syncInvoicePayment($payment);
 
         return redirect()
             ->route('finance.receivables.show', $charge)

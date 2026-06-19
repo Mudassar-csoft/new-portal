@@ -5,6 +5,7 @@
 @section('content')
     @php
         $summary = $summary ?? [
+            'admission_fee' => 0,
             'registration_fee' => 0,
             'coworking_fee' => 0,
             'franchise_royalty' => 0,
@@ -61,6 +62,12 @@
         <div class="row finance-summary-row">
             <div class="col-lg-4 col-md-6">
                 <div class="income-summary-card tone-admission">
+                    <div class="summary-value">Rs. {{ number_format((float) ($summary['admission_fee'] ?? 0), 0) }}</div>
+                    <div class="summary-label">Admission Fee</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="income-summary-card tone-registration">
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['registration_fee'] ?? 0), 0) }}</div>
                     <div class="summary-label">Registration Fee</div>
                 </div>
@@ -96,30 +103,32 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Registration Income</h3>
+                        <h3 class="panel-title">Admission Income</h3>
                     </header>
                     <div class="box-typical-body panel-body table-responsive">
                         <table class="table table-bordered finance-table">
                             <thead>
                                 <tr>
-                                    <th>Reg #</th>
+                                    <th>Receipt</th>
                                     <th>Student</th>
+                                    <th>Meta</th>
                                     <th>Campus</th>
                                     <th>Date</th>
                                     <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($registrations as $registration)
+                                @forelse($admissionFees as $fee)
                                     <tr>
-                                        <td>{{ $registration->registration_number }}</td>
-                                        <td>{{ $registration->student_name }}</td>
-                                        <td>{{ $registration->campus->code ?? 'N/A' }}</td>
-                                        <td>{{ optional($registration->registered_at)->format('Y-m-d') }}</td>
-                                        <td>Rs. {{ number_format((float) $registration->net_payable, 0) }}</td>
+                                        <td>{{ $fee->reference }}</td>
+                                        <td>{{ $fee->student }}</td>
+                                        <td>{{ $fee->meta }}</td>
+                                        <td>{{ $fee->campus }}</td>
+                                        <td>{{ $fee->date }}</td>
+                                        <td>Rs. {{ number_format((float) $fee->amount, 0) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="5" class="text-center text-muted">No registration income found.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted">No admission income found.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -130,6 +139,44 @@
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
+                        <h3 class="panel-title">Registration Income</h3>
+                    </header>
+                    <div class="box-typical-body panel-body table-responsive">
+                        <table class="table table-bordered finance-table">
+                            <thead>
+                                <tr>
+                                    <th>Receipt</th>
+                                    <th>Student</th>
+                                    <th>Meta</th>
+                                    <th>Campus</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($registrationFees as $fee)
+                                    <tr>
+                                        <td>{{ $fee->reference }}</td>
+                                        <td>{{ $fee->student }}</td>
+                                        <td>{{ $fee->meta }}</td>
+                                        <td>{{ $fee->campus }}</td>
+                                        <td>{{ $fee->date }}</td>
+                                        <td>Rs. {{ number_format((float) $fee->amount, 0) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="6" class="text-center text-muted">No registration income found.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <section class="box-typical box-typical-dashboard panel panel-default finance-card">
+                    <header class="box-typical-header panel-heading">
                         <h3 class="panel-title">Coworking Income</h3>
                     </header>
                     <div class="box-typical-body panel-body table-responsive">
@@ -137,7 +184,7 @@
                             <thead>
                                 <tr>
                                     <th>Voucher</th>
-                                    <th>Source</th>
+                                    <th>Type</th>
                                     <th>Campus</th>
                                     <th>Date</th>
                                     <th>Amount</th>
@@ -160,13 +207,11 @@
                     </div>
                 </section>
             </div>
-        </div>
 
-        <div class="row">
             <div class="col-lg-6">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
-                        <h3 class="panel-title">Other Income</h3>
+                        <h3 class="panel-title">Invoice Collections</h3>
                     </header>
                     <div class="box-typical-body panel-body table-responsive">
                         <table class="table table-bordered finance-table">
@@ -189,15 +234,17 @@
                                         <td>Rs. {{ number_format((float) $charge->amount, 0) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="5" class="text-center text-muted">No other income found.</td></tr>
+                                    <tr><td colspan="5" class="text-center text-muted">No invoice collections found.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </section>
             </div>
+        </div>
 
-            <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-12">
                 <section class="box-typical box-typical-dashboard panel panel-default finance-card">
                     <header class="box-typical-header panel-heading">
                         <h3 class="panel-title">Franchise Royalty Income</h3>
@@ -270,10 +317,11 @@
     font-weight: 700;
         }
         .tone-admission { background: #f35f62;}
+        .tone-registration { background: #4285f4; }
         .tone-coworking { background: #fdc518;}
         .tone-royalty { background: #975ce7 }
         .tone-other { background: #a2cf37; }
-        .tone-total { background: #4285f4;  }
+        .tone-total { background: #0f766e;  }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
