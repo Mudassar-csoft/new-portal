@@ -42,19 +42,25 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email" class="form-label-role required">Email Address</label>
+                            <label for="email_local" class="form-label-role required">Email Address</label>
                         </div>
                         <div class="user-form-field">
-                            <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                class="form-control user-input @error('email') is-invalid @enderror"
-                                placeholder="admin@example.com"
-                                value="{{ old('email') }}"
-                                required
-                            >
-                            @error('email')
+                            <div class="email-shell @error('email_local') has-error @enderror">
+                                <input
+                                    type="text"
+                                    name="email_local"
+                                    id="email_local"
+                                    class="form-control user-input email-local-input @error('email_local') is-invalid @enderror"
+                                    placeholder="admin"
+                                    value="{{ old('email_local') }}"
+                                    inputmode="email"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                    required
+                                >
+                                <span class="email-domain">{{ '@' . $emailDomain }}</span>
+                            </div>
+                            @error('email_local')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -75,9 +81,8 @@
                                     required
                                 >
                                 <div class="input-shell-actions">
-                                    <button class="inline-chip generate-password" type="button" aria-label="Generate password">
+                                    <button class="inline-icon generate-password" type="button" aria-label="Generate password" title="Generate password">
                                         <i class="fa fa-refresh" aria-hidden="true"></i>
-                                        Auto
                                     </button>
                                     <button class="inline-icon toggle-visibility" type="button" data-target="#password" aria-label="Show password">
                                         <i class="fa fa-eye"></i>
@@ -292,6 +297,37 @@
         .user-create-page .input-shell {
             position: relative;
         }
+        .user-create-page .email-shell {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        .user-create-page .email-local-input {
+            border-right: 0 !important;
+            border-radius: 5px 0 0 5px;
+        }
+        .user-create-page .email-domain {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding: 0 16px;
+            border: 1px solid #d2dee9;
+            border-left: 0;
+            border-radius: 0 5px 5px 0;
+            background: #eef4fb;
+            color: #4e6278;
+            font-size: 17px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .user-create-page .email-shell:focus-within .email-domain {
+            border-color: #bcd3e8;
+            background: #e8f1ff;
+        }
+        .user-create-page .email-shell.has-error .email-domain {
+            border-color: #d93048;
+        }
         .user-create-page .input-shell-actions {
             position: absolute;
             top: 0;
@@ -303,14 +339,11 @@
             z-index: 3;
         }
         .user-create-page .user-input-password {
-            padding-right: 70px;
+            padding-right: 96px;
             background: #e8f1ff;
         }
         .user-create-page .user-input-confirm {
             padding-right: 70px;
-        }
-        .user-create-page .inline-chip {
-            display: none;
         }
         .user-create-page .inline-icon {
             width: 40px;
@@ -332,8 +365,12 @@
             background: #0086d8;
             color: #fff;
         }
+        .user-create-page .input-shell-actions .inline-icon + .inline-icon {
+            border-left: 1px solid rgba(255, 255, 255, 0.18);
+        }
         .user-create-page .inline-icon .fa-eye,
-        .user-create-page .inline-icon .fa-eye-slash {
+        .user-create-page .inline-icon .fa-eye-slash,
+        .user-create-page .inline-icon .fa-refresh {
             background: transparent !important;
             padding: 0 !important;
             color: #fff !important;
@@ -491,8 +528,22 @@
             .user-create-page .user-action-secondary {
                 width: 100%;
             }
+            .user-create-page .email-shell {
+                flex-direction: column;
+            }
+            .user-create-page .email-local-input {
+                border-right: 1px solid #d2dee9 !important;
+                border-radius: 5px 5px 0 0;
+            }
+            .user-create-page .email-domain {
+                border-left: 1px solid #d2dee9;
+                border-top: 0;
+                border-radius: 0 0 5px 5px;
+                justify-content: flex-start;
+                padding: 12px 14px;
+            }
             .user-create-page .user-input-password {
-                padding-right: 70px;
+                padding-right: 96px;
             }
         }
     </style>

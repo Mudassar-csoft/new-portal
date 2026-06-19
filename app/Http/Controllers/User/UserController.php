@@ -11,13 +11,14 @@ use App\Support\PermissionCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    private const EMAIL_DOMAIN = 'career.edu.pk';
+
     public function index(Request $request)
     {
         $this->ensureAdminAccess();
@@ -97,7 +98,11 @@ class UserController extends Controller
         $campuses = Campus::orderBy('name')->get();
         $roles = Role::orderBy('name')->get();
 
-        return view('user.create', compact('campuses', 'roles'));
+        return view('user.create', [
+            'campuses' => $campuses,
+            'roles' => $roles,
+            'emailDomain' => self::EMAIL_DOMAIN,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -107,7 +112,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            'email_local' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._%+-]+$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
             'roles' => ['sometimes', 'array', 'max:1'],
@@ -116,13 +121,20 @@ class UserController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
+        $email = $this->buildInstitutionEmail($validated['email_local']);
+        if ($this->emailExists($email)) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['email_local' => 'This email address is already taken.']);
+        }
+
         $roleIds = $this->singleRoleIds($validated);
 
         try {
             $user = User::create([
                 'campus_id' => $validated['campus_id'] ?? null,
                 'name' => $validated['name'],
-                'email' => $validated['email'],
+                'email' => $email,
                 'password' => Hash::make($validated['password']),
             ]);
 
@@ -159,7 +171,14 @@ class UserController extends Controller
             $user->setRelation('permissions', Permission::query()->orderBy('resource')->orderBy('action')->get());
         }
 
-        return view('user.edit', compact('user', 'campuses', 'roles', 'permissionGroups'));
+        return view('user.edit', [
+            'user' => $user,
+            'campuses' => $campuses,
+            'roles' => $roles,
+            'permissionGroups' => $permissionGroups,
+            'emailDomain' => self::EMAIL_DOMAIN,
+            'emailLocal' => $this->extractEmailLocalPart($user->email),
+        ]);
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -169,7 +188,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'email_local' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._%+-]+$/'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
             'roles' => ['sometimes', 'array', 'max:1'],
@@ -177,6 +196,13 @@ class UserController extends Controller
             'permissions' => ['array'],
             'permissions.*' => ['exists:permissions,id'],
         ]);
+
+        $email = $this->buildInstitutionEmail($validated['email_local']);
+        if ($this->emailExists($email, $user->id)) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['email_local' => 'This email address is already taken.']);
+        }
 
         $roleIds = $this->singleRoleIds($validated);
 
@@ -190,7 +216,7 @@ class UserController extends Controller
         $user->fill([
             'campus_id' => $validated['campus_id'] ?? null,
             'name' => $validated['name'],
-            'email' => $validated['email'],
+            'email' => $email,
         ]);
 
         if (!empty($validated['password'])) {
@@ -303,6 +329,24 @@ class UserController extends Controller
     private function ensureAdminAccess(): void
     {
         abort_unless(auth()->user()?->isAdmin(), 403);
+    }
+
+    private function buildInstitutionEmail(string $emailLocal): string
+    {
+        return $this->extractEmailLocalPart(trim($emailLocal)) . '@' . self::EMAIL_DOMAIN;
+    }
+
+    private function extractEmailLocalPart(string $email): string
+    {
+        return explode('@', trim($email), 2)[0];
+    }
+
+    private function emailExists(string $email, ?int $ignoreUserId = null): bool
+    {
+        return User::withoutGlobalScope('not_deleted')
+            ->where('email', $email)
+            ->when($ignoreUserId !== null, fn ($query) => $query->where('id', '!=', $ignoreUserId))
+            ->exists();
     }
 
 }

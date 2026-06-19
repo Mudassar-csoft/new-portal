@@ -48,19 +48,25 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email" class="form-label-role required">Email Address</label>
+                            <label for="email_local" class="form-label-role required">Email Address</label>
                         </div>
                         <div class="user-form-field">
-                            <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                class="form-control user-input @error('email') is-invalid @enderror"
-                                placeholder="admin@example.com"
-                                value="{{ old('email', $user->email) }}"
-                                required
-                            >
-                            @error('email')
+                            <div class="email-shell @error('email_local') has-error @enderror">
+                                <input
+                                    type="text"
+                                    name="email_local"
+                                    id="email_local"
+                                    class="form-control user-input email-local-input @error('email_local') is-invalid @enderror"
+                                    placeholder="admin"
+                                    value="{{ old('email_local', $emailLocal) }}"
+                                    inputmode="email"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                    required
+                                >
+                                <span class="email-domain">{{ '@' . $emailDomain }}</span>
+                            </div>
+                            @error('email_local')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -78,12 +84,10 @@
                                     class="form-control user-input user-input-password @error('password') is-invalid @enderror"
                                     placeholder="********"
                                     autocomplete="new-password"
-                                    required
                                 >
                                 <div class="input-shell-actions">
-                                    <button class="inline-chip generate-password" type="button" aria-label="Generate password">
+                                    <button class="inline-icon generate-password" type="button" aria-label="Generate password" title="Generate password">
                                         <i class="fa fa-refresh" aria-hidden="true"></i>
-                                        Auto
                                     </button>
                                     <button class="inline-icon toggle-visibility" type="button" data-target="#password" aria-label="Show password">
                                         <i class="fa fa-eye"></i>
@@ -108,7 +112,6 @@
                                     class="form-control user-input user-input-confirm @error('password_confirmation') is-invalid @enderror"
                                     placeholder="********"
                                     autocomplete="new-password"
-                                    required
                                 >
                                 <div class="input-shell-actions">
                                     <button class="inline-icon toggle-visibility" type="button" data-target="#password_confirmation" aria-label="Show password confirmation">
@@ -310,6 +313,37 @@
         .user-edit-page .input-shell {
             position: relative;
         }
+        .user-edit-page .email-shell {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        .user-edit-page .email-local-input {
+            border-right: 0 !important;
+            border-radius: 5px 0 0 5px;
+        }
+        .user-edit-page .email-domain {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding: 0 16px;
+            border: 1px solid #d2dee9;
+            border-left: 0;
+            border-radius: 0 5px 5px 0;
+            background: #eef4fb;
+            color: #4e6278;
+            font-size: 17px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .user-edit-page .email-shell:focus-within .email-domain {
+            border-color: #bcd3e8;
+            background: #e8f1ff;
+        }
+        .user-edit-page .email-shell.has-error .email-domain {
+            border-color: #d93048;
+        }
         .user-edit-page .input-shell-actions {
             position: absolute;
             top: 0;
@@ -321,14 +355,11 @@
             z-index: 3;
         }
         .user-edit-page .user-input-password {
-            padding-right: 70px;
+            padding-right: 96px;
             background: #e8f1ff;
         }
         .user-edit-page .user-input-confirm {
             padding-right: 70px;
-        }
-        .user-edit-page .inline-chip {
-            display: none;
         }
         .user-edit-page .inline-icon {
             width: 40px;
@@ -350,8 +381,12 @@
             background: #0086d8;
             color: #fff;
         }
+        .user-edit-page .input-shell-actions .inline-icon + .inline-icon {
+            border-left: 1px solid rgba(255, 255, 255, 0.18);
+        }
         .user-edit-page .inline-icon .fa-eye,
-        .user-edit-page .inline-icon .fa-eye-slash {
+        .user-edit-page .inline-icon .fa-eye-slash,
+        .user-edit-page .inline-icon .fa-refresh {
             background: transparent !important;
             padding: 0 !important;
             color: #fff !important;
@@ -499,6 +534,20 @@
             .user-edit-page .user-action-secondary {
                 width: 100%;
             }
+            .user-edit-page .email-shell {
+                flex-direction: column;
+            }
+            .user-edit-page .email-local-input {
+                border-right: 1px solid #d2dee9 !important;
+                border-radius: 5px 5px 0 0;
+            }
+            .user-edit-page .email-domain {
+                border-left: 1px solid #d2dee9;
+                border-top: 0;
+                border-radius: 0 0 5px 5px;
+                justify-content: flex-start;
+                padding: 12px 14px;
+            }
         }
     </style>
 @endpush
@@ -518,6 +567,27 @@
                     icon.classList.toggle('fa-eye', !isHidden);
                     icon.classList.toggle('fa-eye-slash', isHidden);
                 }
+            }
+
+            function generatePassword(length) {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+                let result = '';
+
+                for (let index = 0; index < length; index += 1) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+
+                return result;
+            }
+
+            function fillPasswordFields() {
+                const password = document.getElementById('password');
+                const confirmation = document.getElementById('password_confirmation');
+                if (!password || !confirmation) return;
+
+                const generated = generatePassword(14);
+                password.value = generated;
+                confirmation.value = generated;
             }
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -541,6 +611,10 @@
                     button.addEventListener('click', function () {
                         toggleVisibility(this);
                     });
+                });
+
+                document.querySelector('.generate-password')?.addEventListener('click', function () {
+                    fillPasswordFields();
                 });
             });
         })();
