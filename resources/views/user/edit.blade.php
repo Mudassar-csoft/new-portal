@@ -138,7 +138,7 @@
                             >
                                 <option value="">- Select Campus -</option>
                                 @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>{{ $campus->name }}</option>
+                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>{{ $campus->code ?: $campus->name }}</option>
                                 @endforeach
                             </select>
                             @error('campus_id')
