@@ -159,7 +159,7 @@
                         </div>
                     </div>
 
-                    <div class="text-right">
+                    <div class="text-right mt-3 mb-2">
                         <button type="submit" class="btn btn-inline btn-primary-outline" id="expenseSubmitBtn" >Submit For Approval</button>
                         <button type="submit" class="btn btn-inline btn-danger-outline" id="expenseSubmitBtn">Cancel</button>
                     </div>

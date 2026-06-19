@@ -10,13 +10,13 @@
     <div class="finance-shell">
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title">Finance Ledger</h3>
+                <h3 class="panel-title form-label">Finance Ledger</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.ledger') }}">
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label>Campus</label>
+                            <label class="form-label">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -27,7 +27,7 @@
                             </select>
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label>Account</label>
+                            <label class="form-label">Account</label>
                             <select name="account_code" class="form-control">
                                 <option value="">All Accounts</option>
                                 @foreach($accountOptions as $account)
@@ -37,19 +37,20 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-2 col-md-6">
-                            <label>From</label>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class="form-label">From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-lg-2 col-md-6">
-                            <label>To</label>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class = "form-label">To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
-                        <div class="form-group col-lg-2 col-md-12 d-flex align-items-end">
+                        
+                    </div>
+                    <div class="form-group text-right mt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.ledger') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
-                    </div>
                 </form>
             </div>
         </section>

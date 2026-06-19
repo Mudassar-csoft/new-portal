@@ -82,7 +82,7 @@
 									<td class="text-center">{{ $idx + 1 }}</td>
 									<td>
 										@if($row->registration_id)
-											<a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
+											<a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" style="color: #0a6fd1;" title="View student detail">
 												{{ $row->student_name }}
 											</a>
 										@else

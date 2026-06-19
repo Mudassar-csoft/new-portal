@@ -114,7 +114,7 @@
                                 </select>
                             </div>
                             <div class="program-filter-actions">
-                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                <button type="submit" class="btn btn-primary-outline">Filter</button>
                                 <a href="{{ route('batch.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
                             </div>
                         </div>

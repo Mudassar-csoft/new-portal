@@ -57,8 +57,8 @@
                         </div>
                     </div>
                     <div class="text-right inventory-actions">
+                        <button type="submit" class="btn btn-inline btn-primary-outline">Filter</button>
                         <a href="{{ route('inventory.index') }}" class="btn btn-inline btn-danger-outline">Reset</a>
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Apply Filter</button>
                     </div>
                 </form>
             </div>

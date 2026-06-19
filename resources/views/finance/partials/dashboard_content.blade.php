@@ -539,7 +539,7 @@
             min-height: 44px;
         }
         .finance-stat-card .caption {
-            margin-top: 18px !important;
+            margin-top: 8px !important;
         }
         .finance-stat-card .caption-text {
             text-transform: uppercase;

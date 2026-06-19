@@ -98,7 +98,7 @@
                             @enderror
                         </div>
 
-                        <div class="text-right">
+                        <div class="text-right mt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline">Submit For Approval</button>
                         </div>
                     </form>

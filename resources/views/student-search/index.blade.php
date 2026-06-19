@@ -158,7 +158,7 @@
                                         @foreach($leads as $idx => $lead)
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
-                                                <td><strong>{{ $lead->name ?? 'N/A' }}</strong></td>
+                                                <td><strong style=" color: #0a6fd1;">{{ $lead->name ?? 'N/A' }}</strong></td>
                                                 <td>{{ $lead->program?->title ?? $lead->program?->name ?? 'N/A' }}</td>
                                                 <td>{{ $lead->phone ?: 'N/A' }}</td>
                                                 <!-- <td>{{ $lead->email ?: 'N/A' }}</td> -->
