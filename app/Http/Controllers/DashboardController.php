@@ -80,6 +80,12 @@ class DashboardController extends Controller
         $monthEnd = now()->endOfMonth();
         $yearStart = now()->startOfYear();
         $yearEnd = now()->endOfYear();
+        $incomeNow = $this->dashboardNow();
+        $incomeToday = $incomeNow->copy()->startOfDay();
+        $incomeMonthStart = $incomeNow->copy()->startOfMonth();
+        $incomeMonthEnd = $incomeNow->copy()->endOfMonth();
+        $incomeYearStart = $incomeNow->copy()->startOfYear();
+        $incomeYearEnd = $incomeNow->copy()->endOfYear();
 
         $stats = $this->buildStats($today, $monthStart, $monthEnd, $selectedCampusId, $dashboardAccess);
 
@@ -94,7 +100,7 @@ class DashboardController extends Controller
                 'month' => $canViewIncome ? $stats['currentMonthCollectionRaw'] : 0,
             ],
             'incomeRanges' => $canViewIncome
-                ? $this->buildIncomeRanges($today, $monthStart, $monthEnd, $yearStart, $yearEnd, $selectedCampusId)
+                ? $this->buildIncomeRanges($incomeToday, $incomeMonthStart, $incomeMonthEnd, $incomeYearStart, $incomeYearEnd, $selectedCampusId)
                 : $emptyPayload['incomeRanges'],
             'charts' => ($canViewLeads || $canViewAdmissions)
                 ? $this->buildCharts($monthStart, $monthEnd, $selectedCampusId, $dashboardAccess)
@@ -172,18 +178,22 @@ class DashboardController extends Controller
         $canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
         $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
         $canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
+        $incomeNow = $this->dashboardNow();
+        $incomeToday = $incomeNow->copy()->startOfDay();
+        $incomeWeekStart = $incomeToday->copy()->subDays(6);
+        $incomeMonthStart = $incomeNow->copy()->startOfMonth();
+        $incomeMonthEnd = $incomeNow->copy()->endOfMonth();
 
         $todayCollection = $canViewIncome
-            ? $this->collectionTotalForRange($today, $today->copy()->endOfDay(), $campusId)
+            ? $this->collectionTotalForRange($incomeToday, $incomeToday->copy()->endOfDay(), $campusId)
             : 0;
 
-        $weekStart = now()->startOfDay()->subDays(6);
         $weekCollection = $canViewIncome
-            ? $this->collectionTotalForRange($weekStart, now()->endOfDay(), $campusId)
+            ? $this->collectionTotalForRange($incomeWeekStart, $incomeNow->copy()->endOfDay(), $campusId)
             : 0;
 
         $monthCollection = $canViewIncome
-            ? $this->collectionTotalForRange($monthStart, $monthEnd, $campusId)
+            ? $this->collectionTotalForRange($incomeMonthStart, $incomeMonthEnd, $campusId)
             : 0;
         $previousMonthStart = $monthStart->copy()->subMonth()->startOfMonth();
         $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
@@ -409,10 +419,11 @@ class DashboardController extends Controller
             $hourlyTotals[$this->resolveHourlySlotLabel($timestamp, $hourlySlots)] += (float) ($row->amount ?? 0);
         }
 
-        $weekStart = now()->startOfDay()->subDays(6);
-        $weekRows = $this->paidCollectionRows($weekStart, now()->endOfDay(), $campusId);
+        $incomeNow = $this->dashboardNow();
+        $weekStart = $incomeNow->copy()->startOfDay()->subDays(6);
+        $weekRows = $this->paidCollectionRows($weekStart, $incomeNow->copy()->endOfDay(), $campusId);
         $weekDailyTotals = [];
-        foreach (CarbonPeriod::create($weekStart, now()->startOfDay()) as $date) {
+        foreach (CarbonPeriod::create($weekStart, $incomeNow->copy()->startOfDay()) as $date) {
             $weekDailyTotals[$date->toDateString()] = 0.0;
         }
         foreach ($weekRows as $row) {
@@ -446,7 +457,7 @@ class DashboardController extends Controller
         $yearRows = $this->paidCollectionRows($yearStart, $yearEnd, $campusId);
         $yearMonthlyTotals = [];
         foreach (range(1, 12) as $month) {
-            $yearMonthlyTotals[Carbon::create(now()->year, $month, 1)->format('M')] = 0.0;
+            $yearMonthlyTotals[Carbon::create($yearStart->year, $month, 1, 0, 0, 0, $this->dashboardTimezone())->format('M')] = 0.0;
         }
         foreach ($yearRows as $row) {
             $timestamp = $this->resolveCollectionGraphTimestamp($row->paid_at ?? null, $row->created_at ?? null);
@@ -678,12 +689,14 @@ class DashboardController extends Controller
             return 0;
         }
 
+        [$queryStart, $queryEnd] = $this->queryTimestampRange($start, $end);
+
         return (float) FeeCollection::query()
             ->whereIn('fee_type', ['registration', 'admission'])
             ->where('status', 'paid')
             ->whereNotNull('paid_at')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereBetween('paid_at', [$start, $end])
+            ->whereBetween('paid_at', [$queryStart, $queryEnd])
             ->sum('net_amount');
     }
 
@@ -693,23 +706,27 @@ class DashboardController extends Controller
             return 0;
         }
 
+        [$queryStart, $queryEnd] = $this->queryTimestampRange($start, $end);
+
         return (float) CoworkingRegistrationReceipt::query()
             ->where('receipt_type', 'coworking_charge')
             ->whereNotNull('paid_at')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-            ->whereBetween('paid_at', [$start, $end])
+            ->whereBetween('paid_at', [$queryStart, $queryEnd])
             ->sum('amount');
     }
 
     private function paidCollectionRows(Carbon $start, Carbon $end, ?int $campusId = null)
     {
+        [$queryStart, $queryEnd] = $this->queryTimestampRange($start, $end);
+
         $feeRows = Schema::hasTable('fee_collections')
             ? FeeCollection::query()
                 ->whereIn('fee_type', ['registration', 'admission'])
                 ->where('status', 'paid')
                 ->whereNotNull('paid_at')
                 ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-                ->whereBetween('paid_at', [$start, $end])
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
                 ->get(['paid_at', 'created_at', 'net_amount'])
                 ->map(fn (FeeCollection $fee) => (object) [
                     'paid_at' => $fee->paid_at,
@@ -723,7 +740,7 @@ class DashboardController extends Controller
                 ->where('receipt_type', 'coworking_charge')
                 ->whereNotNull('paid_at')
                 ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
-                ->whereBetween('paid_at', [$start, $end])
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
                 ->get(['paid_at', 'created_at', 'amount'])
                 ->map(fn (CoworkingRegistrationReceipt $receipt) => (object) [
                     'paid_at' => $receipt->paid_at,
@@ -737,18 +754,21 @@ class DashboardController extends Controller
 
     private function resolveCollectionGraphTimestamp($paidAt, $createdAt): ?Carbon
     {
-        $paidAtCarbon = $paidAt ? Carbon::parse($paidAt) : null;
-        $createdAtCarbon = $createdAt ? Carbon::parse($createdAt) : null;
+        $timezone = $this->dashboardTimezone();
+        $paidAtCarbon = $this->normalizeTimestamp($paidAt);
+        $createdAtCarbon = $this->normalizeTimestamp($createdAt);
+        $paidAtLocal = $paidAtCarbon?->copy()->timezone($timezone);
+        $createdAtLocal = $createdAtCarbon?->copy()->timezone($timezone);
 
-        if ($paidAtCarbon && $createdAtCarbon
+        if ($paidAtCarbon && $createdAtLocal && $paidAtLocal
             && $paidAtCarbon->copy()->startOfDay()->equalTo($paidAtCarbon)
-            && $createdAtCarbon->isSameDay($paidAtCarbon)
-            && $createdAtCarbon->gt($paidAtCarbon)
+            && $createdAtLocal->isSameDay($paidAtLocal)
+            && $createdAtLocal->gt($paidAtLocal)
         ) {
-            return $createdAtCarbon;
+            return $createdAtLocal;
         }
 
-        return $paidAtCarbon ?? $createdAtCarbon;
+        return $paidAtLocal ?? $createdAtLocal;
     }
 
     /**
@@ -769,6 +789,38 @@ class DashboardController extends Controller
         }
 
         return $hourlySlots[array_key_last($hourlySlots)]['label'];
+    }
+
+    private function dashboardTimezone(): string
+    {
+        return 'Asia/Karachi';
+    }
+
+    private function dashboardNow(): Carbon
+    {
+        return now($this->dashboardTimezone());
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    private function queryTimestampRange(Carbon $start, Carbon $end): array
+    {
+        return [
+            $start->copy()->utc(),
+            $end->copy()->utc(),
+        ];
+    }
+
+    private function normalizeTimestamp($value): ?Carbon
+    {
+        if (!$value) {
+            return null;
+        }
+
+        return $value instanceof Carbon
+            ? $value->copy()
+            : Carbon::parse($value);
     }
 
     private function leadQueryForDashboard(?int $campusId = null, array $dashboardAccess = [], bool $trainingOnly = false): Builder

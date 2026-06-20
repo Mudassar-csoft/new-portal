@@ -165,6 +165,59 @@ class DashboardAccessTest extends TestCase
         $this->assertTrue(collect($todayPoints)->contains(fn (array $point) => (float) ($point[1] ?? 0) > 0));
     }
 
+    public function test_dashboard_today_income_graph_uses_pakistan_time_buckets(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-06-20 18:00:00', 'UTC'));
+
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Echo Campus', 'ECH');
+
+        ['registration' => $registration, 'admission' => $admission] = $this->seedDashboardRecords($campus, 'echo', 1500);
+        $this->seedAdmissionFee($campus, $registration, $admission, 2500);
+        $this->seedCoworkingChargeReceipt($campus, 3500);
+
+        $registrationFee = FeeCollection::query()
+            ->where('registration_id', $registration->id)
+            ->where('fee_type', 'registration')
+            ->firstOrFail();
+        $admissionFee = FeeCollection::query()
+            ->where('admission_id', $admission->id)
+            ->where('fee_type', 'admission')
+            ->firstOrFail();
+        $coworkingReceipt = CoworkingRegistrationReceipt::query()
+            ->where('campus_id', $campus->id)
+            ->where('receipt_type', 'coworking_charge')
+            ->firstOrFail();
+
+        $registrationFee->forceFill([
+            'paid_at' => Carbon::parse('2026-06-20 00:00:00', 'UTC'),
+            'created_at' => Carbon::parse('2026-06-20 08:15:00', 'UTC'),
+        ])->saveQuietly();
+
+        $admissionFee->forceFill([
+            'paid_at' => Carbon::parse('2026-06-20 00:00:00', 'UTC'),
+            'created_at' => Carbon::parse('2026-06-20 10:15:00', 'UTC'),
+        ])->saveQuietly();
+
+        $coworkingReceipt->forceFill([
+            'paid_at' => Carbon::parse('2026-06-20 00:00:00', 'UTC'),
+            'created_at' => Carbon::parse('2026-06-20 12:30:00', 'UTC'),
+        ])->saveQuietly();
+
+        $response = $this->actingAs($admin)
+            ->get(route('dashboard.live-data', ['campus_id' => $campus->id]))
+            ->assertOk();
+
+        $todayPoints = collect($response->json('dashboard.incomeRanges.today.points') ?? [])
+            ->mapWithKeys(fn (array $point) => [(string) ($point[0] ?? '') => (float) ($point[1] ?? 0)])
+            ->all();
+
+        $this->assertSame(0.0, (float) ($todayPoints['08 AM'] ?? 0.0));
+        $this->assertSame(1500.0, (float) ($todayPoints['12 PM'] ?? 0.0));
+        $this->assertSame(2500.0, (float) ($todayPoints['02 PM'] ?? 0.0));
+        $this->assertSame(3500.0, (float) ($todayPoints['04 PM'] ?? 0.0));
+    }
+
     public function test_dashboard_hides_registration_and_admission_sections_without_permission(): void
     {
         $dashboardView = $this->createPermission('dashboard', 'view', 'dashboard.view');
