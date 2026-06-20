@@ -50,7 +50,7 @@
                             </div>
                             <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Payment Method</label>
-                                <select name="payment_method" id="utility-payment-method" class="form-control" required>
+                                <select name="payment_method" id="utility-payment-method" class="form-control manual" required>
                                     <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
                                     <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
                                     <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
@@ -194,7 +194,7 @@
 
 @push('scripts')
     <script>
-        (function () {
+        document.addEventListener('DOMContentLoaded', function () {
             var methodSelect = document.getElementById('utility-payment-method');
             if (!methodSelect) {
                 return;
@@ -211,22 +211,36 @@
                         .filter(Boolean);
                     var shouldShow = allowedMethods.indexOf(method) !== -1;
                     var label = group.querySelector('.form-label');
-                    var input = group.querySelector('input, select, textarea');
+                    var inputs = Array.prototype.slice.call(group.querySelectorAll('input, select, textarea'));
 
+                    group.hidden = !shouldShow;
+                    group.classList.toggle('d-none', !shouldShow);
                     group.style.display = shouldShow ? '' : 'none';
 
                     if (label) {
                         label.classList.toggle('required', shouldShow);
                     }
 
-                    if (input) {
+                    inputs.forEach(function (input) {
                         input.required = shouldShow;
-                    }
+                        input.disabled = !shouldShow;
+                    });
                 });
             }
 
+            window.toggleUtilityPaymentFields = updateUtilityPaymentFields;
+
             methodSelect.addEventListener('change', updateUtilityPaymentFields);
+
+            if (window.jQuery) {
+                window.jQuery(document).on(
+                    'change select2:select select2:close',
+                    '#utility-payment-method',
+                    updateUtilityPaymentFields
+                );
+            }
+
             updateUtilityPaymentFields();
-        })();
+        });
     </script>
 @endpush
