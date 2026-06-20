@@ -241,7 +241,7 @@ class UtilityController extends Controller
             'bill_id' => ['required', 'exists:finance_bills,id'],
             'payment_date' => ['required', 'date'],
             'paid_amount' => ['required', 'numeric', 'min:1'],
-            'payment_method' => ['required', Rule::in(['cash', 'bank', 'cheque', 'online_transfer', 'easypaisa', 'jazzcash'])],
+            'payment_method' => ['required', Rule::in(['cash', 'bank', 'cheque'])],
             'payment_ref_no' => ['nullable', 'string', 'max:100'],
             'bank_name' => ['nullable', 'string', 'max:150'],
             'cheque_no' => ['nullable', 'string', 'max:100'],
@@ -250,17 +250,40 @@ class UtilityController extends Controller
             'remarks' => ['nullable', 'string'],
         ]);
 
-        if (in_array($validated['payment_method'], ['bank', 'cheque'], true) && empty($validated['bank_name'])) {
-            return back()->withErrors(['bank_name' => 'Bank name is required for bank/cheque payments.'])->withInput();
+        $methodErrors = [];
+
+        if ($validated['payment_method'] === 'cash' && empty($validated['payment_ref_no'])) {
+            $methodErrors['payment_ref_no'] = 'Payment reference number is required for cash payments.';
         }
 
-        if (in_array($validated['payment_method'], ['bank', 'online_transfer', 'easypaisa', 'jazzcash'], true) && empty($validated['payment_ref_no'])) {
-            return back()->withErrors(['payment_ref_no' => 'Payment reference number is required for the selected payment method.'])->withInput();
+        if (in_array($validated['payment_method'], ['bank', 'cheque'], true) && empty($validated['bank_name'])) {
+            $methodErrors['bank_name'] = 'Bank name is required for bank or cheque payments.';
+        }
+
+        if ($validated['payment_method'] === 'bank' && empty($validated['bank_receipt_no'])) {
+            $methodErrors['bank_receipt_no'] = 'Bank receipt number is required for bank payments.';
         }
 
         if ($validated['payment_method'] === 'cheque' && empty($validated['cheque_no'])) {
-            return back()->withErrors(['cheque_no' => 'Cheque number is required for cheque payments.'])->withInput();
+            $methodErrors['cheque_no'] = 'Cheque number is required for cheque payments.';
         }
+
+        if ($methodErrors !== []) {
+            return back()->withErrors($methodErrors)->withInput();
+        }
+
+        $validated['payment_ref_no'] = $validated['payment_method'] === 'cash'
+            ? ($validated['payment_ref_no'] ?? null)
+            : null;
+        $validated['bank_name'] = in_array($validated['payment_method'], ['bank', 'cheque'], true)
+            ? ($validated['bank_name'] ?? null)
+            : null;
+        $validated['cheque_no'] = $validated['payment_method'] === 'cheque'
+            ? ($validated['cheque_no'] ?? null)
+            : null;
+        $validated['bank_receipt_no'] = $validated['payment_method'] === 'bank'
+            ? ($validated['bank_receipt_no'] ?? null)
+            : null;
 
         $bill = FinanceBill::query()->with(['campus', 'billType'])->findOrFail($validated['bill_id']);
         if (!in_array((string) $bill->status, ['unpaid', 'partial'], true)) {

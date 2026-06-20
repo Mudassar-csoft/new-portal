@@ -50,7 +50,7 @@
                             </div>
                             <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Payment Method</label>
-                                <select name="payment_method" class="form-control" required>
+                                <select name="payment_method" id="utility-payment-method" class="form-control" required>
                                     <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
                                     <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
                                     <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
@@ -58,21 +58,33 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-lg-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6 utility-payment-field" data-payment-methods="cash">
                                 <label class="form-label">Payment Ref No</label>
                                 <input type="text" name="payment_ref_no" class="form-control" value="{{ old('payment_ref_no') }}">
+                                @error('payment_ref_no')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="form-group col-lg-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6 utility-payment-field" data-payment-methods="bank cheque">
                                 <label class="form-label">Bank Name</label>
                                 <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}">
+                                @error('bank_name')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="form-group col-lg-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6 utility-payment-field" data-payment-methods="cheque">
                                 <label class="form-label">Cheque No</label>
                                 <input type="text" name="cheque_no" class="form-control" value="{{ old('cheque_no') }}">
+                                @error('cheque_no')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="form-group col-lg-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6 utility-payment-field" data-payment-methods="bank">
                                 <label class="form-label">Bank Receipt No</label>
                                 <input type="text" name="bank_receipt_no" class="form-control" value="{{ old('bank_receipt_no') }}">
+                                @error('bank_receipt_no')
+                                    <div class="field-error">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="form-row">
@@ -176,5 +188,45 @@
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #343434; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }
+        .field-error { margin-top: 6px; font-size: 12px; color: #dc3545; }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        (function () {
+            var methodSelect = document.getElementById('utility-payment-method');
+            if (!methodSelect) {
+                return;
+            }
+
+            var fieldGroups = Array.prototype.slice.call(document.querySelectorAll('.utility-payment-field'));
+
+            function updateUtilityPaymentFields() {
+                var method = methodSelect.value || 'cash';
+
+                fieldGroups.forEach(function (group) {
+                    var allowedMethods = (group.getAttribute('data-payment-methods') || '')
+                        .split(/\s+/)
+                        .filter(Boolean);
+                    var shouldShow = allowedMethods.indexOf(method) !== -1;
+                    var label = group.querySelector('.form-label');
+                    var input = group.querySelector('input, select, textarea');
+
+                    group.style.display = shouldShow ? '' : 'none';
+
+                    if (label) {
+                        label.classList.toggle('required', shouldShow);
+                    }
+
+                    if (input) {
+                        input.required = shouldShow;
+                    }
+                });
+            }
+
+            methodSelect.addEventListener('change', updateUtilityPaymentFields);
+            updateUtilityPaymentFields();
+        })();
+    </script>
 @endpush
