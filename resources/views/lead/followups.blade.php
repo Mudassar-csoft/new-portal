@@ -52,13 +52,11 @@
                                 <tr>
                                     <th>Sr</th>
                                     <th>Name</th>
-                                    <th>Space Type</th>
                                     <th>Primary Contact</th>
-                                    <!-- <th>Campus Code</th> -->
-                                    <th>{{ ($type ?? 'training') === 'coworking' ? 'Campus Code' : 'Campus' }}</th>
-                                    <th>Create By</th>
-                                    <th> Status</th>
                                     <th>Origin</th>
+                                    <th>{{ ($type ?? 'training') === 'coworking' ? 'Campus Code' : 'Campus' }}</th>
+                                    <th>Created At</th>
+                                    <th>Last Follower</th>
                                     <th>Followups</th>
                                     <th class="text-left">Action</th>
                                 </tr>

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -142,60 +143,79 @@ class LeadController extends Controller
         );
 
         try {
-            $details = $validated['details'] ?? [];
-            $initialProbability = $details['probability'] ?? null;
-            $initialNextAt = $this->normalizeFollowupDateTime($details['next_followup_at'] ?? null);
-            $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
+            $lead = DB::transaction(function () use ($request, $validated, $webLead) {
+                $details = $validated['details'] ?? [];
+                $initialProbability = $details['probability'] ?? null;
+                $initialNextAt = $this->normalizeFollowupDateTime($details['next_followup_at'] ?? null);
+                $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
 
-            if ($initialNextAt) {
-                $details['next_followup_at'] = $initialNextAt->format('Y-m-d\TH:i');
-            } else {
-                unset($details['next_followup_at']);
-            }
+                if ($initialNextAt) {
+                    $details['next_followup_at'] = $initialNextAt->format('Y-m-d\TH:i');
+                } else {
+                    unset($details['next_followup_at']);
+                }
 
-            $lead = Lead::create([
-                'campus_id' => $validated['campus_id'] ?? null,
-                'program_id' => $validated['program_id'] ?? null,
-                'assigned_user_id' => $validated['assigned_user_id'] ?? null,
-                'created_by' => $request->user()?->id,
-                'type' => $validated['type'] ?? null,
-                'name' => $validated['name'] ?? null,
-                'email' => $validated['email'] ?? null,
-                'phone' => $validated['phone'] ?? null,
-                'city' => $validated['city'] ?? null,
-                'origin' => $validated['origin'] ?? null,
-                'marketing_source' => $validated['marketing_source'] ?? null,
-                'status' => 'pending',
-                'details' => $details,
-            ]);
-
-            LeadFollowup::create([
-                'lead_id' => $lead->id,
-                'campus_id' => $lead->campus_id,
-                'user_id' => $request->user()?->id,
-                'note' => 'Initial follow-up created automatically.',
-                'method' => null,
-                'probability' => $initialProbability,
-                'next_action_date' => $initialNextAt,
-                'stage' => $initialStage,
-                'lead_status' => 'pending',
-            ]);
-
-            if ($webLead) {
-                $webLead->update([
-                    'status' => WebLead::STATUS_LEAD_CREATED,
-                    'converted_to_lead_id' => $lead->id,
-                    'handled_by' => $request->user()?->id,
-                    'handled_at' => now(),
+                $lead = Lead::create([
+                    'campus_id' => $validated['campus_id'] ?? null,
+                    'program_id' => $validated['program_id'] ?? null,
+                    'assigned_user_id' => $validated['assigned_user_id'] ?? null,
+                    'created_by' => $request->user()?->id,
+                    'type' => $validated['type'] ?? null,
+                    'name' => $validated['name'] ?? null,
+                    'email' => $validated['email'] ?? null,
+                    'phone' => $validated['phone'] ?? null,
+                    'city' => $validated['city'] ?? null,
+                    'origin' => $validated['origin'] ?? null,
+                    'marketing_source' => $validated['marketing_source'] ?? null,
+                    'status' => 'pending',
+                    'details' => $details,
                 ]);
-            }
+
+                LeadFollowup::create([
+                    'lead_id' => $lead->id,
+                    'campus_id' => $lead->campus_id,
+                    'user_id' => $request->user()?->id,
+                    'note' => 'Initial follow-up created automatically.',
+                    'method' => null,
+                    'probability' => $initialProbability,
+                    'next_action_date' => $initialNextAt,
+                    'stage' => $initialStage,
+                    'lead_status' => 'pending',
+                ]);
+
+                if ($webLead) {
+                    $webLead->update([
+                        'status' => WebLead::STATUS_LEAD_CREATED,
+                        'converted_to_lead_id' => $lead->id,
+                        'handled_by' => $request->user()?->id,
+                        'handled_at' => now(),
+                    ]);
+                }
+
+                return $lead;
+            });
 
             return Redirect::route($this->leadFollowupsRouteName($lead->type))->with('status', 'Lead created with initial follow-up.');
         } catch (Throwable $e) {
+            logger()->error('Lead create failed.', [
+                'user_id' => $request->user()?->id,
+                'type' => $request->input('type'),
+                'phone' => $request->input('phone'),
+                'campus_id' => $request->input('campus_id'),
+                'program_id' => $request->input('program_id'),
+                'web_lead_id' => $request->input('web_lead_id'),
+                'exception_class' => $e::class,
+                'exception_message' => $e->getMessage(),
+            ]);
             report($e);
+
+            $errorMessage = app()->isLocal()
+                ? 'Unable to save the lead: ' . $e->getMessage()
+                : 'Unable to save the lead right now. Please try again.';
+
             return Redirect::back()
                 ->withInput()
-                ->with('error', 'Unable to save the lead right now. Please try again.');
+                ->with('error', $errorMessage);
         }
     }
 
