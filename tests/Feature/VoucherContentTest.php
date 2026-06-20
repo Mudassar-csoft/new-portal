@@ -96,6 +96,7 @@ class VoucherContentTest extends TestCase
 
         $this->get(route('admission.voucher', $admission))
             ->assertOk()
+            ->assertSee('Net Course Fee')
             ->assertSee('Original Fee')
             ->assertSee('Rs. 6,250')
             ->assertSee('Discount')

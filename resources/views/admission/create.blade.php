@@ -306,7 +306,7 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label required">
-								Discount %
+								Applied Discount %
 								<span class="discount-limit-hint" id="admission-discount-limit-hint"></span>
 							</label>
 							<input type="number" step="0.01"
@@ -880,8 +880,9 @@
 			}
 
 			function updateLimitHint() {
+				const maxAmount = maxDiscountAmount();
 				if (maxDiscountPercent > 0) {
-					discountLimitHintEl.textContent = 'limit (' + maxDiscountPercent + '%)';
+					discountLimitHintEl.textContent = 'limit (' + maxDiscountPercent + '% / Rs. ' + maxAmount.toFixed(2) + ')';
 				} else {
 					discountLimitHintEl.textContent = '';
 				}

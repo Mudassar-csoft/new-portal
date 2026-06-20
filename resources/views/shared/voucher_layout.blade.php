@@ -46,6 +46,9 @@
         : '';
     $formattedDiscountAmount = $voucherDiscountAmount > 0 ? $formatAmount($voucherDiscountAmount) : '';
     $voucherDiscountDisplay = $formattedDiscountPercent;
+    $courseTuitionFeeLabel = $showCourseTuitionFeeRow && ($originalFee > 0 || $voucherDiscountDisplay !== '')
+        ? 'Net Course Fee'
+        : 'Course Tuition Fee';
 
     if ($formattedDiscountAmount !== '') {
         $voucherDiscountDisplay = $voucherDiscountDisplay !== ''
@@ -285,7 +288,7 @@
                                 @endif
                                 @if($showCourseTuitionFeeRow)
                                     <tr>
-                                        <td>Course Tuition Fee</td>
+                                        <td>{{ $courseTuitionFeeLabel }}</td>
                                         <td>{{ $formatAmount($courseTuitionFee) }}</td>
                                     </tr>
                                 @endif
