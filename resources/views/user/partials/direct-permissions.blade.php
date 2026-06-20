@@ -1,7 +1,8 @@
 @php
     $sectionTitle = $sectionTitle ?? 'Direct Permissions';
     $helperText = $helperText ?? 'Permissions are assigned manually by module. Role-based access stays separate and is not auto-selected here.';
-    $selectedPermissionIds = collect($selectedPermissionIds ?? []);
+    $selectedPermissionIds = collect($selectedPermissionIds ?? [])->map(fn ($id) => (int) $id);
+    $rolePermissionIds = collect($rolePermissionIds ?? [])->map(fn ($id) => (int) $id);
     $inputName = $inputName ?? 'permissions[]';
 @endphp
 
@@ -23,14 +24,24 @@
                                     <div class="perm-subheading">{{ $section['label'] }}</div>
                                 @endif
                                 @foreach ($section['permissions'] as $permission)
-                                    <label class="perm-item form-label">
+                                    @php
+                                        $permissionId = (int) $permission['id'];
+                                        $isDirectPermission = $selectedPermissionIds->contains($permissionId);
+                                        $isRolePermission = $rolePermissionIds->contains($permissionId);
+                                        $isLockedByRole = $isRolePermission && !$isDirectPermission;
+                                    @endphp
+                                    <label class="perm-item form-label {{ $isLockedByRole ? 'perm-item-locked' : '' }}">
                                         <input
                                             type="checkbox"
                                             name="{{ $inputName }}"
-                                            value="{{ $permission['id'] }}"
-                                            @checked($selectedPermissionIds->contains($permission['id']))
+                                            value="{{ $permissionId }}"
+                                            @checked($isDirectPermission || $isRolePermission)
+                                            @disabled($isLockedByRole)
                                         >
                                         <span>{{ $permission['label'] }}</span>
+                                        @if($isRolePermission)
+                                            <span class="perm-badge">{{ $isDirectPermission ? 'Role + Direct' : 'Role' }}</span>
+                                        @endif
                                     </label>
                                 @endforeach
                             </div>
@@ -109,11 +120,31 @@
                 padding: 6px 0;
                 cursor: pointer;
                 font-weight: 500 !important;
+                flex-wrap: wrap;
             }
             .perm-item input[type="checkbox"] {
                 margin: 0;
                 width: 16px;
                 height: 16px;
+            }
+            .perm-item-locked {
+                cursor: default;
+            }
+            .perm-item input[type="checkbox"][disabled] {
+                cursor: not-allowed;
+                opacity: 0.9;
+            }
+            .perm-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 2px 8px;
+                border-radius: 999px;
+                background: #e6eef9;
+                color: #47627f;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
             }
         </style>
     @endpush

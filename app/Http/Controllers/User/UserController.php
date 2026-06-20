@@ -163,7 +163,7 @@ class UserController extends Controller
         $this->ensureAdminAccess();
 
         $campuses = Campus::orderBy('name')->get();
-        $roles = Role::orderBy('name')->get();
+        $roles = Role::with('permissions:id')->orderBy('name')->get();
         $permissionGroups = PermissionCatalog::grouped();
         $user->load(['roles', 'permissions']);
 

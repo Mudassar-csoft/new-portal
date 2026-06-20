@@ -11,6 +11,8 @@
         }
         $selectedPermissionIds = collect(old('permissions', $user->permissions->modelKeys()))->map(fn ($id) => (int) $id);
         $selectedCampusId = old('campus_id', $user->campus_id);
+        $selectedRole = $roles->first(fn ($role) => (string) $role->id === (string) $selectedRoleId);
+        $rolePermissionIds = collect($selectedRole?->permissions?->modelKeys() ?? [])->map(fn ($id) => (int) $id);
     @endphp
 
     <div class="user-shell">
@@ -178,6 +180,8 @@
                     @include('user.partials.direct-permissions', [
                         'permissionGroups' => $permissionGroups,
                         'selectedPermissionIds' => $selectedPermissionIds,
+                        'rolePermissionIds' => $rolePermissionIds,
+                        'helperText' => 'Direct permissions can be edited here. Permissions inherited from the selected role are shown as checked and locked.',
                     ])
 
                     <div class="text-right">

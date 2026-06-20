@@ -72,7 +72,7 @@
         </select>
     </div>
     <div class="form-group col-lg-3 col-md-6">
-        <label class="form-label required" >Upload Outline</label>
+        <label class="form-label">Upload Outline</label>
         <label class="program-upload" for="program-outline-upload">
             <input type="file" id="program-outline-upload" name="outline" accept=".pdf,.doc,.docx">
             <span class="program-upload-icon" aria-hidden="true">
@@ -95,10 +95,10 @@
 <div class="form-row">
     @if($program->outline_path)
         <div class="form-group col-lg-4 col-md-6">
-           <label class="form-label required">Outline Action</label>
+           <label class="form-label">Outline Action</label>
             <div class="checkbox">
                 <input type="hidden" name="remove_outline" value="0">
-               <label class="form-label required">
+               <label class="form-label">
                     <input type="checkbox" name="remove_outline" value="1" @checked(old('remove_outline'))>
                     Remove current outline
                 </label>
