@@ -63,9 +63,9 @@
                         'selectedPermissionIds' => $selectedPermissionIds,
                     ])
 
-                    <div class="text-center mt-3">
-                        <a href="{{ route('roles.index') }}" class="btn btn-default mr-2">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <div class="text-right mt-3">
+                        <a href="{{ route('roles.index') }}" class="btn btn-danger-outline mr-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary-outline">Save Changes</button>
                     </div>
                 </form>
             </div>

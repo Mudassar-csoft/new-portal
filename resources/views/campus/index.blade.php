@@ -106,8 +106,8 @@
                                 <input type="text" class="form-control form-control-sm" name="city" value="{{ $filters['city'] ?? '' }}" placeholder="e.g. Lahore">
                             </div>
                             <div class="program-filter-actions">
-                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                <a href="{{ route('campus.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-default btn-sm">Reset</a>
+                                <button type="submit" class="btn btn-primary-outline">Filter</button>
+                                <a href="{{ route('campus.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
                             </div>
                         </div>
                     </form>

@@ -30,15 +30,15 @@
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-lg-3 col-md-6">
-                                <label class="required">Company Name</label>
+                                <label class="form-label required">Company Name</label>
                                 <input type="text" name="company_name" class="form-control" value="{{ old('company_name') }}" placeholder="FESCO">
                             </div>
                             <div class="form-group col-lg-3 col-md-6">
-                                <label class="required">Bill Type</label>
+                                <label class="form-label required">Bill Type</label>
                                 <input type="text" name="service_name" class="form-control" value="{{ old('service_name') }}" placeholder="Electricity" required>
                             </div>
                             <div class="form-group col-lg-4 col-md-6">
-                                <label>Default Payee</label>
+                                <label class="form-label">Default Payee</label>
                                 <select name="payee_id" class="form-control">
                                     <option value="">- Select -</option>
                                     @foreach($payees as $payee)
@@ -48,7 +48,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-lg-2 col-md-6 d-flex align-items-end mt-1 pt-3">
+                            <div class="form-group col-lg-2 col-md-6 d-flex align-items-end mt-3 pt-3">
                                 <button type="submit" class="btn btn-inline btn-primary-outline w-100">Save</button>
                             </div>
                         </div>
@@ -121,5 +121,6 @@
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }
+        
     </style>
 @endpush

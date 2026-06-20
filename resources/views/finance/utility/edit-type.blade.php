@@ -24,7 +24,7 @@
                     @method('PUT')
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label>Company Name</label>
+                            <label class="form-label">Company Name</label>
                             <input
                                 type="text"
                                 name="company_name"
@@ -34,7 +34,7 @@
                             >
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label class="required">Bill Type</label>
+                            <label class="form-label required">Bill Type</label>
                             <input
                                 type="text"
                                 name="service_name"
@@ -45,7 +45,7 @@
                             >
                         </div>
                         <div class="form-group col-lg-4 col-md-6">
-                            <label>Default Payee</label>
+                            <label class="form-label">Default Payee</label>
                             <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
                                 @foreach($payees as $payee)

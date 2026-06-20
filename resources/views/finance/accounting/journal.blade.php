@@ -11,13 +11,13 @@
     <div class="finance-shell">
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
-                <h3 class="panel-title">Finance Journal</h3>
+                <h3 class="panel-title form-label">Finance Journal</h3>
             </header>
             <div class="box-typical-body panel-body">
                 <form method="GET" action="{{ route('finance.journal') }}">
                     <div class="form-row">
                         <div class="form-group col-lg-3 col-md-6">
-                            <label>Campus</label>
+                            <label class= "form-label">Campus</label>
                             <select name="campus_id" class="form-control">
                                 <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
@@ -27,23 +27,24 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-lg-2 col-md-6">
-                            <label>From</label>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class= "form-label">From</label>
                             <input type="date" name="from" class="form-control" value="{{ $filters['from'] ?? '' }}">
                         </div>
-                        <div class="form-group col-lg-2 col-md-6">
-                            <label>To</label>
+                        <div class="form-group col-lg-3 col-md-6">
+                            <label class= "form-label">To</label>
                             <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
-                            <label>Search</label>
+                            <label class= "form-label">Search</label>
                             <input type="text" name="search" class="form-control" value="{{ $filters['search'] ?? '' }}" placeholder="Journal no, reference, description">
                         </div>
-                        <div class="form-group col-lg-2 col-md-12 d-flex align-items-end">
+                       
+                    </div>
+                     <div class="form-group text-right mt-3">
                             <button type="submit" class="btn btn-inline btn-primary-outline mr-2">Apply</button>
                             <a href="{{ route('finance.journal') }}" class="btn btn-inline btn-danger-outline">Reset</a>
                         </div>
-                    </div>
                 </form>
             </div>
         </section>
@@ -51,19 +52,19 @@
         <div class="row finance-summary-row">
             <div class="col-lg-4 col-md-6">
                 <div class="journal-summary-card tone-blue">
-                    <div class="summary-value">{{ number_format((int) ($summary['entries'] ?? 0)) }}</div>
+                    <div class="summary-value mt-md-4 pt-md-2">{{ number_format((int) ($summary['entries'] ?? 0)) }}</div>
                     <div class="summary-label">Entries</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="journal-summary-card tone-green">
-                    <div class="summary-value">Rs. {{ number_format((float) ($summary['debit'] ?? 0), 0) }}</div>
+                    <div class="summary-value mt-md-4 pt-md-2">Rs. {{ number_format((float) ($summary['debit'] ?? 0), 0) }}</div>
                     <div class="summary-label">Total Debit</div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="journal-summary-card tone-red">
-                    <div class="summary-value">Rs. {{ number_format((float) ($summary['credit'] ?? 0), 0) }}</div>
+                    <div class="summary-value mt-md-4 pt-md-2">Rs. {{ number_format((float) ($summary['credit'] ?? 0), 0) }}</div>
                     <div class="summary-label">Total Credit</div>
                 </div>
             </div>
@@ -142,12 +143,14 @@
         .journal-summary-card {
             border-radius: 10px;
             padding: 16px 18px;
+            height:25vh;
+            
             color: #fff;
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .journal-summary-card .summary-value { font-size: 22px; font-weight: 700; }
-        .journal-summary-card .summary-label { margin-top: 8px; font-size: 13px; text-transform: uppercase; opacity: 0.92; }
+        .journal-summary-card .summary-value { font-size: 22px; font-weight: 700; text-align:center}
+        .journal-summary-card .summary-label { margin-top: 8px; font-size: 13px;text-align:center; text-transform: uppercase; opacity: 0.92; }
         .tone-blue { background: #2563eb; }
         .tone-green { background: #16a34a; }
         .tone-red { background: #dc2626; }
