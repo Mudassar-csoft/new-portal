@@ -2098,6 +2098,17 @@
 				$('#income-axis-top, #income-axis-right').empty().hide();
 			}
 
+			function compactIncomeAxisLabel(label) {
+				var normalized = String(label || '').trim().replace(/\s+/g, '');
+				var match = normalized.match(/^(\d{1,2})(?::\d{2})?([AP])M?$/i);
+
+				if (!match) {
+					return normalized;
+				}
+
+				return String(match[1]).padStart(2, '0') + String(match[2]).toUpperCase();
+			}
+
 			function renderIncomeAxisOverlay(chart, range) {
 				var topAxis = $('#income-axis-top');
 				var rightAxis = $('#income-axis-right');
@@ -2119,15 +2130,27 @@
 				}
 
 				var xLabelTop = Math.max(6, chartArea.top - 16);
+				var slotWidth = points.length > 1 ? (chartArea.width / (points.length - 1)) : chartArea.width;
+				var topAxisStep = Math.max(1, Math.ceil(38 / Math.max(slotWidth, 1)));
+				var useCompactTopLabels = slotWidth < 52;
 
 				points.forEach(function (point, index) {
+					var isFirstPoint = index === 0;
+					var isLastPoint = index === points.length - 1;
+					var shouldRenderPoint = isFirstPoint || isLastPoint || (index % topAxisStep === 0);
+
+					if (!shouldRenderPoint) {
+						return;
+					}
+
 					var xPosition;
 					if (points.length === 1) {
 						xPosition = chartArea.left + (chartArea.width / 2);
 					} else {
 						xPosition = chartArea.left + ((chartArea.width * index) / (points.length - 1));
 					}
-					var labelText = String(point[0] || '').replace(/(\d)\s+([AP]M)$/i, '$1$2');
+					var rawLabelText = String(point[0] || '').replace(/(\d)\s+([AP]M)$/i, '$1$2');
+					var labelText = useCompactTopLabels ? compactIncomeAxisLabel(rawLabelText) : rawLabelText;
 
 					$('<div/>', {
 						'class': 'income-axis-label',
