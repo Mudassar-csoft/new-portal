@@ -4,6 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Admission;
 use App\Models\Campus;
+use App\Models\CoworkingRegistration;
+use App\Models\CoworkingRegistrationReceipt;
+use App\Models\FeeCollection;
 use App\Models\Lead;
 use App\Models\Registration;
 use App\Models\User;
@@ -86,6 +89,33 @@ class DashboardAccessTest extends TestCase
             ->assertSee(route('dashboard', ['campus_id' => 0]))
             ->assertSee('ALP-Alpha Campus')
             ->assertSee('BET-Beta Campus');
+    }
+
+    public function test_dashboard_collection_combines_registration_admission_and_coworking_amounts(): void
+    {
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Gamma Campus', 'GAM');
+
+        ['registration' => $registration, 'admission' => $admission] = $this->seedDashboardRecords($campus, 'gamma', 1200);
+        $this->seedAdmissionFee($campus, $registration, $admission, 3400);
+        $this->seedCoworkingChargeReceipt($campus, 5600);
+
+        $response = $this->actingAs($admin)
+            ->get(route('dashboard.live-data', ['campus_id' => $campus->id]))
+            ->assertOk();
+
+        $dashboard = $response->json('dashboard');
+        $monthPoints = $dashboard['incomeRanges']['month']['points'] ?? [];
+        $yearPoints = $dashboard['incomeRanges']['year']['points'] ?? [];
+        $monthRangeTotal = array_sum(array_map(fn (array $point) => (float) ($point[1] ?? 0), $monthPoints));
+        $yearRangeTotal = array_sum(array_map(fn (array $point) => (float) ($point[1] ?? 0), $yearPoints));
+
+        $this->assertSame(10200.0, (float) ($dashboard['stats']['currentMonthCollectionRaw'] ?? 0));
+        $this->assertSame(10200.0, (float) ($dashboard['incomeSummary']['today'] ?? 0));
+        $this->assertSame(10200.0, (float) ($dashboard['incomeSummary']['week'] ?? 0));
+        $this->assertSame(10200.0, (float) ($dashboard['incomeSummary']['month'] ?? 0));
+        $this->assertSame(10200.0, $monthRangeTotal);
+        $this->assertSame(10200.0, $yearRangeTotal);
     }
 
     public function test_dashboard_hides_registration_and_admission_sections_without_permission(): void
@@ -353,9 +383,12 @@ class DashboardAccessTest extends TestCase
         ]);
     }
 
-    private function seedDashboardRecords(Campus $campus, string $suffix, float $netPayable): void
+    /**
+     * @return array{lead: Lead, registration: Registration, admission: Admission}
+     */
+    private function seedDashboardRecords(Campus $campus, string $suffix, float $netPayable): array
     {
-        $lead = Lead::query()->create([
+        $lead = Lead::query()->create([ 
             'campus_id' => $campus->id,
             'type' => 'training',
             'name' => 'Lead ' . $suffix,
@@ -384,7 +417,7 @@ class DashboardAccessTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        Admission::query()->create([
+        $admission = Admission::query()->create([
             'registration_id' => $registration->id,
             'campus_id' => $campus->id,
             'student_name' => 'Student ' . $suffix,
@@ -400,6 +433,22 @@ class DashboardAccessTest extends TestCase
             'student_status' => 'enrolled',
             'remarks' => 'Test record',
         ]);
+
+        FeeCollection::query()->create([
+            'lead_id' => $lead->id,
+            'registration_id' => $registration->id,
+            'campus_id' => $campus->id,
+            'fee_type' => 'registration',
+            'amount' => $netPayable,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => $netPayable,
+            'receipt_number' => $registration->receipt_number,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        return compact('lead', 'registration', 'admission');
     }
 
     private function seedCoworkingLead(Campus $campus, string $suffix): void
@@ -410,6 +459,60 @@ class DashboardAccessTest extends TestCase
             'name' => 'Coworking ' . $suffix,
             'phone' => '03333333333',
             'status' => 'pending',
+        ]);
+    }
+
+    private function seedAdmissionFee(Campus $campus, Registration $registration, Admission $admission, float $amount): void
+    {
+        FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'fee_type' => 'admission',
+            'amount' => $amount,
+            'discount_percent' => 0,
+            'discount_amount' => 0,
+            'net_amount' => $amount,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+    }
+
+    private function seedCoworkingChargeReceipt(Campus $campus, float $amount): void
+    {
+        $registration = CoworkingRegistration::query()->create([
+            'campus_id' => $campus->id,
+            'registration_number' => 'CW-' . $campus->code . '-001',
+            'receipt_number' => 'CWR-' . $campus->code . '-001',
+            'full_name' => 'Coworking Member',
+            'phone' => '03330000001',
+            'guardian_name' => 'Coworking Guardian',
+            'guardian_phone' => '03330000002',
+            'cnic' => '3520212345699',
+            'email' => 'coworking.member@example.test',
+            'education' => 'Graduate',
+            'date_of_birth' => '1998-01-01',
+            'nature_of_work' => 'Freelancer',
+            'timing' => 'Morning',
+            'gender' => 'male',
+            'address' => 'Coworking Street',
+            'registration_date' => now()->toDateString(),
+            'next_due_date' => now()->addMonth()->toDateString(),
+            'coworking_charges' => $amount,
+            'security_fee' => 0,
+            'status' => 'registered',
+        ]);
+
+        CoworkingRegistrationReceipt::query()->create([
+            'coworking_registration_id' => $registration->id,
+            'campus_id' => $campus->id,
+            'receipt_type' => 'coworking_charge',
+            'receipt_number' => 'CWRC-' . $campus->code . '-001',
+            'amount' => $amount,
+            'paid_at' => now(),
+            'notes' => 'Dashboard coworking collection test.',
         ]);
     }
 

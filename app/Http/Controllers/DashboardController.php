@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Campus;
 use App\Models\Admission;
+use App\Models\CoworkingRegistrationReceipt;
+use App\Models\FeeCollection;
 use App\Models\Lead;
 use App\Models\Program;
 use App\Models\Registration;
@@ -171,33 +173,18 @@ class DashboardController extends Controller
         $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
         $canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
 
-        $todayCollection = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $today,
-            $today->copy()->endOfDay()
-        )->sum('net_payable');
-        $todayCollection = $canViewIncome ? $todayCollection : 0;
+        $todayCollection = $canViewIncome
+            ? $this->collectionTotalForRange($today, $today->copy()->endOfDay(), $campusId)
+            : 0;
 
         $weekStart = now()->startOfDay()->subDays(6);
-        $weekCollection = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $weekStart,
-            now()->endOfDay()
-        )->sum('net_payable');
-        $weekCollection = $canViewIncome ? $weekCollection : 0;
+        $weekCollection = $canViewIncome
+            ? $this->collectionTotalForRange($weekStart, now()->endOfDay(), $campusId)
+            : 0;
 
-        $monthCollection = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $monthStart,
-            $monthEnd
-        )->sum('net_payable');
-        $monthCollection = $canViewIncome ? $monthCollection : 0;
+        $monthCollection = $canViewIncome
+            ? $this->collectionTotalForRange($monthStart, $monthEnd, $campusId)
+            : 0;
         $previousMonthStart = $monthStart->copy()->subMonth()->startOfMonth();
         $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
 
@@ -399,13 +386,7 @@ class DashboardController extends Controller
         Carbon $yearEnd,
         ?int $campusId = null
     ): array {
-        $todayRows = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $today,
-            $today->copy()->endOfDay()
-        )->get(['registered_at', 'created_at', 'net_payable']);
+        $todayRows = $this->paidCollectionRows($today, $today->copy()->endOfDay(), $campusId);
 
         $hourlySlots = [
             ['label' => '08 AM', 'start' => 8, 'end' => 9],
@@ -420,7 +401,7 @@ class DashboardController extends Controller
         $hourlyTotals = array_fill_keys(array_column($hourlySlots, 'label'), 0.0);
 
         foreach ($todayRows as $row) {
-            $timestamp = $row->registered_at ?? $row->created_at;
+            $timestamp = $row->paid_at ?? null;
             if (!$timestamp) {
                 continue;
             }
@@ -428,42 +409,30 @@ class DashboardController extends Controller
             $hour = Carbon::parse($timestamp)->hour;
             foreach ($hourlySlots as $slot) {
                 if ($hour >= $slot['start'] && $hour <= $slot['end']) {
-                    $hourlyTotals[$slot['label']] += (float) ($row->net_payable ?? 0);
+                    $hourlyTotals[$slot['label']] += (float) ($row->amount ?? 0);
                     break;
                 }
             }
         }
 
         $weekStart = now()->startOfDay()->subDays(6);
-        $weekRows = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $weekStart,
-            now()->endOfDay()
-        )->get(['registered_at', 'created_at', 'net_payable']);
+        $weekRows = $this->paidCollectionRows($weekStart, now()->endOfDay(), $campusId);
         $weekDailyTotals = [];
         foreach (CarbonPeriod::create($weekStart, now()->startOfDay()) as $date) {
             $weekDailyTotals[$date->toDateString()] = 0.0;
         }
         foreach ($weekRows as $row) {
-            $timestamp = $row->registered_at ?? $row->created_at;
+            $timestamp = $row->paid_at ?? null;
             if (!$timestamp) {
                 continue;
             }
             $dayKey = Carbon::parse($timestamp)->toDateString();
             if (array_key_exists($dayKey, $weekDailyTotals)) {
-                $weekDailyTotals[$dayKey] += (float) ($row->net_payable ?? 0);
+                $weekDailyTotals[$dayKey] += (float) ($row->amount ?? 0);
             }
         }
 
-        $monthRows = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $monthStart,
-            $monthEnd
-        )->get(['registered_at', 'created_at', 'net_payable']);
+        $monthRows = $this->paidCollectionRows($monthStart, $monthEnd, $campusId);
         $monthWeeklyTotals = [
             'Week 1' => 0.0,
             'Week 2' => 0.0,
@@ -471,34 +440,28 @@ class DashboardController extends Controller
             'Week 4' => 0.0,
         ];
         foreach ($monthRows as $row) {
-            $timestamp = $row->registered_at ?? $row->created_at;
+            $timestamp = $row->paid_at ?? null;
             if (!$timestamp) {
                 continue;
             }
             $dayOfMonth = Carbon::parse($timestamp)->day;
             $weekBucket = min(4, (int) ceil($dayOfMonth / 7));
-            $monthWeeklyTotals['Week ' . $weekBucket] += (float) ($row->net_payable ?? 0);
+            $monthWeeklyTotals['Week ' . $weekBucket] += (float) ($row->amount ?? 0);
         }
 
-        $yearRows = $this->registrationDateRange(
-            Registration::query()
-                ->where('status', 'registered')
-                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id)),
-            $yearStart,
-            $yearEnd
-        )->get(['registered_at', 'created_at', 'net_payable']);
+        $yearRows = $this->paidCollectionRows($yearStart, $yearEnd, $campusId);
         $yearMonthlyTotals = [];
         foreach (range(1, 12) as $month) {
             $yearMonthlyTotals[Carbon::create(now()->year, $month, 1)->format('M')] = 0.0;
         }
         foreach ($yearRows as $row) {
-            $timestamp = $row->registered_at ?? $row->created_at;
+            $timestamp = $row->paid_at ?? null;
             if (!$timestamp) {
                 continue;
             }
             $monthKey = Carbon::parse($timestamp)->format('M');
             if (array_key_exists($monthKey, $yearMonthlyTotals)) {
-                $yearMonthlyTotals[$monthKey] += (float) ($row->net_payable ?? 0);
+                $yearMonthlyTotals[$monthKey] += (float) ($row->amount ?? 0);
             }
         }
 
@@ -707,6 +670,73 @@ class DashboardController extends Controller
                         ->whereBetween('created_at', [$start, $end]);
                 });
         });
+    }
+
+    private function collectionTotalForRange(Carbon $start, Carbon $end, ?int $campusId = null): float
+    {
+        return $this->feeCollectionTotalForRange($start, $end, $campusId)
+            + $this->coworkingCollectionTotalForRange($start, $end, $campusId);
+    }
+
+    private function feeCollectionTotalForRange(Carbon $start, Carbon $end, ?int $campusId = null): float
+    {
+        if (!Schema::hasTable('fee_collections')) {
+            return 0;
+        }
+
+        return (float) FeeCollection::query()
+            ->whereIn('fee_type', ['registration', 'admission'])
+            ->where('status', 'paid')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+            ->whereBetween('paid_at', [$start, $end])
+            ->sum('net_amount');
+    }
+
+    private function coworkingCollectionTotalForRange(Carbon $start, Carbon $end, ?int $campusId = null): float
+    {
+        if (!Schema::hasTable('coworking_registration_receipts')) {
+            return 0;
+        }
+
+        return (float) CoworkingRegistrationReceipt::query()
+            ->where('receipt_type', 'coworking_charge')
+            ->whereNotNull('paid_at')
+            ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+            ->whereBetween('paid_at', [$start, $end])
+            ->sum('amount');
+    }
+
+    private function paidCollectionRows(Carbon $start, Carbon $end, ?int $campusId = null)
+    {
+        $feeRows = Schema::hasTable('fee_collections')
+            ? FeeCollection::query()
+                ->whereIn('fee_type', ['registration', 'admission'])
+                ->where('status', 'paid')
+                ->whereNotNull('paid_at')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ->whereBetween('paid_at', [$start, $end])
+                ->get(['paid_at', 'net_amount'])
+                ->map(fn (FeeCollection $fee) => (object) [
+                    'paid_at' => $fee->paid_at,
+                    'amount' => (float) $fee->net_amount,
+                ])
+            : collect();
+
+        $coworkingRows = Schema::hasTable('coworking_registration_receipts')
+            ? CoworkingRegistrationReceipt::query()
+                ->where('receipt_type', 'coworking_charge')
+                ->whereNotNull('paid_at')
+                ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
+                ->whereBetween('paid_at', [$start, $end])
+                ->get(['paid_at', 'amount'])
+                ->map(fn (CoworkingRegistrationReceipt $receipt) => (object) [
+                    'paid_at' => $receipt->paid_at,
+                    'amount' => (float) $receipt->amount,
+                ])
+            : collect();
+
+        return $feeRows->concat($coworkingRows)->values();
     }
 
     private function leadQueryForDashboard(?int $campusId = null, array $dashboardAccess = [], bool $trainingOnly = false): Builder
