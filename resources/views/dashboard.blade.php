@@ -561,11 +561,14 @@
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
 			height: 314px;
+			padding-right: 68px;
+			overflow: hidden;
 		}
 
 		.chart-statistic-box #chart_div,
 		.chart-statistic-box #chart_fallback {
 			height: 314px;
+			width: 100%;
 		}
 
 		.chart-statistic-box .income-axis {
@@ -596,6 +599,7 @@
 			transform: translateY(-50%);
 			text-align: right;
 			font-size: 11px !important;
+			width: 60px;
 		}
 
 		.chart-statistic-box .tbl-data {
@@ -2108,7 +2112,9 @@
 				}
 
 				var xLabelTop = Math.max(6, chartArea.top - 16);
-				var rightLabelLeft = chartArea.left + chartArea.width + 8;
+				var stageWidth = topAxis.outerWidth() || chartArea.left + chartArea.width + 68;
+				var rightAxisWidth = 60;
+				var rightLabelLeft = Math.max(chartArea.left + chartArea.width + 4, stageWidth - rightAxisWidth - 6);
 
 				points.forEach(function (point, index) {
 					var xPosition;
