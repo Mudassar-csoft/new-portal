@@ -10,14 +10,24 @@ use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class LeadNotificationTimeTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
+
     public function test_header_followup_notification_uses_the_real_next_followup_time(): void
     {
+        Carbon::setTestNow('2026-06-15 19:00:00');
+
         $admin = $this->createAdminUser();
         $campus = $this->createCampus('Alpha Campus', 'ALP');
         $program = $this->createProgram('TRN301');
@@ -48,6 +58,55 @@ class LeadNotificationTimeTest extends TestCase
         $this->assertStringContainsString('15-Jun-26', $html);
         $this->assertStringContainsString('06:33 PM', $html);
         $this->assertStringNotContainsString('12:00 AM', $html);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_header_followup_notification_hides_when_a_newer_followup_is_logged_before_due_time(): void
+    {
+        Carbon::setTestNow('2026-06-15 17:00:00');
+
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Gamma Campus', 'GAM');
+        $program = $this->createProgram('TRN303');
+        $lead = $this->createLead($campus, $program, [
+            'name' => 'Cleared Notification',
+            'phone' => '03000000143',
+            'details' => [
+                'next_followup_at' => '2026-06-16T10:00',
+            ],
+        ]);
+
+        LeadFollowup::query()->create([
+            'lead_id' => $lead->id,
+            'campus_id' => $campus->id,
+            'method' => 'call',
+            'probability' => 70,
+            'note' => 'Original follow-up due this evening.',
+            'next_action_date' => '2026-06-15 00:00:00',
+            'stage' => 'contacted',
+            'lead_status' => 'pending',
+        ]);
+
+        LeadFollowup::query()->create([
+            'lead_id' => $lead->id,
+            'campus_id' => $campus->id,
+            'method' => 'call',
+            'probability' => 80,
+            'note' => 'Follow-up already handled before due time.',
+            'next_action_date' => '2026-06-16 10:00:00',
+            'stage' => 'contacted',
+            'lead_status' => 'pending',
+        ]);
+
+        $this->actingAs($admin);
+
+        $html = view('layouts.header')->render();
+
+        $this->assertStringNotContainsString('Cleared Notification', $html);
+        $this->assertStringContainsString('No Follow Up notifications.', $html);
+
+        Carbon::setTestNow();
     }
 
     public function test_add_followup_preserves_time_and_updates_lead_next_followup_at(): void

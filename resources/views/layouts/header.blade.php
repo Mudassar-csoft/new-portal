@@ -76,12 +76,12 @@
                     </div>
 
 
-                    <div class="notif-accordion-item notif-hover-card active">
-                      <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="true">
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="false">
                         <span>Quick Leads</span>
                         <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
                       </button>
-                      <div class="notif-accordion-panel show" id="notif-quick-leads">
+                      <div class="notif-accordion-panel" id="notif-quick-leads">
                         @if ($quickLeads->isEmpty())
                           <div class="text-center p-4 text-muted">No quick leads notifications.</div>
                         @else
@@ -1426,6 +1426,20 @@ document.addEventListener("DOMContentLoaded", function () {
   var notificationMenu = notificationDropdown ? notificationDropdown.querySelector('.dropdown-menu-notif') : null;
   var headerDropdownToggles = document.querySelectorAll('.site-header [data-toggle="dropdown"]');
 
+  function resetNotificationAccordion() {
+    document.querySelectorAll('.notif-accordion-item').forEach(function(item) {
+      item.classList.remove('active');
+    });
+
+    document.querySelectorAll('.notif-accordion-panel').forEach(function(panel) {
+      panel.classList.remove('show');
+    });
+
+    document.querySelectorAll('.notif-accordion-toggle').forEach(function(button) {
+      button.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   function closeNotificationDropdown() {
     if (!notificationDropdown || !notificationMenu || !notificationToggle) {
       return;
@@ -1434,6 +1448,7 @@ document.addEventListener("DOMContentLoaded", function () {
     notificationDropdown.classList.remove('open', 'show');
     notificationMenu.classList.remove('show');
     notificationToggle.setAttribute('aria-expanded', 'false');
+    resetNotificationAccordion();
   }
 
   function closeOtherHeaderDropdowns(exceptToggle) {
@@ -1502,17 +1517,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var targetPanel = targetId ? document.querySelector(targetId) : null;
       var isOpen = parentItem && parentItem.classList.contains('active');
 
-      document.querySelectorAll('.notif-accordion-item').forEach(function(item) {
-        item.classList.remove('active');
-      });
-
-      document.querySelectorAll('.notif-accordion-panel').forEach(function(panel) {
-        panel.classList.remove('show');
-      });
-
-      document.querySelectorAll('.notif-accordion-toggle').forEach(function(button) {
-        button.setAttribute('aria-expanded', 'false');
-      });
+      resetNotificationAccordion();
 
       if (!isOpen && parentItem && targetPanel) {
         parentItem.classList.add('active');

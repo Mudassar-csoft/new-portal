@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinanceOtherCharge;
-use App\Models\LeadFollowup;
 use App\Models\WebLead;
+use App\Support\ResolvesLeadFollowupNotifications;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +16,8 @@ use Illuminate\View\View;
 
 class WebLeadController extends Controller
 {
+    use ResolvesLeadFollowupNotifications;
+
     public function storePublic(Request $request): JsonResponse
     {
         $this->ensureValidToken($request);
@@ -244,11 +246,10 @@ class WebLeadController extends Controller
             return 0;
         }
 
-        return (int) LeadFollowup::query()
-            ->whereNotNull('next_action_date')
-            ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeQueryToCurrentUserCampus($leadQuery->training()))
-            ->distinct('lead_id')
-            ->count('lead_id');
+        return $this->latestDueTrainingFollowupNotifications(
+            auth()->user(),
+            fn (Builder $leadQuery, $user = null) => $this->scopeQueryToCurrentUserCampus($leadQuery)
+        )->count();
     }
 
     private function scopeQueryToCurrentUserCampus(Builder $query): Builder
