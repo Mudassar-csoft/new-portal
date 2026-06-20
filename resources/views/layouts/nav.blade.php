@@ -132,6 +132,12 @@
                         <li><a href="{{ route('leads.create') }}"><span class="lbl">Create New Lead</span></a></li>
                     @endif
 
+                    <li>
+                        <a href="https://portal.career.edu.pk/" target="_blank" rel="noopener noreferrer">
+                            <span class="lbl">Old Lead Portal</span>
+                        </a>
+                    </li>
+
                     @if($showTrainingLeads)
                         <li class="with-sub">
                             <span>
