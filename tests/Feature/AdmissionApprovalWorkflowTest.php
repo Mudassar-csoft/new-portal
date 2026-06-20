@@ -159,6 +159,31 @@ class AdmissionApprovalWorkflowTest extends TestCase
             ->assertDontSee('Pending Detail Program');
     }
 
+    public function test_admission_document_preview_route_streams_the_uploaded_file(): void
+    {
+        Storage::fake('public');
+
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+
+        $campus = $this->createCampus('Delta Campus', 'DEL');
+        $program = $this->createProgram('TRN904', 'Preview Program');
+        $batch = $this->createBatch($campus, $program, 'DEL-B1');
+        $registration = $this->createRegistration($campus, $program, 'Preview Student', '03200000995');
+
+        Storage::disk('public')->put('admissions/9/preview.jpg', 'preview-file-body');
+
+        $admission = $this->createAdmission($campus, $program, $batch, $registration, 'Preview Student', '03200000995', [
+            'document_cnic_front_path' => 'admissions/9/preview.jpg',
+        ]);
+
+        $user = $this->createScopedUser($campus, [$admissionView]);
+
+        $this->actingAs($user)
+            ->get(route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-front']))
+            ->assertOk()
+            ->assertHeader('content-disposition', 'inline; filename="preview.jpg"');
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([

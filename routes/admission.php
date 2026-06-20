@@ -11,3 +11,4 @@ Route::get('/admission/{admission}/voucher', [AdmissionController::class, 'vouch
 Route::get('/admission/status', [AdmissionController::class, 'status'])->middleware('permission:admission.view')->name('admission.status');
 Route::post('/admission/{admission}/documents', [AdmissionController::class, 'uploadDocuments'])->middleware('permission:admission.create,admission.update')->name('admission.documents.upload');
 Route::post('/admission/{admission}/review', [AdmissionController::class, 'reviewApproval'])->middleware(['permission:admission.update,admission.view', 'admin'])->name('admission.review');
+Route::get('/admission/{admission}/documents/{document}', [AdmissionController::class, 'viewDocument'])->middleware('permission:admission.view')->name('admission.documents.view');

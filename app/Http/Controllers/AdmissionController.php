@@ -20,9 +20,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 class AdmissionController extends Controller
@@ -779,6 +781,27 @@ class AdmissionController extends Controller
         );
     }
 
+    public function viewDocument(Request $request, Admission $admission, string $document): BinaryFileResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to access admissions from another campus.');
+
+        $relativePath = match ($document) {
+            'cnic-front' => $admission->document_cnic_front_path,
+            'admission-form' => $admission->document_admission_form_path,
+            'paid-slip' => $admission->document_paid_slip_path,
+            default => abort(404),
+        };
+
+        abort_unless(filled($relativePath), 404);
+
+        $absolutePath = $this->resolveAdmissionDocumentAbsolutePath((string) $relativePath);
+        abort_unless($absolutePath, 404);
+
+        return response()->file($absolutePath, [
+            'Content-Disposition' => 'inline; filename="' . basename($absolutePath) . '"',
+        ]);
+    }
+
     public function voucher(Request $request, Admission $admission): View
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access admissions from another campus.');
@@ -1106,6 +1129,35 @@ class AdmissionController extends Controller
         });
 
         return $query->exists();
+    }
+
+    private function resolveAdmissionDocumentAbsolutePath(string $relativePath): ?string
+    {
+        $normalizedPath = ltrim(str_replace('\\', '/', $relativePath), '/');
+
+        if ($normalizedPath === '' || Str::contains($normalizedPath, ['../', '..\\'])) {
+            return null;
+        }
+
+        $candidates = array_unique(array_filter([
+            Storage::disk('public')->exists($normalizedPath)
+                ? Storage::disk('public')->path($normalizedPath)
+                : null,
+            file_exists(storage_path('app/public/' . $normalizedPath))
+                ? storage_path('app/public/' . $normalizedPath)
+                : null,
+            file_exists(public_path('storage/' . $normalizedPath))
+                ? public_path('storage/' . $normalizedPath)
+                : null,
+        ]));
+
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 
     private function applyAdmissionPeriodFilter($query, string $period)
