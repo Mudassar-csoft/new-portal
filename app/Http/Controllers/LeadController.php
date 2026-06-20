@@ -148,6 +148,7 @@ class LeadController extends Controller
                 $initialProbability = $details['probability'] ?? null;
                 $initialNextAt = $this->normalizeFollowupDateTime($details['next_followup_at'] ?? null);
                 $initialStage = $this->resolveInitialFollowupStage($validated['origin'] ?? null);
+                $initialMethod = $this->resolveInitialFollowupMethod($validated['origin'] ?? null);
 
                 if ($initialNextAt) {
                     $details['next_followup_at'] = $initialNextAt->format('Y-m-d\TH:i');
@@ -176,7 +177,7 @@ class LeadController extends Controller
                     'campus_id' => $lead->campus_id,
                     'user_id' => $request->user()?->id,
                     'note' => 'Initial follow-up created automatically.',
-                    'method' => null,
+                    'method' => $initialMethod,
                     'probability' => $initialProbability,
                     'next_action_date' => $initialNextAt,
                     'stage' => $initialStage,
@@ -985,6 +986,13 @@ class LeadController extends Controller
         }
 
         return 'contacted';
+    }
+
+    private function resolveInitialFollowupMethod(?string $origin): ?string
+    {
+        $method = trim((string) $origin);
+
+        return $method !== '' ? $method : null;
     }
 
     private function resolveCurrentStage(Lead $lead): string

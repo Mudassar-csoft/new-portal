@@ -100,8 +100,10 @@
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
 						data-uses-training-conversion-flow="{{ $usesTrainingConversionFlow ? '1' : '0' }}"
 						data-registration-url="{{ $registrationFormModalUrl }}"
+						data-registration-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}"
 						@if($usesTrainingConversionFlow)
 							data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}"
+							data-admission-title="Create New Admission (All fields marked with * are required)"
 						@endif>
 						@csrf
 							<div class="form-row" >
@@ -245,16 +247,17 @@
 							<div class="alert alert-info d-none" id="registration-link">
 								Selecting <strong>{{ $registrationStageLabel }}</strong>? {{ $registrationPrompt }}
 								<a href="{{ $registrationFormUrl }}"
-									class="btn btn-sm btn-primary ml-2 {{ $isCoworkingLead ? 'js-lead-modal-link' : '' }}"
-									@if($isCoworkingLead)
-										data-lead-modal-url="{{ $registrationFormModalUrl }}"
-										data-lead-modal-title="Create New Coworking Space Registration (All fields marked with * are required)"
-									@endif>{{ $registrationButtonLabel }}</a>
+									class="btn btn-sm btn-primary ml-2 js-lead-modal-link"
+									data-lead-modal-url="{{ $registrationFormModalUrl }}"
+									data-lead-modal-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}">{{ $registrationButtonLabel }}</a>
 							</div>
 							@if($usesTrainingConversionFlow)
 								<div class="alert alert-info d-none" id="admission-link">
 									Selecting <strong>Enroll</strong>? Complete the admission form first.
-									<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}" class="btn btn-sm btn-primary ml-2">Open Admission Form</a>
+									<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}"
+										class="btn btn-sm btn-primary ml-2 js-lead-modal-link"
+										data-lead-modal-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}"
+										data-lead-modal-title="Create New Admission (All fields marked with * are required)">Open Admission Form</a>
 								</div>
 							@endif
 
@@ -1267,7 +1270,6 @@
 			const stageField = $('#followup-stage');
 			const nextStage = String(element ? element.value : (stageField ? stageField.value : '')).trim().toLowerCase();
 			const form = $('#followup-form');
-			const usesTrainingConversionFlow = form && form.dataset.usesTrainingConversionFlow === '1';
 
 			updateStageSpecificUI(nextStage);
 
@@ -1275,12 +1277,18 @@
 				return;
 			}
 
-			if (!usesTrainingConversionFlow && nextStage === 'registered' && form.dataset.registrationUrl) {
-				openLeadModal(form.dataset.registrationUrl, 'Create New Coworking Space Registration (All fields marked with * are required)');
+			if (nextStage === 'registered' && form.dataset.registrationUrl) {
+				openLeadModal(
+					form.dataset.registrationUrl,
+					form.dataset.registrationTitle || 'Create New Registration (All fields marked with * are required)'
+				);
 			}
 
-			if (usesTrainingConversionFlow && nextStage === 'enroll' && form.dataset.admissionUrl) {
-				openLeadModal(form.dataset.admissionUrl, 'Create New Admission (All fields marked with * are required)');
+			if (nextStage === 'enroll' && form.dataset.admissionUrl) {
+				openLeadModal(
+					form.dataset.admissionUrl,
+					form.dataset.admissionTitle || 'Create New Admission (All fields marked with * are required)'
+				);
 			}
 		};
 
