@@ -1,5 +1,22 @@
 <?php
 
+$publicDiskMode = strtolower((string) env('PUBLIC_DISK_ROOT', 'storage'));
+$publicDiskPath = trim((string) env('PUBLIC_DISK_PATH', 'storage'), "/\\");
+$publicDiskPath = $publicDiskPath !== '' ? $publicDiskPath : 'storage';
+$publicDiskAbsoluteRoot = env('PUBLIC_DISK_ABSOLUTE_ROOT');
+
+$publicDiskRoot = $publicDiskMode === 'public'
+    ? ($publicDiskAbsoluteRoot ?: public_path($publicDiskPath))
+    : storage_path('app/public');
+
+$publicDiskUrl = env('PUBLIC_DISK_URL', rtrim((string) env('APP_URL'), '/') . '/' . $publicDiskPath);
+
+$publicDiskLinks = $publicDiskMode === 'public'
+    ? []
+    : [
+        public_path($publicDiskPath) => storage_path('app/public'),
+    ];
+
 return [
 
     /*
@@ -40,8 +57,8 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => $publicDiskRoot,
+            'url' => $publicDiskUrl,
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -73,8 +90,6 @@ return [
     |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
+    'links' => $publicDiskLinks,
 
 ];
