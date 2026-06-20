@@ -401,18 +401,12 @@ class DashboardController extends Controller
         $hourlyTotals = array_fill_keys(array_column($hourlySlots, 'label'), 0.0);
 
         foreach ($todayRows as $row) {
-            $timestamp = $row->paid_at ?? null;
+            $timestamp = $this->resolveCollectionGraphTimestamp($row->paid_at ?? null, $row->created_at ?? null);
             if (!$timestamp) {
                 continue;
             }
 
-            $hour = Carbon::parse($timestamp)->hour;
-            foreach ($hourlySlots as $slot) {
-                if ($hour >= $slot['start'] && $hour <= $slot['end']) {
-                    $hourlyTotals[$slot['label']] += (float) ($row->amount ?? 0);
-                    break;
-                }
-            }
+            $hourlyTotals[$this->resolveHourlySlotLabel($timestamp, $hourlySlots)] += (float) ($row->amount ?? 0);
         }
 
         $weekStart = now()->startOfDay()->subDays(6);
@@ -422,11 +416,11 @@ class DashboardController extends Controller
             $weekDailyTotals[$date->toDateString()] = 0.0;
         }
         foreach ($weekRows as $row) {
-            $timestamp = $row->paid_at ?? null;
+            $timestamp = $this->resolveCollectionGraphTimestamp($row->paid_at ?? null, $row->created_at ?? null);
             if (!$timestamp) {
                 continue;
             }
-            $dayKey = Carbon::parse($timestamp)->toDateString();
+            $dayKey = $timestamp->toDateString();
             if (array_key_exists($dayKey, $weekDailyTotals)) {
                 $weekDailyTotals[$dayKey] += (float) ($row->amount ?? 0);
             }
@@ -440,11 +434,11 @@ class DashboardController extends Controller
             'Week 4' => 0.0,
         ];
         foreach ($monthRows as $row) {
-            $timestamp = $row->paid_at ?? null;
+            $timestamp = $this->resolveCollectionGraphTimestamp($row->paid_at ?? null, $row->created_at ?? null);
             if (!$timestamp) {
                 continue;
             }
-            $dayOfMonth = Carbon::parse($timestamp)->day;
+            $dayOfMonth = $timestamp->day;
             $weekBucket = min(4, (int) ceil($dayOfMonth / 7));
             $monthWeeklyTotals['Week ' . $weekBucket] += (float) ($row->amount ?? 0);
         }
@@ -455,11 +449,11 @@ class DashboardController extends Controller
             $yearMonthlyTotals[Carbon::create(now()->year, $month, 1)->format('M')] = 0.0;
         }
         foreach ($yearRows as $row) {
-            $timestamp = $row->paid_at ?? null;
+            $timestamp = $this->resolveCollectionGraphTimestamp($row->paid_at ?? null, $row->created_at ?? null);
             if (!$timestamp) {
                 continue;
             }
-            $monthKey = Carbon::parse($timestamp)->format('M');
+            $monthKey = $timestamp->format('M');
             if (array_key_exists($monthKey, $yearMonthlyTotals)) {
                 $yearMonthlyTotals[$monthKey] += (float) ($row->amount ?? 0);
             }
@@ -716,9 +710,10 @@ class DashboardController extends Controller
                 ->whereNotNull('paid_at')
                 ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->whereBetween('paid_at', [$start, $end])
-                ->get(['paid_at', 'net_amount'])
+                ->get(['paid_at', 'created_at', 'net_amount'])
                 ->map(fn (FeeCollection $fee) => (object) [
                     'paid_at' => $fee->paid_at,
+                    'created_at' => $fee->created_at,
                     'amount' => (float) $fee->net_amount,
                 ])
             : collect();
@@ -729,14 +724,51 @@ class DashboardController extends Controller
                 ->whereNotNull('paid_at')
                 ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
                 ->whereBetween('paid_at', [$start, $end])
-                ->get(['paid_at', 'amount'])
+                ->get(['paid_at', 'created_at', 'amount'])
                 ->map(fn (CoworkingRegistrationReceipt $receipt) => (object) [
                     'paid_at' => $receipt->paid_at,
+                    'created_at' => $receipt->created_at,
                     'amount' => (float) $receipt->amount,
                 ])
             : collect();
 
         return $feeRows->concat($coworkingRows)->values();
+    }
+
+    private function resolveCollectionGraphTimestamp($paidAt, $createdAt): ?Carbon
+    {
+        $paidAtCarbon = $paidAt ? Carbon::parse($paidAt) : null;
+        $createdAtCarbon = $createdAt ? Carbon::parse($createdAt) : null;
+
+        if ($paidAtCarbon && $createdAtCarbon
+            && $paidAtCarbon->copy()->startOfDay()->equalTo($paidAtCarbon)
+            && $createdAtCarbon->isSameDay($paidAtCarbon)
+            && $createdAtCarbon->gt($paidAtCarbon)
+        ) {
+            return $createdAtCarbon;
+        }
+
+        return $paidAtCarbon ?? $createdAtCarbon;
+    }
+
+    /**
+     * @param  array<int, array{label: string, start: int, end: int}>  $hourlySlots
+     */
+    private function resolveHourlySlotLabel(Carbon $timestamp, array $hourlySlots): string
+    {
+        $hour = $timestamp->hour;
+
+        foreach ($hourlySlots as $slot) {
+            if ($hour >= $slot['start'] && $hour <= $slot['end']) {
+                return $slot['label'];
+            }
+        }
+
+        if ($hour < $hourlySlots[0]['start']) {
+            return $hourlySlots[0]['label'];
+        }
+
+        return $hourlySlots[array_key_last($hourlySlots)]['label'];
     }
 
     private function leadQueryForDashboard(?int $campusId = null, array $dashboardAccess = [], bool $trainingOnly = false): Builder

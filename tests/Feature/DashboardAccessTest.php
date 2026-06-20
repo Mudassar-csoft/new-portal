@@ -12,12 +12,20 @@ use App\Models\Registration;
 use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DashboardAccessTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
 
     public function test_non_admin_dashboard_is_limited_to_the_users_own_campus(): void
     {
@@ -116,6 +124,45 @@ class DashboardAccessTest extends TestCase
         $this->assertSame(10200.0, (float) ($dashboard['incomeSummary']['month'] ?? 0));
         $this->assertSame(10200.0, $monthRangeTotal);
         $this->assertSame(10200.0, $yearRangeTotal);
+    }
+
+    public function test_dashboard_today_income_graph_counts_midnight_paid_rows_using_recorded_creation_time(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-06-20 14:30:00'));
+
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Delta Campus', 'DEL');
+
+        ['registration' => $registration, 'admission' => $admission] = $this->seedDashboardRecords($campus, 'delta', 1500);
+        $this->seedAdmissionFee($campus, $registration, $admission, 2500);
+        $this->seedCoworkingChargeReceipt($campus, 3500);
+
+        FeeCollection::query()
+            ->where('registration_id', $registration->id)
+            ->where('fee_type', 'registration')
+            ->update(['paid_at' => now()->copy()->startOfDay()]);
+
+        FeeCollection::query()
+            ->where('admission_id', $admission->id)
+            ->where('fee_type', 'admission')
+            ->update(['paid_at' => now()->copy()->startOfDay()]);
+
+        CoworkingRegistrationReceipt::query()
+            ->where('campus_id', $campus->id)
+            ->where('receipt_type', 'coworking_charge')
+            ->update(['paid_at' => now()->copy()->startOfDay()]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('dashboard.live-data', ['campus_id' => $campus->id]))
+            ->assertOk();
+
+        $dashboard = $response->json('dashboard');
+        $todayPoints = $dashboard['incomeRanges']['today']['points'] ?? [];
+        $todayTotal = array_sum(array_map(fn (array $point) => (float) ($point[1] ?? 0), $todayPoints));
+
+        $this->assertSame(7500.0, (float) ($dashboard['incomeSummary']['today'] ?? 0));
+        $this->assertSame(7500.0, $todayTotal);
+        $this->assertTrue(collect($todayPoints)->contains(fn (array $point) => (float) ($point[1] ?? 0) > 0));
     }
 
     public function test_dashboard_hides_registration_and_admission_sections_without_permission(): void
