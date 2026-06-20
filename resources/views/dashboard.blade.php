@@ -561,8 +561,7 @@
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
 			height: 314px;
-			padding-right: 68px;
-			overflow: hidden;
+			padding-right: 76px;
 		}
 
 		.chart-statistic-box #chart_div,
@@ -595,11 +594,19 @@
 			font-size: 10px !important;
 		}
 
+		.chart-statistic-box .income-axis-right {
+			left: auto;
+			right: 0;
+			width: 76px;
+		}
+
 		.chart-statistic-box .income-axis-right .income-axis-label {
 			transform: translateY(-50%);
 			text-align: right;
 			font-size: 11px !important;
-			width: 60px;
+			left: auto !important;
+			right: 6px;
+			width: 68px;
 		}
 
 		.chart-statistic-box .tbl-data {
@@ -2112,9 +2119,6 @@
 				}
 
 				var xLabelTop = Math.max(6, chartArea.top - 16);
-				var stageWidth = topAxis.outerWidth() || chartArea.left + chartArea.width + 68;
-				var rightAxisWidth = 60;
-				var rightLabelLeft = Math.max(chartArea.left + chartArea.width + 4, stageWidth - rightAxisWidth - 6);
 
 				points.forEach(function (point, index) {
 					var xPosition;
@@ -2144,7 +2148,6 @@
 						'class': 'income-axis-label',
 						text: formatAmount(tick)
 					}).css({
-						left: rightLabelLeft + 'px',
 						top: yPosition + 'px'
 					}).appendTo(rightAxis);
 				});
@@ -2474,7 +2477,7 @@
 					},
 					chartArea: {
 						left: 20,
-						right: 48,
+						right: 72,
 						top: 36,
 						bottom: 24,
 						width: '100%',
