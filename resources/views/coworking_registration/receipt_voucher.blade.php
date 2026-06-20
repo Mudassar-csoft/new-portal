@@ -6,327 +6,302 @@
         'security_refund' => 'Security Refund Receipt',
         default => 'Coworking Charges Receipt',
     };
-    $paidDate = optional($receipt->paid_at ?? $registration?->registration_date)->format('d-m-Y');
     $receiptTypeLabel = match ($receipt->receipt_type) {
         'security_fee' => 'Security Fee',
         'security_refund' => 'Security Refund',
         default => 'Coworking Charges',
     };
-@endphp<!DOCTYPE html>
+    $receiptDate = optional($receipt->paid_at ?? $registration?->registration_date ?? $receipt->created_at)->format('d-m-Y') ?? '-';
+    $registrationDate = optional($registration?->registration_date)->format('d-m-Y') ?? '-';
+    $memberName = $registration?->full_name ?? $receipt->lead?->name ?? 'Coworking Member';
+    $campusLabel = trim(collect([$campus?->code, $campus?->name])->filter()->implode(' - ')) ?: 'N/A';
+    $remarks = trim((string) ($receipt->notes ?: $registration?->remarks ?: 'N/A'));
+    $timing = $registration?->timing ?: 'N/A';
+    $totalPaid = (float) ($receipt->amount ?? 0);
+    $amountInWords = \App\Support\AmountToWords::forRupees($totalPaid);
+@endphp
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Fee Voucher</title>
-
-<style>
-    *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-    }
-
-    body{
-        background:#f2f2f2;
-        padding:20px;
-    }
-
-    .voucher{
-        width:1000px;
-        margin:20px auto;
-        background:#fff;
-        border:2px solid #000;
-        padding:18px;
-    }
-
-    .copy-title{
-        text-align:center;
-        font-size:22px;
-        margin-bottom:10px;
-    }
-
-    .top-section{
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-start;
-        margin-bottom:15px;
-    }
-
-    .logo-area{
-        display:flex;
-        gap:15px;
-        align-items:flex-start;
-    }
-
-    .logo{
-        width:90px;
-        height:90px;
-        background:#0c6b7a;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        border-radius:6px;
-        font-size:22px;
-        font-weight:bold;
-    }
-
-    .institute-text{
-        line-height:1.5;
-        font-size:18px;
-        font-weight:bold;
-        color:#333;
-    }
-
-    .voucher-heading{
-        text-align:left;
-    }
-
-    .voucher-heading h1{
-        font-size:42px;
-        font-weight:500;
-        margin-bottom:8px;
-    }
-
-    .voucher-heading p{
-        font-size:14px;
-        margin:3px 0;
-    }
-
-    table{
-        width:100%;
-        border-collapse:collapse;
-        margin-bottom:15px;
-    }
-
-    table th,
-    table td{
-        border:1px solid #000;
-        padding:10px;
-        text-align:left;
-        font-size:18px;
-    }
-
-    table th{
-        font-weight:bold;
-    }
-
-    .amount-table{
-        width:50%;
-    }
-
-    .amount-words{
-        border:1px solid #000;
-        padding:10px;
-        font-size:18px;
-        margin-top:10px;
-    }
-
-    .note-section{
-        display:flex;
-        justify-content:space-between;
-        margin-top:20px;
-        font-size:13px;
-        color:#777;
-    }
-
-    .footer{
-        margin-top:60px;
-        font-size:15px;
-        line-height:1.6;
-    }
-    img.brand-logo {
-        width: 320px;
-    height: 80px;
-    }
-    @media print{
-        body{
-            background:#fff;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $receiptTitle }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .voucher{
-            box-shadow:none;
-            page-break-after:always;
+        @page {
+            size: A4 portrait;
+            margin: 12mm;
         }
-    }
-</style>
+
+        body {
+            background: #fff;
+            color: #111;
+            font-size: 14px;
+            line-height: 1.2;
+            padding: 10px;
+        }
+
+        .voucher-sheet {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .voucher-copy {
+            border: 1px solid #444;
+            padding: 18px 18px 14px;
+            margin-bottom: 18px;
+            page-break-inside: avoid;
+        }
+
+        .copy-label {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .voucher-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 10px;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 320px;
+            height: 80px;
+            flex: 0 0 64px;
+        }
+
+        .voucher-meta {
+            width: 280px;
+        }
+
+        .voucher-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .voucher-meta-line {
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table th,
+        .info-table td,
+        .summary-table td,
+        .status-table td,
+        .amount-table td {
+            border: 1px solid #777;
+            padding: 4px 6px;
+            vertical-align: top;
+        }
+
+        .info-table th {
+            font-weight: 400;
+            text-align: left;
+            background: #fff;
+        }
+
+        .tables-row {
+            display: flex;
+            gap: 36px;
+            margin-top: 12px;
+            align-items: flex-start;
+        }
+
+        .summary-wrap {
+            width: 52%;
+        }
+
+        .status-wrap {
+            width: 42%;
+        }
+
+        .summary-table td:first-child,
+        .status-table td:first-child {
+            width: 58%;
+        }
+
+        .summary-table td:last-child,
+        .status-table td:last-child {
+            width: 42%;
+        }
+
+        .amount-table {
+            margin-top: 10px;
+        }
+
+        .amount-table td {
+            font-size: 15px;
+            padding: 5px 6px;
+        }
+
+        .voucher-notes {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #8a8a8a;
+        }
+
+        .voucher-footer {
+            margin-top: 18px;
+            font-size: 12px;
+            line-height: 1.25;
+        }
+
+        .voucher-footer strong {
+            font-weight: 400;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            .voucher-sheet {
+                max-width: none;
+            }
+
+            .voucher-copy {
+                margin-bottom: 14px;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="voucher-sheet">
+        @foreach (['Member Copy', 'Campus Copy'] as $copyLabel)
+            <section class="voucher-copy">
+                <div class="copy-label">{{ $copyLabel }}</div>
 
-<!-- MEMBER COPY -->
-<div class="voucher">
+                <div class="voucher-header">
+                    <div class="brand-block">
+                        <img src="{{ asset('theme/img/career-updated-logo.png') }}" alt="Career Institute Logo" class="brand-logo">
+                    </div>
 
-    <div class="copy-title">Member Copy</div>
+                    <div class="voucher-meta">
+                        <div class="voucher-title">{{ strtoupper($receiptTitle) }}</div>
+                        <div class="voucher-meta-line">Receipt No: {{ $receipt->receipt_number ?? '-' }}</div>
+                        <div class="voucher-meta-line">Date: {{ $receiptDate }}</div>
+                        <div class="voucher-meta-line">Registration No: {{ $registration?->registration_number ?? '-' }}</div>
+                        <div class="voucher-meta-line">Campus: {{ $campusLabel }}</div>
+                    </div>
+                </div>
 
-    <div class="top-section">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Receipt Type</th>
+                            <th>Timing</th>
+                            <th>Date of Joining</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ $memberName }}</td>
+                            <td>{{ $receiptTypeLabel }}</td>
+                            <td>{{ $timing }}</td>
+                            <td>{{ $registrationDate }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-        <div class="logo-area">
+                <div class="tables-row">
+                    <div class="summary-wrap">
+                        <table class="summary-table">
+                            <tbody>
+                                <tr>
+                                    <td>Registration No</td>
+                                    <td>{{ $registration?->registration_number ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Remarks</td>
+                                    <td>{{ $remarks }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Paid</td>
+                                    <td>Rs. {{ number_format($totalPaid, abs($totalPaid - floor($totalPaid)) > 0 ? 2 : 0) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-            <img src="{{ asset('theme/img/career-updated-logo.png') }}" alt="Career Institute Logo" class="brand-logo">    
-            
-        </div>
+                    <div class="status-wrap">
+                        <table class="status-table">
+                            <tbody>
+                                <tr>
+                                    <td>Receipt Status</td>
+                                    <td>{{ $receipt->paid_at ? 'Paid' : 'Pending' }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Receipt Type</td>
+                                    <td>{{ $receiptTypeLabel }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Collected At</td>
+                                    <td>{{ optional($receipt->paid_at)->format('Y-m-d') ?: '-' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <div class="voucher-heading">
-            <h3>Payment VOUCHER</h3>
+                <table class="amount-table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                Amount in Words:
+                                <span>{{ $amountInWords }}</span>
+                                Only.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <p><strong>Receipt No:</strong> CIFSD02-SEC-0526-00001</p>
-            <p><strong>Date:</strong> 22-05-2026</p>
-            <p><strong>Registration No:</strong> CIFSD02-CWS-0526-00001</p>
-            <p><strong>Campus:</strong> CIFSD02 - fsd Campus</p>
-        </div>
+                <div class="voucher-notes">
+                    <div>
+                        This receipt can be produce when demanded<br>
+                        Fee once paid is not Refundable.
+                    </div>
+                    <div>For Career Institute - {{ $campus?->name ?? 'Campus' }}</div>
+                </div>
 
+                <div class="voucher-footer">
+                    <strong>
+                        Career Institute, P-49, Chenab Market, Susan Road, Block Z, Madina Town, Faisalabad, Punjab, Pakistan - 38000<br>
+                        Ph:0314-4444010 / 0341-4444010<br>
+                        www.career.edu.pk
+                    </strong>
+                </div>
+            </section>
+        @endforeach
     </div>
 
-    <table>
-        <tr>
-            <th>Member Name</th>
-            <th>Receipt Type</th>
-            <th>Timing</th>
-            <th>Date of Joining</th>
-        </tr>
-
-        <tr>
-            <td>web</td>
-            <td>Security Fee</td>
-            <td>09:00AM-09:00AM</td>
-            <td>22-05-2026</td>
-        </tr>
-    </table>
-
-    <table class="amount-table">
-
-        <tr>
-            <td>Registration No</td>
-            <td>CIFSD02-CWS-0526-00001</td>
-        </tr>
-
-        <tr>
-            <td>Remarks</td>
-            <td>Security fee collected at the time of coworking registration.</td>
-        </tr>
-
-        <tr>
-            <td>Total Paid</td>
-            <td>Rs. 20,000</td>
-        </tr>
-
-    </table>
-
-    <div class="amount-words">
-        Amount in Words: Twenty Thousand Only.
-    </div>
-
-    <div class="note-section">
-        <div>
-            This receipt can be produce when demanded <br>
-            Fee once paid is not Refundable.
-        </div>
-
-        <div>
-            For Career Institute - fsd Campus
-        </div>
-    </div>
-
-    <div class="footer">
-        Career Institute, P-165 B, 262 Millat Rd, Millat Chowk,
-        Gulistan Colony, Faisalabad, Punjab, Pakistan - 38000 <br>
-
-        Ph:0314-4444010 / 0341-4444010 <br>
-
-        www.career.edu.pk
-    </div>
-
-</div>
-
-
-<!-- CAMPUS COPY -->
-<div class="voucher">
-
-    <div class="copy-title">Campus Copy</div>
-
-    <div class="top-section">
-
-        <div class="logo-area">
-
-            
-            <img src="{{ asset('theme/img/career-updated-logo.png') }}" alt="Career Institute Logo" class="brand-logo">    
-           
-
-           
-        </div>
-
-        <div class="voucher-heading">
-            <h3>Payment VOUCHER</h3>
-
-            <p><strong>Receipt No:</strong> CIFSD02-SEC-0526-00001</p>
-            <p><strong>Date:</strong> 22-05-2026</p>
-            <p><strong>Registration No:</strong> CIFSD02-CWS-0526-00001</p>
-            <p><strong>Campus:</strong> CIFSD02 - fsd Campus</p>
-        </div>
-
-    </div>
-
-    <table>
-        <tr>
-            <th>Member Name</th>
-            <th>Receipt Type</th>
-            <th>Timing</th>
-            <th>Date of Joining</th>
-        </tr>
-
-        <tr>
-            <td>web</td>
-            <td>Security Fee</td>
-            <td>09:00AM-09:00AM</td>
-            <td>22-05-2026</td>
-        </tr>
-    </table>
-
-    <table class="amount-table">
-
-        <tr>
-            <td>Registration No</td>
-            <td>CIFSD02-CWS-0526-00001</td>
-        </tr>
-
-        <tr>
-            <td>Remarks</td>
-            <td>Security fee collected at the time of coworking registration.</td>
-        </tr>
-
-        <tr>
-            <td>Total Paid</td>
-            <td>Rs. 20,000</td>
-        </tr>
-
-    </table>
-
-    <div class="amount-words">
-        Amount in Words: Twenty Thousand Only.
-    </div>
-
-    <div class="note-section">
-        <div>
-            This receipt can be produce when demanded <br>
-            Fee once paid is not Refundable.
-        </div>
-
-        <div>
-            For Career Institute - fsd Campus
-        </div>
-    </div>
-
-    <div class="footer">
-        Career Institute, P-165 B, 262 Millat Rd, Millat Chowk,
-        Gulistan Colony, Faisalabad, Punjab, Pakistan - 38000 <br>
-
-        Ph:0314-4444010 / 0341-4444010 <br>
-
-        www.career.edu.pk
-    </div>
-
-</div>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.print();
+        });
+    </script>
 </body>
 </html>

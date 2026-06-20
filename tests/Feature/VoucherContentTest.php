@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\Campus;
+use App\Models\CoworkingRegistration;
+use App\Models\CoworkingRegistrationReceipt;
 use App\Models\FeeCollection;
 use App\Models\Lead;
 use App\Models\Program;
@@ -209,6 +211,27 @@ class VoucherContentTest extends TestCase
             ->assertDontSee('Rs. 14,000');
     }
 
+    public function test_coworking_charge_receipt_voucher_uses_the_clicked_receipt_details(): void
+    {
+        $admin = $this->createAdminUser();
+        $this->actingAs($admin);
+
+        [
+            'chargeReceipt' => $chargeReceipt,
+            'securityReceipt' => $securityReceipt,
+        ] = $this->createCoworkingReceiptRecords();
+
+        $this->get(route('coworking-registrations.receipts.voucher', $chargeReceipt))
+            ->assertOk()
+            ->assertSee('COWORKING CHARGES RECEIPT')
+            ->assertSee($chargeReceipt->receipt_number)
+            ->assertSee('Coworking Charges')
+            ->assertSee('Rs. 45,000')
+            ->assertSee('Forty Five Thousand Rupees')
+            ->assertDontSee($securityReceipt->receipt_number)
+            ->assertDontSee('Rs. 20,000');
+    }
+
     public function test_collect_installment_rejects_short_payment_when_no_next_pending_installment_exists(): void
     {
         $admin = $this->createAdminUser();
@@ -353,6 +376,79 @@ class VoucherContentTest extends TestCase
         ]);
 
         return compact('campus', 'program', 'batch', 'lead', 'registration', 'admission');
+    }
+
+    /**
+     * @return array{campus: Campus, lead: Lead, registration: CoworkingRegistration, securityReceipt: CoworkingRegistrationReceipt, chargeReceipt: CoworkingRegistrationReceipt}
+     */
+    private function createCoworkingReceiptRecords(): array
+    {
+        $campus = Campus::query()->create([
+            'name' => 'Coworking Voucher Campus',
+            'slug' => 'coworking-voucher-campus',
+            'code' => 'CWV',
+        ]);
+
+        $lead = Lead::query()->create([
+            'campus_id' => $campus->id,
+            'type' => 'coworking',
+            'name' => 'Coworking Voucher Member',
+            'email' => 'coworking.voucher@example.test',
+            'phone' => '03000000777',
+            'city' => 'Lahore',
+            'origin' => 'Walk-In',
+            'marketing_source' => 'Walk-In',
+            'status' => 'registered',
+        ]);
+
+        $registration = CoworkingRegistration::query()->create([
+            'lead_id' => $lead->id,
+            'campus_id' => $campus->id,
+            'registration_number' => 'CWV-CWS-0626-00001',
+            'receipt_number' => 'CWV-0626-000001',
+            'full_name' => 'Coworking Voucher Member',
+            'phone' => '03000000777',
+            'guardian_name' => 'Guardian Coworking',
+            'guardian_phone' => '03000000778',
+            'cnic' => '3520212345679',
+            'email' => 'coworking.voucher@example.test',
+            'education' => 'Graduate',
+            'date_of_birth' => '1995-05-10',
+            'nature_of_work' => 'Design Studio',
+            'timing' => '09:00 AM - 05:00 PM',
+            'gender' => 'female',
+            'address' => '123 Coworking Street, Lahore',
+            'registration_date' => '2026-06-20',
+            'next_due_date' => '2026-07-20',
+            'coworking_charges' => 45000,
+            'security_fee' => 20000,
+            'remarks' => 'Coworking voucher receipt test.',
+            'status' => 'registered',
+        ]);
+
+        $securityReceipt = CoworkingRegistrationReceipt::query()->create([
+            'coworking_registration_id' => $registration->id,
+            'lead_id' => $lead->id,
+            'campus_id' => $campus->id,
+            'receipt_type' => 'security_fee',
+            'receipt_number' => 'CWV-SEC-0626-00001',
+            'amount' => 20000,
+            'paid_at' => now()->subDay(),
+            'notes' => 'Security fee collected at the time of coworking registration.',
+        ]);
+
+        $chargeReceipt = CoworkingRegistrationReceipt::query()->create([
+            'coworking_registration_id' => $registration->id,
+            'lead_id' => $lead->id,
+            'campus_id' => $campus->id,
+            'receipt_type' => 'coworking_charge',
+            'receipt_number' => 'CWV-CWC-0626-00001',
+            'amount' => 45000,
+            'paid_at' => now(),
+            'notes' => 'Initial coworking charges collected at the time of registration.',
+        ]);
+
+        return compact('campus', 'lead', 'registration', 'securityReceipt', 'chargeReceipt');
     }
 
     private function createAdminUser(): User
