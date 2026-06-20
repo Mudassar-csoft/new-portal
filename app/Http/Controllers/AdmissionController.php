@@ -268,21 +268,12 @@ class AdmissionController extends Controller
                 ]);
             }
 
-            $feePackage = $validated['fee_package'];
-            $discountPercent = $validated['discount_percent'];
-            $discountAmount = $validated['discount_amount'];
-            $discountedFee = $validated['discounted_fee'];
-
-            if (!is_null($program->fee)) {
-                $feePackage = $program->fee;
-                $discountPercent = $this->resolveDiscountPercent($program->id, $campus->id);
-                $discountAmount = round($feePackage * ($discountPercent / 100), 2);
-                $discountedFee = $feePackage - $discountAmount;
-            }
-            $feePackage = $feePackage ?? 0;
-            $discountPercent = $discountPercent ?? 0;
-            $discountAmount = $discountAmount ?? 0;
-            $discountedFee = $discountedFee ?? ($feePackage - $discountAmount);
+            [
+                'feePackage' => $feePackage,
+                'discountPercent' => $discountPercent,
+                'discountAmount' => $discountAmount,
+                'discountedFee' => $discountedFee,
+            ] = $this->resolveAdmissionPricing($program, $campus, $validated);
 
             $sourceAdmission = !empty($validated['source_admission_id'])
                 ? Admission::query()->with(['registration.lead'])->findOrFail($validated['source_admission_id'])
@@ -735,6 +726,45 @@ class AdmissionController extends Controller
             ->first();
 
         return (float)($discount->discount_percent ?? 0);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array{feePackage: float, discountPercent: float, discountAmount: float, discountedFee: float}
+     */
+    private function resolveAdmissionPricing(Program $program, Campus $campus, array $validated): array
+    {
+        $feePackage = round((float) (!is_null($program->fee) ? $program->fee : ($validated['fee_package'] ?? 0)), 2);
+        $maxDiscountPercent = round($this->resolveDiscountPercent($program->id, $campus->id), 2);
+        $maxDiscountAmount = round($feePackage * ($maxDiscountPercent / 100), 2);
+        $submittedDiscountAmount = array_key_exists('discount_amount', $validated) && $validated['discount_amount'] !== null
+            ? round((float) $validated['discount_amount'], 2)
+            : $maxDiscountAmount;
+
+        if ($submittedDiscountAmount < 0) {
+            throw ValidationException::withMessages([
+                'discount_amount' => ['Discount cannot be negative.'],
+            ]);
+        }
+
+        if ($submittedDiscountAmount > $maxDiscountAmount + 0.009) {
+            throw ValidationException::withMessages([
+                'discount_amount' => ['Discount cannot exceed the allowed limit of ' . $maxDiscountAmount . ' (' . $maxDiscountPercent . '%).'],
+            ]);
+        }
+
+        $discountAmount = $submittedDiscountAmount;
+        $discountPercent = $feePackage > 0
+            ? round(($discountAmount / $feePackage) * 100, 2)
+            : 0.0;
+        $discountedFee = round(max(0, $feePackage - $discountAmount), 2);
+
+        return [
+            'feePackage' => $feePackage,
+            'discountPercent' => $discountPercent,
+            'discountAmount' => $discountAmount,
+            'discountedFee' => $discountedFee,
+        ];
     }
 
     private function generateAdmissionReceiptNumber(string $campusCode): string

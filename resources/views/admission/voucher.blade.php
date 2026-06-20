@@ -15,6 +15,9 @@
     $showRegistrationFeeRow = false;
     $registrationFee = (float) ($registrationFeeTotal ?? 0);
     $courseTuitionFee = (float) ($admissionFeeTotal ?? 0);
+    $originalFee = (float) (($admission->discount_amount ?? 0) > 0 ? ($admission->fee_package ?? 0) : 0);
+    $voucherDiscountPercent = (float) ($admission->discount_percent ?? 0);
+    $voucherDiscountAmount = (float) ($admission->discount_amount ?? 0);
     $examFee = 0;
     $fine = 0;
     $others = 0;

@@ -18,6 +18,9 @@
     $examFee = (float) ($examFee ?? 0);
     $fine = (float) ($fine ?? 0);
     $others = (float) ($others ?? 0);
+    $originalFee = (float) ($originalFee ?? 0);
+    $voucherDiscountPercent = (float) ($voucherDiscountPercent ?? 0);
+    $voucherDiscountAmount = (float) ($voucherDiscountAmount ?? 0);
     $installmentNo = $installmentNo ?? '';
     $balanceDue = (float) ($balanceDue ?? 0);
     $nextDueDate = $nextDueDate ?? '';
@@ -38,6 +41,17 @@
     };
 
     $amountInWords = \App\Support\AmountToWords::forRupees($totalPaid);
+    $formattedDiscountPercent = $voucherDiscountPercent > 0
+        ? rtrim(rtrim(number_format($voucherDiscountPercent, 2, '.', ''), '0'), '.') . '%'
+        : '';
+    $formattedDiscountAmount = $voucherDiscountAmount > 0 ? $formatAmount($voucherDiscountAmount) : '';
+    $voucherDiscountDisplay = $formattedDiscountPercent;
+
+    if ($formattedDiscountAmount !== '') {
+        $voucherDiscountDisplay = $voucherDiscountDisplay !== ''
+            ? $voucherDiscountDisplay . ' (' . $formattedDiscountAmount . ')'
+            : $formattedDiscountAmount;
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -298,6 +312,18 @@
                     <div class="status-wrap">
                         <table class="status-table">
                             <tbody>
+                                @if($originalFee > 0)
+                                    <tr>
+                                        <td>Original Fee</td>
+                                        <td>{{ $formatAmount($originalFee) }}</td>
+                                    </tr>
+                                @endif
+                                @if($voucherDiscountDisplay !== '')
+                                    <tr>
+                                        <td>Discount</td>
+                                        <td>{{ $voucherDiscountDisplay }}</td>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <td>Installment No.</td>
                                     <td>{{ $installmentNo !== '' ? $installmentNo : '-' }}</td>

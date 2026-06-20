@@ -64,6 +64,46 @@ class VoucherContentTest extends TestCase
             ->assertSee('Forty Eight Thousand Rupees and Fifty Paisa');
     }
 
+    public function test_admission_voucher_shows_original_fee_and_discount_when_discount_is_applied(): void
+    {
+        $admin = $this->createAdminUser();
+        $this->actingAs($admin);
+
+        ['campus' => $campus, 'program' => $program, 'registration' => $registration, 'admission' => $admission] = $this->createStudentRecords();
+
+        $admission->update([
+            'fee_package' => 6250,
+            'discount_amount' => 1000,
+            'discount_percent' => 16,
+            'discounted_fee' => 5250,
+        ]);
+
+        FeeCollection::query()->create([
+            'lead_id' => $registration->lead_id,
+            'registration_id' => $registration->id,
+            'admission_id' => $admission->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'fee_type' => 'admission',
+            'amount' => 5250,
+            'discount_percent' => 16,
+            'discount_amount' => 1000,
+            'net_amount' => 5250,
+            'receipt_number' => $admission->receipt_number,
+            'status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $this->get(route('admission.voucher', $admission))
+            ->assertOk()
+            ->assertSee('Original Fee')
+            ->assertSee('Rs. 6,250')
+            ->assertSee('Discount')
+            ->assertSee('16% (Rs. 1,000)')
+            ->assertSee('Rs. 5,250')
+            ->assertSee('Five Thousand Two Hundred Fifty Rupees');
+    }
+
     public function test_registration_voucher_shows_only_registration_fee_and_correct_amount_in_words(): void
     {
         $admin = $this->createAdminUser();
