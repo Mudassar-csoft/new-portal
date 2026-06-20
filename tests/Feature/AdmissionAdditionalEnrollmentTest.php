@@ -51,7 +51,7 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
 
         $user = $this->createScopedUser($campus, [$admissionView, $studentView]);
 
-        $response = $this->actingAs($user)->get(route('admission.status'));
+        $response = $this->actingAs($user)->get(route('admission.status', ['scope' => 'approved']));
 
         $response->assertOk()
             ->assertSee('Full Pay Student')
@@ -325,6 +325,7 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
         $this->assertSame('enrolled', $lead->status);
         $this->assertSame($lead->id, $registration->lead_id);
         $this->assertSame($registration->id, $admission->registration_id);
+        $this->assertSame(Admission::APPROVAL_STATUS_PENDING, $admission->approval_status);
 
         $this->assertDatabaseHas('lead_followups', [
             'lead_id' => $lead->id,
@@ -474,6 +475,7 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
             'discount_percent' => 0,
             'discounted_fee' => 50000,
             'fee_type' => 'full',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
             'student_status' => 'enrolled',
             'status_updated_at' => now(),
             'remarks' => 'Admission additional enrollment test record.',

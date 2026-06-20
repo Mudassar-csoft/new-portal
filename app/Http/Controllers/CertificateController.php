@@ -64,11 +64,12 @@ class CertificateController extends Controller
     {
         $admissionId = $request->integer('admission_id') ?: null;
         $selectedAdmission = $admissionId
-            ? Admission::with(['program', 'campus'])->find($admissionId)
+            ? Admission::query()->approved()->with(['program', 'campus'])->find($admissionId)
             : null;
 
         return view('certificate.create', [
             'admissions' => Admission::query()
+                ->approved()
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
                 ->orderByDesc('admission_date')
                 ->limit(500)
@@ -84,7 +85,7 @@ class CertificateController extends Controller
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $admission = Admission::findOrFail($validated['admission_id']);
+        $admission = Admission::query()->approved()->findOrFail($validated['admission_id']);
 
         Certificate::create([
             'admission_id' => $admission->id,

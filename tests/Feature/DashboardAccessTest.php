@@ -477,6 +477,7 @@ class DashboardAccessTest extends TestCase
             'discount_percent' => 0,
             'discounted_fee' => $netPayable,
             'fee_type' => 'full',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
             'student_status' => 'enrolled',
             'remarks' => 'Test record',
         ]);

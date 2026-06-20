@@ -175,6 +175,12 @@ class AppServiceProvider extends ServiceProvider
             'coworking_followups' => 0,
             'all_registrations' => 0,
             'all_admissions' => 0,
+            'admission_today' => 0,
+            'admission_current_month' => 0,
+            'admission_current_year' => 0,
+            'admission_pending' => 0,
+            'admission_requested' => 0,
+            'admission_approved' => 0,
             'student_attendance' => 0,
             'student_active' => 0,
             'student_frozen' => 0,
@@ -272,7 +278,69 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (($can('admission.view') || $can('student.view')) && Schema::hasTable('admissions')) {
-                $admissionSummary = $this->scopeQueryToUserCampus(Admission::query(), $user)
+                $hasApprovalStatus = Schema::hasColumn('admissions', 'approval_status');
+                $admissionBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), $user);
+
+                if ($can('admission.view') && $hasApprovalStatus) {
+                    $approvalCounts = (clone $admissionBaseQuery)
+                        ->selectRaw('approval_status, COUNT(*) as aggregate')
+                        ->groupBy('approval_status')
+                        ->pluck('aggregate', 'approval_status');
+
+                    $sidebarCounts['admission_pending'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_PENDING] ?? 0);
+                    $sidebarCounts['admission_requested'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_REQUESTED] ?? 0);
+                    $sidebarCounts['admission_approved'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_APPROVED] ?? 0);
+                }
+
+                if ($can('admission.view')) {
+                    $sidebarCounts['admission_today'] = (int) (clone $admissionBaseQuery)
+                        ->where(function ($query) use ($todayDate) {
+                            $query
+                                ->whereDate('admission_date', $todayDate)
+                                ->orWhere(function ($nested) use ($todayDate) {
+                                    $nested
+                                        ->whereNull('admission_date')
+                                        ->whereDate('created_at', $todayDate);
+                                });
+                        })
+                        ->count();
+
+                    $sidebarCounts['admission_current_month'] = (int) (clone $admissionBaseQuery)
+                        ->where(function ($query) use ($today) {
+                            $query
+                                ->where(function ($nested) use ($today) {
+                                    $nested
+                                        ->whereNotNull('admission_date')
+                                        ->whereYear('admission_date', $today->year)
+                                        ->whereMonth('admission_date', $today->month);
+                                })
+                                ->orWhere(function ($nested) use ($today) {
+                                    $nested
+                                        ->whereNull('admission_date')
+                                        ->whereYear('created_at', $today->year)
+                                        ->whereMonth('created_at', $today->month);
+                                });
+                        })
+                        ->count();
+
+                    $sidebarCounts['admission_current_year'] = (int) (clone $admissionBaseQuery)
+                        ->where(function ($query) use ($today) {
+                            $query
+                                ->whereYear('admission_date', $today->year)
+                                ->orWhere(function ($nested) use ($today) {
+                                    $nested
+                                        ->whereNull('admission_date')
+                                        ->whereYear('created_at', $today->year);
+                                });
+                        })
+                        ->count();
+                }
+
+                $studentAdmissionQuery = $hasApprovalStatus
+                    ? (clone $admissionBaseQuery)->approved()
+                    : clone $admissionBaseQuery;
+
+                $admissionSummary = $studentAdmissionQuery
                     ->selectRaw('COUNT(*) as total')
                     ->selectRaw("SUM(CASE WHEN student_status = 'enrolled' THEN 1 ELSE 0 END) as student_active")
                     ->selectRaw("SUM(CASE WHEN student_status = 'frozen' THEN 1 ELSE 0 END) as student_frozen")
@@ -285,7 +353,9 @@ class AppServiceProvider extends ServiceProvider
                     ->first();
 
                 if ($can('admission.view')) {
-                    $sidebarCounts['all_admissions'] = (int) ($admissionSummary?->total ?? 0);
+                    $sidebarCounts['all_admissions'] = $hasApprovalStatus
+                        ? (int) ((clone $admissionBaseQuery)->count())
+                        : (int) ($admissionSummary?->total ?? 0);
                 }
 
                 if ($can('student.view')) {

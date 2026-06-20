@@ -26,7 +26,7 @@ class StudentSearchController extends Controller
             $needle = '%' . $query . '%';
             $normalizedDigitsNeedle = $normalizedDigits !== '' ? '%' . $normalizedDigits . '%' : null;
 
-            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+            $admissions = $this->scopeQueryToUserCampus(Admission::query()->approved(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('student_name', 'like', $needle)

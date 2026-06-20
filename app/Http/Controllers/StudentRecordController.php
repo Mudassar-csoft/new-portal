@@ -35,7 +35,7 @@ class StudentRecordController extends Controller
         $config = $this->resolveScope($scope);
 
         if ($request->ajax()) {
-            $query = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+            $query = $this->scopeQueryToUserCampus(Admission::query()->approved(), $request->user())
                 ->with([
                     'campus:id,code,name',
                     'program:id,code,title,name',
@@ -125,17 +125,33 @@ class StudentRecordController extends Controller
             'lead',
             'campus',
             'program',
-            'admission.batch',
-            'admission.campus',
-            'admission.program',
-            'admission.certificateDeliveredBy',
         ]);
 
         $this->backfillRegistrationFee($registration);
 
-        $admission = $registration->admission;
-        $feeCollections = FeeCollection::query()
+        $admission = Admission::query()
+            ->approved()
+            ->with([
+                'batch',
+                'campus',
+                'program',
+                'certificateDeliveredBy',
+            ])
             ->where('registration_id', $registration->id)
+            ->latest('id')
+            ->first();
+        $feeCollectionsQuery = FeeCollection::query()
+            ->where('registration_id', $registration->id);
+
+        if (! $admission) {
+            $feeCollectionsQuery->where(function ($query) {
+                $query
+                    ->whereNull('admission_id')
+                    ->orWhere('fee_type', 'registration');
+            });
+        }
+
+        $feeCollections = $feeCollectionsQuery
             ->orderBy('paid_at')
             ->orderBy('id')
             ->get();
@@ -191,6 +207,17 @@ class StudentRecordController extends Controller
     public function collectInstallment(Request $request, FeeCollection $feeCollection): RedirectResponse
     {
         $this->ensureCampusAccess((int) ($feeCollection->campus_id ?? 0), $request->user(), 'You are not allowed to update fee records from another campus.');
+
+        if ($feeCollection->admission_id) {
+            $approvedAdmissionExists = Admission::query()
+                ->approved()
+                ->whereKey($feeCollection->admission_id)
+                ->exists();
+
+            if (! $approvedAdmissionExists) {
+                return back()->with('error', 'Installments can only be collected for approved admissions.');
+            }
+        }
 
         $validated = $request->validate([
             'paid_amount' => ['required', 'numeric', 'min:0.01'],
@@ -269,6 +296,10 @@ class StudentRecordController extends Controller
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
 
+        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_APPROVED) {
+            return back()->with('error', 'Student status can only be updated after admission approval.');
+        }
+
         $validated = $request->validate([
             'status' => ['required', Rule::in(array_keys(self::STATUS_OPTIONS))],
         ]);
@@ -284,6 +315,10 @@ class StudentRecordController extends Controller
     public function markCertificateDelivered(Request $request, Admission $admission): RedirectResponse
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_APPROVED) {
+            return back()->with('error', 'Certificates can only be delivered for approved admissions.');
+        }
 
         $validated = $request->validate([
             'certificate_delivery_notes' => ['nullable', 'string'],

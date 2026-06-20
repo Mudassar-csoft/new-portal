@@ -45,7 +45,7 @@ class CampusModuleScopeTest extends TestCase
             ->assertDontSee('Beta Registration');
 
         $this->actingAs($user)
-            ->get(route('admission.status'))
+            ->get(route('admission.status', ['scope' => 'approved']))
             ->assertOk()
             ->assertSee('Alpha Admission')
             ->assertDontSee('Beta Admission');
@@ -89,7 +89,7 @@ class CampusModuleScopeTest extends TestCase
         $user = $this->createScopedUser($alphaCampus, [$admissionView]);
 
         $this->actingAs($user)
-            ->get(route('admission.status'))
+            ->get(route('admission.status', ['scope' => 'approved']))
             ->assertOk()
             ->assertSee('Aligned Admission')
             ->assertSee($program->title)
@@ -99,6 +99,48 @@ class CampusModuleScopeTest extends TestCase
             ->assertDontSee($batch->name)
             ->assertDontSee($batch->code)
             ->assertDontSee($admission->city);
+    }
+
+    public function test_all_admissions_page_supports_today_and_current_month_filters(): void
+    {
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram();
+        $batch = $this->createBatch($campus, $program, 'ALP-B7');
+
+        $todayRegistration = $this->createRegistration($campus, $program, 'Today Admission Registration', '03100000071');
+        $monthRegistration = $this->createRegistration($campus, $program, 'Month Admission Registration', '03100000072');
+        $oldRegistration = $this->createRegistration($campus, $program, 'Old Admission Registration', '03100000073');
+        $currentMonthButNotToday = now()->day > 1
+            ? now()->copy()->subDay()
+            : now()->copy()->addDay();
+
+        $this->createAdmission($campus, $program, $batch, $todayRegistration, 'Today Admission', '03200000071', [
+            'admission_date' => now()->toDateString(),
+        ]);
+        $this->createAdmission($campus, $program, $batch, $monthRegistration, 'Month Admission', '03200000072', [
+            'admission_date' => $currentMonthButNotToday->toDateString(),
+        ]);
+        $this->createAdmission($campus, $program, $batch, $oldRegistration, 'Old Admission', '03200000073', [
+            'admission_date' => now()->copy()->subMonth()->toDateString(),
+        ]);
+
+        $user = $this->createScopedUser($campus, [$admissionView]);
+
+        $this->actingAs($user)
+            ->get(route('admission.status', ['scope' => 'all', 'period' => 'today']))
+            ->assertOk()
+            ->assertSee('Today Admission')
+            ->assertDontSee('Month Admission')
+            ->assertDontSee('Old Admission');
+
+        $this->actingAs($user)
+            ->get(route('admission.status', ['scope' => 'all', 'period' => 'month']))
+            ->assertOk()
+            ->assertSee('Today Admission')
+            ->assertSee('Month Admission')
+            ->assertDontSee('Old Admission');
     }
 
     public function test_non_admin_registration_create_form_shows_all_campuses_and_keeps_selected_campus(): void
@@ -506,6 +548,7 @@ class CampusModuleScopeTest extends TestCase
             'discount_percent' => 0,
             'discounted_fee' => 50000,
             'fee_type' => 'full',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
             'student_status' => 'enrolled',
             'status_updated_at' => now(),
             'remarks' => 'Campus scoped admission record.',

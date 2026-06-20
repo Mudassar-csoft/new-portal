@@ -25,7 +25,7 @@ class StudentAttendanceController extends Controller
     {
         $attendanceDate = $request->input('attendance_date', now()->toDateString());
 
-        $baseAdmissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+        $baseAdmissions = $this->scopeQueryToUserCampus(Admission::query()->approved(), $request->user())
             ->with([
                 'campus:id,code,name',
                 'program:id,code,title,name',
@@ -261,7 +261,7 @@ class StudentAttendanceController extends Controller
         $programCode = $this->resolveValue($row, ['program_code']);
         $batchCode = $this->resolveValue($row, ['batch_code']);
 
-        $query = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
+        $query = $this->scopeQueryToUserCampus(Admission::query()->approved(), auth()->user())
             ->with(['batch:id,code,start_time']);
 
         if ($rollNumber) {

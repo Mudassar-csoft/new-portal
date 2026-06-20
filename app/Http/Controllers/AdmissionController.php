@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
@@ -528,6 +529,7 @@ class AdmissionController extends Controller
                     'discounted_fee' => $discountedFee,
                     'fee_type' => $validated['fee_type'],
                     'student_status' => 'enrolled',
+                    'approval_status' => Admission::APPROVAL_STATUS_PENDING,
                     'status_updated_at' => now(),
                     'remarks' => $validated['remarks'],
                 ]
@@ -644,20 +646,137 @@ class AdmissionController extends Controller
         }
     }
 
-    public function status(): View
+    public function status(Request $request): View
     {
-        $admissions = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
+        $activeScope = (string) $request->query('scope', 'pending');
+        if (!in_array($activeScope, ['all', 'pending', 'requested', 'approved'], true)) {
+            $activeScope = 'pending';
+        }
+
+        $activePeriod = $activeScope === 'all'
+            ? (string) $request->query('period', 'all')
+            : 'all';
+        if (!in_array($activePeriod, ['all', 'today', 'month', 'year'], true)) {
+            $activePeriod = 'all';
+        }
+
+        $baseQuery = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
             ->with(['program', 'campus'])
             ->withCount([
                 'feeCollections as pending_admission_fee_count' => fn ($query) => $query
                     ->where('fee_type', 'admission')
                     ->where('status', 'pending'),
-            ])
+            ]);
+
+        $scopeCounts = [
+            'all' => (clone $baseQuery)->count(),
+            'pending' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_PENDING)->count(),
+            'requested' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)->count(),
+            'approved' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_APPROVED)->count(),
+        ];
+
+        $periodCounts = [
+            'all' => $scopeCounts['all'],
+            'today' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'today')->count(),
+            'month' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'month')->count(),
+            'year' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'year')->count(),
+        ];
+
+        $admissions = (clone $baseQuery)
+            ->when($activeScope === 'pending', fn ($query) => $query->where('approval_status', Admission::APPROVAL_STATUS_PENDING))
+            ->when($activeScope === 'requested', fn ($query) => $query->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED))
+            ->when($activeScope === 'approved', fn ($query) => $query->where('approval_status', Admission::APPROVAL_STATUS_APPROVED))
+            ->when($activeScope === 'all', fn ($query) => $this->applyAdmissionPeriodFilter($query, $activePeriod))
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
             ->get();
 
-        return view('admission.status', compact('admissions'));
+        return view('admission.status', compact('admissions', 'activeScope', 'scopeCounts', 'activePeriod', 'periodCounts'));
+    }
+
+    public function uploadDocuments(Request $request, Admission $admission): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update admissions from another campus.');
+        abort_unless(
+            $request->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false,
+            403
+        );
+
+        $currentStatus = $admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED;
+
+        if ($currentStatus === Admission::APPROVAL_STATUS_APPROVED) {
+            return back()->with('error', 'Approved admissions cannot be sent for approval again.');
+        }
+
+        if ($currentStatus !== Admission::APPROVAL_STATUS_PENDING) {
+            return back()->with('error', 'Only pending admissions can upload documents for approval.');
+        }
+
+        $validated = $request->validate([
+            'document_cnic_front' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_admission_form' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_paid_slip' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ]);
+
+        $directory = 'admissions/' . $admission->id;
+        $oldPaths = array_filter([
+            $admission->document_cnic_front_path,
+            $admission->document_admission_form_path,
+            $admission->document_paid_slip_path,
+        ]);
+
+        $newPaths = [
+            'document_cnic_front_path' => $validated['document_cnic_front']->store($directory, 'public'),
+            'document_admission_form_path' => $validated['document_admission_form']->store($directory, 'public'),
+            'document_paid_slip_path' => $validated['document_paid_slip']->store($directory, 'public'),
+        ];
+
+        foreach ($oldPaths as $oldPath) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $admission->update(array_merge($newPaths, [
+            'approval_status' => Admission::APPROVAL_STATUS_REQUESTED,
+            'documents_uploaded_at' => now(),
+            'documents_uploaded_by' => $request->user()?->id,
+            'approval_reviewed_at' => null,
+            'approval_reviewed_by' => null,
+        ]));
+
+        return back()->with('status', 'Admission documents uploaded and sent for approval.');
+    }
+
+    public function reviewApproval(Request $request, Admission $admission): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to review admissions from another campus.');
+        abort_unless($request->user()?->isAdmin() ?? false, 403);
+
+        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_REQUESTED) {
+            return back()->with('error', 'Only admissions waiting for approval can be reviewed.');
+        }
+
+        $validated = $request->validate([
+            'review_action' => ['required', 'in:approve,revert'],
+            'approval_remarks' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $nextStatus = $validated['review_action'] === 'approve'
+            ? Admission::APPROVAL_STATUS_APPROVED
+            : Admission::APPROVAL_STATUS_PENDING;
+
+        $admission->update([
+            'approval_status' => $nextStatus,
+            'approval_reviewed_at' => now(),
+            'approval_reviewed_by' => $request->user()?->id,
+            'approval_remarks' => $validated['approval_remarks'],
+        ]);
+
+        return back()->with(
+            'status',
+            $nextStatus === Admission::APPROVAL_STATUS_APPROVED
+                ? 'Admission approved successfully.'
+                : 'Admission reverted to pending successfully.'
+        );
     }
 
     public function voucher(Request $request, Admission $admission): View
@@ -987,5 +1106,45 @@ class AdmissionController extends Controller
         });
 
         return $query->exists();
+    }
+
+    private function applyAdmissionPeriodFilter($query, string $period)
+    {
+        return match ($period) {
+            'today' => $query->where(function ($builder) {
+                $builder
+                    ->whereDate('admission_date', today())
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('admission_date')
+                            ->whereDate('created_at', today());
+                    });
+            }),
+            'month' => $query->where(function ($builder) {
+                $builder
+                    ->where(function ($nested) {
+                        $nested
+                            ->whereNotNull('admission_date')
+                            ->whereYear('admission_date', now()->year)
+                            ->whereMonth('admission_date', now()->month);
+                    })
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('admission_date')
+                            ->whereYear('created_at', now()->year)
+                            ->whereMonth('created_at', now()->month);
+                    });
+            }),
+            'year' => $query->where(function ($builder) {
+                $builder
+                    ->whereYear('admission_date', now()->year)
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('admission_date')
+                            ->whereYear('created_at', now()->year);
+                    });
+            }),
+            default => $query,
+        };
     }
 }

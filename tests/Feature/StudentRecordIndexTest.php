@@ -196,6 +196,7 @@ class StudentRecordIndexTest extends TestCase
             'discount_percent' => 0,
             'discounted_fee' => 50000,
             'fee_type' => 'full',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
             'student_status' => 'enrolled',
             'status_updated_at' => now(),
             'remarks' => 'Student record index test admission.',

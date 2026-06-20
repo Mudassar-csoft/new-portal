@@ -9,3 +9,5 @@ Route::post('/admission', [AdmissionController::class, 'store'])->middleware('pe
 Route::get('/admission/{admission}/voucher', [AdmissionController::class, 'voucher'])->middleware('permission:admission.view')->name('admission.voucher');
 
 Route::get('/admission/status', [AdmissionController::class, 'status'])->middleware('permission:admission.view')->name('admission.status');
+Route::post('/admission/{admission}/documents', [AdmissionController::class, 'uploadDocuments'])->middleware('permission:admission.create,admission.update')->name('admission.documents.upload');
+Route::post('/admission/{admission}/review', [AdmissionController::class, 'reviewApproval'])->middleware(['permission:admission.update,admission.view', 'admin'])->name('admission.review');
