@@ -77,6 +77,11 @@ class RegistrationController extends Controller
             if (!$lead) {
                 $lead = Lead::query()
                     ->where('phone', $validated['phone'])
+                    ->where(function ($query) {
+                        $query->where('type', 'training')
+                            ->orWhereNull('type');
+                    })
+                    ->latest('id')
                     ->first();
             }
             if (!$lead) {
@@ -84,7 +89,7 @@ class RegistrationController extends Controller
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],
                     'created_by' => $request->user()?->id,
-                    'type' => null,
+                    'type' => 'training',
                     'name' => $validated['student_name'],
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],
@@ -168,6 +173,7 @@ class RegistrationController extends Controller
                 if ($lead) {
                     $leadStatus = $lead->status === 'enrolled' ? 'enrolled' : 'registered';
                     $lead->update([
+                        'type' => blank($lead->type) ? 'training' : $lead->type,
                         'status' => $leadStatus,
                         'campus_id' => $registration->campus_id,
                         'program_id' => $registration->program_id,

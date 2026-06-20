@@ -302,6 +302,11 @@ class AdmissionController extends Controller
             if (!$lead) {
                 $lead = Lead::query()
                     ->where('phone', $validated['phone'])
+                    ->where(function ($query) {
+                        $query->where('type', 'training')
+                            ->orWhereNull('type');
+                    })
+                    ->latest('id')
                     ->first();
             }
 
@@ -316,7 +321,7 @@ class AdmissionController extends Controller
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],
                     'created_by' => $request->user()?->id,
-                    'type' => null,
+                    'type' => 'training',
                     'name' => $validated['student_name'],
                     'email' => $validated['email'],
                     'phone' => $validated['phone'],
@@ -356,6 +361,10 @@ class AdmissionController extends Controller
                     'phone' => $validated['phone'],
                     'city' => $validated['city'],
                 ];
+
+                if (blank($lead->type)) {
+                    $leadUpdates['type'] = 'training';
+                }
 
                 if (! $isAnotherCourseEnrollment) {
                     $leadUpdates['campus_id'] = $validated['campus_id'];

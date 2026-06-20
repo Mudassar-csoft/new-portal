@@ -282,6 +282,62 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
         ]);
     }
 
+    public function test_direct_admission_auto_creates_a_training_lead_and_links_the_registration(): void
+    {
+        $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
+
+        $campus = $this->createCampus('Zeta Campus', 'ZET');
+        $program = $this->createProgram('TRN408', 'Direct Admission Course');
+        $batch = $this->createBatch($campus, $program, 'ZET-B1');
+        $user = $this->createScopedUser($campus, [$admissionCreate]);
+
+        $this->actingAs($user)
+            ->postJson(route('admission.store'), [
+                'campus_id' => $campus->id,
+                'program_id' => $program->id,
+                'batch_id' => $batch->id,
+                'student_name' => 'Direct Admission Student',
+                'phone' => '03200000151',
+                'guardian_name' => 'Guardian Direct',
+                'guardian_phone' => '03200000555',
+                'cnic' => '3520212345679',
+                'passport_number' => 'PASS1511',
+                'email' => 'direct.admission.student@example.test',
+                'education' => 'Intermediate',
+                'date_of_birth' => '2001-01-01',
+                'gender' => 'male',
+                'country' => 'Pakistan',
+                'city' => 'Lahore',
+                'area' => 'Johar Town',
+                'postal_address' => '151 Direct Street, Lahore',
+                'admission_date' => now()->toDateString(),
+                'fee_type' => 'full',
+                'remarks' => 'Created directly from admission form.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'Admission created successfully.');
+
+        $lead = Lead::query()->where('phone', '03200000151')->firstOrFail();
+        $registration = Registration::query()->where('phone', '03200000151')->firstOrFail();
+        $admission = Admission::query()->where('phone', '03200000151')->firstOrFail();
+
+        $this->assertSame('training', $lead->type);
+        $this->assertSame('enrolled', $lead->status);
+        $this->assertSame($lead->id, $registration->lead_id);
+        $this->assertSame($registration->id, $admission->registration_id);
+
+        $this->assertDatabaseHas('lead_followups', [
+            'lead_id' => $lead->id,
+            'stage' => 'registered',
+            'lead_status' => 'registered',
+        ]);
+        $this->assertDatabaseHas('lead_followups', [
+            'lead_id' => $lead->id,
+            'stage' => 'enroll',
+            'lead_status' => 'enrolled',
+        ]);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([
