@@ -63,19 +63,7 @@
                 @endforeach
             </div>
 
-            @if($activeScope === 'all')
-                <div class="follow-tab-bar follow-tab-bar--sub">
-                    @foreach ($periods as $periodKey => $periodLabel)
-                        <a
-                            href="{{ route('admission.status', ['scope' => 'all', 'period' => $periodKey]) }}"
-                            class="follow-tab follow-tab--sub {{ $activePeriod === $periodKey ? 'active' : '' }}"
-                        >
-                            <span class="label-text">{{ $periodLabel }}</span>
-                            <span class="badge badge-light">{{ (int) ($periodCounts[$periodKey] ?? 0) }}</span>
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+            
 
             <div class="box-typical-body panel-body follow-body">
                 <div class="follow-controls">
@@ -178,8 +166,8 @@
                         </div>
                     </div>
                     <div class="admission-modal__footer">
-                        <button type="button" class="btn btn-default" data-admission-modal-close>Cancel</button>
-                        <button type="submit" class="btn btn-primary">Upload Documents</button>
+                        <button type="submit" class="btn btn-primary-outline">Upload Documents</button>
+                        <button type="button" class="btn btn-danger-outline" data-admission-modal-close>Cancel</button>
                     </div>
                 </form>
             </div>
@@ -213,10 +201,10 @@
                         </div>
                     </div>
                     <div class="admission-modal__footer admission-modal__footer--split">
-                        <button type="button" class="btn btn-default" data-admission-review-close>Cancel</button>
+                        <button type="button" class="btn btn-danger-outline" data-admission-review-close>Cancel</button>
                         <div class="admission-modal__actions">
-                            <button type="submit" name="review_action" value="revert" class="btn btn-warning">Revert</button>
-                            <button type="submit" name="review_action" value="approve" class="btn btn-success">Approve</button>
+                            <button type="submit" name="review_action" value="revert" class="btn btn-danger-outline">Revert</button>
+                            <button type="submit" name="review_action" value="approve" class="btn btn-primary-outline">Approve</button>
                         </div>
                     </div>
                 </form>

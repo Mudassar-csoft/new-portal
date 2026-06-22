@@ -196,9 +196,9 @@
 
             <select 
                 name="details[english_tests][]" 
-                class="form-control @error('details.english_tests') is-invalid @enderror"
-                multiple
-            >
+                class="form-control select2 @error('details.english_tests') is-invalid @enderror"
+                multiple  >
+                
                 <option value="IELTS">IELTS</option>
                 <option value="TOEFL">TOEFL</option>
                 <option value="PTE">PTE</option>
@@ -328,4 +328,14 @@
     border-radius: 50%;
     background-color: #00a8ff;
 }
+.select2-selection__rendered {
+    border: solid 1px #d8e2e7;}
 </style>
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "Select English Tests",
+        allowClear: true
+    });
+});
+</script>

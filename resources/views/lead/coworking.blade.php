@@ -62,7 +62,7 @@
 			@enderror
 		</div>
 		<div class="form-group col-lg-3 col-md-6">
-			<label class="form-label required">Preferred Branch</label>
+			<label class="form-label required">Preferred Location</label>
 			<select name="details[preferred_location]" class="form-control @error('details.preferred_location') is-invalid @enderror">
 				<option value="">- Select Branch -</option>
 				@foreach($campuses as $campus)

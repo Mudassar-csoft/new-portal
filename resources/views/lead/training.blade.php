@@ -117,7 +117,7 @@
     <div class="row mt-1" >
         <!-- Email -->
         <div class="col-md-6 col-lg-3">
-            <label class="form-label small fw-semibold text-dark required">
+            <label class="form-label small fw-semibold text-dark">
                 Email Address
             </label>
             <input type="email"
