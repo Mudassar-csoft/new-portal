@@ -100,11 +100,12 @@ class UserController extends Controller
 
         $campuses = Campus::orderBy('name')->get();
         $portalEmployees = HrEmployee::query()
+            ->with('campus:id,code,name')
             ->where('portal_user', true)
             ->whereNull('user_id')
             ->orderBy('first_name')
             ->orderBy('last_name')
-            ->get(['id', 'campus_id', 'first_name', 'last_name']);
+            ->get(['id', 'campus_id', 'first_name', 'last_name', 'email']);
         $roles = Role::orderBy('name')->get();
 
         return view('user.create', [
@@ -121,12 +122,9 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'employee_id' => [
-                'nullable',
+                'required',
                 Rule::exists('hr_employees', 'id')->where(fn ($query) => $query->where('portal_user', true)->whereNull('user_id')),
             ],
-            'campus_id' => ['nullable', 'exists:campuses,id'],
-            'name' => ['nullable', 'required_without:employee_id', 'string', 'max:255'],
-            'email_local' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._%+-]+$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
             'roles' => ['sometimes', 'array', 'max:1'],
@@ -135,31 +133,35 @@ class UserController extends Controller
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
-        $email = $this->buildInstitutionEmail($validated['email_local']);
-        if ($this->emailExists($email)) {
+        $roleIds = $this->singleRoleIds($validated);
+        $employee = HrEmployee::query()
+            ->whereKey($validated['employee_id'])
+            ->where('portal_user', true)
+            ->whereNull('user_id')
+            ->firstOrFail();
+
+        $resolvedName = $employee->full_name;
+        $resolvedEmail = trim((string) $employee->email);
+        $resolvedCampusId = $employee->campus_id;
+
+        if ($resolvedEmail === '' || !filter_var($resolvedEmail, FILTER_VALIDATE_EMAIL)) {
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['email_local' => 'This email address is already taken.']);
+                ->withErrors(['employee_id' => 'Selected employee must have a valid email address.']);
         }
 
-        $roleIds = $this->singleRoleIds($validated);
-        $employee = !empty($validated['employee_id'])
-            ? HrEmployee::query()
-                ->whereKey($validated['employee_id'])
-                ->where('portal_user', true)
-                ->whereNull('user_id')
-                ->firstOrFail()
-            : null;
-
-        $resolvedName = $employee?->full_name ?: $validated['name'];
-        $resolvedCampusId = $employee?->campus_id ?? ($validated['campus_id'] ?? null);
+        if ($this->emailExists($resolvedEmail)) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['employee_id' => 'A portal user already exists with this employee email address.']);
+        }
 
         try {
-            $user = DB::transaction(function () use ($employee, $email, $request, $resolvedCampusId, $resolvedName, $roleIds, $validated) {
+            $user = DB::transaction(function () use ($employee, $request, $resolvedCampusId, $resolvedEmail, $resolvedName, $roleIds, $validated) {
                 $user = User::create([
                     'campus_id' => $resolvedCampusId,
                     'name' => $resolvedName,
-                    'email' => $email,
+                    'email' => $resolvedEmail,
                     'password' => Hash::make($validated['password']),
                 ]);
 

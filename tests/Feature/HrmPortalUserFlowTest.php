@@ -30,6 +30,7 @@ class HrmPortalUserFlowTest extends TestCase
             'employee_code' => 'CIFSD01-13-26-0001',
             'first_name' => 'Ali',
             'last_name' => 'Khan',
+            'email' => 'ali.khan@example.com',
             'joining_date' => '2026-06-13',
             'employment_type' => 'full_time',
             'status' => 'active',
@@ -41,6 +42,7 @@ class HrmPortalUserFlowTest extends TestCase
             'employee_code' => 'CIFSD01-13-26-0002',
             'first_name' => 'Sara',
             'last_name' => 'Noor',
+            'email' => 'sara.noor@example.com',
             'joining_date' => '2026-06-13',
             'employment_type' => 'full_time',
             'status' => 'active',
@@ -50,6 +52,9 @@ class HrmPortalUserFlowTest extends TestCase
             ->get(route('users.create'))
             ->assertOk()
             ->assertSee('Ali Khan')
+            ->assertSee('Email Address')
+            ->assertSee('Campus')
+            ->assertDontSee('Custom Name')
             ->assertDontSee('Sara Noor');
 
         $this->actingAs($admin)
@@ -63,7 +68,7 @@ class HrmPortalUserFlowTest extends TestCase
             ->assertRedirect(route('users.index'))
             ->assertSessionHasNoErrors();
 
-        $user = User::query()->where('email', 'ali.khan@career.edu.pk')->firstOrFail();
+        $user = User::query()->where('email', 'ali.khan@example.com')->firstOrFail();
 
         $this->assertSame('Ali Khan', $user->name);
         $this->assertSame($campus->id, $user->campus_id);

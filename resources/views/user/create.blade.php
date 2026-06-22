@@ -36,7 +36,12 @@
                             >
                                 <option value="">- Select Full Name -</option>
                                 @foreach($portalEmployees as $employee)
-                                    <option value="{{ $employee->id }}" data-campus-id="{{ $employee->campus_id }}" @selected((string) $selectedEmployeeId === (string) $employee->id)>
+                                    <option
+                                        value="{{ $employee->id }}"
+                                        data-email="{{ $employee->email }}"
+                                        data-campus-label="{{ $employee->campus?->code ?: ($employee->campus?->name ?: '') }}"
+                                        @selected((string) $selectedEmployeeId === (string) $employee->id)
+                                    >
                                         {{ $employee->full_name }}
                                     </option>
                                 @endforeach
@@ -49,47 +54,39 @@
                             @endif
                         </div>
                     </div>
-                    <div class="user-form-row" id="manual-name-row">
+                    <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="name" class="form-label-role required">Custom Name</label>
+                            <label for="employee_email" class="form-label-role">Email Address</label>
                         </div>
                         <div class="user-form-field">
-                            <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                class="form-control user-input @error('name') is-invalid @enderror"
-                                placeholder="Alex Morgan"
-                                value="{{ old('name') }}"
-                            >
-                            @error('name')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <div class="email-shell">
+                                <input
+                                    type="text"
+                                    id="employee_email"
+                                    class="form-control user-input"
+                                    placeholder="Select employee first"
+                                    value=""
+                                    inputmode="email"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                    readonly
+                                >
+                            </div>
                         </div>
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email_local" class="form-label-role required">Email Address</label>
+                            <label for="employee_campus" class="form-label-role">Campus</label>
                         </div>
                         <div class="user-form-field">
-                            <div class="email-shell @error('email_local') has-error @enderror">
-                                <input
-                                    type="text"
-                                    name="email_local"
-                                    id="email_local"
-                                    class="form-control user-input email-local-input @error('email_local') is-invalid @enderror"
-                                    placeholder="admin"
-                                    value="{{ old('email_local') }}"
-                                    inputmode="email"
-                                    autocapitalize="none"
-                                    spellcheck="false"
-                                    required
-                                >
-                                <span class="email-domain">{{ '@' . $emailDomain }}</span>
-                            </div>
-                            @error('email_local')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <input
+                                type="text"
+                                id="employee_campus"
+                                class="form-control user-input"
+                                placeholder="Select employee first"
+                                value=""
+                                readonly
+                            >
                         </div>
                     </div>
                     <div class="user-form-row">
@@ -148,28 +145,6 @@
                         </div>
                     </div>
                     <div class="user-form-row">
-                        <div class="user-form-label">
-                            <label for="campus_id" class="form-label-role">Campus</label>
-                        </div>
-                        <div class="user-form-field">
-                            <select
-                                name="campus_id"
-                                id="campus_id"
-                                class="form-control select2 @error('campus_id') is-invalid @enderror"
-                                style="width: 100%; background:white; border: 1px solid #d2dee9 !important;"
-                                data-placeholder="- Select Campus -"
-                            >
-                                <option value="">- Select Campus -</option>
-                                @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected((string) old('campus_id') === (string) $campus->id)>{{ $campus->code ?: $campus->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('campus_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        </div>
-                        <div class="user-form-row">
                             <div class="user-form-label">
                                 <label for="role_id" class="form-label-role">Roles</label>
                             </div>
@@ -616,36 +591,19 @@
 
             function syncEmployeeSelection() {
                 const employeeSelect = document.getElementById('employee_id');
-                const manualNameRow = document.getElementById('manual-name-row');
-                const nameInput = document.getElementById('name');
-                const campusSelect = document.getElementById('campus_id');
+                const emailInput = document.getElementById('employee_email');
+                const campusInput = document.getElementById('employee_campus');
 
-                if (!employeeSelect || !manualNameRow || !nameInput) return;
+                if (!employeeSelect || !emailInput || !campusInput) return;
 
                 const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
-                const employeeSelected = employeeSelect.value !== '';
-                manualNameRow.style.display = employeeSelected ? 'none' : '';
-                nameInput.required = !employeeSelected;
-
-                if (employeeSelected && selectedOption?.dataset.campusId && campusSelect) {
-                    if (window.jQuery && $.fn.select2) {
-                        $('#campus_id').val(selectedOption.dataset.campusId).trigger('change');
-                    } else {
-                        campusSelect.value = selectedOption.dataset.campusId;
-                    }
-                }
+                emailInput.value = selectedOption?.dataset.email || '';
+                campusInput.value = selectedOption?.dataset.campusLabel || '';
             }
 
             document.addEventListener('DOMContentLoaded', function () {
                 if (window.jQuery && $.fn.select2) {
                     $('#employee_id').select2({
-                        width: '100%',
-                        dropdownParent: $('.user-card'),
-                        dropdownAutoWidth: false,
-                        minimumResultsForSearch: 0,
-                    });
-
-                    $('#campus_id').select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,

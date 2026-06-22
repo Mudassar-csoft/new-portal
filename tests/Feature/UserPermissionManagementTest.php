@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Campus;
+use App\Models\HrEmployee;
 use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
@@ -47,10 +48,13 @@ class UserPermissionManagementTest extends TestCase
         $response = $this->actingAs($admin)->get(route('users.create'));
 
         $response->assertOk();
-        $response->assertSee('All Campuses');
+        $response->assertSee('Full Name');
+        $response->assertSee('Email Address');
+        $response->assertSee('Campus');
         $response->assertSee('Password');
         $response->assertSee('Confirm Password');
         $response->assertSee('Select role');
+        $response->assertDontSee('Custom Name');
         $response->assertDontSee('Direct Permissions');
         $response->assertDontSee('Permissions are assigned manually by module. Role-based access stays separate and is not auto-selected here.');
     }
@@ -150,9 +154,15 @@ class UserPermissionManagementTest extends TestCase
             'slug' => 'lead.followup.view',
         ]);
 
+        $campus = Campus::query()->create([
+            'name' => 'Permissions Campus',
+            'slug' => 'permissions-campus',
+            'code' => 'PC',
+        ]);
+        $employee = $this->createPortalEmployee($campus, 'Permissions User', 'permissions@example.com');
+
         $response = $this->actingAs($admin)->post(route('users.store'), [
-            'name' => 'Permissions User',
-            'email' => 'permissions@example.com',
+            'employee_id' => $employee->id,
             'password' => 'secret12345',
             'password_confirmation' => 'secret12345',
             'role_id' => $memberRole->id,
@@ -313,9 +323,15 @@ class UserPermissionManagementTest extends TestCase
             'slug' => 'inventory.view',
         ]);
 
+        $campus = Campus::query()->create([
+            'name' => 'Admin Campus',
+            'slug' => 'admin-campus',
+            'code' => 'AC',
+        ]);
+        $employee = $this->createPortalEmployee($campus, 'Admin Permissions User', 'admin-permissions@example.com');
+
         $response = $this->actingAs($admin)->post(route('users.store'), [
-            'name' => 'Admin Permissions User',
-            'email' => 'admin-permissions@example.com',
+            'employee_id' => $employee->id,
             'password' => 'secret12345',
             'password_confirmation' => 'secret12345',
             'role_id' => $adminRole->id,
@@ -437,5 +453,22 @@ class UserPermissionManagementTest extends TestCase
                 'action' => $action,
             ]
         );
+    }
+
+    private function createPortalEmployee(Campus $campus, string $fullName, string $email): HrEmployee
+    {
+        [$firstName, $lastName] = array_pad(explode(' ', $fullName, 2), 2, null);
+
+        return HrEmployee::query()->create([
+            'campus_id' => $campus->id,
+            'portal_user' => true,
+            'employee_code' => $campus->code . '-13-26-0001',
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'joining_date' => '2026-06-13',
+            'employment_type' => 'full_time',
+            'status' => 'active',
+        ]);
     }
 }
