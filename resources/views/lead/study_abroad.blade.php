@@ -192,12 +192,13 @@
 
       <!-- English Proficiency Tests -->
       <div class="form-group col-lg-3 col-md-6">
-             <label class="form-label required">English Proficiency Test(s)</label>
+             <label class="form-label  required">English Proficiency Test(s)</label>
 
             <select 
+                id="english-proficiency-tests-select"
                 name="details[english_tests][]" 
-                class="form-control select2 @error('details.english_tests') is-invalid @enderror"
-                multiple  >
+                class="form-control @error('details.english_tests') is-invalid @enderror"
+                multiple >
                 
                 <option value="IELTS">IELTS</option>
                 <option value="TOEFL">TOEFL</option>
@@ -332,10 +333,35 @@
     border: solid 1px #d8e2e7;}
 </style>
 <script>
-$(document).ready(function() {
-    $('.select2').select2({
-        placeholder: "Select English Tests",
-        allowClear: true
-    });
-});
+(function() {
+    function initEnglishTests() {
+        var $el = $('#english-proficiency-tests-select');
+        if (!$el.length) {
+            return;
+        }
+
+        if (window.jQuery && $.fn.select2) {
+            $el.select2({
+                width: '100%',
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                language: {
+                    noResults: function() {
+                        return "No results found";
+                    }
+                }
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEnglishTests);
+    } else {
+        initEnglishTests();
+    }
+    
+    if (window.jQuery) {
+        $(document).on('ajaxComplete', initEnglishTests);
+    }
+})();
 </script>

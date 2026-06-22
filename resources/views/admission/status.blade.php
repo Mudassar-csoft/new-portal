@@ -153,62 +153,74 @@
 
                         <div class="form-group">
                             <label>CNIC Front Side <span class="text-danger">*</span></label>
-                            <div class="admission-upload-tools">
-                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
-                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
-                            </div>
-                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" required>
-                            <div class="admission-preview-card is-empty" id="preview-cnic-front">
-                                <div class="admission-preview-card__empty">No file selected yet.</div>
+                            <div class="flex gap-4 " style="display:flex; align-items:center; gap:15px;">
+                                 <div class="admission-preview-card is-empty" id="preview-cnic-front">
+                                    <div class="admission-upload-tools">
+                                    <button type="button" class="btn btn-default btn-sm js-admission-scan mt-0" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
+                                </div>
+                                <!-- <div class="admission-preview-card__empty">No file selected yet.</div> -->
                                 <img class="admission-preview-card__image" alt="CNIC front side preview">
                                 <iframe class="admission-preview-card__frame" title="CNIC front side preview"></iframe>
                                 <div class="admission-preview-card__meta"></div>
                             </div>
+                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" style="width:350px;"required>
+                            
+                        </div>
+                        <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
                         </div>
 
                         <div class="form-group">
                             <label>CNIC Back Side <span class="text-danger">*</span></label>
-                            <div class="admission-upload-tools">
-                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_cnic_back" data-document-label="CNIC Back Side">Scanner</button>
-                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
-                            </div>
-                            <input type="file" name="document_cnic_back" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-back" required>
-                            <div class="admission-preview-card is-empty" id="preview-cnic-back">
-                                <div class="admission-preview-card__empty">No file selected yet.</div>
-                                <img class="admission-preview-card__image" alt="CNIC back side preview">
-                                <iframe class="admission-preview-card__frame" title="CNIC back side preview"></iframe>
+                             <div class="flex gap-4 " style="display:flex; align-items:center; gap:15px;">
+                                 <div class="admission-preview-card is-empty" id="preview-cnic-front">
+                                    <div class="admission-upload-tools">
+                                    <button type="button" class="btn btn-default btn-sm js-admission-scan mt-0" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
+                                </div>
+                                <!-- <div class="admission-preview-card__empty">No file selected yet.</div> -->
+                                <img class="admission-preview-card__image" alt="CNIC front side preview">
+                                <iframe class="admission-preview-card__frame" title="CNIC front side preview"></iframe>
                                 <div class="admission-preview-card__meta"></div>
                             </div>
+                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" style="width:350px;"required>
+                            
+                        </div>
+                        <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
                         </div>
 
                         <div class="form-group">
                             <label>Admission Form <span class="text-danger">*</span></label>
-                            <div class="admission-upload-tools">
-                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_admission_form" data-document-label="Admission Form">Scanner</button>
-                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
-                            </div>
-                            <input type="file" name="document_admission_form" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-admission-form" required>
-                            <div class="admission-preview-card is-empty" id="preview-admission-form">
-                                <div class="admission-preview-card__empty">No file selected yet.</div>
-                                <img class="admission-preview-card__image" alt="Admission form preview">
-                                <iframe class="admission-preview-card__frame" title="Admission form preview"></iframe>
+                            <div class="flex gap-4 " style="display:flex; align-items:center; gap:15px;">
+                                 <div class="admission-preview-card is-empty" id="preview-cnic-front">
+                                    <div class="admission-upload-tools">
+                                    <button type="button" class="btn btn-default btn-sm js-admission-scan mt-0" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
+                                </div>
+                                <!-- <div class="admission-preview-card__empty">No file selected yet.</div> -->
+                                <img class="admission-preview-card__image" alt="CNIC front side preview">
+                                <iframe class="admission-preview-card__frame" title="CNIC front side preview"></iframe>
                                 <div class="admission-preview-card__meta"></div>
                             </div>
+                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" style="width:350px;"required>
+                            
+                        </div>
+                        <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
                         </div>
 
                         <div class="form-group mb-0">
                             <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
-                            <div class="admission-upload-tools">
-                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_paid_slip" data-document-label="Paid Slip With Authorized Stamp">Scanner</button>
-                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
-                            </div>
-                            <input type="file" name="document_paid_slip" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-paid-slip" required>
-                            <div class="admission-preview-card is-empty" id="preview-paid-slip">
-                                <div class="admission-preview-card__empty">No file selected yet.</div>
-                                <img class="admission-preview-card__image" alt="Paid slip preview">
-                                <iframe class="admission-preview-card__frame" title="Paid slip preview"></iframe>
+                            <div class="flex gap-4 " style="display:flex; align-items:center; gap:15px;">
+                                 <div class="admission-preview-card is-empty" id="preview-cnic-front">
+                                    <div class="admission-upload-tools">
+                                    <button type="button" class="btn btn-default btn-sm js-admission-scan mt-0" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
+                                </div>
+                                <!-- <div class="admission-preview-card__empty">No file selected yet.</div> -->
+                                <img class="admission-preview-card__image" alt="CNIC front side preview">
+                                <iframe class="admission-preview-card__frame" title="CNIC front side preview"></iframe>
                                 <div class="admission-preview-card__meta"></div>
                             </div>
+                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" style="width:350px;"required>
+                            
+                        </div>
+                        <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
                         </div>
                     </div>
                     <div class="admission-modal__footer">
@@ -403,14 +415,16 @@
         }
 
         .admission-modal__notice {
-            margin-bottom: 16px;
+            margin-bottom: 5px;
         }
-
+    .alert{
+        font-size:12px !important;
+    }
         .admission-upload-tools {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 0px;
             flex-wrap: wrap;
         }
 
@@ -421,8 +435,8 @@
         }
 
         .admission-preview-card {
-            margin-top: 10px;
-            padding: 10px;
+            margin-top: 2px;
+            padding: 6px;
             border: 1px solid #dbe3ec;
             border-radius: 6px;
             background: #f8fbff;
