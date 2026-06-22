@@ -148,13 +148,15 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
-                            <label class="form-label required d-block">Portal User</label>
-                            <label class="mr-3">
-                                <input type="radio" name="portal_user" value="1" @checked((string) old('portal_user', '0') === '1') required> Yes
-                            </label>
-                            <label>
-                                <input type="radio" name="portal_user" value="0" @checked((string) old('portal_user', '0') === '0') required> No
-                            </label>
+                            <div class="d-flex align-items-center flex-wrap" style="gap: 12px; min-height: 38px;">
+                                <label class="form-label required mb-0">Portal User</label>
+                                <label class="mb-0">
+                                    <input type="radio" name="portal_user" value="1" @checked((string) old('portal_user', '0') === '1') required> Yes
+                                </label>
+                                <label class="mb-0">
+                                    <input type="radio" name="portal_user" value="0" @checked((string) old('portal_user', '0') === '0') required> No
+                                </label>
+                            </div>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">Joining Date</label>
