@@ -4,13 +4,16 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campus;
+use App\Models\HrEmployee;
 use App\Models\User;
 use App\Models\User\Permission;
 use App\Models\User\Role;
 use App\Support\PermissionCatalog;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -96,10 +99,17 @@ class UserController extends Controller
         $this->ensureAdminAccess();
 
         $campuses = Campus::orderBy('name')->get();
+        $portalEmployees = HrEmployee::query()
+            ->where('portal_user', true)
+            ->whereNull('user_id')
+            ->orderBy('first_name')
+            ->orderBy('last_name')
+            ->get(['id', 'campus_id', 'first_name', 'last_name']);
         $roles = Role::orderBy('name')->get();
 
         return view('user.create', [
             'campuses' => $campuses,
+            'portalEmployees' => $portalEmployees,
             'roles' => $roles,
             'emailDomain' => self::EMAIL_DOMAIN,
         ]);
@@ -110,8 +120,12 @@ class UserController extends Controller
         $this->ensureAdminAccess();
 
         $validated = $request->validate([
+            'employee_id' => [
+                'nullable',
+                Rule::exists('hr_employees', 'id')->where(fn ($query) => $query->where('portal_user', true)->whereNull('user_id')),
+            ],
             'campus_id' => ['nullable', 'exists:campuses,id'],
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'required_without:employee_id', 'string', 'max:255'],
             'email_local' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._%+-]+$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
@@ -129,24 +143,42 @@ class UserController extends Controller
         }
 
         $roleIds = $this->singleRoleIds($validated);
+        $employee = !empty($validated['employee_id'])
+            ? HrEmployee::query()
+                ->whereKey($validated['employee_id'])
+                ->where('portal_user', true)
+                ->whereNull('user_id')
+                ->firstOrFail()
+            : null;
+
+        $resolvedName = $employee?->full_name ?: $validated['name'];
+        $resolvedCampusId = $employee?->campus_id ?? ($validated['campus_id'] ?? null);
 
         try {
-            $user = User::create([
-                'campus_id' => $validated['campus_id'] ?? null,
-                'name' => $validated['name'],
-                'email' => $email,
-                'password' => Hash::make($validated['password']),
-            ]);
+            $user = DB::transaction(function () use ($employee, $email, $request, $resolvedCampusId, $resolvedName, $roleIds, $validated) {
+                $user = User::create([
+                    'campus_id' => $resolvedCampusId,
+                    'name' => $resolvedName,
+                    'email' => $email,
+                    'password' => Hash::make($validated['password']),
+                ]);
 
-            if ($roleIds !== []) {
-                $user->roles()->sync(
-                    collect($roleIds)->mapWithKeys(fn ($id) => [
-                        $id => ['assigned_by' => optional($request->user())->id],
-                    ])
-                );
-            }
+                if ($roleIds !== []) {
+                    $user->roles()->sync(
+                        collect($roleIds)->mapWithKeys(fn ($id) => [
+                            $id => ['assigned_by' => optional($request->user())->id],
+                        ])
+                    );
+                }
 
-            $this->syncUserPermissions($user, $roleIds, $validated['permissions'] ?? []);
+                $this->syncUserPermissions($user, $roleIds, $validated['permissions'] ?? []);
+
+                if ($employee) {
+                    $employee->update(['user_id' => $user->id]);
+                }
+
+                return $user;
+            });
 
             return redirect()->route('users.index')
                 ->with('status', 'User created.');

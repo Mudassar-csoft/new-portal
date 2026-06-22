@@ -13,6 +13,7 @@ class HrEmployee extends Model
 
     protected $fillable = [
         'user_id',
+        'portal_user',
         'campus_id',
         'department_id',
         'designation_id',
@@ -36,6 +37,7 @@ class HrEmployee extends Model
 
     protected $casts = [
         'joining_date' => 'date',
+        'portal_user' => 'boolean',
     ];
 
     public function user(): BelongsTo
@@ -113,4 +115,3 @@ class HrEmployee extends Model
         return trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
     }
 }
-

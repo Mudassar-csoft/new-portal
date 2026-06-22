@@ -5,6 +5,7 @@
 
 @section('content')
     @php
+        $selectedEmployeeId = old('employee_id');
         $selectedRoleId = old('role_id');
         if ($selectedRoleId === null) {
             $selectedRoleId = collect(old('roles', []))->filter()->first();
@@ -23,7 +24,34 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="name" class="form-label-role required">Full Name</label>
+                            <label for="employee_id" class="form-label-role">Full Name</label>
+                        </div>
+                        <div class="user-form-field">
+                            <select
+                                name="employee_id"
+                                id="employee_id"
+                                class="form-control select2 @error('employee_id') is-invalid @enderror"
+                                style="width: 100%; background:white; border: 1px solid #d2dee9 !important;"
+                                data-placeholder="- Select Full Name -"
+                            >
+                                <option value="">- Select Full Name -</option>
+                                @foreach($portalEmployees as $employee)
+                                    <option value="{{ $employee->id }}" data-campus-id="{{ $employee->campus_id }}" @selected((string) $selectedEmployeeId === (string) $employee->id)>
+                                        {{ $employee->full_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('employee_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                            @if($portalEmployees->isEmpty())
+                                <div class="field-error" style="color: #64748b;">No portal-user employees are available.</div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="user-form-row" id="manual-name-row">
+                        <div class="user-form-label">
+                            <label for="name" class="form-label-role required">Custom Name</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -33,7 +61,6 @@
                                 class="form-control user-input @error('name') is-invalid @enderror"
                                 placeholder="Alex Morgan"
                                 value="{{ old('name') }}"
-                                required
                             >
                             @error('name')
                                 <div class="field-error">{{ $message }}</div>
@@ -587,8 +614,37 @@
                 confirmation.value = generated;
             }
 
+            function syncEmployeeSelection() {
+                const employeeSelect = document.getElementById('employee_id');
+                const manualNameRow = document.getElementById('manual-name-row');
+                const nameInput = document.getElementById('name');
+                const campusSelect = document.getElementById('campus_id');
+
+                if (!employeeSelect || !manualNameRow || !nameInput) return;
+
+                const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
+                const employeeSelected = employeeSelect.value !== '';
+                manualNameRow.style.display = employeeSelected ? 'none' : '';
+                nameInput.required = !employeeSelected;
+
+                if (employeeSelected && selectedOption?.dataset.campusId && campusSelect) {
+                    if (window.jQuery && $.fn.select2) {
+                        $('#campus_id').val(selectedOption.dataset.campusId).trigger('change');
+                    } else {
+                        campusSelect.value = selectedOption.dataset.campusId;
+                    }
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 if (window.jQuery && $.fn.select2) {
+                    $('#employee_id').select2({
+                        width: '100%',
+                        dropdownParent: $('.user-card'),
+                        dropdownAutoWidth: false,
+                        minimumResultsForSearch: 0,
+                    });
+
                     $('#campus_id').select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
@@ -614,6 +670,9 @@
                         toggleVisibility(this);
                     });
                 });
+
+                document.getElementById('employee_id')?.addEventListener('change', syncEmployeeSelection);
+                syncEmployeeSelection();
 
                 document.querySelector('.generate-password')?.addEventListener('click', function () {
                     fillPasswordFields();

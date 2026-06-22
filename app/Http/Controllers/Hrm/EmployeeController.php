@@ -6,7 +6,6 @@ use App\Models\Campus;
 use App\Models\HrDepartment;
 use App\Models\HrDesignation;
 use App\Models\HrEmployee;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +22,7 @@ class EmployeeController extends BaseController
         $this->authorizeHrm($request, ['hrm_employee.view']);
 
         $employees = HrEmployee::query()
-            ->with(['campus', 'department', 'designation', 'manager'])
+            ->with(['campus', 'department', 'designation'])
             ->when($request->integer('campus_id'), fn ($q, $campusId) => $q->where('campus_id', $campusId))
             ->when($request->integer('department_id'), fn ($q, $departmentId) => $q->where('department_id', $departmentId))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
@@ -36,8 +35,6 @@ class EmployeeController extends BaseController
             'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name']),
             'departments' => HrDepartment::query()->orderBy('name')->get(['id', 'name']),
             'designations' => HrDesignation::query()->orderBy('name')->get(['id', 'name']),
-            'managers' => HrEmployee::query()->where('status', 'active')->orderBy('first_name')->limit(300)->get(['id', 'employee_code', 'first_name', 'last_name']),
-            'users' => User::query()->orderBy('name')->limit(300)->get(['id', 'name', 'email']),
             'filters' => [
                 'campus_id' => $request->integer('campus_id') ?: null,
                 'department_id' => $request->integer('department_id') ?: null,
@@ -51,11 +48,9 @@ class EmployeeController extends BaseController
         $this->authorizeHrm($request, ['hrm_employee.create']);
 
         $validated = $request->validate([
-            'user_id' => ['nullable', 'exists:users,id'],
             'campus_id' => ['required', 'exists:campuses,id'],
             'department_id' => ['nullable', 'exists:hr_departments,id'],
             'designation_id' => ['nullable', 'exists:hr_designations,id'],
-            'reporting_manager_id' => ['nullable', 'exists:hr_employees,id'],
             'first_name' => ['required', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
             'cnic' => ['nullable', 'string', 'max:30', Rule::unique('hr_employees', 'cnic')],
@@ -67,6 +62,7 @@ class EmployeeController extends BaseController
             'emergency_contact_relation' => ['nullable', 'string', 'max:60'],
             'joining_date' => ['required', 'date'],
             'employment_type' => ['nullable', 'string', 'max:40'],
+            'portal_user' => ['required', 'boolean'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
             'notes' => ['nullable', 'string'],
         ]);
@@ -86,11 +82,9 @@ class EmployeeController extends BaseController
         $this->authorizeHrm($request, ['hrm_employee.update']);
 
         $validated = $request->validate([
-            'user_id' => ['nullable', 'exists:users,id'],
             'campus_id' => ['nullable', 'exists:campuses,id'],
             'department_id' => ['nullable', 'exists:hr_departments,id'],
             'designation_id' => ['nullable', 'exists:hr_designations,id'],
-            'reporting_manager_id' => ['nullable', 'exists:hr_employees,id', Rule::notIn([$employee->id])],
             'first_name' => ['required', 'string', 'max:120'],
             'last_name' => ['nullable', 'string', 'max:120'],
             'cnic' => ['nullable', 'string', 'max:30', Rule::unique('hr_employees', 'cnic')->ignore($employee->id)],
@@ -102,6 +96,7 @@ class EmployeeController extends BaseController
             'emergency_contact_relation' => ['nullable', 'string', 'max:60'],
             'joining_date' => ['nullable', 'date'],
             'employment_type' => ['nullable', 'string', 'max:40'],
+            'portal_user' => ['nullable', 'boolean'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
             'notes' => ['nullable', 'string'],
         ]);

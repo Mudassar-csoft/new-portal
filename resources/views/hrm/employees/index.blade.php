@@ -75,7 +75,6 @@
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label">Employee Code</label>
                             <input type="text" class="form-control" value="Auto-generated on save" readonly disabled>
-                            <small class="text-muted">Format: CAMPUSCODE-DD-YY-0001</small>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">First Name</label>
@@ -149,22 +148,13 @@
                             </select>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
-                            <label class="form-label required">Reporting Manager</label>
-                            <select name="reporting_manager_id" class="form-control">
-                                <option value="">- Select -</option>
-                                @foreach($managers as $manager)
-                                    <option value="{{ $manager->id }}">{{ $manager->employee_code ?: 'EMP' }} - {{ trim($manager->first_name . ' ' . $manager->last_name) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-4 col-lg-3 ">
-                            <label class="form-label required">System User</label>
-                            <select name="user_id" class="form-control">
-                                <option value="">- Select -</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                                @endforeach
-                            </select>
+                            <label class="form-label required d-block">Portal User</label>
+                            <label class="mr-3">
+                                <input type="radio" name="portal_user" value="1" @checked((string) old('portal_user', '0') === '1') required> Yes
+                            </label>
+                            <label>
+                                <input type="radio" name="portal_user" value="0" @checked((string) old('portal_user', '0') === '0') required> No
+                            </label>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">Joining Date</label>
@@ -210,7 +200,7 @@
                                 <th>Contact</th>
                                 <th>Campus</th>
                                 <th>Department / Designation</th>
-                                <th>Manager</th>
+                                <th>Portal User</th>
                                 <th>Joining</th>
                                 <th>Status</th>
                                 <th>Quick Update</th>
@@ -225,7 +215,7 @@
                                     <td>{{ $employee->contact_no ?: '-' }}</td>
                                     <td>{{ $employee->campus->code ?? '-' }}</td>
                                     <td>{{ $employee->department->name ?? '-' }} / {{ $employee->designation->name ?? '-' }}</td>
-                                    <td>{{ $employee->manager?->full_name ?: '-' }}</td>
+                                    <td>{{ $employee->portal_user ? 'Yes' : 'No' }}</td>
                                     <td>{{ optional($employee->joining_date)->format('Y-m-d') ?: '-' }}</td>
                                     <td>
                                         <span class="badge {{ $employee->status === 'active' ? 'badge-success' : 'badge-secondary' }}">

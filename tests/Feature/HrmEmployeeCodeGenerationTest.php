@@ -22,6 +22,7 @@ class HrmEmployeeCodeGenerationTest extends TestCase
             ->from(route('hrm.employees.index'))
             ->post(route('hrm.employees.store'), [
                 'campus_id' => $campus->id,
+                'portal_user' => '0',
                 'first_name' => 'Ali',
                 'last_name' => 'Khan',
                 'joining_date' => '2026-06-13',
@@ -34,6 +35,7 @@ class HrmEmployeeCodeGenerationTest extends TestCase
             ->from(route('hrm.employees.index'))
             ->post(route('hrm.employees.store'), [
                 'campus_id' => $campus->id,
+                'portal_user' => '0',
                 'first_name' => 'Sara',
                 'last_name' => 'Noor',
                 'joining_date' => '2026-06-13',
