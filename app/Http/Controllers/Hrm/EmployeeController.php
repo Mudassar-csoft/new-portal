@@ -26,6 +26,7 @@ class EmployeeController extends BaseController
             ->when($request->integer('campus_id'), fn ($q, $campusId) => $q->where('campus_id', $campusId))
             ->when($request->integer('department_id'), fn ($q, $departmentId) => $q->where('department_id', $departmentId))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
+            ->when($request->filled('qualification'), fn ($q) => $q->where('qualification', 'like', '%' . trim((string) $request->input('qualification')) . '%'))
             ->orderByDesc('id')
             ->paginate(20)
             ->withQueryString();
@@ -39,6 +40,7 @@ class EmployeeController extends BaseController
                 'campus_id' => $request->integer('campus_id') ?: null,
                 'department_id' => $request->integer('department_id') ?: null,
                 'status' => $request->input('status'),
+                'qualification' => trim((string) $request->input('qualification', '')) ?: null,
             ],
         ]);
     }
@@ -61,6 +63,7 @@ class EmployeeController extends BaseController
             'emergency_contact_phone' => ['nullable', 'string', 'max:40'],
             'emergency_contact_relation' => ['nullable', 'string', 'max:60'],
             'joining_date' => ['required', 'date'],
+            'qualification' => ['nullable', 'string', 'max:255'],
             'employment_type' => ['nullable', 'string', 'max:40'],
             'portal_user' => ['required', 'boolean'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],
@@ -95,6 +98,7 @@ class EmployeeController extends BaseController
             'emergency_contact_phone' => ['nullable', 'string', 'max:40'],
             'emergency_contact_relation' => ['nullable', 'string', 'max:60'],
             'joining_date' => ['nullable', 'date'],
+            'qualification' => ['nullable', 'string', 'max:255'],
             'employment_type' => ['nullable', 'string', 'max:40'],
             'portal_user' => ['nullable', 'boolean'],
             'status' => ['nullable', Rule::in(['active', 'inactive'])],

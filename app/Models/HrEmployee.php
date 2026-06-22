@@ -29,6 +29,7 @@ class HrEmployee extends Model
         'emergency_contact_phone',
         'emergency_contact_relation',
         'joining_date',
+        'qualification',
         'employment_type',
         'status',
         'notes',
