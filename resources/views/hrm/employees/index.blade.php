@@ -73,8 +73,9 @@
                     @csrf
                     <div class="form-row" >
                         <div class="form-group col-md-4 col-lg-3 ">
-                            <label class="form-label required">Employee Code</label>
-                            <input type="text" name="employee_code" class="form-control" placeholder="Auto if blank">
+                            <label class="form-label">Employee Code</label>
+                            <input type="text" class="form-control" value="Auto-generated on save" readonly disabled>
+                            <small class="text-muted">Format: CAMPUSCODE-DD-YY-0001</small>
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">First Name</label>
@@ -119,7 +120,7 @@
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">Campus</label>
-                            <select name="campus_id" class="form-control">
+                            <select name="campus_id" class="form-control" required>
                                 <option value="">- Select -</option>
                                 @foreach($campuses as $campus)
                                     <option value="{{ $campus->id }}">{{ $campus->code }} - {{ $campus->name }}</option>
@@ -167,7 +168,7 @@
                         </div>
                         <div class="form-group col-md-4 col-lg-3 ">
                             <label class="form-label required">Joining Date</label>
-                            <input type="date" name="joining_date" class="form-control" value="{{ now()->toDateString() }}">
+                            <input type="date" name="joining_date" class="form-control" value="{{ now()->toDateString() }}" required>
                         </div>
                         </div>
                         <div class="form-row">
@@ -263,4 +264,3 @@
         .hrm-table thead th { background: #0ea5e9; color: #fff; }
     </style>
 @endpush
-

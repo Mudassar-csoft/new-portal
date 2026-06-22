@@ -1,2 +1,5 @@
 [2026-06-22 15:17:37] Scanner helper started at http://127.0.0.1:18777/
 [2026-06-22 15:17:45] Failed to start listener on http://127.0.0.1:18777/: Exception calling "Start" with "0" argument(s): "Failed to listen on prefix 'http://127.0.0.1:18777/' because it conflicts with an existing registration on the machine."
+[2026-06-22 15:20:08] Scan completed via device: HP LJ M232M237 (USB) #2
+[2026-06-22 15:20:23] Scan completed via device: HP LJ M232M237 (USB) #2
+[2026-06-22 15:20:49] Scan completed via device: HP LJ M232M237 (USB) #2
