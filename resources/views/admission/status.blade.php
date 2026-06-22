@@ -161,9 +161,14 @@
                     <div class="admission-modal__body">
                         <p class="admission-modal__student" id="uploadDocumentsStudent"></p>
                         <div class="alert alert-warning admission-modal__notice" id="uploadDocumentsRemark" style="display:none;"></div>
+                        <div class="alert alert-info admission-modal__notice" id="uploadDocumentsScannerNotice" style="display:none;"></div>
 
                         <div class="form-group">
                             <label>CNIC Front Side <span class="text-danger">*</span></label>
+                            <div class="admission-upload-tools">
+                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_cnic_front" data-document-label="CNIC Front Side">Scanner</button>
+                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
+                            </div>
                             <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" required>
                             <div class="admission-preview-card is-empty" id="preview-cnic-front">
                                 <div class="admission-preview-card__empty">No file selected yet.</div>
@@ -175,6 +180,10 @@
 
                         <div class="form-group">
                             <label>CNIC Back Side <span class="text-danger">*</span></label>
+                            <div class="admission-upload-tools">
+                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_cnic_back" data-document-label="CNIC Back Side">Scanner</button>
+                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
+                            </div>
                             <input type="file" name="document_cnic_back" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-back" required>
                             <div class="admission-preview-card is-empty" id="preview-cnic-back">
                                 <div class="admission-preview-card__empty">No file selected yet.</div>
@@ -186,6 +195,10 @@
 
                         <div class="form-group">
                             <label>Admission Form <span class="text-danger">*</span></label>
+                            <div class="admission-upload-tools">
+                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_admission_form" data-document-label="Admission Form">Scanner</button>
+                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
+                            </div>
                             <input type="file" name="document_admission_form" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-admission-form" required>
                             <div class="admission-preview-card is-empty" id="preview-admission-form">
                                 <div class="admission-preview-card__empty">No file selected yet.</div>
@@ -197,6 +210,10 @@
 
                         <div class="form-group mb-0">
                             <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
+                            <div class="admission-upload-tools">
+                                <button type="button" class="btn btn-default btn-sm js-admission-scan" data-input-name="document_paid_slip" data-document-label="Paid Slip With Authorized Stamp">Scanner</button>
+                                <span class="admission-upload-tools__hint">Use scanner if helper is installed. Otherwise file picker will open.</span>
+                            </div>
                             <input type="file" name="document_paid_slip" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-paid-slip" required>
                             <div class="admission-preview-card is-empty" id="preview-paid-slip">
                                 <div class="admission-preview-card__empty">No file selected yet.</div>
@@ -401,6 +418,20 @@
             margin-bottom: 16px;
         }
 
+        .admission-upload-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .admission-upload-tools__hint {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
         .admission-preview-card {
             margin-top: 10px;
             padding: 10px;
@@ -565,14 +596,17 @@
                 var form = document.getElementById('uploadDocumentsForm');
                 var studentLabel = document.getElementById('uploadDocumentsStudent');
                 var remarkBox = document.getElementById('uploadDocumentsRemark');
+                var scannerNotice = document.getElementById('uploadDocumentsScannerNotice');
                 var uploadBase = @json(url('/admission'));
                 var docInputs = [];
+                var scanButtons = [];
 
                 if (!modal || !form) {
                     return;
                 }
 
                 docInputs = Array.prototype.slice.call(form.querySelectorAll('.js-admission-doc-input'));
+                scanButtons = Array.prototype.slice.call(form.querySelectorAll('.js-admission-scan'));
 
                 function formatFileSize(bytes) {
                     if (!bytes) {
@@ -584,6 +618,118 @@
                     }
 
                     return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+                }
+
+                function showScannerNotice(message, tone) {
+                    if (!scannerNotice) {
+                        return;
+                    }
+
+                    scannerNotice.classList.remove('alert-info', 'alert-success', 'alert-warning', 'alert-danger');
+                    scannerNotice.classList.add('alert-' + (tone || 'info'));
+                    scannerNotice.textContent = message;
+                    scannerNotice.style.display = 'block';
+                }
+
+                function hideScannerNotice() {
+                    if (!scannerNotice) {
+                        return;
+                    }
+
+                    scannerNotice.style.display = 'none';
+                    scannerNotice.textContent = '';
+                    scannerNotice.classList.remove('alert-success', 'alert-warning', 'alert-danger');
+                    scannerNotice.classList.add('alert-info');
+                }
+
+                function findInputByName(inputName) {
+                    return form.querySelector('[name="' + inputName + '"]');
+                }
+
+                function guessExtension(type) {
+                    switch ((type || '').toLowerCase()) {
+                        case 'image/jpeg':
+                            return '.jpg';
+                        case 'image/png':
+                            return '.png';
+                        case 'application/pdf':
+                            return '.pdf';
+                        default:
+                            return '';
+                    }
+                }
+
+                function dataUrlToBlob(dataUrl) {
+                    var parts = (dataUrl || '').split(',');
+                    if (parts.length !== 2) {
+                        throw new Error('Invalid scanner data URL.');
+                    }
+
+                    var match = parts[0].match(/data:(.*?);base64/i);
+                    var mimeType = match && match[1] ? match[1] : 'application/octet-stream';
+                    var binary = atob(parts[1]);
+                    var length = binary.length;
+                    var bytes = new Uint8Array(length);
+
+                    for (var index = 0; index < length; index++) {
+                        bytes[index] = binary.charCodeAt(index);
+                    }
+
+                    return new Blob([bytes], { type: mimeType });
+                }
+
+                function assignFileToInput(input, file) {
+                    var transfer = new DataTransfer();
+                    transfer.items.add(file);
+                    input.files = transfer.files;
+                }
+
+                function normalizeScannerResult(result, input) {
+                    if (result instanceof File) {
+                        return result;
+                    }
+
+                    if (result && result.file instanceof File) {
+                        return result.file;
+                    }
+
+                    var blob = null;
+                    var type = '';
+                    var name = '';
+
+                    if (result instanceof Blob) {
+                        blob = result;
+                        type = result.type || '';
+                    } else if (result && result.blob instanceof Blob) {
+                        blob = result.blob;
+                        type = result.type || result.blob.type || '';
+                    } else if (result && typeof result.dataUrl === 'string') {
+                        blob = dataUrlToBlob(result.dataUrl);
+                        type = result.type || blob.type || '';
+                    }
+
+                    if (!blob) {
+                        throw new Error('Scanner did not return a usable file.');
+                    }
+
+                    name = (result && result.name) ? result.name : (input.name + '-scan' + guessExtension(type || blob.type));
+
+                    return new File([blob], name, {
+                        type: type || blob.type || 'application/octet-stream',
+                        lastModified: Date.now(),
+                    });
+                }
+
+                function resolveScannerBridge() {
+                    if (window.CRMAdmissionScanner && typeof window.CRMAdmissionScanner.scan === 'function') {
+                        return window.CRMAdmissionScanner;
+                    }
+
+                    if (window.CRMScanner && typeof window.CRMScanner.scan === 'function') {
+                        return window.CRMScanner;
+                    }
+
+                    return null;
                 }
 
                 function resetPreview(card) {
@@ -689,6 +835,45 @@
                     }
                 }
 
+                async function handleScannerClick(button) {
+                    var inputName = button.getAttribute('data-input-name') || '';
+                    var documentLabel = button.getAttribute('data-document-label') || 'Document';
+                    var input = findInputByName(inputName);
+                    var scannerBridge = resolveScannerBridge();
+
+                    if (!input) {
+                        return;
+                    }
+
+                    if (!scannerBridge) {
+                        showScannerNotice('Scanner helper not detected for ' + documentLabel + '. File picker opened instead.', 'info');
+                        input.click();
+                        return;
+                    }
+
+                    try {
+                        showScannerNotice('Starting scanner for ' + documentLabel + '...', 'info');
+
+                        var result = await scannerBridge.scan({
+                            field: input.name,
+                            label: documentLabel,
+                            accept: input.getAttribute('accept') || '',
+                        });
+
+                        if (!result) {
+                            showScannerNotice('Scanner was closed before a file was captured for ' + documentLabel + '.', 'warning');
+                            return;
+                        }
+
+                        assignFileToInput(input, normalizeScannerResult(result, input));
+                        updatePreview(input);
+                        showScannerNotice(documentLabel + ' scanned successfully. Review the preview, then save.', 'success');
+                    } catch (error) {
+                        showScannerNotice('Scanner could not complete for ' + documentLabel + '. File picker opened instead.', 'warning');
+                        input.click();
+                    }
+                }
+
                 function openModal(button) {
                     var admissionId = button.getAttribute('data-admission-id');
                     var studentName = button.getAttribute('data-student-name') || 'Admission';
@@ -697,6 +882,7 @@
                     form.action = uploadBase + '/' + admissionId + '/documents';
                     form.reset();
                     resetAllPreviews();
+                    hideScannerNotice();
                     studentLabel.textContent = studentName;
 
                     if (remark) {
@@ -714,6 +900,7 @@
                 function closeModal() {
                     form.reset();
                     resetAllPreviews();
+                    hideScannerNotice();
                     modal.classList.remove('is-open');
                     modal.setAttribute('aria-hidden', 'true');
                 }
@@ -721,6 +908,13 @@
                 docInputs.forEach(function (input) {
                     input.addEventListener('change', function () {
                         updatePreview(this);
+                        hideScannerNotice();
+                    });
+                });
+
+                scanButtons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        handleScannerClick(this);
                     });
                 });
 

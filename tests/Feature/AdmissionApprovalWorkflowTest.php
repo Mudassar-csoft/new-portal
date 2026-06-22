@@ -100,6 +100,31 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->assertNotNull($admission->approval_reviewed_at);
     }
 
+    public function test_pending_admission_status_page_shows_scanner_buttons_in_upload_modal(): void
+    {
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+        $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
+
+        $campus = $this->createCampus('Scanner Campus', 'SCN');
+        $program = $this->createProgram('TRN905', 'Scanner Program');
+        $batch = $this->createBatch($campus, $program, 'SCN-B1');
+        $registration = $this->createRegistration($campus, $program, 'Scanner Student', '03200000996');
+
+        $this->createAdmission($campus, $program, $batch, $registration, 'Scanner Student', '03200000996', [
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $user = $this->createScopedUser($campus, [$admissionView, $admissionCreate]);
+
+        $this->actingAs($user)
+            ->get(route('admission.status', ['scope' => 'pending']))
+            ->assertOk()
+            ->assertSee('Upload Documents')
+            ->assertSee('Scanner')
+            ->assertSee('CNIC Front Side')
+            ->assertSee('CNIC Back Side');
+    }
+
     public function test_student_records_only_return_approved_admissions(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');
