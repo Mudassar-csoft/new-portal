@@ -10,6 +10,14 @@
         if ($selectedRoleId === null) {
             $selectedRoleId = collect(old('roles', []))->filter()->first();
         }
+        $employeeDirectory = $portalEmployees->mapWithKeys(function ($employee) {
+            return [
+                (string) $employee->id => [
+                    'email' => (string) ($employee->email ?? ''),
+                    'campus' => (string) ($employee->campus?->code ?: ($employee->campus?->name ?: '')),
+                ],
+            ];
+        })->all();
     @endphp
 
     <div class="user-shell">
@@ -554,14 +562,7 @@
 @push('scripts')
     <script>
         (function () {
-            const employeeDirectory = @json(
-                $portalEmployees->mapWithKeys(fn ($employee) => [
-                    (string) $employee->id => [
-                        'email' => (string) ($employee->email ?? ''),
-                        'campus' => (string) ($employee->campus?->code ?: ($employee->campus?->name ?: '')),
-                    ],
-                ])
-            );
+            const employeeDirectory = @json($employeeDirectory);
 
             function toggleVisibility(button) {
                 const input = document.querySelector(button.getAttribute('data-target'));
@@ -605,9 +606,14 @@
 
                 if (!employeeSelect || !emailInput || !campusInput) return;
 
-                const selectedEmployee = employeeDirectory[String(employeeSelect.value)] || null;
-                emailInput.value = selectedEmployee?.email || '';
-                campusInput.value = selectedEmployee?.campus || '';
+                const selectedOption = employeeSelect.options[employeeSelect.selectedIndex] || null;
+                const selectedEmployeeId = String(employeeSelect.value || '');
+                const selectedEmployee = employeeDirectory[selectedEmployeeId] || {};
+                const selectedEmail = selectedOption ? (selectedOption.getAttribute('data-email') || '') : '';
+                const selectedCampus = selectedOption ? (selectedOption.getAttribute('data-campus-label') || '') : '';
+
+                emailInput.value = selectedEmail || selectedEmployee.email || '';
+                campusInput.value = selectedCampus || selectedEmployee.campus || '';
             }
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -632,7 +638,10 @@
                     });
                 }
 
-                if (!document.getElementById('password')?.value && !document.getElementById('password_confirmation')?.value) {
+                const passwordInput = document.getElementById('password');
+                const confirmationInput = document.getElementById('password_confirmation');
+
+                if (passwordInput && confirmationInput && !passwordInput.value && !confirmationInput.value) {
                     fillPasswordFields();
                 }
 
@@ -642,13 +651,19 @@
                     });
                 });
 
-                document.getElementById('employee_id')?.addEventListener('change', syncEmployeeSelection);
+                const employeeSelect = document.getElementById('employee_id');
+                if (employeeSelect) {
+                    employeeSelect.addEventListener('change', syncEmployeeSelection);
+                }
                 syncEmployeeSelection();
                 window.setTimeout(syncEmployeeSelection, 0);
 
-                document.querySelector('.generate-password')?.addEventListener('click', function () {
-                    fillPasswordFields();
-                });
+                const generatePasswordButton = document.querySelector('.generate-password');
+                if (generatePasswordButton) {
+                    generatePasswordButton.addEventListener('click', function () {
+                        fillPasswordFields();
+                    });
+                }
             });
         })();
     </script>
