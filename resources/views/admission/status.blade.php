@@ -598,8 +598,10 @@
                 var remarkBox = document.getElementById('uploadDocumentsRemark');
                 var scannerNotice = document.getElementById('uploadDocumentsScannerNotice');
                 var uploadBase = @json(url('/admission'));
+                var scannerHelperBases = ['http://127.0.0.1:18777', 'http://localhost:18777'];
                 var docInputs = [];
                 var scanButtons = [];
+                var activeHttpScannerBase = null;
 
                 if (!modal || !form) {
                     return;
@@ -732,6 +734,87 @@
                     return null;
                 }
 
+                async function fetchFromHttpScannerHelper(path, options) {
+                    var bases = activeHttpScannerBase
+                        ? [activeHttpScannerBase].concat(scannerHelperBases.filter(function (base) { return base !== activeHttpScannerBase; }))
+                        : scannerHelperBases.slice();
+                    var lastError = null;
+
+                    for (var index = 0; index < bases.length; index++) {
+                        var base = bases[index];
+
+                        try {
+                            var response = await fetch(base + path, Object.assign({
+                                mode: 'cors',
+                                credentials: 'omit',
+                                cache: 'no-store',
+                            }, options || {}));
+
+                            activeHttpScannerBase = base;
+
+                            return {
+                                base: base,
+                                response: response,
+                            };
+                        } catch (error) {
+                            lastError = error;
+                        }
+                    }
+
+                    throw lastError || new Error('Scanner helper not detected.');
+                }
+
+                async function readHelperError(response) {
+                    try {
+                        var payload = await response.json();
+                        if (payload && payload.message) {
+                            return payload.message;
+                        }
+                    } catch (error) {
+                        // Ignore JSON parse failures and use status text fallback.
+                    }
+
+                    return response.statusText || 'Scanner helper request failed.';
+                }
+
+                async function getHttpScannerHelperHealth() {
+                    var result = await fetchFromHttpScannerHelper('/health', {
+                        method: 'GET',
+                    });
+
+                    if (!result.response.ok) {
+                        throw new Error(await readHelperError(result.response));
+                    }
+
+                    return result.response.json();
+                }
+
+                async function scanWithHttpScannerHelper(input, documentLabel) {
+                    var result = await fetchFromHttpScannerHelper('/scan', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            field: input.name,
+                            label: documentLabel,
+                        }),
+                    });
+
+                    if (!result.response.ok) {
+                        throw new Error(await readHelperError(result.response));
+                    }
+
+                    var blob = await result.response.blob();
+                    var fileName = result.response.headers.get('X-Scan-File-Name') || (input.name + '-scan.jpg');
+                    var contentType = blob.type || 'image/jpeg';
+
+                    return new File([blob], fileName, {
+                        type: contentType,
+                        lastModified: Date.now(),
+                    });
+                }
+
                 function resetPreview(card) {
                     if (!card) {
                         return;
@@ -845,32 +928,64 @@
                         return;
                     }
 
-                    if (!scannerBridge) {
-                        showScannerNotice('Scanner helper not detected for ' + documentLabel + '. File picker opened instead.', 'info');
-                        input.click();
+                    try {
+                        button.disabled = true;
+
+                        if (scannerBridge) {
+                            showScannerNotice('Starting scanner for ' + documentLabel + '...', 'info');
+
+                            var browserResult = await scannerBridge.scan({
+                                field: input.name,
+                                label: documentLabel,
+                                accept: input.getAttribute('accept') || '',
+                            });
+
+                            if (!browserResult) {
+                                showScannerNotice('Scanner was closed before a file was captured for ' + documentLabel + '.', 'warning');
+                                return;
+                            }
+
+                            assignFileToInput(input, normalizeScannerResult(browserResult, input));
+                            updatePreview(input);
+                            showScannerNotice(documentLabel + ' scanned successfully. Review the preview, then save.', 'success');
+                            return;
+                        }
+
+                        showScannerNotice('Connecting to local scanner helper for ' + documentLabel + '...', 'info');
+
+                        var scannedFile = await scanWithHttpScannerHelper(input, documentLabel);
+                        assignFileToInput(input, scannedFile);
+                        updatePreview(input);
+                        showScannerNotice(documentLabel + ' scanned successfully. Review the preview, then save.', 'success');
+                    } catch (error) {
+                        var message = error && error.message ? error.message : 'Scanner helper not detected.';
+
+                        if (/not detected/i.test(message) || /failed to fetch/i.test(message)) {
+                            showScannerNotice('Scanner helper not detected for ' + documentLabel + '. File picker opened instead.', 'warning');
+                            input.click();
+                        } else {
+                            showScannerNotice('Scanner could not complete for ' + documentLabel + ': ' + message, 'danger');
+                        }
+                    } finally {
+                        button.disabled = false;
+                    }
+                }
+
+                async function refreshScannerStatusNotice() {
+                    var scannerBridge = resolveScannerBridge();
+
+                    if (scannerBridge) {
+                        showScannerNotice('Browser scanner bridge detected. You can scan directly from this screen.', 'success');
                         return;
                     }
 
                     try {
-                        showScannerNotice('Starting scanner for ' + documentLabel + '...', 'info');
+                        var health = await getHttpScannerHelperHealth();
+                        var deviceName = health && health.devices && health.devices.length ? health.devices[0].name : 'WIA scanner';
 
-                        var result = await scannerBridge.scan({
-                            field: input.name,
-                            label: documentLabel,
-                            accept: input.getAttribute('accept') || '',
-                        });
-
-                        if (!result) {
-                            showScannerNotice('Scanner was closed before a file was captured for ' + documentLabel + '.', 'warning');
-                            return;
-                        }
-
-                        assignFileToInput(input, normalizeScannerResult(result, input));
-                        updatePreview(input);
-                        showScannerNotice(documentLabel + ' scanned successfully. Review the preview, then save.', 'success');
+                        showScannerNotice('Scanner helper connected: ' + deviceName + '.', 'success');
                     } catch (error) {
-                        showScannerNotice('Scanner could not complete for ' + documentLabel + '. File picker opened instead.', 'warning');
-                        input.click();
+                        showScannerNotice('Scanner helper not detected. Start the local scanner helper, or file picker will open.', 'warning');
                     }
                 }
 
@@ -895,6 +1010,7 @@
 
                     modal.classList.add('is-open');
                     modal.setAttribute('aria-hidden', 'false');
+                    refreshScannerStatusNotice();
                 }
 
                 function closeModal() {
