@@ -40,6 +40,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->actingAs($creator)
             ->post(route('admission.documents.upload', $admission), [
                 'document_cnic_front' => UploadedFile::fake()->create('cnic-front.jpg', 150, 'image/jpeg'),
+                'document_cnic_back' => UploadedFile::fake()->create('cnic-back.jpg', 150, 'image/jpeg'),
                 'document_admission_form' => UploadedFile::fake()->create('admission-form.pdf', 200),
                 'document_paid_slip' => UploadedFile::fake()->create('paid-slip.jpg', 180, 'image/jpeg'),
             ])
@@ -51,6 +52,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->assertSame($creator->id, $admission->documents_uploaded_by);
         $this->assertNotNull($admission->documents_uploaded_at);
         Storage::disk('public')->assertExists($admission->document_cnic_front_path);
+        Storage::disk('public')->assertExists($admission->document_cnic_back_path);
         Storage::disk('public')->assertExists($admission->document_admission_form_path);
         Storage::disk('public')->assertExists($admission->document_paid_slip_path);
 
@@ -71,6 +73,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->actingAs($creator)
             ->post(route('admission.documents.upload', $admission), [
                 'document_cnic_front' => UploadedFile::fake()->create('cnic-front-updated.jpg', 155, 'image/jpeg'),
+                'document_cnic_back' => UploadedFile::fake()->create('cnic-back-updated.jpg', 155, 'image/jpeg'),
                 'document_admission_form' => UploadedFile::fake()->create('admission-form-updated.pdf', 240),
                 'document_paid_slip' => UploadedFile::fake()->create('paid-slip-updated.jpg', 185, 'image/jpeg'),
             ])
@@ -95,6 +98,31 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->assertSame('Documents verified and approved.', $admission->approval_remarks);
         $this->assertSame($admin->id, $admission->approval_reviewed_by);
         $this->assertNotNull($admission->approval_reviewed_at);
+    }
+
+    public function test_pending_admission_status_page_shows_scanner_buttons_in_upload_modal(): void
+    {
+        $admissionView = $this->createPermission('admission', 'view', 'admission.view');
+        $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
+
+        $campus = $this->createCampus('Scanner Campus', 'SCN');
+        $program = $this->createProgram('TRN905', 'Scanner Program');
+        $batch = $this->createBatch($campus, $program, 'SCN-B1');
+        $registration = $this->createRegistration($campus, $program, 'Scanner Student', '03200000996');
+
+        $this->createAdmission($campus, $program, $batch, $registration, 'Scanner Student', '03200000996', [
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $user = $this->createScopedUser($campus, [$admissionView, $admissionCreate]);
+
+        $this->actingAs($user)
+            ->get(route('admission.status', ['scope' => 'pending']))
+            ->assertOk()
+            ->assertSee('Upload Documents')
+            ->assertSee('Scanner')
+            ->assertSee('CNIC Front Side')
+            ->assertSee('CNIC Back Side');
     }
 
     public function test_student_records_only_return_approved_admissions(): void

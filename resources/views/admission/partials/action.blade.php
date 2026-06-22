@@ -8,6 +8,7 @@
     $showCollectFeeInstallment = $admission && $registrationId && $canViewStudent && (int) ($admission->pending_admission_fee_count ?? 0) > 0;
     $approvalStatus = $admission->approval_status ?? \App\Models\Admission::APPROVAL_STATUS_APPROVED;
     $docCnicUrl = $admission?->document_cnic_front_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-front']) : null;
+    $docCnicBackUrl = $admission?->document_cnic_back_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back']) : null;
     $docFormUrl = $admission?->document_admission_form_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form']) : null;
     $docSlipUrl = $admission?->document_paid_slip_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'paid-slip']) : null;
 @endphp
@@ -137,6 +138,7 @@
                 data-admission-id="{{ $admission->id }}"
                 data-student-name="{{ $admission->student_name }}"
                 data-doc-cnic="{{ $docCnicUrl ?? '' }}"
+                data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
                 data-doc-form="{{ $docFormUrl ?? '' }}"
                 data-doc-slip="{{ $docSlipUrl ?? '' }}"
                 data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
