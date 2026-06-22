@@ -554,6 +554,15 @@
 @push('scripts')
     <script>
         (function () {
+            const employeeDirectory = @json(
+                $portalEmployees->mapWithKeys(fn ($employee) => [
+                    (string) $employee->id => [
+                        'email' => (string) ($employee->email ?? ''),
+                        'campus' => (string) ($employee->campus?->code ?: ($employee->campus?->name ?: '')),
+                    ],
+                ])
+            );
+
             function toggleVisibility(button) {
                 const input = document.querySelector(button.getAttribute('data-target'));
                 if (!input) return;
@@ -596,19 +605,23 @@
 
                 if (!employeeSelect || !emailInput || !campusInput) return;
 
-                const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
-                emailInput.value = selectedOption?.dataset.email || '';
-                campusInput.value = selectedOption?.dataset.campusLabel || '';
+                const selectedEmployee = employeeDirectory[String(employeeSelect.value)] || null;
+                emailInput.value = selectedEmployee?.email || '';
+                campusInput.value = selectedEmployee?.campus || '';
             }
 
             document.addEventListener('DOMContentLoaded', function () {
                 if (window.jQuery && $.fn.select2) {
-                    $('#employee_id').select2({
+                    const $employeeSelect = $('#employee_id');
+
+                    $employeeSelect.select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
                         minimumResultsForSearch: 0,
                     });
+
+                    $employeeSelect.on('change select2:select select2:clear', syncEmployeeSelection);
 
                     $('#role_id').select2({
                         width: '100%',
@@ -631,6 +644,7 @@
 
                 document.getElementById('employee_id')?.addEventListener('change', syncEmployeeSelection);
                 syncEmployeeSelection();
+                window.setTimeout(syncEmployeeSelection, 0);
 
                 document.querySelector('.generate-password')?.addEventListener('click', function () {
                     fillPasswordFields();
