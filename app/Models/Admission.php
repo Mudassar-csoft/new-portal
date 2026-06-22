@@ -47,6 +47,7 @@ class Admission extends Model
         'approval_status',
         'status_updated_at',
         'document_cnic_front_path',
+        'document_cnic_back_path',
         'document_admission_form_path',
         'document_paid_slip_path',
         'documents_uploaded_at',

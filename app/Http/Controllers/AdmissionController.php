@@ -716,6 +716,7 @@ class AdmissionController extends Controller
 
         $validated = $request->validate([
             'document_cnic_front' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_cnic_back' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'document_admission_form' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'document_paid_slip' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ]);
@@ -723,12 +724,14 @@ class AdmissionController extends Controller
         $directory = 'admissions/' . $admission->id;
         $oldPaths = array_filter([
             $admission->document_cnic_front_path,
+            $admission->document_cnic_back_path,
             $admission->document_admission_form_path,
             $admission->document_paid_slip_path,
         ]);
 
         $newPaths = [
             'document_cnic_front_path' => $validated['document_cnic_front']->store($directory, 'public'),
+            'document_cnic_back_path' => $validated['document_cnic_back']->store($directory, 'public'),
             'document_admission_form_path' => $validated['document_admission_form']->store($directory, 'public'),
             'document_paid_slip_path' => $validated['document_paid_slip']->store($directory, 'public'),
         ];
@@ -787,6 +790,7 @@ class AdmissionController extends Controller
 
         $relativePath = match ($document) {
             'cnic-front' => $admission->document_cnic_front_path,
+            'cnic-back' => $admission->document_cnic_back_path,
             'admission-form' => $admission->document_admission_form_path,
             'paid-slip' => $admission->document_paid_slip_path,
             default => abort(404),

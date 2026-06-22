@@ -40,6 +40,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->actingAs($creator)
             ->post(route('admission.documents.upload', $admission), [
                 'document_cnic_front' => UploadedFile::fake()->create('cnic-front.jpg', 150, 'image/jpeg'),
+                'document_cnic_back' => UploadedFile::fake()->create('cnic-back.jpg', 150, 'image/jpeg'),
                 'document_admission_form' => UploadedFile::fake()->create('admission-form.pdf', 200),
                 'document_paid_slip' => UploadedFile::fake()->create('paid-slip.jpg', 180, 'image/jpeg'),
             ])
@@ -51,6 +52,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->assertSame($creator->id, $admission->documents_uploaded_by);
         $this->assertNotNull($admission->documents_uploaded_at);
         Storage::disk('public')->assertExists($admission->document_cnic_front_path);
+        Storage::disk('public')->assertExists($admission->document_cnic_back_path);
         Storage::disk('public')->assertExists($admission->document_admission_form_path);
         Storage::disk('public')->assertExists($admission->document_paid_slip_path);
 
@@ -71,6 +73,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $this->actingAs($creator)
             ->post(route('admission.documents.upload', $admission), [
                 'document_cnic_front' => UploadedFile::fake()->create('cnic-front-updated.jpg', 155, 'image/jpeg'),
+                'document_cnic_back' => UploadedFile::fake()->create('cnic-back-updated.jpg', 155, 'image/jpeg'),
                 'document_admission_form' => UploadedFile::fake()->create('admission-form-updated.pdf', 240),
                 'document_paid_slip' => UploadedFile::fake()->create('paid-slip-updated.jpg', 185, 'image/jpeg'),
             ])

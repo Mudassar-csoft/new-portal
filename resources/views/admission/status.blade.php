@@ -168,6 +168,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label>CNIC Back Side <span class="text-danger">*</span></label>
+                            <input type="file" name="document_cnic_back" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                        </div>
+
+                        <div class="form-group">
                             <label>Admission Form <span class="text-danger">*</span></label>
                             <input type="file" name="document_admission_form" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
                         </div>
@@ -201,6 +206,7 @@
 
                         <div class="admission-doc-list">
                             <a href="#" target="_blank" rel="noopener" id="reviewDocCnic" class="admission-doc-link">CNIC Front Side</a>
+                            <a href="#" target="_blank" rel="noopener" id="reviewDocCnicBack" class="admission-doc-link">CNIC Back Side</a>
                             <a href="#" target="_blank" rel="noopener" id="reviewDocForm" class="admission-doc-link">Admission Form</a>
                             <a href="#" target="_blank" rel="noopener" id="reviewDocSlip" class="admission-doc-link">Paid Slip With Authorized Stamp</a>
                         </div>
@@ -586,6 +592,7 @@
                     remarksInput.value = '';
 
                     bindDocLink('reviewDocCnic', button.getAttribute('data-doc-cnic'));
+                    bindDocLink('reviewDocCnicBack', button.getAttribute('data-doc-cnic-back'));
                     bindDocLink('reviewDocForm', button.getAttribute('data-doc-form'));
                     bindDocLink('reviewDocSlip', button.getAttribute('data-doc-slip'));
 
