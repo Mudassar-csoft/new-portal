@@ -164,22 +164,46 @@
 
                         <div class="form-group">
                             <label>CNIC Front Side <span class="text-danger">*</span></label>
-                            <input type="file" name="document_cnic_front" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="document_cnic_front" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-front" required>
+                            <div class="admission-preview-card is-empty" id="preview-cnic-front">
+                                <div class="admission-preview-card__empty">No file selected yet.</div>
+                                <img class="admission-preview-card__image" alt="CNIC front side preview">
+                                <iframe class="admission-preview-card__frame" title="CNIC front side preview"></iframe>
+                                <div class="admission-preview-card__meta"></div>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label>CNIC Back Side <span class="text-danger">*</span></label>
-                            <input type="file" name="document_cnic_back" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="document_cnic_back" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-cnic-back" required>
+                            <div class="admission-preview-card is-empty" id="preview-cnic-back">
+                                <div class="admission-preview-card__empty">No file selected yet.</div>
+                                <img class="admission-preview-card__image" alt="CNIC back side preview">
+                                <iframe class="admission-preview-card__frame" title="CNIC back side preview"></iframe>
+                                <div class="admission-preview-card__meta"></div>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label>Admission Form <span class="text-danger">*</span></label>
-                            <input type="file" name="document_admission_form" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="document_admission_form" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-admission-form" required>
+                            <div class="admission-preview-card is-empty" id="preview-admission-form">
+                                <div class="admission-preview-card__empty">No file selected yet.</div>
+                                <img class="admission-preview-card__image" alt="Admission form preview">
+                                <iframe class="admission-preview-card__frame" title="Admission form preview"></iframe>
+                                <div class="admission-preview-card__meta"></div>
+                            </div>
                         </div>
 
                         <div class="form-group mb-0">
                             <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
-                            <input type="file" name="document_paid_slip" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <input type="file" name="document_paid_slip" class="form-control js-admission-doc-input" accept=".jpg,.jpeg,.png,.pdf" data-preview-target="preview-paid-slip" required>
+                            <div class="admission-preview-card is-empty" id="preview-paid-slip">
+                                <div class="admission-preview-card__empty">No file selected yet.</div>
+                                <img class="admission-preview-card__image" alt="Paid slip preview">
+                                <iframe class="admission-preview-card__frame" title="Paid slip preview"></iframe>
+                                <div class="admission-preview-card__meta"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="admission-modal__footer">
@@ -377,6 +401,45 @@
             margin-bottom: 16px;
         }
 
+        .admission-preview-card {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #dbe3ec;
+            border-radius: 6px;
+            background: #f8fbff;
+        }
+
+        .admission-preview-card__empty {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .admission-preview-card__image,
+        .admission-preview-card__frame {
+            display: none;
+            width: 100%;
+            border: 0;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .admission-preview-card__image {
+            max-height: 220px;
+            object-fit: contain;
+        }
+
+        .admission-preview-card__frame {
+            height: 220px;
+        }
+
+        .admission-preview-card__meta {
+            display: none;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #334155;
+            word-break: break-word;
+        }
+
         .admission-modal__footer {
             display: flex;
             align-items: center;
@@ -503,9 +566,127 @@
                 var studentLabel = document.getElementById('uploadDocumentsStudent');
                 var remarkBox = document.getElementById('uploadDocumentsRemark');
                 var uploadBase = @json(url('/admission'));
+                var docInputs = [];
 
                 if (!modal || !form) {
                     return;
+                }
+
+                docInputs = Array.prototype.slice.call(form.querySelectorAll('.js-admission-doc-input'));
+
+                function formatFileSize(bytes) {
+                    if (!bytes) {
+                        return '0 KB';
+                    }
+
+                    if (bytes >= 1024 * 1024) {
+                        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+                    }
+
+                    return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+                }
+
+                function resetPreview(card) {
+                    if (!card) {
+                        return;
+                    }
+
+                    var objectUrl = card.getAttribute('data-object-url');
+                    var empty = card.querySelector('.admission-preview-card__empty');
+                    var image = card.querySelector('.admission-preview-card__image');
+                    var frame = card.querySelector('.admission-preview-card__frame');
+                    var meta = card.querySelector('.admission-preview-card__meta');
+
+                    if (objectUrl) {
+                        URL.revokeObjectURL(objectUrl);
+                        card.removeAttribute('data-object-url');
+                    }
+
+                    if (image) {
+                        image.removeAttribute('src');
+                        image.style.display = 'none';
+                    }
+
+                    if (frame) {
+                        frame.removeAttribute('src');
+                        frame.style.display = 'none';
+                    }
+
+                    if (meta) {
+                        meta.textContent = '';
+                        meta.style.display = 'none';
+                    }
+
+                    if (empty) {
+                        empty.textContent = 'No file selected yet.';
+                        empty.style.display = 'block';
+                    }
+
+                    card.classList.add('is-empty');
+                }
+
+                function resetAllPreviews() {
+                    docInputs.forEach(function (input) {
+                        var previewId = input.getAttribute('data-preview-target');
+                        if (!previewId) {
+                            return;
+                        }
+
+                        resetPreview(document.getElementById(previewId));
+                    });
+                }
+
+                function updatePreview(input) {
+                    var previewId = input.getAttribute('data-preview-target');
+                    var card = previewId ? document.getElementById(previewId) : null;
+                    var file = input.files && input.files[0] ? input.files[0] : null;
+
+                    if (!card) {
+                        return;
+                    }
+
+                    resetPreview(card);
+
+                    if (!file) {
+                        return;
+                    }
+
+                    var objectUrl = URL.createObjectURL(file);
+                    var empty = card.querySelector('.admission-preview-card__empty');
+                    var image = card.querySelector('.admission-preview-card__image');
+                    var frame = card.querySelector('.admission-preview-card__frame');
+                    var meta = card.querySelector('.admission-preview-card__meta');
+                    var isPdf = (file.type || '').toLowerCase() === 'application/pdf' || /\.pdf$/i.test(file.name);
+                    var isImage = (file.type || '').toLowerCase().indexOf('image/') === 0;
+
+                    card.setAttribute('data-object-url', objectUrl);
+                    card.classList.remove('is-empty');
+
+                    if (meta) {
+                        meta.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+                        meta.style.display = 'block';
+                    }
+
+                    if (empty) {
+                        empty.style.display = 'none';
+                    }
+
+                    if (isImage && image) {
+                        image.src = objectUrl;
+                        image.style.display = 'block';
+                        return;
+                    }
+
+                    if (isPdf && frame) {
+                        frame.src = objectUrl;
+                        frame.style.display = 'block';
+                        return;
+                    }
+
+                    if (empty) {
+                        empty.textContent = 'Preview is not available for this file type.';
+                        empty.style.display = 'block';
+                    }
                 }
 
                 function openModal(button) {
@@ -515,6 +696,7 @@
 
                     form.action = uploadBase + '/' + admissionId + '/documents';
                     form.reset();
+                    resetAllPreviews();
                     studentLabel.textContent = studentName;
 
                     if (remark) {
@@ -530,9 +712,17 @@
                 }
 
                 function closeModal() {
+                    form.reset();
+                    resetAllPreviews();
                     modal.classList.remove('is-open');
                     modal.setAttribute('aria-hidden', 'true');
                 }
+
+                docInputs.forEach(function (input) {
+                    input.addEventListener('change', function () {
+                        updatePreview(this);
+                    });
+                });
 
                 document.querySelectorAll('.js-open-upload-admission').forEach(function (button) {
                     button.addEventListener('click', function () {
