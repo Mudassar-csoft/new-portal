@@ -257,35 +257,35 @@
 <div class="form-group mb-0">
     <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
-        <div class="admission-preview-card is-empty" id="preview-paid-slip">
-            <div class="admission-upload-tools">
-                <button type="button"
-                        class="btn btn-default btn-sm js-admission-scan mt-0"
-                        data-input-name="document_paid_slip"
-                        data-document-label="Paid Slip With Authorized Stamp">
-                    Scanner
-                </button>
-            </div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div class="admission-preview-card is-empty" id="preview-paid-slip">
+                <div class="admission-upload-tools">
+                    <button type="button"
+                            class="btn btn-default btn-sm js-admission-scan mt-0"
+                            data-input-name="document_paid_slip"
+                            data-document-label="Paid Slip With Authorized Stamp">
+                        Scanner
+                    </button>
+                    </div>
 
-            <img class="admission-preview-card__image" alt="Paid slip preview">
-            <iframe class="admission-preview-card__frame" title="Paid slip preview"></iframe>
-            <div class="admission-preview-card__meta"></div>
-        </div>
+                    <img class="admission-preview-card__image" alt="Paid slip preview">
+                    <iframe class="admission-preview-card__frame" title="Paid slip preview"></iframe>
+                    <div class="admission-preview-card__meta"></div>
+                    </div>
 
-        <input type="file"
-               name="document_paid_slip"
-               class="form-control js-admission-doc-input"
-               accept=".jpg,.jpeg,.png,.pdf"
-               data-preview-target="preview-paid-slip"
-               style="width:350px;"
-               required>
-    </div>
+                    <input type="file"
+                        name="document_paid_slip"
+                        class="form-control js-admission-doc-input"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        data-preview-target="preview-paid-slip"
+                        style="width:350px;"
+                        required>
+                    </div>
 
-    <span class="admission-upload-tools__hint">
-        Use scanner if helper is installed. Otherwise file picker will open.
-    </span>
-</div>
+                    <span class="admission-upload-tools__hint">
+                        Use scanner if helper is installed. Otherwise file picker will open.
+                    </span>
+                    </div>
                     </div>
                     <div class="admission-modal__footer">
                         <button type="submit" class="btn btn-primary-outline">Upload Documents</button>
@@ -329,7 +329,7 @@
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 </span>
-</div>
+                            </div>
                         </div>
 
                         <div class="alert alert-info admission-modal__notice" id="reviewAdmissionPreviousRemark" style="display:none;"></div>
@@ -374,6 +374,7 @@
             text-decoration: none;
         }
         .eye-span{
+                height: 35px;
                 text-align: right !important;
                 /* margin-left: 341px; */
                 padding: 9px;
@@ -381,7 +382,8 @@
                 border-radius: 20px;
         }
          .eye-span-4{
-                text-align: right !important;
+             height: 35px;      
+         text-align: right !important;
                 /* margin-left: 241px; */
                 padding: 9px;
                 background: #e1efff;
@@ -490,7 +492,7 @@
             border: 0;
             background: transparent;
             color: #fff;
-            font-size: 26px;
+            font-size: 30px !important;
             line-height: 1;
             cursor: pointer;
             padding: 0;
@@ -498,8 +500,8 @@
 
         .admission-modal__body {
             padding: 18px;
-                overflow-y: auto;
-    max-height: 80vh !important;
+            overflow-y: auto;
+            max-height: 80vh !important;
         }
 
         .admission-modal__student {

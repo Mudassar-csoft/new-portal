@@ -561,6 +561,7 @@
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
 			height: 314px;
+			
 		}
 
 		.chart-statistic-box #chart_div,
@@ -584,7 +585,9 @@
 			position: absolute;
 			line-height: 1;
 			white-space: nowrap;
+			/* margin-right:15px; */
 			font-size: 11px !important;
+			
 		}
 
 		.chart-statistic-box .income-axis-top .income-axis-label {
@@ -947,7 +950,7 @@
 
 .statistic-box .number, 
 .statistic-box .caption{
-    font-size:28px !important;
+    font-size:26px !important;
 
 }
 *{
@@ -2138,7 +2141,7 @@
 						'class': 'income-axis-label',
 						text: formatAmount(tick)
 					}).css({
-						left: rightLabelLeft + 'px',
+						left: rightLabelLeft-5 + 'px',
 						top: yPosition + 'px'
 					}).appendTo(rightAxis);
 				});
