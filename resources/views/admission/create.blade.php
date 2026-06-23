@@ -140,7 +140,7 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label class="form-label">Email Address</label>
+							<label class="form-label required">Email Address</label>
 							<input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $formDefaults['email'] ?? '') }}" placeholder="Enter email address" required>
 							@error('email')
 								<div class="field-error">{{ $message }}</div>
@@ -422,7 +422,7 @@
 
 						<div  class="form-actions mb-2 mt-3 text-right">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Confirm Admission</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Save Admission</button>
 
 							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem; ">Cancel</a>
 						</div>

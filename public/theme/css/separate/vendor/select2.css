@@ -248,7 +248,7 @@
   cursor: default;
   float: left;
   margin-right: 5px;
-  margin-top: 5px;
+  margin-top: 7px !important;
   padding: 0 5px;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -504,7 +504,7 @@
   cursor: default;
   float: left;
   margin-right: 5px;
-  margin-top: 5px;
+  margin-top: 7px;
   padding: 0 5px;
 }
 .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove {
