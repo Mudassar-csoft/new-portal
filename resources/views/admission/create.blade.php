@@ -80,7 +80,14 @@
 								<option value="">- Select -</option>
 								@foreach($batches ?? [] as $batch)
 									@php
-										$batchLabel = $batch->code ?: $batch->name ?: ('Batch #' . $batch->id);
+										$batchLabel = $batch->code ?? $batch->name;
+										$batchStart = $batch->start_time ? \Carbon\Carbon::parse($batch->start_time)->format('h:i A') : null;
+										$batchEnd = $batch->end_time ? \Carbon\Carbon::parse($batch->end_time)->format('h:i A') : null;
+										if ($batchStart && $batchEnd) {
+											$batchLabel .= ' (' . $batchStart . ' - ' . $batchEnd . ')';
+										} elseif ($batchStart) {
+											$batchLabel .= ' (' . $batchStart . ')';
+										}
 									@endphp
 									<option value="{{ $batch->id }}" {{ old('batch_id') == $batch->id ? 'selected' : '' }}>
 										{{ $batchLabel }}
@@ -1062,7 +1069,22 @@
 			const allBatches = @json($batchList);
 
 			function formatBatchLabel(b) {
-				return b.code || b.name || ('Batch #' + b.id);
+				let label = b.code || b.name || ('Batch #' + b.id);
+				const fmt = function (t) {
+					if (!t) return null;
+					const parts = String(t).split(':');
+					if (parts.length < 2) return null;
+					let h = parseInt(parts[0], 10);
+					const m = parts[1];
+					const ampm = h >= 12 ? 'PM' : 'AM';
+					h = h % 12 || 12;
+					return (h < 10 ? '0' + h : h) + ':' + m + ' ' + ampm;
+				};
+				const s = fmt(b.start_time);
+				const e = fmt(b.end_time);
+				if (s && e) label += ' (' + s + ' - ' + e + ')';
+				else if (s) label += ' (' + s + ')';
+				return label;
 			}
 
 			function refreshBatchOptions() {
