@@ -5,10 +5,19 @@
 
 @section('content')
     @php
+        $selectedEmployeeId = old('employee_id');
         $selectedRoleId = old('role_id');
         if ($selectedRoleId === null) {
             $selectedRoleId = collect(old('roles', []))->filter()->first();
         }
+        $employeeDirectory = $portalEmployees->mapWithKeys(function ($employee) {
+            return [
+                (string) $employee->id => [
+                    'email' => (string) ($employee->email ?? ''),
+                    'campus' => (string) ($employee->campus?->code ?: ($employee->campus?->name ?: '')),
+                ],
+            ];
+        })->all();
     @endphp
 
     <div class="user-shell">
@@ -23,46 +32,69 @@
 
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="name" class="form-label-role required">Full Name</label>
+                            <label for="employee_id" class="form-label-role">Full Name</label>
                         </div>
                         <div class="user-form-field">
-                            <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                class="form-control user-input @error('name') is-invalid @enderror"
-                                placeholder="Alex Morgan"
-                                value="{{ old('name') }}"
-                                required
+                            <select
+                                name="employee_id"
+                                id="employee_id"
+                                class="form-control select2 @error('employee_id') is-invalid @enderror"
+                                style="width: 100%; background:white; border: 1px solid #d2dee9 !important;"
+                                data-placeholder="- Select Full Name -"
                             >
-                            @error('name')
+                                <option value="">- Select Full Name -</option>
+                                @foreach($portalEmployees as $employee)
+                                    <option
+                                        value="{{ $employee->id }}"
+                                        data-email="{{ $employee->email }}"
+                                        data-campus-label="{{ $employee->campus?->code ?: ($employee->campus?->name ?: '') }}"
+                                        @selected((string) $selectedEmployeeId === (string) $employee->id)
+                                    >
+                                        {{ $employee->full_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('employee_id')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
+                            @if($portalEmployees->isEmpty())
+                                <div class="field-error" style="color: #64748b;">No portal-user employees are available.</div>
+                            @endif
                         </div>
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="email_local" class="form-label-role required">Email Address</label>
+                            <label for="employee_email" class="form-label-role">Email Address</label>
                         </div>
                         <div class="user-form-field">
-                            <div class="email-shell @error('email_local') has-error @enderror">
+                            <div class="email-shell">
                                 <input
                                     type="text"
-                                    name="email_local"
-                                    id="email_local"
-                                    class="form-control user-input email-local-input @error('email_local') is-invalid @enderror"
-                                    placeholder="admin"
-                                    value="{{ old('email_local') }}"
+                                    id="employee_email"
+                                    class="form-control user-input"
+                                    placeholder="Select employee first"
+                                    value=""
                                     inputmode="email"
                                     autocapitalize="none"
                                     spellcheck="false"
-                                    required
+                                    readonly
                                 >
-                                <span class="email-domain">{{ '@' . $emailDomain }}</span>
                             </div>
-                            @error('email_local')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                        </div>
+                    </div>
+                    <div class="user-form-row">
+                        <div class="user-form-label">
+                            <label for="employee_campus" class="form-label-role">Campus</label>
+                        </div>
+                        <div class="user-form-field">
+                            <input
+                                type="text"
+                                id="employee_campus"
+                                class="form-control user-input"
+                                placeholder="Select employee first"
+                                value=""
+                                readonly
+                            >
                         </div>
                     </div>
                     <div class="user-form-row">
@@ -121,28 +153,6 @@
                         </div>
                     </div>
                     <div class="user-form-row">
-                        <div class="user-form-label">
-                            <label for="campus_id" class="form-label-role">Campus</label>
-                        </div>
-                        <div class="user-form-field">
-                            <select
-                                name="campus_id"
-                                id="campus_id"
-                                class="form-control select2 @error('campus_id') is-invalid @enderror"
-                                style="width: 100%; background:white; border: 1px solid #d2dee9 !important;"
-                                data-placeholder="- Select Campus -"
-                            >
-                                <option value="">- Select Campus -</option>
-                                @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected((string) old('campus_id') === (string) $campus->id)>{{ $campus->code ?: $campus->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('campus_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        </div>
-                        <div class="user-form-row">
                             <div class="user-form-label">
                                 <label for="role_id" class="form-label-role">Roles</label>
                             </div>
@@ -552,6 +562,8 @@
 @push('scripts')
     <script>
         (function () {
+            const employeeDirectory = @json($employeeDirectory);
+
             function toggleVisibility(button) {
                 const input = document.querySelector(button.getAttribute('data-target'));
                 if (!input) return;
@@ -587,14 +599,35 @@
                 confirmation.value = generated;
             }
 
+            function syncEmployeeSelection() {
+                const employeeSelect = document.getElementById('employee_id');
+                const emailInput = document.getElementById('employee_email');
+                const campusInput = document.getElementById('employee_campus');
+
+                if (!employeeSelect || !emailInput || !campusInput) return;
+
+                const selectedOption = employeeSelect.options[employeeSelect.selectedIndex] || null;
+                const selectedEmployeeId = String(employeeSelect.value || '');
+                const selectedEmployee = employeeDirectory[selectedEmployeeId] || {};
+                const selectedEmail = selectedOption ? (selectedOption.getAttribute('data-email') || '') : '';
+                const selectedCampus = selectedOption ? (selectedOption.getAttribute('data-campus-label') || '') : '';
+
+                emailInput.value = selectedEmail || selectedEmployee.email || '';
+                campusInput.value = selectedCampus || selectedEmployee.campus || '';
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 if (window.jQuery && $.fn.select2) {
-                    $('#campus_id').select2({
+                    const $employeeSelect = $('#employee_id');
+
+                    $employeeSelect.select2({
                         width: '100%',
                         dropdownParent: $('.user-card'),
                         dropdownAutoWidth: false,
                         minimumResultsForSearch: 0,
                     });
+
+                    $employeeSelect.on('change select2:select select2:clear', syncEmployeeSelection);
 
                     $('#role_id').select2({
                         width: '100%',
@@ -605,7 +638,10 @@
                     });
                 }
 
-                if (!document.getElementById('password')?.value && !document.getElementById('password_confirmation')?.value) {
+                const passwordInput = document.getElementById('password');
+                const confirmationInput = document.getElementById('password_confirmation');
+
+                if (passwordInput && confirmationInput && !passwordInput.value && !confirmationInput.value) {
                     fillPasswordFields();
                 }
 
@@ -615,9 +651,19 @@
                     });
                 });
 
-                document.querySelector('.generate-password')?.addEventListener('click', function () {
-                    fillPasswordFields();
-                });
+                const employeeSelect = document.getElementById('employee_id');
+                if (employeeSelect) {
+                    employeeSelect.addEventListener('change', syncEmployeeSelection);
+                }
+                syncEmployeeSelection();
+                window.setTimeout(syncEmployeeSelection, 0);
+
+                const generatePasswordButton = document.querySelector('.generate-password');
+                if (generatePasswordButton) {
+                    generatePasswordButton.addEventListener('click', function () {
+                        fillPasswordFields();
+                    });
+                }
             });
         })();
     </script>
