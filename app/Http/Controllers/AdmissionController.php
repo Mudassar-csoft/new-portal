@@ -546,18 +546,37 @@ class AdmissionController extends Controller
                 $amounts = [];
 
                 if ($feeType === 'installments') {
+                    if ($programMaxInstallments <= 1) {
+                        throw ValidationException::withMessages([
+                            'fee_type' => ['The selected program does not allow installment admissions.'],
+                        ]);
+                    }
+
                     $inputAmounts = array_values(array_filter(
                         (array) $request->input('installment_amounts', []),
                         fn ($v) => $v !== null && $v !== ''
                     ));
 
                     if (!empty($inputAmounts)) {
-                        $count = min(count($inputAmounts), $programMaxInstallments);
-                        $amounts = array_slice(
-                            array_map(fn ($v) => round((float) $v, 2), $inputAmounts),
-                            0,
-                            $count
-                        );
+                        if (count($inputAmounts) !== $programMaxInstallments) {
+                            throw ValidationException::withMessages([
+                                'installment_amounts' => ['This program requires exactly ' . $programMaxInstallments . ' installments.'],
+                            ]);
+                        }
+
+                        $amounts = array_map(fn ($v) => round((float) $v, 2), $inputAmounts);
+
+                        if (collect($amounts)->contains(fn (float $amount) => $amount <= 0)) {
+                            throw ValidationException::withMessages([
+                                'installment_amounts' => ['Each installment amount must be greater than zero.'],
+                            ]);
+                        }
+
+                        if (abs(round(array_sum($amounts), 2) - round($base, 2)) > 0.01) {
+                            throw ValidationException::withMessages([
+                                'installment_amounts' => ['Installment amounts must add up to the discounted fee.'],
+                            ]);
+                        }
                     } else {
                         $count = $programMaxInstallments;
                         $split = round($base / $count, 2);
@@ -568,11 +587,6 @@ class AdmissionController extends Controller
                         }
                     }
 
-                    $amounts = array_values(array_filter($amounts, fn ($a) => $a > 0));
-                    if (empty($amounts)) {
-                        $amounts = [$base];
-                        $feeType = 'full';
-                    }
                 } else {
                     $amounts = [$base];
                 }
