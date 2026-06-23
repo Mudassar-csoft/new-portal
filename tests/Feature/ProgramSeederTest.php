@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Program;
+use App\Models\ProgramCampusDiscount;
 use Database\Seeders\ProgramSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,6 +18,7 @@ class ProgramSeederTest extends TestCase
 
         $this->assertSame(104, Program::query()->count());
         $this->assertSame(104, Program::query()->where('status', 'active')->count());
+        $this->assertSame(104, ProgramCampusDiscount::query()->whereNull('campus_id')->count());
 
         $this->assertDatabaseHas('programs', [
             'id' => 42,
@@ -34,11 +36,25 @@ class ProgramSeederTest extends TestCase
             'status' => 'active',
         ]);
 
+        $this->assertDatabaseHas('program_campus_discounts', [
+            'program_id' => 42,
+            'campus_id' => null,
+            'discount_percent' => 40.00,
+            'status' => 'active',
+        ]);
+
         $this->assertDatabaseHas('programs', [
             'id' => 81,
             'title' => 'Digital Transformation Program & Strategy',
             'code' => 'DS',
             'program_type' => 'certificate',
+            'status' => 'active',
+        ]);
+
+        $this->assertDatabaseHas('program_campus_discounts', [
+            'program_id' => 81,
+            'campus_id' => null,
+            'discount_percent' => 20.00,
             'status' => 'active',
         ]);
 

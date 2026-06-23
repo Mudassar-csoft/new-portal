@@ -16,6 +16,7 @@ class ProgramSeeder extends Seeder
 
         foreach ($this->programRows() as $row) {
             $code = $this->resolveCode($row, $usedCodes);
+            $discountLimit = $row['discount_limit'] ?? 20.0;
 
             $payload = [
                 'id' => $row['id'],
@@ -26,7 +27,7 @@ class ProgramSeeder extends Seeder
                 'program_type' => $this->normalizeProgramType($row['program_type']),
                 'fee' => $row['fee'],
                 'duration_weeks' => $row['duration_weeks'],
-                'discount_limit' => $row['discount_limit'],
+                'discount_limit' => $discountLimit,
                 'installments' => 1,
                 'outline_path' => $row['outline_path'],
                 'prerequisite' => $row['prerequisite'],
@@ -45,6 +46,8 @@ class ProgramSeeder extends Seeder
                     ->where('id', $row['id'])
                     ->update($this->withoutId($payload));
 
+                $this->upsertGlobalDiscount((int) $row['id'], $discountLimit, $payload['created_at'], $payload['updated_at']);
+
                 continue;
             }
 
@@ -57,11 +60,18 @@ class ProgramSeeder extends Seeder
                     ->where('id', $existingByCode->id)
                     ->update($this->withoutId($payload));
 
+                $this->upsertGlobalDiscount((int) $existingByCode->id, $discountLimit, $payload['created_at'], $payload['updated_at']);
+
                 continue;
             }
 
             if ($existingById) {
                 DB::table('programs')->insert($this->withoutId($payload));
+                $insertedProgramId = (int) DB::table('programs')
+                    ->where('code', $code)
+                    ->value('id');
+
+                $this->upsertGlobalDiscount($insertedProgramId, $discountLimit, $payload['created_at'], $payload['updated_at']);
 
                 $this->command?->warn(sprintf(
                     'Program %s inserted without fixed id %d because that id is already in use.',
@@ -73,6 +83,7 @@ class ProgramSeeder extends Seeder
             }
 
             DB::table('programs')->insert($payload);
+            $this->upsertGlobalDiscount((int) $row['id'], $discountLimit, $payload['created_at'], $payload['updated_at']);
         }
     }
 
@@ -249,5 +260,21 @@ class ProgramSeeder extends Seeder
         unset($payload['id']);
 
         return $payload;
+    }
+
+    private function upsertGlobalDiscount(int $programId, float $discountPercent, ?string $createdAt, ?string $updatedAt): void
+    {
+        DB::table('program_campus_discounts')->updateOrInsert(
+            [
+                'program_id' => $programId,
+                'campus_id' => null,
+            ],
+            [
+                'discount_percent' => $discountPercent,
+                'status' => 'active',
+                'created_at' => $createdAt ?? now(),
+                'updated_at' => $updatedAt ?? now(),
+            ]
+        );
     }
 }
