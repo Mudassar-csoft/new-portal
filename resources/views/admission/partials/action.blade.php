@@ -87,7 +87,7 @@
             .admission-action-state {
                 display: flex;
                 flex-direction: column;
-                align-items: flex-end;
+                align-items: flex-start;
                 gap: 6px;
             }
 
@@ -104,9 +104,12 @@
 @endonce
 
 @if($approvalStatus === \App\Models\Admission::APPROVAL_STATUS_PENDING)
-    <div class="admission-action-state">
+        <div class="admission-action-state">
         @if($canAdmissionUpload)
-            <button
+         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button>    
+        <button
                 type="button"
                 class="btn btn-primary btn-sm js-open-upload-admission"
                 data-admission-id="{{ $admission->id }}"
@@ -120,15 +123,18 @@
         @endif
 
         @if(filled($admission->approval_remarks))
-            <div class="admission-action-note">Admin Comment: {{ $admission->approval_remarks }}</div>
+            <!-- <div class="admission-action-note">Admin Comment: {{ $admission->approval_remarks }}</div> -->
         @endif
     </div>
 @elseif($approvalStatus === \App\Models\Admission::APPROVAL_STATUS_REQUESTED)
     <div class="admission-action-state">
         @if($canAdminEdit)
-            <button
+          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+        </button> 
+        <button
                 type="button"
-                class="btn btn-info btn-sm js-open-review-admission"
+                class="btn btn-primary js-open-review-admission"
                 data-admission-id="{{ $admission->id }}"
                 data-student-name="{{ $admission->student_name }}"
                 data-doc-cnic="{{ $docCnicUrl ?? '' }}"
@@ -144,7 +150,7 @@
         @endif
 
         @if(filled($admission->approval_remarks))
-            <div class="admission-action-note">Admin Comment: {{ $admission->approval_remarks }}</div>
+            <!-- <div class="admission-action-note">Admin Comment: {{ $admission->approval_remarks }}</div> -->
         @endif
     </div>
 @else

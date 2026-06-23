@@ -3170,6 +3170,7 @@ textarea.form-control {
   font-weight: 600;
   font-size: 1rem;
   padding: 0 2rem 0 .5rem;
+  margin-top: 11px;
   height: 26px;
   line-height: 26px;
   position: relative;
