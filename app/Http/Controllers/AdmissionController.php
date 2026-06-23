@@ -67,9 +67,7 @@ class AdmissionController extends Controller
             ->orderBy('name')
             ->get();
         $programs = Program::query()->orderBy('title')->get();
-        $batches = Batch::query()
-            ->orderBy('name')
-            ->get();
+        $batches = $this->admissionBatches();
 
         $isAnotherCourseEnrollment = (bool) ($sourceRegistration || $sourceAdmission);
         $formDefaults = $this->buildAdmissionFormDefaults($lead, $sourceRegistration, $sourceAdmission, $isAnotherCourseEnrollment);
@@ -867,6 +865,33 @@ class AdmissionController extends Controller
             'registration_number' => $campusCode . '-' . $monthYear . '-' . $countPadded,
             'receipt_number' => $campusCode . '-' . $monthYear . '-' . $receiptPadded,
         ];
+    }
+
+    private function admissionBatches()
+    {
+        $today = now()->startOfDay();
+        $recentWindow = $today->copy()->subDays(30);
+
+        return Batch::query()
+            ->where(function ($query) use ($today, $recentWindow) {
+                $query
+                    ->where(function ($builder) use ($today, $recentWindow) {
+                        $builder
+                            ->whereDate('start_date', '>=', $recentWindow)
+                            ->whereDate('start_date', '<=', $today);
+                    })
+                    ->orWhere(function ($builder) use ($today) {
+                        $builder
+                            ->whereDate('start_date', '<=', $today)
+                            ->where(function ($nested) use ($today) {
+                                $nested
+                                    ->whereNull('end_date')
+                                    ->orWhereDate('end_date', '>=', $today);
+                            });
+                    });
+            })
+            ->orderBy('name')
+            ->get();
     }
 
     private function resolveDiscountPercent(int $programId, int $campusId): float
