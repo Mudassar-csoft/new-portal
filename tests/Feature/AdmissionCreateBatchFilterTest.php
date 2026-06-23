@@ -14,6 +14,68 @@ class AdmissionCreateBatchFilterTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admission_create_batch_dropdown_uses_batch_code_as_label(): void
+    {
+        $admissionCreate = Permission::query()->create([
+            'resource' => 'admission',
+            'action' => 'create',
+            'slug' => 'admission.create',
+        ]);
+
+        $campus = Campus::query()->create([
+            'name' => 'Label Campus',
+            'slug' => 'label-campus',
+            'code' => 'LBL',
+        ]);
+
+        $program = Program::query()->create([
+            'name' => 'Label Program',
+            'title' => 'Label Program',
+            'code' => 'LBL101',
+            'program_type' => 'bootcamp',
+            'fee' => 50000,
+            'duration_weeks' => 12,
+            'installments' => 3,
+            'status' => 'active',
+        ]);
+
+        $batch = Batch::query()->create([
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'name' => 'Friendly Batch Name',
+            'code' => 'LBL-B1',
+            'start_date' => now()->subDays(5)->toDateString(),
+            'end_date' => now()->addDays(20)->toDateString(),
+            'session' => 'morning',
+            'start_time' => '09:00',
+            'end_time' => '11:00',
+            'status' => 'active',
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+
+        $user->permissions()->sync([$admissionCreate->id]);
+
+        $response = $this->actingAs($user)->get(route('admission.create'));
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML($response->assertOk()->getContent());
+
+        $xpath = new \DOMXPath($dom);
+        $options = $xpath->query('//select[@name="batch_id"]/option');
+        $labels = [];
+
+        foreach ($options as $option) {
+            $labels[] = trim($option->textContent);
+        }
+
+        $this->assertContains('LBL-B1', $labels);
+        $this->assertNotContains('Friendly Batch Name', $labels);
+        $this->assertTrue(Batch::query()->whereKey($batch->id)->exists());
+    }
+
     public function test_admission_create_only_shows_recently_started_or_in_progress_batches(): void
     {
         $admissionCreate = Permission::query()->create([
