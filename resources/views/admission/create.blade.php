@@ -843,6 +843,25 @@
 				return Math.round((Number(n) || 0) * 100) / 100;
 			}
 
+			function programInstallmentsMax() {
+				const prog = programMap[programEl.value];
+				return prog ? Math.max(1, Number(prog.installments) || 1) : 1;
+			}
+
+			function programAllowsInstallments() {
+				return programInstallmentsMax() > 1;
+			}
+
+			function syncFeeTypeAvailability() {
+				const allowsInstallments = programAllowsInstallments();
+
+				feeTypeInst.disabled = !allowsInstallments;
+
+				if (!allowsInstallments && feeTypeInst.checked) {
+					feeTypeFull.checked = true;
+				}
+			}
+
 			function recalcFees() {
 				const programId = programEl.value;
 				const campusId = campusEl.value;
@@ -856,6 +875,7 @@
 					discountedFeeEl.value = '';
 					discountLimitHintEl.textContent = '';
 					clearDiscountError();
+					syncFeeTypeAvailability();
 					rebuildInstallments();
 					return;
 				}
@@ -876,6 +896,7 @@
 				updateLimitHint();
 				clearDiscountError();
 
+				syncFeeTypeAvailability();
 				rebuildInstallments();
 			}
 
@@ -930,14 +951,18 @@
 				return Number(discountedFeeEl.value) || 0;
 			}
 
-			function programInstallmentsMax() {
-				const prog = programMap[programEl.value];
-				return prog ? Math.max(1, Number(prog.installments) || 1) : 1;
-			}
-
 			function rebuildInstallments() {
 				const max = programInstallmentsMax();
-				installmentsMaxHint.textContent = '(Program allows up to ' + max + ' installment' + (max === 1 ? '' : 's') + '. Enter 0 to skip an installment.)';
+
+				if (max <= 1) {
+					installmentsMaxHint.textContent = '';
+					installmentsRows.innerHTML = '';
+					installmentsTotalEl.textContent = '0.00';
+					installmentsRemainingEl.textContent = '0.00';
+					return;
+				}
+
+				installmentsMaxHint.textContent = '(Program allows ' + max + ' installment' + (max === 1 ? '' : 's') + '.)';
 				renderInstallmentInputs();
 			}
 
@@ -1021,7 +1046,9 @@
 			}
 
 			function toggleInstallmentsBlock() {
-				if (feeTypeInst.checked) {
+				syncFeeTypeAvailability();
+
+				if (feeTypeInst.checked && !feeTypeInst.disabled) {
 					installmentsBlock.style.display = 'flex';
 					rebuildInstallments();
 				} else {

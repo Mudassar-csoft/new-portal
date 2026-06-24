@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CampusSeeder::class,
             CampusUserSeeder::class,
             ProgramSeeder::class,
+            BatchSeeder::class,
             DemoAcademicSeeder::class,
             FinanceSetupSeeder::class,
         ]);
