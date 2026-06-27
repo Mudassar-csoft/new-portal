@@ -2,7 +2,7 @@
 
 @php use Illuminate\Support\Str; @endphp
 
-@section('title', 'All Leads')
+@section('title', ($moduleTitle ?? 'Lead') . ' | All Leads')
 
 @section('content')
 	@php
@@ -13,6 +13,9 @@
 			'not_interesting' => 'Not Interested',
 		];
 		$todayOnly = (bool) ($todayOnly ?? false);
+		$interestHeading = $interestHeading ?? 'Program';
+		$emptyStateMessage = $emptyStateMessage ?? 'No leads found.';
+		$indexRoute = $indexRoute ?? route('leads.index');
 	@endphp
 
 	<div class="lead-status-shell">
@@ -40,7 +43,7 @@
 					@if($todayOnly)
 						<div class="lead-filter-banner">
 							<span>Showing today&apos;s leads only.</span>
-							<a href="{{ route('leads.index') }}" class="lead-filter-banner-link">View all leads</a>
+							<a href="{{ $indexRoute }}" class="lead-filter-banner-link">View all leads</a>
 						</div>
 					@endif
 					<div class="follow-controls">
@@ -65,7 +68,7 @@
 								<tr>
 									<th>Sr</th>
 									<th>Name</th>
-									<th>Program</th>
+									<th>{{ $interestHeading }}</th>
 									<th>Primary Contact</th>
 									<th>Campus Code</th>
 									<th>Created By</th>
@@ -96,7 +99,7 @@
 												{{ $row->name ?? 'N/A' }}
 											</a>
 										</td>
-										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
+										<td>{{ $row->interest_summary ?? 'N/A' }}</td>
 										<td>{{ $row->phone ?? 'N/A' }}</td>
 										<td>{{ $row->campus?->code ?? $row->campus?->name ?? 'N/A' }}</td>
 										<td>{{ $row->createdBy?->name ?? 'Unknown' }}</td>
@@ -113,7 +116,7 @@
 									</tr>
 								@empty
 									<tr>
-										<td colspan="10" class="text-center text-muted">No training leads found.</td>
+										<td colspan="10" class="text-center text-muted">{{ $emptyStateMessage }}</td>
 									</tr>
 								@endforelse
 							</tbody>

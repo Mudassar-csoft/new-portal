@@ -28,47 +28,22 @@ class LeadController extends Controller
 {
     public function index(Request $request): View
     {
-        $todayOnly = $request->boolean('today');
+        return $this->renderLeadIndex('training', $request);
+    }
 
-        $leadQuery = $this->trainingLeadQuery()
-            ->with([
-                'program',
-                'campus',
-                'createdBy:id,name',
-            ])
-            ->withCount('followups')
-            ->latest();
+    public function certificationIndex(Request $request): View
+    {
+        return $this->renderLeadIndex('certification', $request);
+    }
 
-        if ($todayOnly) {
-            $leadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
-        }
+    public function studyAbroadIndex(Request $request): View
+    {
+        return $this->renderLeadIndex('study_abroad', $request);
+    }
 
-        $leads = $leadQuery->get();
-
-        $tabs = [
-            'all' => 'All Leads',
-            'pending' => 'Pending',
-            'registered' => 'Registered',
-            'enrolled' => 'Enrolled',
-            'not_interesting' => 'Not Interested',
-        ];
-
-        $badgeColors = [
-            'all' => 'badge-secondary',
-            'pending' => 'badge-primary',
-            'registered' => 'badge-info',
-            'enrolled' => 'badge-warning',
-            'not_interesting' => 'badge-danger',
-        ];
-
-        $tabCounts = [];
-        foreach ($tabs as $key => $label) {
-            $tabCounts[$key] = $key === 'all'
-                ? $leads->count()
-                : $leads->where('status', $key)->count();
-        }
-
-        return view('lead.all', compact('leads', 'tabs', 'badgeColors', 'tabCounts', 'todayOnly'));
+    public function coworkingIndex(Request $request): View
+    {
+        return $this->renderLeadIndex('coworking', $request);
     }
 
     public function create(Request $request): View|RedirectResponse
@@ -235,6 +210,8 @@ class LeadController extends Controller
             $this->leadStoreAttributes()
         );
 
+        $mergedDetails = $this->mergeLeadDetails($lead->details, $validated['details'] ?? []);
+
         $lead->update([
             'campus_id' => $validated['campus_id'] ?? null,
             'program_id' => $validated['program_id'] ?? null,
@@ -246,7 +223,7 @@ class LeadController extends Controller
             'city' => $validated['city'] ?? null,
             'origin' => $validated['origin'] ?? null,
             'marketing_source' => $validated['marketing_source'] ?? null,
-            'details' => $validated['details'] ?? [],
+            'details' => $mergedDetails,
         ]);
 
         return Redirect::route('leads.show', $lead)->with('status', 'Lead updated successfully.');
@@ -296,6 +273,8 @@ class LeadController extends Controller
         $currentStage = $this->resolveCurrentStage($lead);
         $canUpdateLeadProfile = $currentStage === 'new';
         $usesTrainingConversionFlow = $this->usesTrainingConversionFlow($lead->type);
+        $supportsRegistration = $this->supportsRegistration($lead->type);
+        $supportsAdmission = $this->supportsAdmission($lead->type);
         $allowedStages = array_keys($this->followupStageConfig($lead->type)['stageMap']);
         $selectedStage = (string) $request->input('stage');
         $usesMinimalFields = in_array($selectedStage, ['registered', 'not_interesting', 'enroll'], true);
@@ -327,7 +306,7 @@ class LeadController extends Controller
             'note' => 'remarks',
         ]);
 
-        if (! $usesTrainingConversionFlow && $validated['stage'] === 'registered') {
+        if ($lead->type === 'coworking' && $validated['stage'] === 'registered') {
             throw ValidationException::withMessages([
                 'stage' => [
                     'Use the coworking registration form to register this lead.',
@@ -335,12 +314,20 @@ class LeadController extends Controller
             ]);
         }
 
-        if ($usesTrainingConversionFlow && in_array($validated['stage'], ['registered', 'enroll'], true)) {
+        if ($supportsRegistration && $usesTrainingConversionFlow && in_array($validated['stage'], ['registered', 'enroll'], true)) {
             throw ValidationException::withMessages([
                 'stage' => [
                     $validated['stage'] === 'registered'
                         ? 'Use the registration form to register this lead.'
                         : 'Use the admission form to enroll this lead.',
+                ],
+            ]);
+        }
+
+        if (! $supportsAdmission && $validated['stage'] === 'enroll') {
+            throw ValidationException::withMessages([
+                'stage' => [
+                    'The selected lead type does not support enrollment.',
                 ],
             ]);
         }
@@ -401,6 +388,8 @@ class LeadController extends Controller
 
         $isCoworkingLead = $lead->type === 'coworking';
         $usesTrainingConversionFlow = $this->usesTrainingConversionFlow($lead->type);
+        $supportsRegistration = $this->supportsRegistration($lead->type);
+        $supportsAdmission = $this->supportsAdmission($lead->type);
         $stages = $this->followupStageConfig($lead->type)['stageMap'];
         $campuses = Campus::orderBy('name')->get();
         $resolvedCoworkingCampus = $isCoworkingLead
@@ -448,6 +437,8 @@ class LeadController extends Controller
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
         $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
+        $interestHeading = $this->leadInterestHeading($lead->type);
+        $interestValue = $this->leadInterestValue($lead);
 
         // Hide the opposite terminal state to avoid showing both end states together
         if ($lead->status === 'not_interesting') {
@@ -475,8 +466,12 @@ class LeadController extends Controller
             'isCoworkingLead' => $isCoworkingLead,
             'isFollowupClosed' => $isFollowupClosed,
             'usesTrainingConversionFlow' => $usesTrainingConversionFlow,
+            'supportsRegistration' => $supportsRegistration,
+            'supportsAdmission' => $supportsAdmission,
             'leadLocationCode' => $leadLocationCode,
             'leadLocationName' => $leadLocationName,
+            'interestHeading' => $interestHeading,
+            'interestValue' => $interestValue,
             'transfers' => $lead->transfers()->latest()->get(),
         ]);
     }
@@ -577,9 +572,12 @@ class LeadController extends Controller
 
     public function transfers(Request $request): View|JsonResponse
     {
+        $type = $this->normalizeLeadType((string) $request->query('type', 'training'));
+        $typeMeta = $this->leadTypeMeta($type);
+
         if ($request->ajax()) {
             $query = LeadTransfer::query()
-                ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToCurrentCampus($leadQuery->training()))
+                ->whereHas('lead', fn (Builder $leadQuery) => $this->applyLeadTypeScope($leadQuery, $type))
                 ->with([
                     'lead:id,name,phone,program_id',
                     'lead.program:id,title,name',
@@ -653,7 +651,11 @@ class LeadController extends Controller
                 ->make(true);
         }
 
-        return view('lead.transfers');
+        return view('lead.transfers', [
+            'type' => $type,
+            'moduleTitle' => $typeMeta['moduleTitle'],
+            'ajaxUrl' => route('leads.transfer', ['type' => $type]),
+        ]);
     }
 
     public function followups(): View
@@ -661,24 +663,24 @@ class LeadController extends Controller
         return $this->renderFollowupsModule('training');
     }
 
+    public function certificationFollowups(): View
+    {
+        return $this->renderFollowupsModule('certification');
+    }
+
+    public function studyAbroadFollowups(): View
+    {
+        return $this->renderFollowupsModule('study_abroad');
+    }
+
     public function coworkingFollowups(): View
     {
         return $this->renderFollowupsModule('coworking');
     }
 
-    private function trainingLeadQuery(): Builder
+    private function leadQueryForType(string $type): Builder
     {
-        return $this->scopeLeadQueryToCurrentCampus(Lead::query()->training());
-    }
-
-    private function coworkingLeadQuery(): Builder
-    {
-        return Lead::query()->coworking();
-    }
-
-    private function latestTrainingFollowups(): Collection
-    {
-        return $this->latestFollowupsByType('training');
+        return $this->applyLeadTypeScope(Lead::query(), $type);
     }
 
     private function latestFollowupsByType(string $type): Collection
@@ -696,13 +698,7 @@ class LeadController extends Controller
                 'lead.coworkingRegistration',
                 'user:id,name',
             ])
-            ->whereHas('lead', function (Builder $leadQuery) use ($type) {
-                if ($type === 'coworking') {
-                    $leadQuery->coworking();
-                } else {
-                    $this->scopeLeadQueryToCurrentCampus($leadQuery->training());
-                }
-            })
+            ->whereHas('lead', fn (Builder $leadQuery) => $this->applyLeadTypeScope($leadQuery, $type))
             ->latest()
             ->get()
             ->unique('lead_id')
@@ -821,10 +817,204 @@ class LeadController extends Controller
         return $campusId > 0 ? $campusId : null;
     }
 
+    private function renderLeadIndex(string $type, Request $request): View
+    {
+        $type = $this->normalizeLeadType($type);
+        $todayOnly = $request->boolean('today');
+        $typeMeta = $this->leadTypeMeta($type);
+
+        $leadQuery = $this->leadQueryForType($type)
+            ->with([
+                'program',
+                'campus',
+                'createdBy:id,name',
+            ])
+            ->withCount('followups')
+            ->latest();
+
+        if ($todayOnly) {
+            $leadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+
+        $leads = $leadQuery->get()->map(function (Lead $lead) {
+            $lead->interest_summary = $this->leadInterestValue($lead);
+
+            return $lead;
+        });
+
+        $tabs = $this->leadIndexTabs($type);
+        $badgeColors = $this->leadIndexBadgeColors($type);
+        $tabCounts = [];
+
+        foreach ($tabs as $key => $label) {
+            $tabCounts[$key] = $key === 'all'
+                ? $leads->count()
+                : $leads->where('status', $key)->count();
+        }
+
+        return view('lead.all', [
+            'leads' => $leads,
+            'tabs' => $tabs,
+            'badgeColors' => $badgeColors,
+            'tabCounts' => $tabCounts,
+            'todayOnly' => $todayOnly,
+            'type' => $type,
+            'moduleTitle' => $typeMeta['moduleTitle'],
+            'interestHeading' => $this->leadInterestHeading($type),
+            'emptyStateMessage' => $typeMeta['emptyStateMessage'],
+            'indexRoute' => route($typeMeta['indexRoute']),
+        ]);
+    }
+
+    private function applyLeadTypeScope(Builder $query, string $type): Builder
+    {
+        $type = $this->normalizeLeadType($type);
+
+        $query = match ($type) {
+            'coworking' => $query->coworking(),
+            'certification' => $query->certification(),
+            'study_abroad' => $query->studyAbroad(),
+            default => $query->training(),
+        };
+
+        if ($type === 'coworking') {
+            return $query;
+        }
+
+        return $this->scopeLeadQueryToCurrentCampus($query);
+    }
+
+    private function normalizeLeadType(string $type): string
+    {
+        return in_array($type, ['training', 'coworking', 'certification', 'study_abroad'], true)
+            ? $type
+            : 'training';
+    }
+
+    /**
+     * @return array{label: string, moduleTitle: string, indexPageTitle: string, followupsPageTitle: string, emptyStateMessage: string, indexRoute: string}
+     */
+    private function leadTypeMeta(string $type): array
+    {
+        return match ($this->normalizeLeadType($type)) {
+            'coworking' => [
+                'label' => 'Coworking Space',
+                'moduleTitle' => 'Coworking Space',
+                'indexPageTitle' => 'Coworking Space Leads',
+                'followupsPageTitle' => 'Coworking Space Follow-ups',
+                'emptyStateMessage' => 'No coworking leads found.',
+                'indexRoute' => 'leads.coworking.index',
+            ],
+            'certification' => [
+                'label' => 'Certification Exam',
+                'moduleTitle' => 'Exam Leads',
+                'indexPageTitle' => 'Exam Leads',
+                'followupsPageTitle' => 'Exam Lead Follow-ups',
+                'emptyStateMessage' => 'No exam leads found.',
+                'indexRoute' => 'leads.certification.index',
+            ],
+            'study_abroad' => [
+                'label' => 'Study Abroad',
+                'moduleTitle' => 'Study Abroad Leads',
+                'indexPageTitle' => 'Study Abroad Leads',
+                'followupsPageTitle' => 'Study Abroad Lead Follow-ups',
+                'emptyStateMessage' => 'No study abroad leads found.',
+                'indexRoute' => 'leads.study-abroad.index',
+            ],
+            default => [
+                'label' => 'Training',
+                'moduleTitle' => 'Training Leads',
+                'indexPageTitle' => 'Training Leads',
+                'followupsPageTitle' => 'Training Lead Follow-ups',
+                'emptyStateMessage' => 'No training leads found.',
+                'indexRoute' => 'leads.index',
+            ],
+        };
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function leadIndexTabs(string $type): array
+    {
+        if ($this->supportsAdmission($type)) {
+            return [
+                'all' => 'All Leads',
+                'pending' => 'Pending',
+                'registered' => 'Registered',
+                'enrolled' => 'Enrolled',
+                'not_interesting' => 'Not Interested',
+            ];
+        }
+
+        return [
+            'all' => 'All Leads',
+            'pending' => 'Pending',
+            'registered' => 'Registered',
+            'not_interesting' => 'Not Interested',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function leadIndexBadgeColors(string $type): array
+    {
+        $colors = [
+            'all' => 'badge-secondary',
+            'pending' => 'badge-primary',
+            'registered' => 'badge-info',
+            'not_interesting' => 'badge-danger',
+        ];
+
+        if ($this->supportsAdmission($type)) {
+            $colors['enrolled'] = 'badge-warning';
+        }
+
+        return $colors;
+    }
+
+    private function leadInterestHeading(string $type): string
+    {
+        return match ($this->normalizeLeadType($type)) {
+            'coworking' => 'Space Type',
+            'certification' => 'Certification / Exam',
+            'study_abroad' => 'Study Program',
+            default => 'Program',
+        };
+    }
+
+    private function leadInterestValue(Lead $lead): string
+    {
+        return match ($this->normalizeLeadType((string) $lead->type)) {
+            'coworking' => (string) (data_get($lead->details, 'space_required')
+                ?: data_get($lead->details, 'business_name')
+                ?: 'N/A'),
+            'certification' => (string) (data_get($lead->details, 'certification_title')
+                ?: data_get($lead->details, 'exam_code')
+                ?: 'N/A'),
+            'study_abroad' => (string) (data_get($lead->details, 'preferred_study_program')
+                ?: data_get($lead->details, 'preferred_country')
+                ?: 'N/A'),
+            default => (string) ($lead->program?->title ?? $lead->program?->name ?? 'N/A'),
+        };
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $existingDetails
+     * @param  array<string, mixed>  $submittedDetails
+     * @return array<string, mixed>
+     */
+    private function mergeLeadDetails(?array $existingDetails, array $submittedDetails): array
+    {
+        return array_replace($existingDetails ?? [], $submittedDetails);
+    }
+
     private function renderFollowupsModule(string $type): View
     {
         $followups = $this->latestFollowupsByType($type);
         $stageConfig = $this->followupStageConfig($type);
+        $typeMeta = $this->leadTypeMeta($type);
         $tabs = $stageConfig['tabs'];
         $badgeColors = $stageConfig['badgeColors'];
 
@@ -835,17 +1025,9 @@ class LeadController extends Controller
                 : $followups->where('stage_label', $label)->count();
         }
 
-        $pageTitle = $type === 'coworking'
-            ? 'Coworking Space Follow-ups'
-            : 'Training Lead Follow-ups';
-
-        $moduleTitle = $type === 'coworking'
-            ? 'Coworking Space'
-            : 'Training Leads';
-
-        $interestHeading = $type === 'coworking'
-            ? 'Space Type'
-            : 'Interested Course';
+        $pageTitle = $typeMeta['followupsPageTitle'];
+        $moduleTitle = $typeMeta['moduleTitle'];
+        $interestHeading = $this->leadInterestHeading($type);
 
         return view('lead.followups', compact(
             'followups',
@@ -861,7 +1043,44 @@ class LeadController extends Controller
 
     private function followupStageConfig(string $type): array
     {
-        if ($type === 'coworking') {
+        if ($type === 'training') {
+            return [
+                'stageMap' => [
+                    'new' => 'New',
+                    'contacted' => 'Contacted',
+                    'need_analysis' => 'Need Analysis',
+                    'branch_visited' => 'Branch Visited',
+                    'proposal_negotiation' => 'Proposal & Negotiation',
+                    'not_interesting' => 'Not Interesting',
+                    'registered' => 'Registered',
+                    'enroll' => 'Enrolled',
+                ],
+                'tabs' => [
+                    'all' => 'All',
+                    'New' => 'New',
+                    'Contacted' => 'Contacted',
+                    'Need Analysis' => 'Need Analysis',
+                    'Branch Visited' => 'Branch Visited',
+                    'Proposal & Negotiation' => 'Proposal & Negotiation',
+                    'Not Interesting' => 'Not Interesting',
+                    'Registered' => 'Registered',
+                    'Enrolled' => 'Enrolled',
+                ],
+                'badgeColors' => [
+                    'all' => 'badge-secondary',
+                    'New' => 'badge-primary',
+                    'Contacted' => 'badge-success',
+                    'Need Analysis' => 'badge-warning',
+                    'Branch Visited' => 'badge-secondary',
+                    'Proposal & Negotiation' => 'badge-info',
+                    'Not Interesting' => 'badge-warning',
+                    'Registered' => 'badge-success',
+                    'Enrolled' => 'badge-success',
+                ],
+            ];
+        }
+
+        if (in_array($type, ['coworking', 'certification', 'study_abroad'], true)) {
             return [
                 'stageMap' => [
                     'new' => 'New',
@@ -895,45 +1114,14 @@ class LeadController extends Controller
             ];
         }
 
-        return [
-            'stageMap' => [
-                'new' => 'New',
-                'contacted' => 'Contacted',
-                'need_analysis' => 'Need Analysis',
-                'branch_visited' => 'Branch Visited',
-                'proposal_negotiation' => 'Proposal & Negotiation',
-                'not_interesting' => 'Not Interesting',
-                'registered' => 'Registered',
-                'enroll' => 'Enrolled',
-            ],
-            'tabs' => [
-                'all' => 'All',
-                'New' => 'New',
-                'Contacted' => 'Contacted',
-                'Need Analysis' => 'Need Analysis',
-                'Branch Visited' => 'Branch Visited',
-                'Proposal & Negotiation' => 'Proposal & Negotiation',
-                'Not Interesting' => 'Not Interesting',
-                'Registered' => 'Registered',
-                'Enrolled' => 'Enrolled',
-            ],
-            'badgeColors' => [
-                'all' => 'badge-secondary',
-                'New' => 'badge-primary',
-                'Contacted' => 'badge-success',
-                'Need Analysis' => 'badge-warning',
-                'Branch Visited' => 'badge-secondary',
-                'Proposal & Negotiation' => 'badge-info',
-                'Not Interesting' => 'badge-warning',
-                'Registered' => 'badge-success',
-                'Enrolled' => 'badge-success',
-            ],
-        ];
+        return $this->followupStageConfig('training');
     }
 
     private function leadFollowupsRouteName(?string $type): string
     {
         return match ($type) {
+            'certification' => 'leads.certification.followups',
+            'study_abroad' => 'leads.study-abroad.followups',
             'coworking' => 'leads.coworking.followups',
             default => 'leads.followups',
         };
@@ -941,7 +1129,17 @@ class LeadController extends Controller
 
     private function usesTrainingConversionFlow(?string $type): bool
     {
-        return $type !== 'coworking';
+        return $type === 'training';
+    }
+
+    private function supportsRegistration(?string $type): bool
+    {
+        return in_array($type, ['training', 'coworking'], true);
+    }
+
+    private function supportsAdmission(?string $type): bool
+    {
+        return $type === 'training';
     }
 
     private function closedFollowupStatuses(?string $type): array
@@ -965,7 +1163,7 @@ class LeadController extends Controller
     {
         $normalizedStage = trim((string) $stage);
 
-        if ($type === 'coworking' && $normalizedStage === 'enroll') {
+        if (! $this->supportsAdmission($type) && $normalizedStage === 'enroll') {
             return 'registered';
         }
 
@@ -1220,6 +1418,7 @@ class LeadController extends Controller
                 'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
             ]),
             'certification' => array_merge($rules, [
+                'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'city' => ['required', 'string', 'max:255'],
                 'details.country' => ['required', 'string', 'max:255'],
                 'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],
@@ -1242,6 +1441,7 @@ class LeadController extends Controller
                 'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
             ]),
             'study_abroad' => array_merge($rules, [
+                'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'city' => ['required', 'string', 'max:255'],
                 'details.country' => ['required', 'string', 'max:255'],
                 'details.gender' => ['required', Rule::in(['male', 'female', 'other'])],

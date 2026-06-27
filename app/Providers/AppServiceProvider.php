@@ -112,10 +112,34 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 if (Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
-                    $followupNotifications = $this->latestDueTrainingFollowupNotifications(
-                        $currentUser,
-                        fn (Builder $leadQuery, ?User $user) => $this->scopeLeadQueryToUserCampus($leadQuery, $user)
-                    );
+                    if ($currentUser?->hasAnyPermission(['lead.followup.view']) ?? false) {
+                        $followupNotifications = $followupNotifications->concat(
+                            $this->latestDueLeadFollowupNotifications(
+                                $currentUser,
+                                fn (Builder $leadQuery, ?User $user) => $this->scopeLeadQueryToUserCampus($leadQuery, $user),
+                                ['training', 'certification', 'study_abroad']
+                            )
+                        );
+                    }
+
+                    if ($currentUser?->hasAnyPermission(['lead.coworking.view']) ?? false) {
+                        $followupNotifications = $followupNotifications->concat(
+                            $this->latestDueLeadFollowupNotifications(
+                                $currentUser,
+                                fn (Builder $leadQuery, ?User $user) => $this->scopeLeadQueryToUserCampus($leadQuery, $user),
+                                ['coworking']
+                            )
+                        );
+                    }
+
+                    $followupNotifications = $followupNotifications
+                        ->sort(function ($left, $right) {
+                            $leftTimestamp = $left->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
+                            $rightTimestamp = $right->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
+
+                            return $leftTimestamp <=> $rightTimestamp ?: ($right->id <=> $left->id);
+                        })
+                        ->values();
 
                     $followupNotificationCount = $followupNotifications->count();
                     $followupNotifications = $followupNotifications->take(5)->values();
@@ -172,7 +196,17 @@ class AppServiceProvider extends ServiceProvider
             'training_all_leads' => 0,
             'training_today_leads' => 0,
             'training_web_leads' => 0,
+            'certification_followups' => 0,
+            'certification_transfers' => 0,
+            'certification_all_leads' => 0,
+            'certification_today_leads' => 0,
+            'study_abroad_followups' => 0,
+            'study_abroad_transfers' => 0,
+            'study_abroad_all_leads' => 0,
+            'study_abroad_today_leads' => 0,
             'coworking_followups' => 0,
+            'coworking_all_leads' => 0,
+            'coworking_today_leads' => 0,
             'all_registrations' => 0,
             'all_admissions' => 0,
             'admission_today' => 0,
@@ -248,11 +282,45 @@ class AppServiceProvider extends ServiceProvider
                 )
                     ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
                     ->count();
+
+                $sidebarCounts['certification_all_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->certification(),
+                    $user
+                )->count();
+
+                $sidebarCounts['certification_today_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->certification(),
+                    $user
+                )
+                    ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                    ->count();
+
+                $sidebarCounts['study_abroad_all_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->studyAbroad(),
+                    $user
+                )->count();
+
+                $sidebarCounts['study_abroad_today_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->studyAbroad(),
+                    $user
+                )
+                    ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                    ->count();
             }
 
             if ($can('lead.followup.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
                 $sidebarCounts['training_followups'] = LeadFollowup::query()
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->training(), $user))
+                    ->distinct()
+                    ->count('lead_id');
+
+                $sidebarCounts['certification_followups'] = LeadFollowup::query()
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->certification(), $user))
+                    ->distinct()
+                    ->count('lead_id');
+
+                $sidebarCounts['study_abroad_followups'] = LeadFollowup::query()
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->studyAbroad(), $user))
                     ->distinct()
                     ->count('lead_id');
             }
@@ -262,11 +330,31 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->coworking(), $user))
                     ->distinct()
                     ->count('lead_id');
+
+                $sidebarCounts['coworking_all_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->coworking(),
+                    $user
+                )->count();
+
+                $sidebarCounts['coworking_today_leads'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->coworking(),
+                    $user
+                )
+                    ->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])
+                    ->count();
             }
 
             if (($can('lead.view') || $can('lead.transfer.approve')) && Schema::hasTable('lead_transfers') && Schema::hasTable('leads')) {
                 $sidebarCounts['training_transfers'] = LeadTransfer::query()
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->training(), $user))
+                    ->count();
+
+                $sidebarCounts['certification_transfers'] = LeadTransfer::query()
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->certification(), $user))
+                    ->count();
+
+                $sidebarCounts['study_abroad_transfers'] = LeadTransfer::query()
+                    ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->studyAbroad(), $user))
                     ->count();
             }
 

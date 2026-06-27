@@ -83,8 +83,23 @@ class Lead extends Model
         return $query->where('type', 'training');
     }
 
+    public function scopeCertification(Builder $query): Builder
+    {
+        return $query->where('type', 'certification');
+    }
+
     public function scopeCoworking(Builder $query): Builder
     {
         return $query->where('type', 'coworking');
+    }
+
+    public function scopeStudyAbroad(Builder $query): Builder
+    {
+        return $query->where('type', 'study_abroad');
+    }
+
+    public function scopeOfType(Builder $query, string $type): Builder
+    {
+        return $query->where('type', $type);
     }
 }

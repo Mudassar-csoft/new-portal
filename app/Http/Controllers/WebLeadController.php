@@ -246,9 +246,10 @@ class WebLeadController extends Controller
             return 0;
         }
 
-        return $this->latestDueTrainingFollowupNotifications(
+        return $this->latestDueLeadFollowupNotifications(
             auth()->user(),
-            fn (Builder $leadQuery, $user = null) => $this->scopeQueryToCurrentUserCampus($leadQuery)
+            fn (Builder $leadQuery, $user = null) => $this->scopeQueryToCurrentUserCampus($leadQuery),
+            ['training', 'certification', 'study_abroad']
         )->count();
     }
 

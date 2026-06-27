@@ -1,6 +1,6 @@
 @extends('layouts.theme')
 
-@section('title', 'Lead Transfers')
+@section('title', ($moduleTitle ?? 'Lead') . ' Transfers')
 
 @section('content')
     <div class="follow-shell">
@@ -17,7 +17,7 @@
             <div class="box-typical box-typical-dashboard panel panel-default follow-card">
                 <header class="box-typical-header panel-heading d-flex justify-content-between">
                     <div>
-                        <h3 class="panel-title">Lead Management | <span class="text-muted ">Transferred Leads</span></h3>
+                        <h3 class="panel-title">Lead Management | <span class="text-muted ">{{ $moduleTitle ?? 'Lead' }} Transfers</span></h3>
                     </div>
                 </header>
                 <div class="box-typical-body panel-body">
@@ -192,7 +192,7 @@ table#transfer-grid{
                 serverSide: true,
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
-                ajax: "{{ route('leads.transfer') }}",
+                ajax: "{{ $ajaxUrl ?? route('leads.transfer') }}",
                 order: [[7, 'desc']],
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },

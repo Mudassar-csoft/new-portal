@@ -3,10 +3,13 @@
 	$lead = $lead ?? null;
 	$leadId = $lead?->id ?? ($leadId ?? null);
 	$leadStatus = strtolower((string) ($lead?->status ?? 'pending'));
-	$isCoworkingLead = ($lead?->type ?? null) === 'coworking';
+	$leadType = (string) ($lead?->type ?? 'training');
+	$isCoworkingLead = $leadType === 'coworking';
+	$supportsRegistration = in_array($leadType, ['training', 'coworking'], true);
+	$supportsAdmission = $leadType === 'training';
 	$editOnly = (bool) ($editOnly ?? false);
-	$canRegister = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
-	$canEnroll = !$isCoworkingLead && $leadStatus === 'registered';
+	$canRegister = $supportsRegistration && !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
+	$canEnroll = $supportsAdmission && $leadStatus === 'registered';
 	$canTransfer = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
 	$registrationRoute = $isCoworkingLead
 		? route('coworking-registrations.create', ['lead_id' => $leadId])
