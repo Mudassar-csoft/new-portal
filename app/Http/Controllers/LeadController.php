@@ -1055,35 +1055,193 @@ class LeadController extends Controller
         return array_replace($existingDetails ?? [], $submittedDetails);
     }
 
-    private function renderFollowupsModule(string $type): View
+    private function renderFollowupsModule(string $type, Request $request): View
     {
-        $followups = $this->latestFollowupsByType($type);
+        $type = $this->normalizeLeadType($type);
+        $search = $this->normalizeSearchTerm((string) $request->query('q', ''));
+        $selectedStage = $this->normalizeFollowupStageFilter($request->query('stage'), $type);
+        $perPage = $this->resolvePerPage($request);
         $stageConfig = $this->followupStageConfig($type);
         $typeMeta = $this->leadTypeMeta($type);
         $tabs = $stageConfig['tabs'];
         $badgeColors = $stageConfig['badgeColors'];
+        $stageMap = $stageConfig['stageMap'];
 
-        $tabCounts = [];
-        foreach ($tabs as $key => $label) {
-            $tabCounts[$key] = $key === 'all'
-                ? $followups->count()
-                : $followups->where('stage_label', $label)->count();
+        $followupQuery = $this->baseFollowupLeadQuery($type);
+
+        if ($search !== null) {
+            $this->applyFollowupSearch($followupQuery, $search, $type);
+        }
+
+        $totalFollowups = (int) (clone $followupQuery)->count();
+        $countsByStage = $this->latestFollowupStageCounts($type, $search);
+
+        if ($selectedStage !== null) {
+            $followupQuery->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($selectedStage) {
+                $latestFollowupQuery->where('stage', $selectedStage);
+            });
+        }
+
+        $followups = $followupQuery
+            ->orderByDesc('latest_followup_id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $campusDirectory = $type === 'coworking'
+            ? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
+            : collect();
+
+        $followups->setCollection(
+            $followups->getCollection()->map(function (Lead $lead) use ($stageMap, $campusDirectory, $type) {
+                $followup = $lead->latestFollowup;
+
+                if (! $followup) {
+                    return null;
+                }
+
+                $followup->stage = $this->normalizeFollowupStage($type, $followup->stage);
+                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+                $followup->followups_count = (int) ($lead->followups_count ?? 0);
+                $followup->last_follower_name = trim((string) ($followup->user?->name ?? '')) ?: 'System';
+                $followup->setRelation('lead', $lead);
+
+                if ($type === 'coworking') {
+                    $followup->branch_code = $this->resolveCoworkingBranchCode($lead, $campusDirectory);
+                }
+
+                return $followup;
+            })->filter()->values()
+        );
+
+        $tabCounts = ['all' => $totalFollowups];
+        foreach (array_keys($tabs) as $key) {
+            if ($key === 'all') {
+                continue;
+            }
+
+            $tabCounts[$key] = (int) ($countsByStage[$key] ?? 0);
         }
 
         $pageTitle = $typeMeta['followupsPageTitle'];
         $moduleTitle = $typeMeta['moduleTitle'];
         $interestHeading = $this->leadInterestHeading($type);
 
-        return view('lead.followups', compact(
-            'followups',
-            'tabs',
-            'badgeColors',
-            'tabCounts',
-            'pageTitle',
-            'moduleTitle',
-            'interestHeading',
-            'type'
-        ));
+        return view('lead.followups', [
+            'followups' => $followups,
+            'tabs' => $tabs,
+            'badgeColors' => $badgeColors,
+            'tabCounts' => $tabCounts,
+            'pageTitle' => $pageTitle,
+            'moduleTitle' => $moduleTitle,
+            'interestHeading' => $interestHeading,
+            'type' => $type,
+            'selectedStage' => $selectedStage ?? 'all',
+            'search' => $search ?? '',
+            'perPage' => $perPage,
+        ]);
+    }
+
+    private function normalizeSearchTerm(?string $value): ?string
+    {
+        $search = trim((string) $value);
+
+        return $search !== '' ? $search : null;
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->query('per_page', 25);
+
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
+    }
+
+    private function normalizeLeadStatusFilter(mixed $value, string $type): ?string
+    {
+        $status = trim((string) $value);
+
+        return $status !== ''
+            && $status !== 'all'
+            && array_key_exists($status, $this->leadIndexTabs($type))
+            ? $status
+            : null;
+    }
+
+    private function normalizeFollowupStageFilter(mixed $value, string $type): ?string
+    {
+        $stage = trim((string) $value);
+
+        return $stage !== ''
+            && $stage !== 'all'
+            && array_key_exists($stage, $this->followupStageConfig($type)['stageMap'])
+            ? $stage
+            : null;
+    }
+
+    private function applyLeadIndexSearch(Builder $query, string $search, string $type): Builder
+    {
+        return $this->applyLeadSearch($query, $search, $type, false);
+    }
+
+    private function applyFollowupSearch(Builder $query, string $search, string $type): Builder
+    {
+        return $this->applyLeadSearch($query, $search, $type, true);
+    }
+
+    private function applyLeadSearch(Builder $query, string $search, string $type, bool $includeLatestFollower): Builder
+    {
+        $like = $this->toSqlLikePattern($search);
+
+        return $query->where(function (Builder $searchQuery) use ($like, $type, $includeLatestFollower) {
+            $searchQuery
+                ->where('name', 'like', $like)
+                ->orWhere('phone', 'like', $like)
+                ->orWhere('email', 'like', $like)
+                ->orWhere('city', 'like', $like)
+                ->orWhere('origin', 'like', $like)
+                ->orWhere('marketing_source', 'like', $like)
+                ->orWhereHas('campus', function (Builder $campusQuery) use ($like) {
+                    $campusQuery
+                        ->where('code', 'like', $like)
+                        ->orWhere('name', 'like', $like)
+                        ->orWhere('title', 'like', $like)
+                        ->orWhere('city', 'like', $like);
+                })
+                ->orWhereHas('createdBy', fn (Builder $userQuery) => $userQuery->where('name', 'like', $like));
+
+            if ($type === 'training') {
+                $searchQuery->orWhereHas('program', function (Builder $programQuery) use ($like) {
+                    $programQuery
+                        ->where('title', 'like', $like)
+                        ->orWhere('name', 'like', $like);
+                });
+            } elseif ($type === 'coworking') {
+                $searchQuery
+                    ->orWhere('details->space_required', 'like', $like)
+                    ->orWhere('details->business_name', 'like', $like)
+                    ->orWhere('details->preferred_location', 'like', $like);
+            } elseif ($type === 'certification') {
+                $searchQuery
+                    ->orWhere('details->certification_title', 'like', $like)
+                    ->orWhere('details->exam_code', 'like', $like);
+            } elseif ($type === 'study_abroad') {
+                $searchQuery
+                    ->orWhere('details->preferred_study_program', 'like', $like)
+                    ->orWhere('details->preferred_country', 'like', $like);
+            }
+
+            if ($includeLatestFollower) {
+                $searchQuery
+                    ->orWhereHas('latestFollowup.user', fn (Builder $userQuery) => $userQuery->where('name', 'like', $like))
+                    ->orWhereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->where('stage', 'like', $like));
+            }
+        });
+    }
+
+    private function toSqlLikePattern(string $value): string
+    {
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
+
+        return '%' . $escaped . '%';
     }
 
     private function followupStageConfig(string $type): array
@@ -1102,25 +1260,25 @@ class LeadController extends Controller
                 ],
                 'tabs' => [
                     'all' => 'All',
-                    'New' => 'New',
-                    'Contacted' => 'Contacted',
-                    'Need Analysis' => 'Need Analysis',
-                    'Branch Visited' => 'Branch Visited',
-                    'Proposal & Negotiation' => 'Proposal & Negotiation',
-                    'Not Interesting' => 'Not Interesting',
-                    'Registered' => 'Registered',
-                    'Enrolled' => 'Enrolled',
+                    'new' => 'New',
+                    'contacted' => 'Contacted',
+                    'need_analysis' => 'Need Analysis',
+                    'branch_visited' => 'Branch Visited',
+                    'proposal_negotiation' => 'Proposal & Negotiation',
+                    'not_interesting' => 'Not Interesting',
+                    'registered' => 'Registered',
+                    'enroll' => 'Enrolled',
                 ],
                 'badgeColors' => [
                     'all' => 'badge-secondary',
-                    'New' => 'badge-primary',
-                    'Contacted' => 'badge-success',
-                    'Need Analysis' => 'badge-warning',
-                    'Branch Visited' => 'badge-secondary',
-                    'Proposal & Negotiation' => 'badge-info',
-                    'Not Interesting' => 'badge-warning',
-                    'Registered' => 'badge-success',
-                    'Enrolled' => 'badge-success',
+                    'new' => 'badge-primary',
+                    'contacted' => 'badge-success',
+                    'need_analysis' => 'badge-warning',
+                    'branch_visited' => 'badge-secondary',
+                    'proposal_negotiation' => 'badge-info',
+                    'not_interesting' => 'badge-warning',
+                    'registered' => 'badge-success',
+                    'enroll' => 'badge-success',
                 ],
             ];
         }
@@ -1138,23 +1296,23 @@ class LeadController extends Controller
                 ],
                 'tabs' => [
                     'all' => 'All',
-                    'New' => 'New',
-                    'Contacted' => 'Contacted',
-                    'Need Analysis' => 'Need Analysis',
-                    'Branch Visited' => 'Branch Visited',
-                    'Proposal & Negotiation' => 'Proposal & Negotiation',
-                    'Registered' => 'Registered',
-                    'Not Interesting' => 'Not Interesting',
+                    'new' => 'New',
+                    'contacted' => 'Contacted',
+                    'need_analysis' => 'Need Analysis',
+                    'branch_visited' => 'Branch Visited',
+                    'proposal_negotiation' => 'Proposal & Negotiation',
+                    'registered' => 'Registered',
+                    'not_interesting' => 'Not Interesting',
                 ],
                 'badgeColors' => [
                     'all' => 'badge-secondary',
-                    'New' => 'badge-primary',
-                    'Contacted' => 'badge-success',
-                    'Need Analysis' => 'badge-warning',
-                    'Branch Visited' => 'badge-secondary',
-                    'Proposal & Negotiation' => 'badge-info',
-                    'Registered' => 'badge-success',
-                    'Not Interesting' => 'badge-warning',
+                    'new' => 'badge-primary',
+                    'contacted' => 'badge-success',
+                    'need_analysis' => 'badge-warning',
+                    'branch_visited' => 'badge-secondary',
+                    'proposal_negotiation' => 'badge-info',
+                    'registered' => 'badge-success',
+                    'not_interesting' => 'badge-warning',
                 ],
             ];
         }
