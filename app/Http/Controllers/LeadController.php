@@ -658,24 +658,24 @@ class LeadController extends Controller
         ]);
     }
 
-    public function followups(): View
+    public function followups(Request $request): View
     {
-        return $this->renderFollowupsModule('training');
+        return $this->renderFollowupsModule('training', $request);
     }
 
-    public function certificationFollowups(): View
+    public function certificationFollowups(Request $request): View
     {
-        return $this->renderFollowupsModule('certification');
+        return $this->renderFollowupsModule('certification', $request);
     }
 
-    public function studyAbroadFollowups(): View
+    public function studyAbroadFollowups(Request $request): View
     {
-        return $this->renderFollowupsModule('study_abroad');
+        return $this->renderFollowupsModule('study_abroad', $request);
     }
 
-    public function coworkingFollowups(): View
+    public function coworkingFollowups(Request $request): View
     {
-        return $this->renderFollowupsModule('coworking');
+        return $this->renderFollowupsModule('coworking', $request);
     }
 
     private function leadQueryForType(string $type): Builder
@@ -683,38 +683,54 @@ class LeadController extends Controller
         return $this->applyLeadTypeScope(Lead::query(), $type);
     }
 
-    private function latestFollowupsByType(string $type): Collection
+    private function baseFollowupLeadQuery(string $type): Builder
     {
-        $stageMap = $this->followupStageConfig($type)['stageMap'];
+        $latestFollowupIdSubquery = LeadFollowup::query()
+            ->select('id')
+            ->whereColumn('lead_id', 'leads.id')
+            ->orderByDesc('id')
+            ->limit(1);
 
-        $campusDirectory = $type === 'coworking'
-            ? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
-            : collect();
-
-        return LeadFollowup::with([
-                'lead' => fn ($query) => $query->withCount('followups'),
-                'lead.program',
-                'lead.campus',
-                'lead.coworkingRegistration',
-                'user:id,name',
+        return $this->leadQueryForType($type)
+            ->whereHas('followups')
+            ->with([
+                'latestFollowup.user:id,name',
+                'latestFollowup.campus:id,code,name,title,city,city_abbr',
+                'campus:id,code,name,title,city,city_abbr',
+                'program:id,title,name',
+                'coworkingRegistration:id,lead_id',
             ])
-            ->whereHas('lead', fn (Builder $leadQuery) => $this->applyLeadTypeScope($leadQuery, $type))
-            ->latest()
-            ->get()
-            ->unique('lead_id')
-            ->values()
-            ->map(function (LeadFollowup $followup) use ($stageMap, $campusDirectory, $type) {
-                $followup->stage = $this->normalizeFollowupStage($type, $followup->stage);
-                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
-                $followup->followups_count = (int) ($followup->lead?->followups_count ?? 0);
-                $followup->last_follower_name = trim((string) ($followup->user?->name ?? '')) ?: 'System';
+            ->withCount('followups')
+            ->select('leads.*')
+            ->selectSub($latestFollowupIdSubquery, 'latest_followup_id');
+    }
 
-                if ($type === 'coworking') {
-                    $followup->branch_code = $this->resolveCoworkingBranchCode($followup->lead, $campusDirectory);
-                }
+    /**
+     * @return array<string, int>
+     */
+    private function latestFollowupStageCounts(string $type, ?string $search = null): array
+    {
+        $latestStageSubquery = LeadFollowup::query()
+            ->select('stage')
+            ->whereColumn('lead_id', 'leads.id')
+            ->orderByDesc('id')
+            ->limit(1);
 
-                return $followup;
-            });
+        $stageQuery = $this->leadQueryForType($type)
+            ->whereHas('followups')
+            ->selectSub($latestStageSubquery, 'latest_stage');
+
+        if ($search !== null) {
+            $this->applyFollowupSearch($stageQuery, $search, $type);
+        }
+
+        return DB::query()
+            ->fromSub($stageQuery->toBase(), 'latest_lead_stages')
+            ->selectRaw('latest_stage, COUNT(*) as aggregate')
+            ->groupBy('latest_stage')
+            ->pluck('aggregate', 'latest_stage')
+            ->map(fn ($count) => (int) $count)
+            ->all();
     }
 
     private function resolveCoworkingBranchCode(?Lead $lead, Collection $campuses): ?string
@@ -822,8 +838,29 @@ class LeadController extends Controller
         $type = $this->normalizeLeadType($type);
         $todayOnly = $request->boolean('today');
         $typeMeta = $this->leadTypeMeta($type);
+        $search = $this->normalizeSearchTerm((string) $request->query('q', ''));
+        $status = $this->normalizeLeadStatusFilter($request->query('status'), $type);
+        $perPage = $this->resolvePerPage($request);
 
-        $leadQuery = $this->leadQueryForType($type)
+        $baseLeadQuery = $this->leadQueryForType($type);
+
+        if ($todayOnly) {
+            $baseLeadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+
+        if ($search !== null) {
+            $this->applyLeadIndexSearch($baseLeadQuery, $search, $type);
+        }
+
+        $tabs = $this->leadIndexTabs($type);
+        $badgeColors = $this->leadIndexBadgeColors($type);
+        $countsByStatus = (clone $baseLeadQuery)
+            ->select('status', DB::raw('COUNT(*) as aggregate'))
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+        $totalLeads = (int) (clone $baseLeadQuery)->count();
+
+        $leadQuery = (clone $baseLeadQuery)
             ->with([
                 'program',
                 'campus',
@@ -832,24 +869,29 @@ class LeadController extends Controller
             ->withCount('followups')
             ->latest();
 
-        if ($todayOnly) {
-            $leadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        if ($status !== null) {
+            $leadQuery->where('status', $status);
         }
 
-        $leads = $leadQuery->get()->map(function (Lead $lead) {
-            $lead->interest_summary = $this->leadInterestValue($lead);
+        $leads = $leadQuery
+            ->paginate($perPage)
+            ->withQueryString();
 
-            return $lead;
-        });
+        $leads->setCollection(
+            $leads->getCollection()->map(function (Lead $lead) {
+                $lead->interest_summary = $this->leadInterestValue($lead);
 
-        $tabs = $this->leadIndexTabs($type);
-        $badgeColors = $this->leadIndexBadgeColors($type);
-        $tabCounts = [];
+                return $lead;
+            })
+        );
 
-        foreach ($tabs as $key => $label) {
-            $tabCounts[$key] = $key === 'all'
-                ? $leads->count()
-                : $leads->where('status', $key)->count();
+        $tabCounts = ['all' => $totalLeads];
+        foreach (array_keys($tabs) as $key) {
+            if ($key === 'all') {
+                continue;
+            }
+
+            $tabCounts[$key] = (int) ($countsByStatus[$key] ?? 0);
         }
 
         return view('lead.all', [
@@ -857,6 +899,9 @@ class LeadController extends Controller
             'tabs' => $tabs,
             'badgeColors' => $badgeColors,
             'tabCounts' => $tabCounts,
+            'selectedStatus' => $status ?? 'all',
+            'search' => $search ?? '',
+            'perPage' => $perPage,
             'todayOnly' => $todayOnly,
             'type' => $type,
             'moduleTitle' => $typeMeta['moduleTitle'],
