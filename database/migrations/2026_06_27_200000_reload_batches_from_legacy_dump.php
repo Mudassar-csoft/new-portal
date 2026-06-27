@@ -28,8 +28,11 @@ return new class extends Migration
         $this->dropLegacyCodeUniqueness();
         $this->ensureCodeIndex();
 
-        $rows = $this->parseLegacyDump();
-        $this->ensureReferencedProgramsAndCampusesExist($rows);
+        [$rows, $skippedSummary] = $this->filterRowsWithExistingReferences($this->parseLegacyDump());
+
+        if ($skippedSummary !== null) {
+            echo $skippedSummary . PHP_EOL;
+        }
 
         DB::transaction(function () use ($rows): void {
             // Use delete, not truncate, so existing FK rules on child tables are honored.
@@ -153,9 +156,43 @@ return new class extends Migration
     }
 
     /**
-     * @param  list<array{program_id:int,campus_id:int}>  $rows
+     * @param  list<array{
+     *     id:int,
+     *     program_id:int,
+     *     campus_id:int,
+     *     code:string,
+     *     start_date:?string,
+     *     end_date:?string,
+     *     session:string,
+     *     start_time:?string,
+     *     end_time:?string,
+     *     lab:?string,
+     *     remarks:?string,
+     *     status:string,
+     *     created_at:?string,
+     *     updated_at:?string
+     * }>  $rows
+     * @return array{
+     *     0:list<array{
+     *         id:int,
+     *         program_id:int,
+     *         campus_id:int,
+     *         code:string,
+     *         start_date:?string,
+     *         end_date:?string,
+     *         session:string,
+     *         start_time:?string,
+     *         end_time:?string,
+     *         lab:?string,
+     *         remarks:?string,
+     *         status:string,
+     *         created_at:?string,
+     *         updated_at:?string
+     *     }>,
+     *     1:?string
+     * }
      */
-    private function ensureReferencedProgramsAndCampusesExist(array $rows): void
+    private function filterRowsWithExistingReferences(array $rows): array
     {
         $programIds = collect($rows)
             ->pluck('program_id')
@@ -181,22 +218,36 @@ return new class extends Migration
             ->map(fn ($id) => (int) $id)
             ->all();
 
+        $existingProgramLookup = array_fill_keys($existingProgramIds, true);
+        $existingCampusLookup = array_fill_keys($existingCampusIds, true);
         $missingPrograms = $programIds->diff($existingProgramIds)->values()->all();
         $missingCampuses = $campusIds->diff($existingCampusIds)->values()->all();
 
-        if ($missingPrograms !== [] || $missingCampuses !== []) {
-            $parts = [];
+        $validRows = array_values(array_filter($rows, function (array $row) use ($existingProgramLookup, $existingCampusLookup): bool {
+            return isset($existingProgramLookup[$row['program_id']]) && isset($existingCampusLookup[$row['campus_id']]);
+        }));
 
-            if ($missingPrograms !== []) {
-                $parts[] = 'missing program ids: ' . implode(', ', $missingPrograms);
-            }
-
-            if ($missingCampuses !== []) {
-                $parts[] = 'missing campus ids: ' . implode(', ', $missingCampuses);
-            }
-
-            throw new RuntimeException('Legacy batch import aborted because referenced records do not exist in the current database: ' . implode('; ', $parts));
+        if ($validRows === []) {
+            throw new RuntimeException('Legacy batch import aborted because none of the dump rows reference existing programs and campuses in the current database.');
         }
+
+        if ($missingPrograms === [] && $missingCampuses === []) {
+            return [$validRows, null];
+        }
+
+        $parts = [
+            sprintf('Skipped %d legacy batch row(s) during import.', count($rows) - count($validRows)),
+        ];
+
+        if ($missingPrograms !== []) {
+            $parts[] = 'missing program ids: ' . implode(', ', $missingPrograms);
+        }
+
+        if ($missingCampuses !== []) {
+            $parts[] = 'missing campus ids: ' . implode(', ', $missingCampuses);
+        }
+
+        return [$validRows, implode(' ', $parts)];
     }
 
     /**
