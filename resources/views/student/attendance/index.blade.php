@@ -82,7 +82,7 @@
                                 <option value="">All Batches</option>
                                 @foreach($batches as $batch)
                                     <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
-                                        {{ $batch->code }} - {{ $batch->name }}
+                                        {{ $batch->code }}{{ $batch->name ? ' - ' . $batch->name : '' }}
                                     </option>
                                 @endforeach
                             </select>
