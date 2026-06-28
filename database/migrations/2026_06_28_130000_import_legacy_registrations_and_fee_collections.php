@@ -578,140 +578,174 @@ return new class extends Migration
      */
     private function parseTable(string $path, string $expectedTable): array
     {
-        $sql = file_get_contents($path);
-
-        if ($sql === false) {
-            throw new RuntimeException('Unable to read legacy SQL dump: '.$path);
-        }
-
-        preg_match_all(
-            '/INSERT INTO\s+`'.preg_quote($expectedTable, '/').'`\s*\((.+?)\)\s*VALUES\s*(.+?);/is',
-            $sql,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        if ($matches === []) {
-            throw new RuntimeException("No INSERT statements for table `{$expectedTable}` were found in {$path}.");
-        }
-
         $rows = [];
 
-        foreach ($matches as $match) {
-            preg_match_all('/`([^`]+)`/', $match[1], $columnMatches);
-            $columns = array_values($columnMatches[1] ?? []);
+        foreach ($this->iterateInsertRows($path, $expectedTable) as $row) {
+            $rows[] = $row;
+        }
 
-            if ($columns === []) {
-                throw new RuntimeException('Unable to parse INSERT columns from '.$path.'.');
-            }
-
-            foreach ($this->splitSqlTuples($match[2], $path, count($columns)) as $values) {
-                $combined = array_combine($columns, $values);
-
-                if ($combined === false) {
-                    throw new RuntimeException('Unable to combine parsed values for '.$path.'.');
-                }
-
-                $rows[] = $combined;
-            }
+        if ($rows === []) {
+            throw new RuntimeException("No INSERT statements for table `{$expectedTable}` were found in {$path}.");
         }
 
         return $rows;
     }
 
     /**
-     * @return list<list<mixed>>
+     * @return \Generator<int, array<string, mixed>>
      */
-    private function splitSqlTuples(string $valuesBlock, string $path, int $expectedColumns): array
+    private function iterateInsertRows(string $path, string $expectedTable): \Generator
     {
-        $rows = [];
-        $tupleBuffer = '';
-        $depth = 0;
-        $length = strlen($valuesBlock);
+        $handle = fopen($path, 'rb');
 
-        for ($index = 0; $index < $length; $index++) {
-            $character = $valuesBlock[$index];
+        if ($handle === false) {
+            throw new RuntimeException('Unable to open legacy SQL dump: '.$path);
+        }
 
-            if ($depth === 0) {
-                if ($character === '(') {
-                    $depth = 1;
-                    $tupleBuffer = '';
-                }
+        try {
+            $insideInsert = false;
+            $columns = [];
+            $tupleBuffer = '';
+            $depth = 0;
 
-                continue;
-            }
-
-            if ($character === "'") {
-                $tupleBuffer .= $character;
-                $index++;
-
-                while (true) {
-                    if ($index >= $length) {
-                        throw new RuntimeException('Unterminated quoted string while parsing '.$path.'.');
-                    }
-
-                    $current = $valuesBlock[$index];
-                    $tupleBuffer .= $current;
-
-                    if ($current === '\\') {
-                        $index++;
-
-                        if ($index >= $length) {
-                            break;
-                        }
-
-                        $tupleBuffer .= $valuesBlock[$index];
-                        $index++;
+            while (($line = fgets($handle)) !== false) {
+                if (! $insideInsert) {
+                    if (
+                        stripos($line, 'INSERT INTO') === false
+                        || stripos($line, '`'.$expectedTable.'`') === false
+                        || stripos($line, 'VALUES') === false
+                    ) {
                         continue;
                     }
 
-                    if ($current === "'") {
-                        if ($index + 1 < $length && $valuesBlock[$index + 1] === "'") {
-                            $tupleBuffer .= "'";
-                            $index++;
-                            continue;
+                    $columns = $this->extractInsertColumns($line, $path);
+                    $insideInsert = true;
+                    $line = substr($line, stripos($line, 'VALUES') + 6);
+                }
+
+                $length = strlen($line);
+
+                for ($index = 0; $index < $length; $index++) {
+                    $character = $line[$index];
+
+                    if ($depth === 0) {
+                        if ($character === '(') {
+                            $depth = 1;
+                            $tupleBuffer = '';
                         }
 
-                        break;
+                        continue;
                     }
 
-                    $index++;
-                }
+                    if ($character === "'") {
+                        $tupleBuffer .= $character;
+                        $index++;
 
-                continue;
-            }
+                        while (true) {
+                            if ($index >= $length) {
+                                $line = fgets($handle);
 
-            if ($character === '(') {
-                $depth++;
-                $tupleBuffer .= $character;
-                continue;
-            }
+                                if ($line === false) {
+                                    throw new RuntimeException('Unterminated quoted string while parsing '.$path.'.');
+                                }
 
-            if ($character === ')') {
-                $depth--;
+                                $length = strlen($line);
+                                $index = 0;
+                            }
 
-                if ($depth === 0) {
-                    $values = $this->parseTupleValues($tupleBuffer);
+                            $current = $line[$index];
+                            $tupleBuffer .= $current;
 
-                    if (count($values) !== $expectedColumns) {
-                        throw new RuntimeException(sprintf(
-                            'Legacy SQL parse error in %s. Expected %d values, got %d.',
-                            $path,
-                            $expectedColumns,
-                            count($values)
-                        ));
+                            if ($current === '\\') {
+                                $index++;
+
+                                if ($index >= $length) {
+                                    continue;
+                                }
+
+                                $tupleBuffer .= $line[$index];
+                                $index++;
+                                continue;
+                            }
+
+                            if ($current === "'") {
+                                if ($index + 1 < $length && $line[$index + 1] === "'") {
+                                    $tupleBuffer .= "'";
+                                    $index++;
+                                    continue;
+                                }
+
+                                break;
+                            }
+
+                            $index++;
+                        }
+
+                        continue;
                     }
 
-                    $rows[] = $values;
-                    $tupleBuffer = '';
-                    continue;
+                    if ($character === '(') {
+                        $depth++;
+                        $tupleBuffer .= $character;
+                        continue;
+                    }
+
+                    if ($character === ')') {
+                        $depth--;
+
+                        if ($depth === 0) {
+                            $values = $this->parseTupleValues($tupleBuffer);
+
+                            if (count($values) !== count($columns)) {
+                                throw new RuntimeException(sprintf(
+                                    'Legacy SQL parse error in %s. Expected %d values, got %d.',
+                                    $path,
+                                    count($columns),
+                                    count($values)
+                                ));
+                            }
+
+                            $combined = array_combine($columns, $values);
+
+                            if ($combined === false) {
+                                throw new RuntimeException('Unable to combine parsed values for '.$path.'.');
+                            }
+
+                            yield $combined;
+                            $tupleBuffer = '';
+                            continue;
+                        }
+                    }
+
+                    $tupleBuffer .= $character;
+                }
+
+                if ($insideInsert && $depth === 0 && str_contains($line, ';')) {
+                    $insideInsert = false;
+                    $columns = [];
                 }
             }
+        } finally {
+            fclose($handle);
+        }
+    }
 
-            $tupleBuffer .= $character;
+    /**
+     * @return list<string>
+     */
+    private function extractInsertColumns(string $line, string $path): array
+    {
+        if (! preg_match('/INSERT INTO\s+`[^`]+`\s*\((.+)\)\s+VALUES/i', $line, $matches)) {
+            throw new RuntimeException('Unable to parse INSERT columns from '.$path.'.');
         }
 
-        return $rows;
+        preg_match_all('/`([^`]+)`/', $matches[1], $columnMatches);
+
+        if (($columnMatches[1] ?? []) === []) {
+            throw new RuntimeException('No INSERT columns detected in '.$path.'.');
+        }
+
+        return array_values($columnMatches[1]);
     }
 
     /**
