@@ -20,11 +20,13 @@ class LeadFollowup extends Model
         'next_action_date',
         'stage',
         'lead_status',
+        'metadata',
     ];
 
     protected $casts = [
         'next_action_date' => 'datetime',
         'probability' => 'integer',
+        'metadata' => 'array',
     ];
 
     public function lead(): BelongsTo
