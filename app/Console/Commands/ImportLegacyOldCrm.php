@@ -25,14 +25,53 @@ class ImportLegacyOldCrm extends Command
     /**
      * @var array<string, string>
      */
-    private const DEFAULT_PATHS = [
-        'leads' => 'C:/Users/caree/Downloads/leads (1).sql',
-        'followups' => 'C:/Users/caree/Downloads/lead_follow_ups (1).sql',
-        'coworking' => 'C:/Users/caree/Downloads/coworkspace_leads.sql',
-        'study_abroad' => 'C:/Users/caree/Downloads/study_abroad_leads.sql',
-        'exam' => 'C:/Users/caree/Downloads/exam_registrations.sql',
-        'web' => 'C:/Users/caree/Downloads/web_leads.sql',
-        'transfers' => 'C:/Users/caree/Downloads/lead_transfer_histories.sql',
+    private const SOURCE_OPTION_MAP = [
+        'leads' => 'leads',
+        'followups' => 'followups',
+        'coworking' => 'coworking',
+        'study_abroad' => 'study-abroad',
+        'exam' => 'exam',
+        'web' => 'web',
+        'transfers' => 'transfers',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const SOURCE_TABLE_MAP = [
+        'leads' => 'leads',
+        'followups' => 'lead_follow_ups',
+        'coworking' => 'coworkspace_leads',
+        'study_abroad' => 'study_abroad_leads',
+        'exam' => 'exam_registrations',
+        'web' => 'web_leads',
+        'transfers' => 'lead_transfer_histories',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const DEFAULT_DOWNLOAD_FILENAMES = [
+        'leads' => 'leads (1).sql',
+        'followups' => 'lead_follow_ups (1).sql',
+        'coworking' => 'coworkspace_leads.sql',
+        'study_abroad' => 'study_abroad_leads.sql',
+        'exam' => 'exam_registrations.sql',
+        'web' => 'web_leads.sql',
+        'transfers' => 'lead_transfer_histories.sql',
+    ];
+
+    /**
+     * @var array<string, list<string>>
+     */
+    private const REPO_FALLBACK_FILENAMES = [
+        'leads' => ['legacy_leads_2026_06_27_dump.sql'],
+        'followups' => ['legacy_lead_followups_2026_06_27_dump.sql'],
+        'coworking' => ['coworkspace_leads.sql'],
+        'study_abroad' => ['study_abroad_leads.sql'],
+        'exam' => ['exam_registrations.sql'],
+        'web' => ['web_leads.sql'],
+        'transfers' => ['lead_transfer_histories.sql'],
     ];
 
     protected $signature = 'legacy:import-old-crm
@@ -59,6 +98,11 @@ class ImportLegacyOldCrm extends Command
     private int $nextTransferId = 1;
 
     private int $nextWebLeadId = 1;
+
+    /**
+     * @var array<string, ?string>
+     */
+    private array $attachmentDumpPathCache = [];
 
     /**
      * @var array<int, true>
@@ -210,26 +254,34 @@ class ImportLegacyOldCrm extends Command
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, ?string>
      */
     private function resolvePaths(): array
     {
-        return [
-            'leads' => $this->resolvePathOption('leads', self::DEFAULT_PATHS['leads']),
-            'followups' => $this->resolvePathOption('followups', self::DEFAULT_PATHS['followups']),
-            'coworking' => $this->resolvePathOption('coworking', self::DEFAULT_PATHS['coworking']),
-            'study_abroad' => $this->resolvePathOption('study-abroad', self::DEFAULT_PATHS['study_abroad']),
-            'exam' => $this->resolvePathOption('exam', self::DEFAULT_PATHS['exam']),
-            'web' => $this->resolvePathOption('web', self::DEFAULT_PATHS['web']),
-            'transfers' => $this->resolvePathOption('transfers', self::DEFAULT_PATHS['transfers']),
-        ];
+        $resolved = [];
+
+        foreach (self::SOURCE_OPTION_MAP as $key => $option) {
+            $resolved[$key] = $this->resolvePathOption($key, $option);
+        }
+
+        return $resolved;
     }
 
-    private function resolvePathOption(string $option, string $default): string
+    private function resolvePathOption(string $key, string $option): ?string
     {
         $value = trim((string) $this->option($option));
 
-        return $value !== '' ? $value : $default;
+        if ($value !== '') {
+            return $value;
+        }
+
+        foreach ($this->defaultPathCandidates($key) as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return $this->findAttachmentDumpForTable(self::SOURCE_TABLE_MAP[$key]);
     }
 
     private function resolveImportTag(): string
@@ -247,15 +299,134 @@ class ImportLegacyOldCrm extends Command
     }
 
     /**
-     * @param  array<string, string>  $paths
+     * @param  array<string, ?string>  $paths
      */
     private function assertFilesExist(array $paths): void
     {
+        $missing = [];
+
         foreach ($paths as $label => $path) {
-            if (!is_file($path)) {
-                throw new RuntimeException(sprintf('Missing legacy %s dump file: %s', $label, $path));
+            if ($path !== null && is_file($path)) {
+                continue;
+            }
+
+            $option = self::SOURCE_OPTION_MAP[$label];
+            $defaultFilename = self::DEFAULT_DOWNLOAD_FILENAMES[$label];
+            $providedPath = trim((string) $this->option($option));
+
+            if ($providedPath !== '') {
+                $missing[] = sprintf(
+                    '%s: provided --%s path does not exist: %s',
+                    $label,
+                    $option,
+                    $providedPath
+                );
+                continue;
+            }
+
+            $missing[] = sprintf(
+                '%s: not found automatically. Pass --%s=/full/path/%s',
+                $label,
+                $option,
+                $defaultFilename
+            );
+        }
+
+        if ($missing !== []) {
+            throw new RuntimeException(
+                'Missing legacy source files: '.implode('; ', $missing)
+            );
+        }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function defaultPathCandidates(string $key): array
+    {
+        $candidates = [];
+        $homeDirectory = $this->resolveUserHomeDirectory();
+
+        if ($homeDirectory !== null) {
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Downloads'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Desktop'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Documents'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
+        }
+
+        foreach (self::REPO_FALLBACK_FILENAMES[$key] as $filename) {
+            $candidates[] = database_path('seeders/data/'.$filename);
+        }
+
+        return array_values(array_unique($candidates));
+    }
+
+    private function resolveUserHomeDirectory(): ?string
+    {
+        $home = trim((string) (getenv('USERPROFILE') ?: getenv('HOME') ?: ''));
+
+        return $home !== '' ? rtrim($home, '\\/') : null;
+    }
+
+    private function findAttachmentDumpForTable(string $tableName): ?string
+    {
+        if (array_key_exists($tableName, $this->attachmentDumpPathCache)) {
+            return $this->attachmentDumpPathCache[$tableName];
+        }
+
+        $homeDirectory = $this->resolveUserHomeDirectory();
+
+        if ($homeDirectory === null) {
+            return $this->attachmentDumpPathCache[$tableName] = null;
+        }
+
+        $attachmentRoot = $homeDirectory.DIRECTORY_SEPARATOR.'.codex'.DIRECTORY_SEPARATOR.'attachments';
+
+        if (!is_dir($attachmentRoot)) {
+            return $this->attachmentDumpPathCache[$tableName] = null;
+        }
+
+        $matches = glob($attachmentRoot.DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.'pasted-text.txt') ?: [];
+        $needle = 'CREATE TABLE `'.$tableName.'`';
+        $found = [];
+
+        foreach ($matches as $path) {
+            $handle = @fopen($path, 'rb');
+
+            if ($handle === false) {
+                continue;
+            }
+
+            try {
+                while (($line = fgets($handle)) !== false) {
+                    if (str_contains($line, $needle)) {
+                        $found[] = $path;
+                        break;
+                    }
+                }
+            } finally {
+                fclose($handle);
             }
         }
+
+        if ($found === []) {
+            return $this->attachmentDumpPathCache[$tableName] = null;
+        }
+
+        usort($found, static function (string $left, string $right): int {
+            $leftMtime = @filemtime($left) ?: 0;
+            $rightMtime = @filemtime($right) ?: 0;
+
+            if ($leftMtime !== $rightMtime) {
+                return $rightMtime <=> $leftMtime;
+            }
+
+            $leftSize = @filesize($left) ?: 0;
+            $rightSize = @filesize($right) ?: 0;
+
+            return $rightSize <=> $leftSize;
+        });
+
+        return $this->attachmentDumpPathCache[$tableName] = $found[0];
     }
 
     private function ensureImportInfrastructure(): void
