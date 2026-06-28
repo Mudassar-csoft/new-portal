@@ -297,8 +297,9 @@
 							@php
 								$label = $stages[$row->stage] ?? ucfirst(str_replace('_', ' ', $row->stage));
 								$rowHighlight = $row->stage === 'not_interesting';
+								$isLatestRow = $idx === 0;
 							@endphp
-							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }}">
+							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }} {{ $isLatestRow ? 'latest-followup-highlight' : '' }}">
 								<td class="text-center">{{ $idx + 1 }}</td>
 								<td>{{ $row->user?->name ?? 'System' }}</td>
 								<td>{{ $row->method ? ucfirst($row->method) : '—' }}</td>
@@ -366,7 +367,7 @@
 								<th>{{ $locationNameLabel }}</th>
 								<td>{{ $lead->campus?->name ?? '—' }}</td>
 								<th>Remarks</th>
-								<td colspan="3">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
+								<td colspan="3" class="{{ $latestFollowup?->note ? 'latest-remarks-highlight' : '' }}">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
 							</tr>
 							
 						</tbody>
@@ -821,6 +822,18 @@
 		.followup-table .row-highlight td {
 			background: #ffeded;
 			color: #b00020;
+		}
+
+		.followup-table .latest-followup-highlight td {
+			background: #ffdfe2;
+			color: #b00020;
+			font-weight: 600;
+		}
+
+		.info-table .latest-remarks-highlight {
+			background: #ffdfe2;
+			color: #b00020;
+			font-weight: 600;
 		}
 		.table td{
 			height:20px !important;
