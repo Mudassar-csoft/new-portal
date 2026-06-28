@@ -77,6 +77,7 @@ class ImportLegacyOldCrm extends Command
     protected $signature = 'legacy:import-old-crm
                             {--import-tag= : Tag stored in imported metadata}
                             {--chunk=500 : Insert chunk size}
+                            {--source-dir= : Directory containing the legacy SQL dump files}
                             {--leads= : Path to the old training leads SQL dump}
                             {--followups= : Path to the old lead follow-ups SQL dump}
                             {--coworking= : Path to the old coworking leads SQL dump}
@@ -98,6 +99,8 @@ class ImportLegacyOldCrm extends Command
     private int $nextTransferId = 1;
 
     private int $nextWebLeadId = 1;
+
+    private ?string $sourceDirectory = null;
 
     /**
      * @var array<string, ?string>
@@ -203,6 +206,7 @@ class ImportLegacyOldCrm extends Command
 
     public function handle(): int
     {
+        $this->sourceDirectory = $this->resolveSourceDirectoryOption();
         $paths = $this->resolvePaths();
         $this->importTag = $this->resolveImportTag();
         $this->chunkSize = $this->resolveChunkSize();
@@ -298,6 +302,17 @@ class ImportLegacyOldCrm extends Command
         return $value >= 50 ? $value : 500;
     }
 
+    private function resolveSourceDirectoryOption(): ?string
+    {
+        $value = trim((string) $this->option('source-dir'));
+
+        if ($value === '') {
+            return null;
+        }
+
+        return rtrim($value, '\\/');
+    }
+
     /**
      * @param  array<string, ?string>  $paths
      */
@@ -324,8 +339,18 @@ class ImportLegacyOldCrm extends Command
                 continue;
             }
 
+            if ($this->sourceDirectory !== null) {
+                $missing[] = sprintf(
+                    '%s: not found in --source-dir=%s. Expected file name %s',
+                    $label,
+                    $this->sourceDirectory,
+                    $defaultFilename
+                );
+                continue;
+            }
+
             $missing[] = sprintf(
-                '%s: not found automatically. Pass --%s=/full/path/%s',
+                '%s: not found automatically. Pass --%s=/full/path/%s or --source-dir=/full/path/to/folder',
                 $label,
                 $option,
                 $defaultFilename
@@ -346,12 +371,23 @@ class ImportLegacyOldCrm extends Command
     {
         $candidates = [];
         $homeDirectory = $this->resolveUserHomeDirectory();
+        $filename = self::DEFAULT_DOWNLOAD_FILENAMES[$key];
+
+        if ($this->sourceDirectory !== null) {
+            $candidates[] = $this->sourceDirectory.DIRECTORY_SEPARATOR.$filename;
+        }
 
         if ($homeDirectory !== null) {
-            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Downloads'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
-            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Desktop'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
-            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Documents'.DIRECTORY_SEPARATOR.self::DEFAULT_DOWNLOAD_FILENAMES[$key];
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Downloads'.DIRECTORY_SEPARATOR.$filename;
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Desktop'.DIRECTORY_SEPARATOR.$filename;
+            $candidates[] = $homeDirectory.DIRECTORY_SEPARATOR.'Documents'.DIRECTORY_SEPARATOR.$filename;
         }
+
+        $candidates[] = storage_path('app/legacy-import/'.$filename);
+        $candidates[] = storage_path('app/private/legacy-import/'.$filename);
+        $candidates[] = storage_path('app/'.$filename);
+        $candidates[] = base_path('legacy-import/'.$filename);
+        $candidates[] = base_path($filename);
 
         foreach (self::REPO_FALLBACK_FILENAMES[$key] as $filename) {
             $candidates[] = database_path('seeders/data/'.$filename);
