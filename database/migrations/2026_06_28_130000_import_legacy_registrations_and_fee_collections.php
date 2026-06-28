@@ -8,28 +8,39 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('registrations') || ! Schema::hasTable('fee_collections')) {
+        if (! Schema::hasTable('registrations') || ! Schema::hasTable('admissions') || ! Schema::hasTable('fee_collections')) {
             return;
         }
 
         $registrationPath = $this->resolveSourcePath('registrations.sql');
+        $admissionPath = $this->resolveSourcePath('admissions.sql');
         $feeCollectionPath = $this->resolveSourcePath('fee_collections.sql');
 
         $registrationRows = $this->parseTable($registrationPath, 'registrations');
+        $admissionRows = $this->parseTable($admissionPath, 'admissions');
         $feeRows = $this->parseTable($feeCollectionPath, 'fee_collections');
 
         $registrationRowsById = [];
+        $admissionRowsById = [];
 
         foreach ($registrationRows as $row) {
             $registrationRowsById[(int) $row['id']] = $row;
         }
 
+        foreach ($admissionRows as $row) {
+            $admissionRowsById[(int) $row['id']] = $row;
+        }
+
         $feeRowsByRegistrationId = [];
+        $feeRowsByAdmissionId = [];
+        $admissionRowsByRegistrationId = [];
         $currentRegistrationIds = [];
+        $currentAdmissionIds = [];
         $legacyLeadIds = [];
         $legacyCampusIds = [];
         $legacyUserIds = [];
-        $legacyAdmissionIds = [];
+        $legacyProgramIds = [];
+        $legacyBatchIds = [];
 
         foreach ($registrationRowsById as $registrationId => $row) {
             $currentRegistrationIds[$registrationId] = true;
@@ -47,6 +58,29 @@ return new class extends Migration
             }
         }
 
+        foreach ($admissionRowsById as $admissionId => $row) {
+            $currentAdmissionIds[$admissionId] = true;
+            $registrationId = (int) $row['registration_id'];
+            $currentRegistrationIds[$registrationId] = true;
+            $admissionRowsByRegistrationId[$registrationId][] = $row;
+
+            if (($campusId = $this->nullableInt($row['campus_id'])) !== null) {
+                $legacyCampusIds[$campusId] = true;
+            }
+
+            if (($userId = $this->nullableInt($row['user_id'])) !== null) {
+                $legacyUserIds[$userId] = true;
+            }
+
+            if (($programId = $this->nullableInt($row['program_id'])) !== null) {
+                $legacyProgramIds[$programId] = true;
+            }
+
+            if (($batchId = $this->nullableInt($row['batch_id'])) !== null) {
+                $legacyBatchIds[$batchId] = true;
+            }
+        }
+
         foreach ($feeRows as $row) {
             $registrationId = (int) $row['registration_id'];
             $feeRowsByRegistrationId[$registrationId][] = $row;
@@ -61,7 +95,8 @@ return new class extends Migration
             }
 
             if (($admissionId = $this->nullableInt($row['admission_id'])) !== null) {
-                $legacyAdmissionIds[$admissionId] = true;
+                $currentAdmissionIds[$admissionId] = true;
+                $feeRowsByAdmissionId[$admissionId][] = $row;
             }
         }
 
@@ -72,7 +107,8 @@ return new class extends Migration
         );
         $currentCampusLookup = $this->buildExistsLookup('campuses', array_keys($legacyCampusIds));
         $currentUserLookup = $this->buildExistsLookup('users', array_keys($legacyUserIds));
-        $currentAdmissionLookup = $this->buildExistsLookup('admissions', array_keys($legacyAdmissionIds));
+        $currentProgramLookup = $this->buildExistsLookup('programs', array_keys($legacyProgramIds));
+        $currentBatchLookup = $this->buildExistsLookup('batches', array_keys($legacyBatchIds));
 
         $registrationFeeSummaryById = [];
         $installmentTotalsByAdmissionId = [];
@@ -108,18 +144,30 @@ return new class extends Migration
             ->mapWithKeys(fn ($id, $number) => [(string) $number => (int) $id])
             ->all();
 
+        $existingAdmissionRollNumbers = DB::table('admissions')
+            ->whereNotNull('roll_number')
+            ->pluck('id', 'roll_number')
+            ->mapWithKeys(fn ($id, $number) => [(string) $number => (int) $id])
+            ->all();
+
         DB::transaction(function () use (
             $currentRegistrationIds,
+            $currentAdmissionIds,
             $registrationRowsById,
+            $admissionRowsById,
             $feeRowsByRegistrationId,
+            $feeRowsByAdmissionId,
+            $admissionRowsByRegistrationId,
             $currentLeadLookup,
             $currentCampusLookup,
             $currentUserLookup,
-            $currentAdmissionLookup,
+            $currentProgramLookup,
+            $currentBatchLookup,
             $registrationFeeSummaryById,
             $installmentTotalsByAdmissionId,
             &$existingRegistrationNumbers,
             &$existingReceiptNumbers,
+            &$existingAdmissionRollNumbers,
             $feeRows
         ): void {
             $allRegistrationIds = array_map('intval', array_keys($currentRegistrationIds));
@@ -130,6 +178,7 @@ return new class extends Migration
             foreach ($allRegistrationIds as $registrationId) {
                 $legacyRegistration = $registrationRowsById[$registrationId] ?? null;
                 $relatedFeeRows = $feeRowsByRegistrationId[$registrationId] ?? [];
+                $relatedAdmissionRows = $admissionRowsByRegistrationId[$registrationId] ?? [];
                 $leadSnapshot = null;
 
                 if ($legacyRegistration !== null) {
@@ -150,14 +199,18 @@ return new class extends Migration
                         $registrationId,
                         $legacyRegistration,
                         $leadSnapshot,
+                        $relatedAdmissionRows,
                         $currentCampusLookup,
+                        $currentProgramLookup,
                         $summary
                     );
                 } else {
                     $payload = $this->buildPlaceholderRegistrationPayload(
                         $registrationId,
                         $relatedFeeRows,
+                        $relatedAdmissionRows,
                         $currentCampusLookup,
+                        $currentProgramLookup,
                         $summary
                     );
                 }
@@ -188,31 +241,132 @@ return new class extends Migration
                     'lead_id' => $payload['lead_id'],
                     'campus_id' => $payload['campus_id'],
                     'program_id' => $payload['program_id'],
+                    'student_name' => $payload['student_name'],
+                    'phone' => $payload['phone'],
+                    'guardian_name' => $payload['guardian_name'],
+                    'guardian_phone' => $payload['guardian_phone'],
+                    'cnic' => $payload['cnic'],
+                    'passport_number' => $payload['passport_number'],
+                    'email' => $payload['email'],
+                    'education' => $payload['education'],
+                    'date_of_birth' => $payload['date_of_birth'],
+                    'gender' => $payload['gender'],
+                    'address' => $payload['address'],
+                    'registration_number' => $payload['registration_number'],
+                    'receipt_number' => $payload['receipt_number'],
+                ];
+            }
+
+            $allAdmissionIds = array_map('intval', array_keys($currentAdmissionIds));
+            sort($allAdmissionIds);
+
+            $resolvedAdmissionPayloads = [];
+
+            foreach ($allAdmissionIds as $admissionId) {
+                $legacyAdmission = $admissionRowsById[$admissionId] ?? null;
+                $relatedFeeRows = $feeRowsByAdmissionId[$admissionId] ?? [];
+
+                if ($legacyAdmission !== null) {
+                    $registrationId = (int) $legacyAdmission['registration_id'];
+                } else {
+                    $firstFee = $relatedFeeRows[0] ?? null;
+
+                    if ($firstFee === null) {
+                        continue;
+                    }
+
+                    $registrationId = (int) $firstFee['registration_id'];
+                }
+
+                $registrationContext = $resolvedRegistrationPayloads[$registrationId] ?? null;
+
+                if ($registrationContext === null) {
+                    throw new RuntimeException('Unable to resolve registration context for legacy admission id '.$admissionId.'.');
+                }
+
+                if ($legacyAdmission !== null) {
+                    $payload = $this->buildLegacyAdmissionPayload(
+                        $admissionId,
+                        $legacyAdmission,
+                        $registrationContext,
+                        $relatedFeeRows,
+                        $currentCampusLookup,
+                        $currentProgramLookup,
+                        $currentBatchLookup
+                    );
+                } else {
+                    $payload = $this->buildPlaceholderAdmissionPayload(
+                        $admissionId,
+                        $registrationContext,
+                        $relatedFeeRows,
+                        $currentCampusLookup,
+                        $currentProgramLookup
+                    );
+                }
+
+                $payload['roll_number'] = $this->resolveUniqueValue(
+                    $existingAdmissionRollNumbers,
+                    $payload['roll_number'],
+                    'LEGACY-ADM-',
+                    $admissionId
+                );
+
+                DB::table('admissions')->updateOrInsert(
+                    ['id' => $admissionId],
+                    $payload
+                );
+
+                $existingAdmissionRollNumbers[$payload['roll_number']] = $admissionId;
+
+                $resolvedAdmissionPayloads[$admissionId] = [
+                    'id' => $admissionId,
+                    'registration_id' => $payload['registration_id'],
+                    'campus_id' => $payload['campus_id'],
+                    'program_id' => $payload['program_id'],
+                    'receipt_number' => $payload['receipt_number'],
                 ];
             }
 
             foreach ($feeRows as $row) {
-                $feeId = (int) $row['id'];
                 $registrationId = (int) $row['registration_id'];
                 $registrationContext = $resolvedRegistrationPayloads[$registrationId] ?? [
                     'lead_id' => null,
                     'campus_id' => null,
                     'program_id' => null,
+                    'student_name' => 'Legacy Registration #'.$registrationId,
+                    'phone' => null,
+                    'guardian_name' => null,
+                    'guardian_phone' => null,
+                    'cnic' => null,
+                    'passport_number' => null,
+                    'email' => null,
+                    'education' => null,
+                    'date_of_birth' => null,
+                    'gender' => null,
+                    'address' => null,
+                    'registration_number' => 'LEGACY-REG-'.$registrationId,
+                    'receipt_number' => 'LEGACY-REC-'.$registrationId,
                 ];
+                $legacyAdmissionId = $this->nullableInt($row['admission_id']);
+                $admissionContext = $legacyAdmissionId !== null
+                    ? ($resolvedAdmissionPayloads[$legacyAdmissionId] ?? null)
+                    : null;
 
-                $payload = $this->buildFeeCollectionPayload(
+                $payloads = $this->buildFeeCollectionPayloads(
                     $row,
                     $registrationContext,
+                    $admissionContext,
                     $currentCampusLookup,
                     $currentUserLookup,
-                    $currentAdmissionLookup,
                     $installmentTotalsByAdmissionId
                 );
 
-                DB::table('fee_collections')->updateOrInsert(
-                    ['id' => $feeId],
-                    $payload
-                );
+                foreach ($payloads as $feeId => $payload) {
+                    DB::table('fee_collections')->updateOrInsert(
+                        ['id' => $feeId],
+                        $payload
+                    );
+                }
             }
         });
     }
@@ -225,7 +379,9 @@ return new class extends Migration
     /**
      * @param  array<string, mixed>  $legacyRegistration
      * @param  array<string, mixed>|null  $leadSnapshot
+     * @param  list<array<string, mixed>>  $relatedAdmissionRows
      * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentProgramLookup
      * @param  array{amount:float,receipt_number:?string}  $summary
      * @return array<string, mixed>
      */
@@ -233,7 +389,9 @@ return new class extends Migration
         int $registrationId,
         array $legacyRegistration,
         ?array $leadSnapshot,
+        array $relatedAdmissionRows,
         array $currentCampusLookup,
+        array $currentProgramLookup,
         array $summary
     ): array {
         $campusId = $this->nullableInt($legacyRegistration['campus_id']);
@@ -244,6 +402,19 @@ return new class extends Migration
 
         if ($campusId === null) {
             $campusId = $leadSnapshot['campus_id'] ?? null;
+        }
+
+        $programId = $leadSnapshot['program_id'] ?? null;
+
+        if ($programId === null) {
+            foreach ($relatedAdmissionRows as $relatedAdmissionRow) {
+                $legacyProgramId = $this->nullableInt($relatedAdmissionRow['program_id']);
+
+                if ($legacyProgramId !== null && isset($currentProgramLookup[$legacyProgramId])) {
+                    $programId = $legacyProgramId;
+                    break;
+                }
+            }
         }
 
         $fullCnic = $this->nullableString($legacyRegistration['cnic']);
@@ -257,7 +428,7 @@ return new class extends Migration
         return [
             'lead_id' => $leadSnapshot['id'] ?? null,
             'campus_id' => $campusId,
-            'program_id' => $leadSnapshot['program_id'] ?? null,
+            'program_id' => $programId,
             'registration_number' => trim((string) $legacyRegistration['registration_number']),
             'receipt_number' => $summary['receipt_number'] ?? ('LEGACY-REC-'.$registrationId),
             'student_name' => $this->nullableString($legacyRegistration['name']),
@@ -286,30 +457,53 @@ return new class extends Migration
 
     /**
      * @param  list<array<string, mixed>>  $relatedFeeRows
+     * @param  list<array<string, mixed>>  $relatedAdmissionRows
      * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentProgramLookup
      * @param  array{amount:float,receipt_number:?string}  $summary
      * @return array<string, mixed>
      */
     private function buildPlaceholderRegistrationPayload(
         int $registrationId,
         array $relatedFeeRows,
+        array $relatedAdmissionRows,
         array $currentCampusLookup,
+        array $currentProgramLookup,
         array $summary
     ): array {
         $firstFee = $relatedFeeRows[0] ?? null;
-        $campusId = $firstFee !== null ? $this->nullableInt($firstFee['campus_id']) : null;
+        $firstAdmission = $relatedAdmissionRows[0] ?? null;
+        $campusId = $firstFee !== null
+            ? $this->nullableInt($firstFee['campus_id'])
+            : $this->nullableInt($firstAdmission['campus_id'] ?? null);
 
         if ($campusId !== null && ! isset($currentCampusLookup[$campusId])) {
             $campusId = null;
         }
 
+        $programId = null;
+
+        if ($firstAdmission !== null) {
+            $legacyProgramId = $this->nullableInt($firstAdmission['program_id']);
+
+            if ($legacyProgramId !== null && isset($currentProgramLookup[$legacyProgramId])) {
+                $programId = $legacyProgramId;
+            }
+        }
+
         $registeredAt = $this->normalizeDateTime($firstFee['created_at'] ?? null)
-            ?? $this->normalizeDateTime($firstFee['admission_date'] ?? null);
+            ?? $this->normalizeDateTime($firstFee['admission_date'] ?? null)
+            ?? $this->normalizeDateTime($firstAdmission['created_at'] ?? null)
+            ?? $this->normalizeDateTime($firstAdmission['admission_date'] ?? null);
+
+        $placeholderReason = $firstAdmission !== null
+            ? 'Placeholder registration created because this registration id exists in legacy admissions.sql but not in legacy registrations.sql.'
+            : 'Placeholder registration created because this registration id exists in legacy fee_collections.sql but not in legacy registrations.sql.';
 
         return [
             'lead_id' => null,
             'campus_id' => $campusId,
-            'program_id' => null,
+            'program_id' => $programId,
             'registration_number' => 'LEGACY-REG-'.$registrationId,
             'receipt_number' => $summary['receipt_number'] ?? ('LEGACY-REC-'.$registrationId),
             'student_name' => 'Legacy Registration #'.$registrationId,
@@ -323,7 +517,7 @@ return new class extends Migration
             'date_of_birth' => null,
             'gender' => null,
             'address' => null,
-            'remarks' => 'Placeholder registration created because this registration id exists in legacy fee_collections.sql but not in legacy registrations.sql.',
+            'remarks' => $placeholderReason,
             'fee' => $summary['amount'],
             'discount' => 0,
             'net_payable' => $summary['amount'],
@@ -336,51 +530,39 @@ return new class extends Migration
 
     /**
      * @param  array<string, mixed>  $legacyFeeRow
-     * @param  array{lead_id:?int,campus_id:?int,program_id:?int}  $registrationContext
+     * @param  array{
+     *     lead_id:?int,
+     *     campus_id:?int,
+     *     program_id:?int,
+     *     student_name:?string,
+     *     phone:?string,
+     *     guardian_name:?string,
+     *     guardian_phone:?string,
+     *     cnic:?string,
+     *     passport_number:?string,
+     *     email:?string,
+     *     education:?string,
+     *     date_of_birth:?string,
+     *     gender:?string,
+     *     address:?string,
+     *     registration_number:string,
+     *     receipt_number:string
+     * }  $registrationContext
      * @param  array<int, true>  $currentCampusLookup
-     * @param  array<int, true>  $currentUserLookup
-     * @param  array<int, true>  $currentAdmissionLookup
-     * @param  array<int, int>  $installmentTotalsByAdmissionId
+     * @param  array<int, true>  $currentProgramLookup
+     * @param  array<int, true>  $currentBatchLookup
      * @return array<string, mixed>
      */
-    private function buildFeeCollectionPayload(
-        array $legacyFeeRow,
+    private function buildLegacyAdmissionPayload(
+        int $admissionId,
+        array $legacyAdmission,
         array $registrationContext,
+        array $relatedFeeRows,
         array $currentCampusLookup,
-        array $currentUserLookup,
-        array $currentAdmissionLookup,
-        array $installmentTotalsByAdmissionId
+        array $currentProgramLookup,
+        array $currentBatchLookup
     ): array {
-        $legacyType = strtolower(trim((string) ($legacyFeeRow['fee_type'] ?? '')));
-        $currentFeeType = $legacyType === 'registration'
-            ? 'registration'
-            : 'admission';
-
-        $baseAmount = $currentFeeType === 'registration'
-            ? $this->money($legacyFeeRow['registration_amount'])
-            : $this->money($legacyFeeRow['paid_amount']);
-
-        if ($currentFeeType === 'admission' && $baseAmount <= 0) {
-            $baseAmount = $this->money($legacyFeeRow['total_amount']);
-        }
-
-        $normalizedStatus = 'pending';
-        $normalizedAmount = $baseAmount;
-
-        switch (strtolower(trim((string) ($legacyFeeRow['status'] ?? '')))) {
-            case 'clear':
-                $normalizedStatus = 'paid';
-                break;
-            case 'refund':
-                $normalizedStatus = 'paid';
-                $normalizedAmount = $baseAmount > 0 ? ($baseAmount * -1) : 0;
-                break;
-            case 'cancel':
-                $normalizedAmount = 0;
-                break;
-        }
-
-        $campusId = $this->nullableInt($legacyFeeRow['campus_id']);
+        $campusId = $this->nullableInt($legacyAdmission['campus_id']);
 
         if ($campusId !== null && ! isset($currentCampusLookup[$campusId])) {
             $campusId = null;
@@ -390,32 +572,357 @@ return new class extends Migration
             $campusId = $registrationContext['campus_id'];
         }
 
+        $programId = $this->nullableInt($legacyAdmission['program_id']);
+
+        if ($programId !== null && ! isset($currentProgramLookup[$programId])) {
+            $programId = null;
+        }
+
+        if ($programId === null) {
+            $programId = $registrationContext['program_id'];
+        }
+
+        $batchId = $this->nullableInt($legacyAdmission['batch_id']);
+
+        if ($batchId !== null && ! isset($currentBatchLookup[$batchId])) {
+            $batchId = null;
+        }
+
+        $feePackage = $this->money($legacyAdmission['fee_package']);
+        $discountPercent = $this->money($legacyAdmission['discount']);
+        $discountAmount = round($feePackage * ($discountPercent / 100), 2);
+        $statusUpdatedAt = $this->normalizeDateTime($legacyAdmission['updated_at'])
+            ?? $this->normalizeDateTime($legacyAdmission['created_at']);
+        $legacyStatus = $this->nullableString($legacyAdmission['status']);
+        $certificateDeliveredAt = strtolower(trim((string) $legacyStatus)) === 'delivered'
+            ? $statusUpdatedAt
+            : null;
+
+        return [
+            'registration_id' => (int) $legacyAdmission['registration_id'],
+            'campus_id' => $campusId,
+            'program_id' => $programId,
+            'batch_id' => $batchId,
+            'student_name' => $registrationContext['student_name'],
+            'phone' => $registrationContext['phone'],
+            'guardian_name' => $registrationContext['guardian_name'],
+            'guardian_phone' => $registrationContext['guardian_phone'],
+            'cnic' => $registrationContext['cnic'],
+            'passport_number' => $registrationContext['passport_number'],
+            'date_of_birth' => $registrationContext['date_of_birth'],
+            'email' => $registrationContext['email'],
+            'gender' => $registrationContext['gender'],
+            'education' => $registrationContext['education'],
+            'country' => null,
+            'city' => null,
+            'area' => null,
+            'postal_address' => $registrationContext['address'],
+            'registration_number' => $registrationContext['registration_number'],
+            'roll_number' => trim((string) ($legacyAdmission['roll_number'] ?? 'LEGACY-ADM-'.$admissionId)),
+            'admission_date' => $this->normalizeDate($legacyAdmission['admission_date'])
+                ?? $this->normalizeDate($legacyAdmission['created_at'])
+                ?? now()->toDateString(),
+            'fee_package' => round($feePackage, 2),
+            'discount_amount' => $discountAmount,
+            'discount_percent' => round($discountPercent, 2),
+            'discounted_fee' => round(max(0, $feePackage - $discountAmount), 2),
+            'fee_type' => $this->resolveAdmissionFeeType($relatedFeeRows),
+            'student_status' => $this->normalizeAdmissionStudentStatus($legacyStatus),
+            'approval_status' => $this->normalizeAdmissionApprovalStatus($legacyStatus),
+            'status_updated_at' => $statusUpdatedAt,
+            'document_cnic_front_path' => null,
+            'document_cnic_back_path' => null,
+            'document_admission_form_path' => null,
+            'document_paid_slip_path' => null,
+            'documents_uploaded_at' => null,
+            'documents_uploaded_by' => null,
+            'approval_reviewed_at' => null,
+            'approval_reviewed_by' => null,
+            'approval_remarks' => null,
+            'certificate_delivered_at' => $certificateDeliveredAt,
+            'certificate_delivered_by' => null,
+            'certificate_delivery_notes' => $certificateDeliveredAt !== null ? 'Imported from legacy delivered status.' : null,
+            'remarks' => $this->nullableString($legacyAdmission['remarks']) ?? '',
+            'receipt_number' => $this->resolveAdmissionReceiptNumber($relatedFeeRows, $registrationContext['receipt_number']),
+            'created_at' => $this->normalizeDateTime($legacyAdmission['created_at']) ?? now(),
+            'updated_at' => $this->normalizeDateTime($legacyAdmission['updated_at'])
+                ?? $this->normalizeDateTime($legacyAdmission['created_at'])
+                ?? now(),
+        ];
+    }
+
+    /**
+     * @param  array{
+     *     lead_id:?int,
+     *     campus_id:?int,
+     *     program_id:?int,
+     *     student_name:?string,
+     *     phone:?string,
+     *     guardian_name:?string,
+     *     guardian_phone:?string,
+     *     cnic:?string,
+     *     passport_number:?string,
+     *     email:?string,
+     *     education:?string,
+     *     date_of_birth:?string,
+     *     gender:?string,
+     *     address:?string,
+     *     registration_number:string,
+     *     receipt_number:string
+     * }  $registrationContext
+     * @param  list<array<string, mixed>>  $relatedFeeRows
+     * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentProgramLookup
+     * @return array<string, mixed>
+     */
+    private function buildPlaceholderAdmissionPayload(
+        int $admissionId,
+        array $registrationContext,
+        array $relatedFeeRows,
+        array $currentCampusLookup,
+        array $currentProgramLookup
+    ): array {
+        $firstFee = $relatedFeeRows[0] ?? null;
+
+        if ($firstFee === null) {
+            throw new RuntimeException('Unable to build placeholder legacy admission id '.$admissionId.' without related fee rows.');
+        }
+
+        $campusId = $this->nullableInt($firstFee['campus_id']);
+
+        if ($campusId !== null && ! isset($currentCampusLookup[$campusId])) {
+            $campusId = null;
+        }
+
+        if ($campusId === null) {
+            $campusId = $registrationContext['campus_id'];
+        }
+
+        $programId = $registrationContext['program_id'];
+
+        $admissionDate = $this->normalizeDate($firstFee['admission_date'] ?? null)
+            ?? $this->normalizeDate($firstFee['created_at'] ?? null)
+            ?? now()->toDateString();
+        $createdAt = $this->normalizeDateTime($firstFee['created_at'] ?? null)
+            ?? $this->normalizeDateTime($firstFee['updated_at'] ?? null)
+            ?? now();
+        $feePackage = round($this->money($firstFee['total_amount']), 2);
+
+        return [
+            'registration_id' => (int) $firstFee['registration_id'],
+            'campus_id' => $campusId,
+            'program_id' => $programId,
+            'batch_id' => null,
+            'student_name' => $registrationContext['student_name'] ?? ('Legacy Admission #'.$admissionId),
+            'phone' => $registrationContext['phone'],
+            'guardian_name' => $registrationContext['guardian_name'],
+            'guardian_phone' => $registrationContext['guardian_phone'],
+            'cnic' => $registrationContext['cnic'],
+            'passport_number' => $registrationContext['passport_number'],
+            'date_of_birth' => $registrationContext['date_of_birth'],
+            'email' => $registrationContext['email'],
+            'gender' => $registrationContext['gender'],
+            'education' => $registrationContext['education'],
+            'country' => null,
+            'city' => null,
+            'area' => null,
+            'postal_address' => $registrationContext['address'],
+            'registration_number' => $registrationContext['registration_number'],
+            'roll_number' => 'LEGACY-ADM-'.$admissionId,
+            'admission_date' => $admissionDate,
+            'fee_package' => $feePackage,
+            'discount_amount' => 0,
+            'discount_percent' => 0,
+            'discounted_fee' => $feePackage,
+            'fee_type' => $this->resolveAdmissionFeeType($relatedFeeRows),
+            'student_status' => 'enrolled',
+            'approval_status' => 'approved',
+            'status_updated_at' => $createdAt,
+            'document_cnic_front_path' => null,
+            'document_cnic_back_path' => null,
+            'document_admission_form_path' => null,
+            'document_paid_slip_path' => null,
+            'documents_uploaded_at' => null,
+            'documents_uploaded_by' => null,
+            'approval_reviewed_at' => null,
+            'approval_reviewed_by' => null,
+            'approval_remarks' => null,
+            'certificate_delivered_at' => null,
+            'certificate_delivered_by' => null,
+            'certificate_delivery_notes' => null,
+            'remarks' => 'Placeholder admission created because this legacy admission id exists in fee_collections.sql but not in admissions.sql.',
+            'receipt_number' => $this->resolveAdmissionReceiptNumber($relatedFeeRows, $registrationContext['receipt_number']),
+            'created_at' => $createdAt,
+            'updated_at' => $this->normalizeDateTime($firstFee['updated_at'] ?? null) ?? $createdAt,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $legacyFeeRow
+     * @param  array{
+     *     lead_id:?int,
+     *     campus_id:?int,
+     *     program_id:?int,
+     *     student_name:?string,
+     *     phone:?string,
+     *     guardian_name:?string,
+     *     guardian_phone:?string,
+     *     cnic:?string,
+     *     passport_number:?string,
+     *     email:?string,
+     *     education:?string,
+     *     date_of_birth:?string,
+     *     gender:?string,
+     *     address:?string,
+     *     registration_number:string,
+     *     receipt_number:string
+     * }  $registrationContext
+     * @param  array{id:int,registration_id:int,campus_id:?int,program_id:?int,receipt_number:?string}|null  $admissionContext
+     * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentUserLookup
+     * @param  array<int, int>  $installmentTotalsByAdmissionId
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildFeeCollectionPayloads(
+        array $legacyFeeRow,
+        array $registrationContext,
+        ?array $admissionContext,
+        array $currentCampusLookup,
+        array $currentUserLookup,
+        array $installmentTotalsByAdmissionId
+    ): array {
+        $legacyType = strtolower(trim((string) ($legacyFeeRow['fee_type'] ?? '')));
+        $legacyFeeId = (int) $legacyFeeRow['id'];
+        $payloads = [];
+
+        $payloads[$legacyFeeId] = $this->buildSingleFeeCollectionPayload(
+            $legacyFeeRow,
+            $registrationContext,
+            $legacyType === 'registration' ? null : $admissionContext,
+            $currentCampusLookup,
+            $currentUserLookup,
+            $installmentTotalsByAdmissionId,
+            'registration'
+        );
+
+        if ($legacyType !== 'registration') {
+            $payloads[$legacyFeeId]['fee_type'] = 'admission';
+            $payloads[$legacyFeeId]['admission_id'] = $admissionContext['id'] ?? null;
+            $payloads[$legacyFeeId]['program_id'] = $admissionContext['program_id'] ?? $registrationContext['program_id'];
+            $payloads[$legacyFeeId]['amount'] = round($this->normalizeLegacyFeeAmount($legacyFeeRow, 'admission', $payloads[$legacyFeeId]['status']), 2);
+            $payloads[$legacyFeeId]['net_amount'] = $payloads[$legacyFeeId]['amount'];
+            $payloads[$legacyFeeId]['receipt_number'] = $this->nullableString($legacyFeeRow['receipt_number']) ?? ($admissionContext['receipt_number'] ?? null);
+            $payloads[$legacyFeeId]['notes'] = $this->buildLegacyFeeNotes($legacyFeeRow, 'admission', 'primary');
+            $payloads[$legacyFeeId]['installment_no'] = $legacyType === 'installment'
+                ? $this->nullableInt($legacyFeeRow['installment_number'])
+                : null;
+            $payloads[$legacyFeeId]['installments_total'] = $legacyType === 'installment' && $this->nullableInt($legacyFeeRow['admission_id']) !== null
+                ? ($installmentTotalsByAdmissionId[(int) $legacyFeeRow['admission_id']] ?? null)
+                : null;
+
+            return $payloads;
+        }
+
+        $payloads[$legacyFeeId]['fee_type'] = 'registration';
+        $payloads[$legacyFeeId]['admission_id'] = null;
+        $payloads[$legacyFeeId]['program_id'] = $registrationContext['program_id'];
+        $payloads[$legacyFeeId]['amount'] = round($this->normalizeLegacyFeeAmount($legacyFeeRow, 'registration', $payloads[$legacyFeeId]['status']), 2);
+        $payloads[$legacyFeeId]['net_amount'] = $payloads[$legacyFeeId]['amount'];
+        $payloads[$legacyFeeId]['receipt_number'] = $this->nullableString($legacyFeeRow['receipt_number']) ?? $registrationContext['receipt_number'];
+        $payloads[$legacyFeeId]['notes'] = $this->buildLegacyFeeNotes($legacyFeeRow, 'registration', 'primary');
+        $payloads[$legacyFeeId]['installment_no'] = null;
+        $payloads[$legacyFeeId]['installments_total'] = null;
+
+        if ($admissionContext !== null) {
+            $syntheticFeeId = $this->syntheticAdmissionFeeId($legacyFeeId);
+            $payloads[$syntheticFeeId] = $this->buildSingleFeeCollectionPayload(
+                $legacyFeeRow,
+                $registrationContext,
+                $admissionContext,
+                $currentCampusLookup,
+                $currentUserLookup,
+                $installmentTotalsByAdmissionId,
+                'admission'
+            );
+            $payloads[$syntheticFeeId]['receipt_number'] = $this->nullableString($legacyFeeRow['receipt_number']) ?? ($admissionContext['receipt_number'] ?? null);
+            $payloads[$syntheticFeeId]['notes'] = $this->buildLegacyFeeNotes($legacyFeeRow, 'admission', 'split-from-registration');
+        }
+
+        return $payloads;
+    }
+
+    /**
+     * @param  array<string, mixed>  $legacyFeeRow
+     * @param  array{
+     *     lead_id:?int,
+     *     campus_id:?int,
+     *     program_id:?int,
+     *     student_name:?string,
+     *     phone:?string,
+     *     guardian_name:?string,
+     *     guardian_phone:?string,
+     *     cnic:?string,
+     *     passport_number:?string,
+     *     email:?string,
+     *     education:?string,
+     *     date_of_birth:?string,
+     *     gender:?string,
+     *     address:?string,
+     *     registration_number:string,
+     *     receipt_number:string
+     * }  $registrationContext
+     * @param  array{id:int,registration_id:int,campus_id:?int,program_id:?int,receipt_number:?string}|null  $admissionContext
+     * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentUserLookup
+     * @param  array<int, int>  $installmentTotalsByAdmissionId
+     * @return array<string, mixed>
+     */
+    private function buildSingleFeeCollectionPayload(
+        array $legacyFeeRow,
+        array $registrationContext,
+        ?array $admissionContext,
+        array $currentCampusLookup,
+        array $currentUserLookup,
+        array $installmentTotalsByAdmissionId,
+        string $segment
+    ): array {
+        $legacyType = strtolower(trim((string) ($legacyFeeRow['fee_type'] ?? '')));
+        $normalizedStatus = $this->normalizeLegacyFeeStatus($legacyFeeRow['status'] ?? null);
+        $normalizedAmount = $this->normalizeLegacyFeeAmount($legacyFeeRow, $segment, $normalizedStatus);
+
+        $campusId = $this->nullableInt($legacyFeeRow['campus_id']);
+
+        if ($campusId !== null && ! isset($currentCampusLookup[$campusId])) {
+            $campusId = null;
+        }
+
+        if ($campusId === null) {
+            $campusId = $admissionContext['campus_id'] ?? $registrationContext['campus_id'];
+        }
+
         $createdBy = $this->nullableInt($legacyFeeRow['user_id']);
 
         if ($createdBy !== null && ! isset($currentUserLookup[$createdBy])) {
             $createdBy = null;
         }
 
-        $admissionId = $this->nullableInt($legacyFeeRow['admission_id']);
-
-        if ($admissionId !== null && ! isset($currentAdmissionLookup[$admissionId])) {
-            $admissionId = null;
-        }
-
-        $installmentNo = $legacyType === 'installment'
+        $installmentNo = $segment === 'admission' && $legacyType === 'installment'
             ? $this->nullableInt($legacyFeeRow['installment_number'])
             : null;
+        $legacyAdmissionId = $this->nullableInt($legacyFeeRow['admission_id']);
 
         return [
             'lead_id' => $registrationContext['lead_id'],
             'registration_id' => (int) $legacyFeeRow['registration_id'],
-            'admission_id' => $currentFeeType === 'admission' ? $admissionId : null,
+            'admission_id' => $segment === 'admission' ? ($admissionContext['id'] ?? null) : null,
             'campus_id' => $campusId,
-            'program_id' => $registrationContext['program_id'],
-            'fee_type' => $currentFeeType,
+            'program_id' => $segment === 'admission'
+                ? ($admissionContext['program_id'] ?? $registrationContext['program_id'])
+                : $registrationContext['program_id'],
+            'fee_type' => $segment === 'admission' ? 'admission' : 'registration',
             'installment_no' => $installmentNo,
-            'installments_total' => $installmentNo !== null && $this->nullableInt($legacyFeeRow['admission_id']) !== null
-                ? ($installmentTotalsByAdmissionId[(int) $legacyFeeRow['admission_id']] ?? null)
+            'installments_total' => $installmentNo !== null && $legacyAdmissionId !== null
+                ? ($installmentTotalsByAdmissionId[$legacyAdmissionId] ?? null)
                 : null,
             'amount' => round($normalizedAmount, 2),
             'discount_percent' => 0,
@@ -433,7 +940,7 @@ return new class extends Migration
             'due_at' => $this->normalizeDate($legacyFeeRow['due_date'])
                 ?? $this->normalizeDate($legacyFeeRow['admission_date']),
             'created_by' => $createdBy,
-            'notes' => $this->buildLegacyFeeNotes($legacyFeeRow, $currentFeeType),
+            'notes' => $this->buildLegacyFeeNotes($legacyFeeRow, $segment === 'admission' ? 'admission' : 'registration', 'base'),
             'created_at' => $this->normalizeDateTime($legacyFeeRow['created_at']) ?? now(),
             'updated_at' => $this->normalizeDateTime($legacyFeeRow['updated_at'])
                 ?? $this->normalizeDateTime($legacyFeeRow['created_at'])
@@ -444,17 +951,22 @@ return new class extends Migration
     /**
      * @param  array<string, mixed>  $legacyFeeRow
      */
-    private function buildLegacyFeeNotes(array $legacyFeeRow, string $currentFeeType): string
+    private function buildLegacyFeeNotes(array $legacyFeeRow, string $currentFeeType, string $segment): string
     {
         $parts = [
             'Legacy fee row #'.(int) $legacyFeeRow['id'],
             'legacy type: '.((string) $legacyFeeRow['fee_type']),
             'legacy status: '.((string) $legacyFeeRow['status']),
             'mapped type: '.$currentFeeType,
+            'segment: '.$segment,
         ];
 
         if ($this->money($legacyFeeRow['registration_amount']) > 0) {
             $parts[] = 'legacy registration amount: '.number_format($this->money($legacyFeeRow['registration_amount']), 2, '.', '');
+        }
+
+        if ($this->money($legacyFeeRow['paid_amount']) > 0) {
+            $parts[] = 'legacy paid amount: '.number_format($this->money($legacyFeeRow['paid_amount']), 2, '.', '');
         }
 
         if ($this->nullableInt($legacyFeeRow['admission_id']) !== null) {
@@ -462,6 +974,91 @@ return new class extends Migration
         }
 
         return implode(' | ', $parts);
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $relatedFeeRows
+     */
+    private function resolveAdmissionFeeType(array $relatedFeeRows): string
+    {
+        foreach ($relatedFeeRows as $row) {
+            if (strtolower(trim((string) ($row['fee_type'] ?? ''))) === 'installment') {
+                return 'installments';
+            }
+        }
+
+        return 'full';
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $relatedFeeRows
+     */
+    private function resolveAdmissionReceiptNumber(array $relatedFeeRows, ?string $fallback): ?string
+    {
+        foreach ($relatedFeeRows as $row) {
+            $receiptNumber = $this->nullableString($row['receipt_number'] ?? null);
+
+            if ($receiptNumber !== null) {
+                return $receiptNumber;
+            }
+        }
+
+        return $fallback;
+    }
+
+    private function normalizeAdmissionStudentStatus(?string $legacyStatus): string
+    {
+        return match (strtolower(trim((string) $legacyStatus))) {
+            'conclude', 'ready', 'delivered' => 'concluded',
+            'suspend' => 'suspended',
+            'not completed' => 'incomplete',
+            'freeze' => 'frozen',
+            'batch transfer', 'campus transfer' => 'transferred',
+            'dropped' => 'dropped',
+            'cancel' => 'admission_cancelled',
+            default => 'enrolled',
+        };
+    }
+
+    private function normalizeAdmissionApprovalStatus(?string $legacyStatus): string
+    {
+        return strtolower(trim((string) $legacyStatus)) === 'requested'
+            ? 'approval_requested'
+            : 'approved';
+    }
+
+    private function normalizeLegacyFeeStatus(?string $legacyStatus): string
+    {
+        return strtolower(trim((string) $legacyStatus)) === 'clear' || strtolower(trim((string) $legacyStatus)) === 'refund'
+            ? 'paid'
+            : 'pending';
+    }
+
+    /**
+     * @param  array<string, mixed>  $legacyFeeRow
+     */
+    private function normalizeLegacyFeeAmount(array $legacyFeeRow, string $segment, string $normalizedStatus): float
+    {
+        $amount = $segment === 'registration'
+            ? $this->money($legacyFeeRow['registration_amount'])
+            : $this->money($legacyFeeRow['paid_amount']);
+
+        $legacyStatus = strtolower(trim((string) ($legacyFeeRow['status'] ?? '')));
+
+        if ($legacyStatus === 'refund') {
+            return $amount > 0 ? ($amount * -1) : 0.0;
+        }
+
+        if ($legacyStatus === 'cancel' && $normalizedStatus !== 'paid') {
+            return 0.0;
+        }
+
+        return round($amount, 2);
+    }
+
+    private function syntheticAdmissionFeeId(int $legacyFeeId): int
+    {
+        return 1000000 + $legacyFeeId;
     }
 
     /**
