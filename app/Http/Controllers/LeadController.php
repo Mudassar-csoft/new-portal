@@ -691,6 +691,13 @@ class LeadController extends Controller
             ->orderByDesc('id')
             ->limit(1);
 
+        $latestFollowupAtSubquery = LeadFollowup::query()
+            ->selectRaw('COALESCE(updated_at, created_at)')
+            ->whereColumn('lead_id', 'leads.id')
+            ->orderByRaw('COALESCE(updated_at, created_at) DESC')
+            ->orderByDesc('id')
+            ->limit(1);
+
         return $this->leadQueryForType($type)
             ->whereHas('followups')
             ->with([
@@ -702,6 +709,7 @@ class LeadController extends Controller
             ])
             ->select('leads.*')
             ->selectSub($latestFollowupIdSubquery, 'latest_followup_id')
+            ->selectSub($latestFollowupAtSubquery, 'latest_followup_at')
             ->withCount('followups');
     }
 
@@ -1083,6 +1091,7 @@ class LeadController extends Controller
         }
 
         $followups = $followupQuery
+            ->orderByDesc('latest_followup_at')
             ->orderByDesc('latest_followup_id')
             ->paginate($perPage)
             ->withQueryString();
