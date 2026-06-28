@@ -7,6 +7,44 @@
         $selectedStage = $selectedStage ?? 'all';
         $search = $search ?? '';
         $perPage = (int) ($perPage ?? 25);
+        $currentPage = $followups->currentPage();
+        $lastPage = $followups->lastPage();
+        $pageStart = max(1, $currentPage - 2);
+        $pageEnd = min($lastPage, $currentPage + 2);
+
+        if ($pageStart <= 3) {
+            $pageStart = 1;
+            $pageEnd = min($lastPage, 5);
+        }
+
+        if ($pageEnd >= $lastPage - 2) {
+            $pageEnd = $lastPage;
+            $pageStart = max(1, $lastPage - 4);
+        }
+
+        $pageItems = [];
+
+        if ($lastPage > 0) {
+            if ($pageStart > 1) {
+                $pageItems[] = 1;
+
+                if ($pageStart > 2) {
+                    $pageItems[] = 'ellipsis-left';
+                }
+            }
+
+            foreach (range($pageStart, $pageEnd) as $pageNumber) {
+                $pageItems[] = $pageNumber;
+            }
+
+            if ($pageEnd < $lastPage) {
+                if ($pageEnd < $lastPage - 1) {
+                    $pageItems[] = 'ellipsis-right';
+                }
+
+                $pageItems[] = $lastPage;
+            }
+        }
     @endphp
     <div class="follow-shell">
         <div id="follow-loader" class="follow-loader">
@@ -146,15 +184,41 @@
 
                     <div class="follow-footer">
                         <div id="follow-count">Showing {{ $followups->firstItem() ?? 0 }} to {{ $followups->lastItem() ?? 0 }} of {{ $followups->total() }} Entries</div>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item {{ $followups->onFirstPage() ? 'disabled' : '' }}">
-                                <a class="page-link" href="{{ $followups->previousPageUrl() ?: '#' }}">Previous</a>
-                            </li>
-                            <li class="page-item active"><span class="page-link">{{ $followups->currentPage() }}</span></li>
-                            <li class="page-item {{ $followups->hasMorePages() ? '' : 'disabled' }}">
-                                <a class="page-link" href="{{ $followups->nextPageUrl() ?: '#' }}">Next</a>
-                            </li>
-                        </ul>
+                        @if($lastPage > 1)
+                            <ul class="pagination pagination-sm mb-0 follow-pagination">
+                                <li class="page-item {{ $followups->onFirstPage() ? 'disabled' : '' }}">
+                                    @if($followups->onFirstPage())
+                                        <span class="page-link" aria-hidden="true">&lt;</span>
+                                    @else
+                                        <a class="page-link" href="{{ $followups->previousPageUrl() }}" aria-label="Previous page">&lt;</a>
+                                    @endif
+                                </li>
+
+                                @foreach($pageItems as $pageItem)
+                                    @if(is_int($pageItem))
+                                        <li class="page-item {{ $pageItem === $currentPage ? 'active' : '' }}">
+                                            @if($pageItem === $currentPage)
+                                                <span class="page-link">{{ $pageItem }}</span>
+                                            @else
+                                                <a class="page-link" href="{{ $followups->url($pageItem) }}">{{ $pageItem }}</a>
+                                            @endif
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled page-ellipsis" aria-hidden="true">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                <li class="page-item {{ $followups->hasMorePages() ? '' : 'disabled' }}">
+                                    @if($followups->hasMorePages())
+                                        <a class="page-link" href="{{ $followups->nextPageUrl() }}" aria-label="Next page">&gt;</a>
+                                    @else
+                                        <span class="page-link" aria-hidden="true">&gt;</span>
+                                    @endif
+                                </li>
+                            </ul>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -263,6 +327,35 @@
 
         .follow-search .form-control {
             width: min(280px, 100%);
+        }
+
+        .follow-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .follow-pagination {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .follow-pagination .page-link {
+            min-width: 34px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .follow-pagination .page-item.active .page-link {
+            z-index: 1;
+        }
+
+        .follow-pagination .page-ellipsis .page-link {
+            min-width: auto;
         }
     </style>
 @endpush
