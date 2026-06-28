@@ -1781,10 +1781,12 @@ class ImportLegacyOldCrm extends Command
                             if ($current === '\\') {
                                 $index++;
 
-                                if ($index < $length) {
-                                    $tupleBuffer .= $line[$index];
+                                if ($index >= $length) {
+                                    continue;
                                 }
 
+                                $tupleBuffer .= $line[$index];
+                                $index++;
                                 continue;
                             }
 
