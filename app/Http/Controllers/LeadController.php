@@ -700,9 +700,9 @@ class LeadController extends Controller
                 'program:id,title,name',
                 'coworkingRegistration:id,lead_id',
             ])
-            ->withCount('followups')
             ->select('leads.*')
-            ->selectSub($latestFollowupIdSubquery, 'latest_followup_id');
+            ->selectSub($latestFollowupIdSubquery, 'latest_followup_id')
+            ->withCount('followups');
     }
 
     /**
