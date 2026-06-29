@@ -519,20 +519,44 @@ class DashboardController extends Controller
                 ->pluck('aggregate', 'campus_id')
             : collect();
 
-        $programLabels = Program::query()
-            ->whereIn(
-                'id',
-                collect($leadCountsByProgram->keys())
-                    ->merge($admissionCountsByProgram->keys())
-                    ->filter()
-                    ->unique()
-                    ->values()
-            )
-            ->get(['id', 'code', 'title', 'name'])
-            ->mapWithKeys(function (Program $program) {
-                $label = $program->code ?: ($program->title ?: $program->name ?: 'Program #' . $program->id);
-                return [$program->id => $label];
-            });
+
+            
+   $programIds = collect($leadCountsByProgram->keys())
+    ->merge($admissionCountsByProgram->keys())
+    ->filter()
+    ->unique()
+    ->sortDesc()
+    ->slice(0, 6)
+    ->values();
+
+$leadCountsByProgram = $leadCountsByProgram->only($programIds)->take(6);
+$admissionCountsByProgram = $admissionCountsByProgram->only($programIds)->take(6);
+
+$programLabels = Program::query()
+    ->whereIn('id', $programIds)
+    ->get(['id', 'code', 'title', 'name'])
+    ->mapWithKeys(function (Program $program) {
+        $label = $program->code ?: ($program->title ?: ($program->name ?: 'Program #' . $program->id));
+        return [$program->id => $label];
+    });
+
+
+
+
+        // $programLabels = Program::query()
+        //     ->whereIn(
+        //         'id',
+        //         collect($leadCountsByProgram->keys())
+        //             ->merge($admissionCountsByProgram->keys())
+        //             ->filter()
+        //             ->unique()
+        //             ->values()
+        //     )
+        //     ->get(['id', 'code', 'title', 'name'])
+        //     ->mapWithKeys(function (Program $program) {
+        //         $label = $program->code ?: ($program->title ?: $program->name ?: 'Program #' . $program->id);
+        //         return [$program->id => $label];
+        //     });
 
         $leadCategories = [];
         $leadCounts = [];
