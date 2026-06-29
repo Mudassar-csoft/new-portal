@@ -38,7 +38,6 @@
 
                 <a href="{{ route('web-leads.index', array_filter([
                     'tab' => $webLead->source_type,
-                    'status' => $webLead->status,
                 ], static fn ($value) => $value !== null && $value !== '')) }}" class="btn btn-inline btn-default">Back</a>
             </div>
 

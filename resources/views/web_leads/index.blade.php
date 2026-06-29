@@ -26,7 +26,6 @@
 							class="follow-tab notification-link-tab {{ $activeTab === $key ? 'active' : '' }}"
 							href="{{ route('web-leads.index', array_filter([
 								'tab' => $key !== 'all' ? $key : null,
-								'status' => $activeStatus !== 'all' ? $activeStatus : null,
 								'search' => $search !== '' ? $search : null,
 								'per_page' => $perPage !== 25 ? $perPage : null,
 							], static fn ($value) => $value !== null && $value !== '')) }}"
@@ -47,7 +46,7 @@
 
 				<div class="box-typical-body panel-body follow-body">
 					<form method="GET" action="{{ route('web-leads.index') }}" class="follow-controls">
-						<input type="hidden" name="tab" value="{{ $activeTab !== 'all' ? $activeTab : '' }}">
+						<input type="hidden" id="web-lead-tab-input" name="tab" value="{{ $activeTab !== 'all' ? $activeTab : '' }}">
 						<div class="d-flex" style="gap:0.5rem;align-items: center; flex-wrap: wrap;">
 							<label>Show</label>
 							<select name="per_page" id="web-lead-per-page" class="form-control form-control-sm" style="width: 86px;">
@@ -56,13 +55,6 @@
 								@endforeach
 							</select>
 							<label>Entries</label>
-
-							<label class="mb-0 ml-2">Status</label>
-							<select name="status" id="web-lead-status" class="form-control form-control-sm" style="min-width: 160px;">
-								@foreach ($statusOptions as $statusValue => $statusLabel)
-									<option value="{{ $statusValue === 'all' ? '' : $statusValue }}" @selected($activeStatus === $statusValue)>{{ $statusLabel }}</option>
-								@endforeach
-							</select>
 
 							<a href="{{ route('web-leads.index', $activeTab !== 'all' ? ['tab' => $activeTab] : []) }}" class="btn btn-default btn-sm">Reset</a>
 						</div>
@@ -78,7 +70,6 @@
 								<tr>
 									<th>Sr</th>
 									<th>Lead Type</th>
-									<th>Status</th>
 									<th>Name</th>
 									<th>Contact No</th>
 									<th>Email</th>
@@ -92,16 +83,10 @@
 								@forelse ($webLeads as $webLead)
 									@php
 										$actionId = 'web-lead-action-' . Str::slug($webLead->full_name ?: 'web-lead') . '-' . $loop->iteration;
-										$statusClass = match ($webLead->status) {
-											WebLead::STATUS_LEAD_CREATED => 'label-success',
-											WebLead::STATUS_NOT_INTERESTED => 'label-danger',
-											default => 'label-warning',
-										};
 									@endphp
 									<tr>
 										<td class="text-start">{{ ($webLeads->firstItem() ?? 1) + $loop->index }}</td>
 										<td>{{ $webLead->source_label }}</td>
-										<td><span class="label {{ $statusClass }}">{{ $webLead->status_label }}</span></td>
 										<td>
 											<a href="{{ route('web-leads.show', $webLead) }}" class="lead-link">
 												{{ $webLead->full_name }}
@@ -118,7 +103,7 @@
 									</tr>
 								@empty
 									<tr id="web-lead-empty-row">
-										<td colspan="10" class="text-center text-muted">No web leads found for the current filters.</td>
+										<td colspan="9" class="text-center text-muted">No pending web leads found for the current filters.</td>
 									</tr>
 								@endforelse
 							</tbody>
@@ -356,16 +341,9 @@
 			document.addEventListener('DOMContentLoaded', function () {
 				revealWebLeadPage();
 				var perPage = document.getElementById('web-lead-per-page');
-				var status = document.getElementById('web-lead-status');
 
 				if (perPage) {
 					perPage.addEventListener('change', function () {
-						this.form.submit();
-					});
-				}
-
-				if (status) {
-					status.addEventListener('change', function () {
 						this.form.submit();
 					});
 				}

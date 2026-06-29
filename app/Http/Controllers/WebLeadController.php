@@ -59,7 +59,7 @@ class WebLeadController extends Controller
     public function index(Request $request): View
     {
         $sourceTabs = [
-            'all' => 'All Web Leads',
+            'all' => 'All Pending',
             WebLead::SOURCE_QUICK_LEAD => 'Quick Lead',
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Course Enrollment',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
@@ -76,17 +76,7 @@ class WebLeadController extends Controller
             WebLead::SOURCE_FEE_ALERT => 'badge-secondary',
         ];
 
-        $statusOptions = [
-            'all' => 'All Statuses',
-            ...WebLead::statusLabels(),
-        ];
-
         $activeTab = $request->string('tab')->toString();
-
-        $activeStatus = $request->string('status')->toString();
-        if (! array_key_exists($activeStatus, $statusOptions)) {
-            $activeStatus = 'all';
-        }
 
         $perPage = (int) $request->integer('per_page', 25);
         if (! in_array($perPage, [10, 25, 50, 100], true)) {
@@ -115,11 +105,7 @@ class WebLeadController extends Controller
             $activeTab = 'all';
         }
 
-        $countQuery = WebLead::query();
-
-        if ($activeStatus !== 'all') {
-            $countQuery->where('status', $activeStatus);
-        }
+        $countQuery = WebLead::query()->pending();
 
         $sourceCounts = (clone $countQuery)
             ->selectRaw('source_type, COUNT(*) as aggregate')
@@ -139,11 +125,8 @@ class WebLeadController extends Controller
         }
 
         $webLeadsQuery = WebLead::query()
+            ->pending()
             ->with(['convertedLead', 'handledBy']);
-
-        if ($activeStatus !== 'all') {
-            $webLeadsQuery->where('status', $activeStatus);
-        }
 
         if ($activeTab !== 'all') {
             $webLeadsQuery->where('source_type', $activeTab);
@@ -188,8 +171,6 @@ class WebLeadController extends Controller
             'badgeColors',
             'tabCounts',
             'activeTab',
-            'activeStatus',
-            'statusOptions',
             'search',
             'perPage',
             'externalTabs'
