@@ -16,7 +16,9 @@ trait ResolvesLeadFollowupNotifications
      */
     protected function latestDueLeadFollowupNotifications(?User $user, callable $scopeLeadQuery, array $types): Collection
     {
-        $notificationCutoff = now();
+        $notificationNow = now();
+        $todayStart = $notificationNow->copy()->startOfDay();
+        $todayEnd = $notificationNow->copy()->endOfDay();
 
         $latestFollowupIds = LeadFollowup::query()
             ->selectRaw('MAX(id)')
@@ -31,11 +33,31 @@ trait ResolvesLeadFollowupNotifications
             ->get()
             ->map(function (LeadFollowup $followup) {
                 $followup->notification_due_at = $this->resolveFollowupNotificationDateTime($followup);
+                $followup->notification_starts_at = $followup->notification_due_at instanceof Carbon
+                    ? $followup->notification_due_at->copy()->subHours(2)
+                    : null;
 
                 return $followup;
             })
-            ->filter(fn (LeadFollowup $followup) => $followup->notification_due_at instanceof Carbon
-                && $followup->notification_due_at->lessThanOrEqualTo($notificationCutoff))
+            ->filter(function (LeadFollowup $followup) use ($notificationNow, $todayEnd, $todayStart): bool {
+                if (! $followup->notification_due_at instanceof Carbon) {
+                    return false;
+                }
+
+                if (
+                    $followup->notification_due_at->lt($todayStart)
+                    || $followup->notification_due_at->gt($todayEnd)
+                ) {
+                    return false;
+                }
+
+                if (! $followup->notification_starts_at instanceof Carbon) {
+                    return false;
+                }
+
+                return $followup->notification_starts_at->lessThanOrEqualTo($notificationNow)
+                    && $followup->notification_due_at->greaterThanOrEqualTo($notificationNow);
+            })
             ->sort(function (LeadFollowup $left, LeadFollowup $right) {
                 $leftTimestamp = $left->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
                 $rightTimestamp = $right->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
