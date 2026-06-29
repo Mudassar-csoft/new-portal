@@ -58,14 +58,8 @@ class WebLeadController extends Controller
 
     public function index(Request $request): View
     {
-        $webLeads = WebLead::query()
-            ->where('status', WebLead::STATUS_NEW)
-            ->with(['convertedLead', 'handledBy'])
-            ->latest('submitted_at')
-            ->latest('id')
-            ->get();
-
-        $tabs = [
+        $sourceTabs = [
+            'all' => 'All Pending',
             WebLead::SOURCE_QUICK_LEAD => 'Quick Lead',
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Course Enrollment',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
@@ -74,6 +68,7 @@ class WebLeadController extends Controller
         ];
 
         $badgeColors = [
+            'all' => 'badge-default',
             WebLead::SOURCE_QUICK_LEAD => 'badge-primary',
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'badge-success',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'badge-info',
@@ -81,22 +76,105 @@ class WebLeadController extends Controller
             WebLead::SOURCE_FEE_ALERT => 'badge-secondary',
         ];
 
-        $tabCounts = [];
-        foreach ($tabs as $sourceType => $label) {
-            $tabCounts[$sourceType] = $webLeads
-                ->where('status', WebLead::STATUS_NEW)
-                ->where('source_type', $sourceType)
-                ->count();
-        }
-
-        $notificationTabs = $this->notificationTabs($tabs, $tabCounts);
-
         $activeTab = $request->string('tab')->toString();
-        if (! array_key_exists($activeTab, $tabs)) {
-            $activeTab = array_key_first($tabs);
+
+        $perPage = (int) $request->integer('per_page', 25);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
         }
 
-        return view('web_leads.index', compact('webLeads', 'tabs', 'badgeColors', 'tabCounts', 'activeTab', 'notificationTabs'));
+        $search = trim($request->string('search')->toString());
+
+        $allSourceTypes = WebLead::query()
+            ->whereNotNull('source_type')
+            ->distinct()
+            ->orderBy('source_type')
+            ->pluck('source_type')
+            ->filter(fn (?string $sourceType) => $sourceType !== null && $sourceType !== '')
+            ->values()
+            ->all();
+
+        foreach ($allSourceTypes as $sourceType) {
+            if (! array_key_exists($sourceType, $sourceTabs)) {
+                $sourceTabs[$sourceType] = Str::headline((string) $sourceType);
+                $badgeColors[$sourceType] = 'badge-secondary';
+            }
+        }
+
+        if (! array_key_exists($activeTab, $sourceTabs)) {
+            $activeTab = 'all';
+        }
+
+        $countQuery = WebLead::query()->pending();
+
+        $sourceCounts = (clone $countQuery)
+            ->selectRaw('source_type, COUNT(*) as aggregate')
+            ->groupBy('source_type')
+            ->pluck('aggregate', 'source_type')
+            ->map(fn ($count) => (int) $count)
+            ->all();
+
+        $tabCounts = ['all' => (clone $countQuery)->count()];
+
+        foreach ($sourceTabs as $sourceType => $label) {
+            if ($sourceType === 'all') {
+                continue;
+            }
+
+            $tabCounts[$sourceType] = (int) ($sourceCounts[$sourceType] ?? 0);
+        }
+
+        $webLeadsQuery = WebLead::query()
+            ->pending()
+            ->with(['convertedLead', 'handledBy']);
+
+        if ($activeTab !== 'all') {
+            $webLeadsQuery->where('source_type', $activeTab);
+        }
+
+        if ($search !== '') {
+            $webLeadsQuery->where(function (Builder $query) use ($search): void {
+                $query
+                    ->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('interested_program', 'like', "%{$search}%")
+                    ->orWhere('preferred_campus', 'like', "%{$search}%");
+            });
+        }
+
+        $webLeads = $webLeadsQuery
+            ->latest('submitted_at')
+            ->latest('id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $externalTabs = [
+            [
+                'label' => 'Lead Follow Up',
+                'count' => $this->followupNotificationCount(),
+                'url' => route('leads.followups'),
+                'badge' => 'badge-danger',
+            ],
+            [
+                'label' => 'Overdue Invoices',
+                'count' => $this->overdueInvoiceCount(),
+                'url' => route('finance.receivables', ['status' => 'overdue']),
+                'badge' => 'badge-danger',
+            ],
+        ];
+
+        return view('web_leads.index', compact(
+            'webLeads',
+            'sourceTabs',
+            'badgeColors',
+            'tabCounts',
+            'activeTab',
+            'search',
+            'perPage',
+            'externalTabs'
+        ));
     }
 
     public function show(WebLead $webLead): View

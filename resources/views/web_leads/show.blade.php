@@ -36,7 +36,9 @@
                     <a href="{{ route('leads.show', $webLead->converted_to_lead_id) }}" class="btn btn-inline btn-success-outline">Open CRM Lead</a>
                 @endif
 
-                <a href="{{ route('web-leads.index', ['tab' => $webLead->status === \App\Models\WebLead::STATUS_NOT_INTERESTED ? 'web_not_interest' : $webLead->source_type]) }}" class="btn btn-inline btn-default">Back</a>
+                <a href="{{ route('web-leads.index', array_filter([
+                    'tab' => $webLead->source_type,
+                ], static fn ($value) => $value !== null && $value !== '')) }}" class="btn btn-inline btn-default">Back</a>
             </div>
 
             <div class="row">

@@ -1,10 +1,10 @@
 @extends('layouts.theme')
 
-@section('title', $pageTitle ?? 'Lead Follow-ups')
+@section('title', $pageTitle ?? 'Follow-up Schedule')
 
 @section('content')
     @php
-        $selectedStage = $selectedStage ?? 'all';
+        $selectedWindow = $selectedWindow ?? 'today';
         $search = $search ?? '';
         $perPage = (int) ($perPage ?? 25);
         $currentPage = $followups->currentPage();
@@ -46,6 +46,7 @@
             }
         }
     @endphp
+
     <div class="follow-shell">
         <div id="follow-loader" class="follow-loader">
             <div class="follow-spinner">
@@ -53,16 +54,16 @@
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
-            <p>Loading follow-ups...</p>
+            <p>Loading follow-up schedule...</p>
         </div>
 
         <div id="follow-content" class="follow-content p-0 m-0">
             <div class="follow-card box-typical box-typical-dashboard panel panel-default">
                 <div class="panel-heading p-3">
                     <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
-                        <h3 class="panel-title mb-0">Lead Management | <span class="text-muted">{{ $moduleTitle ?? 'Lead Follow-ups' }}</span></h3>
-                        @if(!empty($scheduleRoute ?? null))
-                            <a href="{{ $scheduleRoute }}" class="btn btn-primary btn-sm">Follow-up Schedule</a>
+                        <h3 class="panel-title mb-0">Lead Management | <span class="text-muted">{{ $moduleTitle ?? 'Follow-up Schedule' }}</span></h3>
+                        @if(!empty($stageRoute ?? null))
+                            <a href="{{ $stageRoute }}" class="btn btn-default btn-sm">All Follow-up Stages</a>
                         @endif
                     </div>
                 </div>
@@ -72,14 +73,10 @@
                         @php
                             $tabQuery = request()->query();
                             unset($tabQuery['page']);
-                            if ($key === 'all') {
-                                unset($tabQuery['stage']);
-                            } else {
-                                $tabQuery['stage'] = $key;
-                            }
+                            $tabQuery['window'] = $key;
                             $tabUrl = request()->url() . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
                         @endphp
-                        <a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStage === $key ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
+                        <a href="{{ $tabUrl }}" class="follow-tab {{ $selectedWindow === $key ? 'active' : '' }}" data-window="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
                             <span class="label-text">{{ $label }}</span>
                             <span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
                         </a>
@@ -88,9 +85,8 @@
 
                 <div class="box-typical-body panel-body follow-body">
                     <form method="GET" class="follow-controls" id="follow-filter-form">
-                        @if($selectedStage !== 'all')
-                            <input type="hidden" name="stage" value="{{ $selectedStage }}">
-                        @endif
+                        <input type="hidden" name="window" value="{{ $selectedWindow }}">
+
                         <div class="d-flex control-flow-show-bar" style="gap: 0.5rem; align-items: center;">
                             <label>Show</label>
                             <select class="form-select form-select-sm" name="per_page" id="follow-per-page">
@@ -104,7 +100,7 @@
                         <div class="follow-search">
                             <input type="text" name="q" id="follow-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
                             <button type="submit" class="btn btn-primary btn-sm">Search</button>
-                            @if($search !== '' || $selectedStage !== 'all')
+                            @if($search !== '' || $selectedWindow !== 'today')
                                 <a href="{{ request()->url() }}" class="btn btn-default btn-sm">Reset</a>
                             @endif
                             <i class="fa fa-search"></i>
@@ -117,10 +113,11 @@
                                 <tr>
                                     <th>Sr</th>
                                     <th>Name</th>
-                                    <th>Primary Contact</th>
+                                    <th>{{ $interestHeading ?? 'Program' }}</th>
+                                    <th>Contact</th>
                                     <th>Origin</th>
-                                    <th>{{ ($type ?? 'training') === 'coworking' ? 'Campus Code' : 'Campus' }}</th>
-                                    <th>Created At</th>
+                                    <th>Campus Code</th>
+                                    <th>Create Date</th>
                                     <th>Last Follower</th>
                                     <th>Followups</th>
                                     <th class="text-left">Action</th>
@@ -129,7 +126,7 @@
                             <tbody>
                                 @forelse ($followups as $row)
                                     @php
-                                        $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration;
+                                        $actionId = 'schedule-action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration;
                                         $nameUrl = !empty($row->lead?->id)
                                             ? route('leads.show', $row->lead->id)
                                             : null;
@@ -141,6 +138,7 @@
                                             'Proposal & Negotiation', 'Proposal or Negotiation' => 'label-info',
                                             'Not Interesting' => 'label-default',
                                             'Registered' => 'label-success',
+                                            'Enrolled' => 'label-success',
                                             default => 'label-default',
                                         };
 
@@ -148,7 +146,7 @@
                                             $nameUrl = route('coworking-registrations.show', $row->lead->coworkingRegistration);
                                         }
                                     @endphp
-                                    <tr data-status="{{ $row->stage_label }}">
+                                    <tr>
                                         <td class="text-start">{{ ($followups->firstItem() ?? 1) + $loop->index }}</td>
                                         <td>
                                             @if($nameUrl)
@@ -162,6 +160,7 @@
                                                 <span class="label {{ $labelClass }}">{{ $row->stage_label }}</span>
                                             </div>
                                         </td>
+                                        <td>{{ $row->lead->interest_summary ?? 'N/A' }}</td>
                                         <td>{{ $row->lead->phone ?? 'N/A' }}</td>
                                         <td>{{ $row->lead->origin ?? 'N/A' }}</td>
                                         <td>
@@ -171,7 +170,14 @@
                                                 {{ $row->lead->campus->code ?? $row->campus->code ?? $row->campus->name ?? 'N/A' }}
                                             @endif
                                         </td>
-                                        <td>{{ optional($row->lead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td>
+                                        <td>
+                                            @if($row->lead?->created_at)
+                                                {{ $row->lead->created_at->format('d-m-Y') }}
+                                                ({{ $row->lead->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay()) }} days)
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
                                         <td class="last-follower-cell">{{ $row->last_follower_name ?? 'System' }}</td>
                                         <td class="followup-count text-center">{{ (int) ($row->followups_count ?? 0) }}</td>
                                         <td class="action-cell">
@@ -180,7 +186,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted">No follow-ups found.</td>
+                                        <td colspan="9" class="text-center text-muted">No scheduled follow-ups found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

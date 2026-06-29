@@ -25,15 +25,27 @@ Route::post('/leads/{lead}/followups', [LeadController::class, 'addFollowup'])
 Route::get('/leads/follow-ups', [LeadController::class, 'followups'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.followups');
+Route::get('/leads/follow-up-schedule', [LeadController::class, 'followupSchedule'])
+    ->middleware('permission:lead.followup.view')
+    ->name('leads.followup-schedule');
 Route::get('/leads/certification-exam/follow-ups', [LeadController::class, 'certificationFollowups'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.certification.followups');
+Route::get('/leads/certification-exam/follow-up-schedule', [LeadController::class, 'certificationFollowupSchedule'])
+    ->middleware('permission:lead.followup.view')
+    ->name('leads.certification.followup-schedule');
 Route::get('/leads/study-abroad/follow-ups', [LeadController::class, 'studyAbroadFollowups'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.study-abroad.followups');
+Route::get('/leads/study-abroad/follow-up-schedule', [LeadController::class, 'studyAbroadFollowupSchedule'])
+    ->middleware('permission:lead.followup.view')
+    ->name('leads.study-abroad.followup-schedule');
 Route::get('/leads/coworking-space/follow-ups', [LeadController::class, 'coworkingFollowups'])
     ->middleware('permission:lead.coworking.view')
     ->name('leads.coworking.followups');
+Route::get('/leads/coworking-space/follow-up-schedule', [LeadController::class, 'coworkingFollowupSchedule'])
+    ->middleware('permission:lead.coworking.view')
+    ->name('leads.coworking.followup-schedule');
 
 Route::get('/leads/{lead}/transfer', [LeadController::class, 'transferForm'])
     ->middleware('permission:lead.update')

@@ -16,7 +16,9 @@ trait ResolvesLeadFollowupNotifications
      */
     protected function latestDueLeadFollowupNotifications(?User $user, callable $scopeLeadQuery, array $types): Collection
     {
-        $notificationCutoff = now();
+        $notificationNow = now($this->followupNotificationTimezone());
+        $todayStart = $notificationNow->copy()->startOfDay();
+        $todayEnd = $notificationNow->copy()->endOfDay();
 
         $latestFollowupIds = LeadFollowup::query()
             ->selectRaw('MAX(id)')
@@ -31,11 +33,31 @@ trait ResolvesLeadFollowupNotifications
             ->get()
             ->map(function (LeadFollowup $followup) {
                 $followup->notification_due_at = $this->resolveFollowupNotificationDateTime($followup);
+                $followup->notification_starts_at = $followup->notification_due_at instanceof Carbon
+                    ? $followup->notification_due_at->copy()->subHours(2)
+                    : null;
 
                 return $followup;
             })
-            ->filter(fn (LeadFollowup $followup) => $followup->notification_due_at instanceof Carbon
-                && $followup->notification_due_at->lessThanOrEqualTo($notificationCutoff))
+            ->filter(function (LeadFollowup $followup) use ($notificationNow, $todayEnd, $todayStart): bool {
+                if (! $followup->notification_due_at instanceof Carbon) {
+                    return false;
+                }
+
+                if (
+                    $followup->notification_due_at->lt($todayStart)
+                    || $followup->notification_due_at->gt($todayEnd)
+                ) {
+                    return false;
+                }
+
+                if (! $followup->notification_starts_at instanceof Carbon) {
+                    return false;
+                }
+
+                return $followup->notification_starts_at->lessThanOrEqualTo($notificationNow)
+                    && $followup->notification_due_at->greaterThanOrEqualTo($notificationNow);
+            })
             ->sort(function (LeadFollowup $left, LeadFollowup $right) {
                 $leftTimestamp = $left->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
                 $rightTimestamp = $right->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
@@ -47,9 +69,9 @@ trait ResolvesLeadFollowupNotifications
 
     protected function resolveFollowupNotificationDateTime(LeadFollowup $followup): ?Carbon
     {
-        $nextActionAt = $followup->next_action_date instanceof Carbon
-            ? $followup->next_action_date->copy()
-            : null;
+        $nextActionAt = $this->parseFollowupNotificationDateTime(
+            $followup->getRawOriginal('next_action_date')
+        );
 
         $leadNextFollowupAt = $this->parseFollowupNotificationDateTime(
             data_get($followup->lead?->details, 'next_followup_at')
@@ -77,9 +99,11 @@ trait ResolvesLeadFollowupNotifications
             return null;
         }
 
+        $timezone = $this->followupNotificationTimezone();
+
         foreach (['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'] as $format) {
             try {
-                $dateTime = Carbon::createFromFormat($format, $stringValue);
+                $dateTime = Carbon::createFromFormat($format, $stringValue, $timezone);
 
                 return $format === 'Y-m-d'
                     ? $dateTime->startOfDay()
@@ -90,9 +114,14 @@ trait ResolvesLeadFollowupNotifications
         }
 
         try {
-            return Carbon::parse($stringValue);
+            return Carbon::parse($stringValue, $timezone);
         } catch (Throwable) {
             return null;
         }
+    }
+
+    protected function followupNotificationTimezone(): string
+    {
+        return 'Asia/Karachi';
     }
 }

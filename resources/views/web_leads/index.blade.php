@@ -21,37 +21,48 @@
 		<div id="web-lead-content" class="follow-content p-0 m-0">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
 				<div class="follow-tab-bar m-0 pt-3 small" style="gap:2px;">
-					@foreach (($notificationTabs ?? []) as $key => $tab)
-						@if($tab['external'] ?? false)
-							<a class="follow-tab notification-link-tab" href="{{ $tab['url'] }}" data-external-tab="true" style="display: flex; align-items: center; gap: 3px;">
-								<span class="label-text">{{ $tab['label'] }}</span>
-								<span class="badge {{ $badgeColors[$key] ?? 'badge-danger' }}">{{ $tab['count'] ?? 0 }}</span>
-							</a>
-						@else
-							<div class="follow-tab {{ $activeTab === $key ? 'active' : '' }}" data-tab="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
-								<span class="label-text">{{ $tab['label'] }}</span>
-								<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tab['count'] ?? 0 }}</span>
-							</div>
-						@endif
+					@foreach (($sourceTabs ?? []) as $key => $tabLabel)
+						<a
+							class="follow-tab notification-link-tab {{ $activeTab === $key ? 'active' : '' }}"
+							href="{{ route('web-leads.index', array_filter([
+								'tab' => $key !== 'all' ? $key : null,
+								'search' => $search !== '' ? $search : null,
+								'per_page' => $perPage !== 25 ? $perPage : null,
+							], static fn ($value) => $value !== null && $value !== '')) }}"
+							style="display: flex; align-items: center; gap: 3px;"
+						>
+							<span class="label-text">{{ $tabLabel }}</span>
+							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
+						</a>
+					@endforeach
+
+					@foreach (($externalTabs ?? []) as $externalTab)
+						<a class="follow-tab notification-link-tab" href="{{ $externalTab['url'] }}" style="display: flex; align-items: center; gap: 3px;">
+							<span class="label-text">{{ $externalTab['label'] }}</span>
+							<span class="badge {{ $externalTab['badge'] ?? 'badge-danger' }}">{{ $externalTab['count'] ?? 0 }}</span>
+						</a>
 					@endforeach
 				</div>
 
 				<div class="box-typical-body panel-body follow-body">
-					<div class="follow-controls">
-						<div class="d-flex" style="gap:0.5rem;align-items: center;">
+					<form method="GET" action="{{ route('web-leads.index') }}" class="follow-controls">
+						<input type="hidden" id="web-lead-tab-input" name="tab" value="{{ $activeTab !== 'all' ? $activeTab : '' }}">
+						<div class="d-flex" style="gap:0.5rem;align-items: center; flex-wrap: wrap;">
 							<label>Show</label>
-							<select class="form-select form-select-sm">
-								<option>10</option>
-								<option>25</option>
-								<option>50</option>
+							<select name="per_page" id="web-lead-per-page" class="form-control form-control-sm" style="width: 86px;">
+								@foreach ([10, 25, 50, 100] as $option)
+									<option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
+								@endforeach
 							</select>
 							<label>Entries</label>
+
+							<a href="{{ route('web-leads.index', $activeTab !== 'all' ? ['tab' => $activeTab] : []) }}" class="btn btn-default btn-sm">Reset</a>
 						</div>
 						<div class="follow-search">
-							<input type="text" id="web-lead-search" class="form-control form-control-sm" placeholder="Search...">
-							<i class="fa fa-search"></i>
+							<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, email, city...">
+							<button type="submit" class="btn btn-primary btn-sm">Search</button>
 						</div>
-					</div>
+					</form>
 
 					<div class="table-responsive">
 						<table class="table table-bordered follow-table" id="web-lead-table">
@@ -69,13 +80,12 @@
 								</tr>
 							</thead>
 							<tbody>
-								@foreach ($webLeads as $idx => $webLead)
+								@forelse ($webLeads as $webLead)
 									@php
 										$actionId = 'web-lead-action-' . Str::slug($webLead->full_name ?: 'web-lead') . '-' . $loop->iteration;
-										$rowTab = $webLead->source_type;
 									@endphp
-									<tr data-tab="{{ $rowTab }}">
-										<td class="text-start">{{ $idx + 1 }}</td>
+									<tr>
+										<td class="text-start">{{ ($webLeads->firstItem() ?? 1) + $loop->index }}</td>
 										<td>{{ $webLead->source_label }}</td>
 										<td>
 											<a href="{{ route('web-leads.show', $webLead) }}" class="lead-link">
@@ -91,20 +101,53 @@
 											@include('web_leads.action', ['actionId' => $actionId, 'webLead' => $webLead])
 										</td>
 									</tr>
-								@endforeach
-								<tr id="web-lead-empty-row" @if ($webLeads->isNotEmpty()) style="display:none;" @endif>
-									<td colspan="9" class="text-center text-muted"></td>
-								</tr>
+								@empty
+									<tr id="web-lead-empty-row">
+										<td colspan="9" class="text-center text-muted">No pending web leads found for the current filters.</td>
+									</tr>
+								@endforelse
 							</tbody>
 						</table>
 					</div>
 
+					@php
+						$currentPage = $webLeads->currentPage();
+						$lastPage = $webLeads->lastPage();
+						$startPage = max(1, $currentPage - 2);
+						$endPage = min($lastPage, $currentPage + 2);
+					@endphp
 					<div class="follow-footer">
-						<div id="web-lead-count">Showing 0 to 0 of 0 entries</div>
+						<div id="web-lead-count">
+							Showing {{ $webLeads->firstItem() ?? 0 }} to {{ $webLeads->lastItem() ?? 0 }} of {{ $webLeads->total() }} entries
+						</div>
 						<ul class="pagination pagination-sm mb-0">
-							<li class="page-item disabled"><span class="page-link">Previous</span></li>
-							<li class="page-item active"><span class="page-link">1</span></li>
-							<li class="page-item disabled"><span class="page-link">Next</span></li>
+							<li class="page-item {{ $webLeads->onFirstPage() ? 'disabled' : '' }}">
+								<a class="page-link" href="{{ $webLeads->onFirstPage() ? '#' : $webLeads->previousPageUrl() }}">Previous</a>
+							</li>
+
+							@if ($startPage > 1)
+								<li class="page-item"><a class="page-link" href="{{ $webLeads->url(1) }}">1</a></li>
+								@if ($startPage > 2)
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								@endif
+							@endif
+
+							@for ($page = $startPage; $page <= $endPage; $page++)
+								<li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
+									<a class="page-link" href="{{ $webLeads->url($page) }}">{{ $page }}</a>
+								</li>
+							@endfor
+
+							@if ($endPage < $lastPage)
+								@if ($endPage < $lastPage - 1)
+									<li class="page-item disabled"><span class="page-link">...</span></li>
+								@endif
+								<li class="page-item"><a class="page-link" href="{{ $webLeads->url($lastPage) }}">{{ $lastPage }}</a></li>
+							@endif
+
+							<li class="page-item {{ $webLeads->hasMorePages() ? '' : 'disabled' }}">
+								<a class="page-link" href="{{ $webLeads->hasMorePages() ? $webLeads->nextPageUrl() : '#' }}">Next</a>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -277,6 +320,12 @@
 		.follow-action-dropdown form {
 			margin: 0;
 		}
+
+		.follow-search {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
 	</style>
 @endpush
 
@@ -289,54 +338,14 @@
 				}, 150);
 			}
 
-			function filterByStatus(status) {
-				var rows = document.querySelectorAll('#web-lead-table tbody tr[data-tab]');
-				var emptyRow = document.getElementById('web-lead-empty-row');
-				var searchVal = (document.getElementById('web-lead-search').value || '').toLowerCase();
-				var visible = 0;
-
-				rows.forEach(function (row) {
-					var matchesStatus = row.getAttribute('data-tab') === status;
-					var matchesSearch = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-					var show = matchesStatus && matchesSearch;
-					row.style.display = show ? '' : 'none';
-					if (show) visible++;
-				});
-
-				if (emptyRow) {
-					emptyRow.style.display = visible ? 'none' : '';
-				}
-
-				document.getElementById('web-lead-count').textContent = 'Showing ' + (visible ? 1 : 0) + ' to ' + visible + ' of ' + visible + ' entries';
-			}
-
 			document.addEventListener('DOMContentLoaded', function () {
 				revealWebLeadPage();
+				var perPage = document.getElementById('web-lead-per-page');
 
-				var tabs = document.querySelectorAll('.follow-tab');
-				tabs.forEach(function (tab) {
-					tab.addEventListener('click', function () {
-						if (this.getAttribute('data-external-tab') === 'true') {
-							return;
-						}
-
-						tabs.forEach(function (t) { t.classList.remove('active'); });
-						this.classList.add('active');
-						filterByStatus(this.getAttribute('data-tab'));
+				if (perPage) {
+					perPage.addEventListener('change', function () {
+						this.form.submit();
 					});
-				});
-
-				document.getElementById('web-lead-search').addEventListener('input', function () {
-					var activeTab = document.querySelector('.follow-tab.active');
-					var status = activeTab ? activeTab.getAttribute('data-tab') : '';
-					if (status) {
-						filterByStatus(status);
-					}
-				});
-
-				var activeTab = document.querySelector('.follow-tab.active');
-				if (activeTab) {
-					filterByStatus(activeTab.getAttribute('data-tab'));
 				}
 			});
 		})();
