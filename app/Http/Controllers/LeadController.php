@@ -678,6 +678,26 @@ class LeadController extends Controller
         return $this->renderFollowupsModule('coworking', $request);
     }
 
+    public function followupSchedule(Request $request): View
+    {
+        return $this->renderFollowupScheduleModule('training', $request);
+    }
+
+    public function certificationFollowupSchedule(Request $request): View
+    {
+        return $this->renderFollowupScheduleModule('certification', $request);
+    }
+
+    public function studyAbroadFollowupSchedule(Request $request): View
+    {
+        return $this->renderFollowupScheduleModule('study_abroad', $request);
+    }
+
+    public function coworkingFollowupSchedule(Request $request): View
+    {
+        return $this->renderFollowupScheduleModule('coworking', $request);
+    }
+
     private function leadQueryForType(string $type): Builder
     {
         return $this->applyLeadTypeScope(Lead::query(), $type);
@@ -698,6 +718,12 @@ class LeadController extends Controller
             ->orderByDesc('id')
             ->limit(1);
 
+        $latestNextActionDateSubquery = LeadFollowup::query()
+            ->select('next_action_date')
+            ->whereColumn('lead_id', 'leads.id')
+            ->orderByDesc('id')
+            ->limit(1);
+
         return $this->leadQueryForType($type)
             ->whereHas('followups')
             ->with([
@@ -710,6 +736,7 @@ class LeadController extends Controller
             ->select('leads.*')
             ->selectSub($latestFollowupIdSubquery, 'latest_followup_id')
             ->selectSub($latestFollowupAtSubquery, 'latest_followup_at')
+            ->selectSub($latestNextActionDateSubquery, 'latest_next_action_date')
             ->withCount('followups');
     }
 
@@ -1147,6 +1174,78 @@ class LeadController extends Controller
             'selectedStage' => $selectedStage ?? 'all',
             'search' => $search ?? '',
             'perPage' => $perPage,
+            'scheduleRoute' => route($this->leadFollowupScheduleRouteName($type)),
+        ]);
+    }
+
+    private function renderFollowupScheduleModule(string $type, Request $request): View
+    {
+        $type = $this->normalizeLeadType($type);
+        $search = $this->normalizeSearchTerm((string) $request->query('q', ''));
+        $selectedWindow = $this->normalizeFollowupScheduleWindow($request->query('window')) ?? 'today';
+        $perPage = $this->resolvePerPage($request);
+        $typeMeta = $this->leadTypeMeta($type);
+        $scheduleConfig = $this->followupScheduleConfig();
+        $tabs = $scheduleConfig['tabs'];
+        $badgeColors = $scheduleConfig['badgeColors'];
+        $stageMap = $this->followupStageConfig($type)['stageMap'];
+
+        $followupQuery = $this->baseFollowupLeadQuery($type);
+
+        if ($search !== null) {
+            $this->applyFollowupSearch($followupQuery, $search, $type);
+        }
+
+        $this->applyFollowupScheduleWindowFilter($followupQuery, $selectedWindow);
+
+        $countsByWindow = $this->latestFollowupScheduleCounts($type, $search);
+
+        $followups = $followupQuery
+            ->orderBy('latest_next_action_date')
+            ->orderByDesc('latest_followup_id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $campusDirectory = $type === 'coworking'
+            ? Campus::query()->get(['id', 'code', 'city', 'city_abbr', 'name', 'title'])
+            : collect();
+
+        $followups->setCollection(
+            $followups->getCollection()->map(function (Lead $lead) use ($campusDirectory, $stageMap, $type) {
+                $followup = $lead->latestFollowup;
+
+                if (! $followup || ! $followup->next_action_date) {
+                    return null;
+                }
+
+                $followup->stage = $this->normalizeFollowupStage($type, $followup->stage);
+                $followup->stage_label = $stageMap[$followup->stage] ?? ucfirst(str_replace('_', ' ', $followup->stage));
+                $followup->followups_count = (int) ($lead->followups_count ?? 0);
+                $followup->last_follower_name = trim((string) ($followup->user?->name ?? '')) ?: 'System';
+                $lead->interest_summary = $this->leadInterestValue($lead);
+                $followup->setRelation('lead', $lead);
+
+                if ($type === 'coworking') {
+                    $followup->branch_code = $this->resolveCoworkingBranchCode($lead, $campusDirectory);
+                }
+
+                return $followup;
+            })->filter()->values()
+        );
+
+        return view('lead.followup_schedule', [
+            'followups' => $followups,
+            'tabs' => $tabs,
+            'badgeColors' => $badgeColors,
+            'tabCounts' => $countsByWindow,
+            'pageTitle' => ($typeMeta['moduleTitle'] . ' Follow-up Schedule'),
+            'moduleTitle' => $typeMeta['moduleTitle'],
+            'interestHeading' => $this->leadInterestHeading($type),
+            'type' => $type,
+            'selectedWindow' => $selectedWindow,
+            'search' => $search ?? '',
+            'perPage' => $perPage,
+            'stageRoute' => route($this->leadFollowupsRouteName($type)),
         ]);
     }
 
@@ -1183,6 +1282,15 @@ class LeadController extends Controller
             && $stage !== 'all'
             && array_key_exists($stage, $this->followupStageConfig($type)['stageMap'])
             ? $stage
+            : null;
+    }
+
+    private function normalizeFollowupScheduleWindow(mixed $value): ?string
+    {
+        $window = trim((string) $value);
+
+        return in_array($window, ['pending', 'today', 'upcoming'], true)
+            ? $window
             : null;
     }
 
@@ -1251,6 +1359,75 @@ class LeadController extends Controller
         $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
 
         return '%' . $escaped . '%';
+    }
+
+    /**
+     * @return array{
+     *     tabs: array<string, string>,
+     *     badgeColors: array<string, string>
+     * }
+     */
+    private function followupScheduleConfig(): array
+    {
+        return [
+            'tabs' => [
+                'today' => 'Todays Follow Up',
+                'pending' => 'Pending Follow Up',
+                'upcoming' => 'Upcoming Follow Up',
+            ],
+            'badgeColors' => [
+                'today' => 'badge-success',
+                'pending' => 'badge-danger',
+                'upcoming' => 'badge-danger',
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function latestFollowupScheduleCounts(string $type, ?string $search = null): array
+    {
+        $baseQuery = $this->baseFollowupLeadQuery($type);
+
+        if ($search !== null) {
+            $this->applyFollowupSearch($baseQuery, $search, $type);
+        }
+
+        $counts = [];
+
+        foreach (array_keys($this->followupScheduleConfig()['tabs']) as $window) {
+            $counts[$window] = (int) $this->applyFollowupScheduleWindowFilter(
+                clone $baseQuery,
+                $window
+            )->count();
+        }
+
+        return $counts;
+    }
+
+    private function applyFollowupScheduleWindowFilter(Builder $query, ?string $window): Builder
+    {
+        $todayStart = now()->startOfDay();
+        $todayEnd = now()->endOfDay();
+
+        return $query->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($todayEnd, $todayStart, $window) {
+            $latestFollowupQuery->whereNotNull('next_action_date');
+
+            switch ($window) {
+                case 'pending':
+                    $latestFollowupQuery->where('next_action_date', '<', $todayStart);
+                    break;
+
+                case 'today':
+                    $latestFollowupQuery->whereBetween('next_action_date', [$todayStart, $todayEnd]);
+                    break;
+
+                case 'upcoming':
+                    $latestFollowupQuery->where('next_action_date', '>', $todayEnd);
+                    break;
+            }
+        });
     }
 
     private function followupStageConfig(string $type): array
@@ -1336,6 +1513,16 @@ class LeadController extends Controller
             'study_abroad' => 'leads.study-abroad.followups',
             'coworking' => 'leads.coworking.followups',
             default => 'leads.followups',
+        };
+    }
+
+    private function leadFollowupScheduleRouteName(?string $type): string
+    {
+        return match ($type) {
+            'certification' => 'leads.certification.followup-schedule',
+            'study_abroad' => 'leads.study-abroad.followup-schedule',
+            'coworking' => 'leads.coworking.followup-schedule',
+            default => 'leads.followup-schedule',
         };
     }
 

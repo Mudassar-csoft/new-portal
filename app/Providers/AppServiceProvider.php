@@ -192,19 +192,23 @@ class AppServiceProvider extends ServiceProvider
     {
         return [
             'training_followups' => 0,
+            'training_followup_schedule' => 0,
             'training_transfers' => 0,
             'training_all_leads' => 0,
             'training_today_leads' => 0,
             'training_web_leads' => 0,
             'certification_followups' => 0,
+            'certification_followup_schedule' => 0,
             'certification_transfers' => 0,
             'certification_all_leads' => 0,
             'certification_today_leads' => 0,
             'study_abroad_followups' => 0,
+            'study_abroad_followup_schedule' => 0,
             'study_abroad_transfers' => 0,
             'study_abroad_all_leads' => 0,
             'study_abroad_today_leads' => 0,
             'coworking_followups' => 0,
+            'coworking_followup_schedule' => 0,
             'coworking_all_leads' => 0,
             'coworking_today_leads' => 0,
             'all_registrations' => 0,
@@ -314,15 +318,36 @@ class AppServiceProvider extends ServiceProvider
                     ->distinct()
                     ->count('lead_id');
 
+                $sidebarCounts['training_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->training(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->whereNotNull('next_action_date'))
+                    ->count();
+
                 $sidebarCounts['certification_followups'] = LeadFollowup::query()
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->certification(), $user))
                     ->distinct()
                     ->count('lead_id');
 
+                $sidebarCounts['certification_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->certification(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->whereNotNull('next_action_date'))
+                    ->count();
+
                 $sidebarCounts['study_abroad_followups'] = LeadFollowup::query()
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->studyAbroad(), $user))
                     ->distinct()
                     ->count('lead_id');
+
+                $sidebarCounts['study_abroad_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->studyAbroad(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->whereNotNull('next_action_date'))
+                    ->count();
             }
 
             if ($can('lead.coworking.view') && Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
@@ -330,6 +355,13 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->coworking(), $user))
                     ->distinct()
                     ->count('lead_id');
+
+                $sidebarCounts['coworking_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->coworking(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->whereNotNull('next_action_date'))
+                    ->count();
 
                 $sidebarCounts['coworking_all_leads'] = $this->scopeLeadQueryToUserCampus(
                     Lead::query()->coworking(),
