@@ -16,6 +16,21 @@
 @once
     @push('styles')
         <style>
+               .admission-action-dropdown {
+            position: relative;
+        }
+
+        .admission-action-dropdown .dropdown-menu {
+            min-width: 292px;
+            position: absolute !important;
+            top: 100% !important;
+            left: auto !important;
+            right: 0 !important;
+            margin-top: 6px !important;
+            margin-right: 0 !important;
+            transform: none !important;
+            z-index: 9999;
+        }
             .admission-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 292px;
                 padding: 8px 0;
@@ -104,7 +119,7 @@
 @endonce
 
 @if($approvalStatus === \App\Models\Admission::APPROVAL_STATUS_PENDING)
-        <div class="admission-action-state">
+        <div class="admission-action-state admission-action-dropdown">
         @if($canAdmissionUpload)
          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Actions
@@ -161,7 +176,7 @@
         @endif
     </div>
 @elseif($approvalStatus === \App\Models\Admission::APPROVAL_STATUS_REQUESTED)
-    <div class="admission-action-state">
+    <div class="admission-action-state admission-action-dropdown">
         @if($canAdminEdit)
           <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Actions
