@@ -11,19 +11,23 @@
 		$leadDetails = $lead->details ?? [];
 		$isCoworkingLead = $isCoworkingLead ?? false;
 		$usesTrainingConversionFlow = $usesTrainingConversionFlow ?? true;
-		$interestLabel = $isCoworkingLead ? 'Space Type' : 'Interested Program';
-		$interestValue = $isCoworkingLead
-			? (data_get($leadDetails, 'space_required') ?: 'N/A')
-			: ($lead->program?->title ?? $lead->program?->name ?? 'N/A');
+		$supportsRegistration = $supportsRegistration ?? in_array($lead->type, ['training', 'coworking'], true);
+		$supportsAdmission = $supportsAdmission ?? $lead->type === 'training';
+		$interestLabel = $interestHeading ?? ($isCoworkingLead ? 'Space Type' : 'Program');
+		$interestValue = $interestValue ?? ($lead->program?->title ?? $lead->program?->name ?? 'N/A');
 		$locationSelectLabel = $isCoworkingLead ? 'Preferred Branch' : 'Preferred Campus';
 		$locationCodeLabel = $isCoworkingLead ? 'Branch Code' : 'Campus Code';
 		$locationNameLabel = $isCoworkingLead ? 'Branch Name' : 'Campus Name';
-		$registrationFormUrl = $isCoworkingLead
+		$registrationFormUrl = $supportsRegistration
+			? ($isCoworkingLead
 			? route('coworking-registrations.create', ['lead_id' => $lead->id])
-			: route('registration.create', ['lead_id' => $lead->id]);
-		$registrationFormModalUrl = $isCoworkingLead
+			: route('registration.create', ['lead_id' => $lead->id]))
+			: null;
+		$registrationFormModalUrl = $supportsRegistration
+			? ($isCoworkingLead
 			? route('coworking-registrations.create', ['lead_id' => $lead->id, 'embed' => 1])
-			: route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]);
+			: route('registration.create', ['lead_id' => $lead->id, 'embed' => 1]))
+			: null;
 		$registrationPrompt = $isCoworkingLead
 			? 'Complete the coworking registration form first.'
 			: 'Complete the registration form first.';
@@ -37,6 +41,7 @@
 			default => ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')),
 		};
 		$defaultProbability = old('probability', $latestFollowup?->probability ?? 0);
+		$closedStatuses = ['registered', 'not_interesting', 'enrolled'];
 	@endphp
 
 	<div class="lead-show-shell">
@@ -83,7 +88,7 @@
 		<div class="lead-pane" id="tab-followups" style="display: block;">
 			<div class="d-flex justify-content-end align-items-center p-1">
 				
-				@php $isClosed = $isFollowupClosed ?? in_array($lead->status, ['registered', 'not_interesting', 'enrolled'], true); @endphp
+				@php $isClosed = $isFollowupClosed ?? in_array($lead->status, $closedStatuses, true); @endphp
 				@if($isClosed)
 					<div class="alert alert-warning mb-0 followup-closed-banner">
 						This lead is marked as <strong>{{ $statusLabel }}</strong>. No further follow-ups can be added.
@@ -99,9 +104,11 @@
 				<div class="card-body">
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
 						data-uses-training-conversion-flow="{{ $usesTrainingConversionFlow ? '1' : '0' }}"
-						data-registration-url="{{ $registrationFormModalUrl }}"
-						data-registration-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}"
-						@if($usesTrainingConversionFlow)
+						@if($supportsRegistration && $registrationFormModalUrl)
+							data-registration-url="{{ $registrationFormModalUrl }}"
+							data-registration-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}"
+						@endif
+						@if($supportsAdmission)
 							data-admission-url="{{ route('admission.create', ['lead_id' => $lead->id, 'embed' => 1]) }}"
 							data-admission-title="Create New Admission (All fields marked with * are required)"
 						@endif>
@@ -121,9 +128,7 @@
 									<label class="form-label">Stage</label>
 									@php
 										$hideRegistered = $lead->status === 'not_interesting';
-										$hideNotInteresting = $usesTrainingConversionFlow
-											? in_array($lead->status, ['registered', 'enrolled'], true)
-											: $lead->status === 'enrolled';
+										$hideNotInteresting = in_array($lead->status, array_diff($closedStatuses, ['not_interesting']), true);
 									@endphp
 									<select class="form-control" name="stage" id="followup-stage" required onchange="window.handleFollowupStageChange && window.handleFollowupStageChange(this)">
 										@foreach ($stages as $key => $label)
@@ -244,6 +249,7 @@
 								</div>
 							</div>
 
+							@if($supportsRegistration && $registrationFormUrl && $registrationFormModalUrl)
 							<div class="alert alert-info d-none" id="registration-link">
 								Selecting <strong>{{ $registrationStageLabel }}</strong>? {{ $registrationPrompt }}
 								<a href="{{ $registrationFormUrl }}"
@@ -251,7 +257,8 @@
 									data-lead-modal-url="{{ $registrationFormModalUrl }}"
 									data-lead-modal-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}">{{ $registrationButtonLabel }}</a>
 							</div>
-							@if($usesTrainingConversionFlow)
+							@endif
+							@if($supportsAdmission)
 								<div class="alert alert-info d-none" id="admission-link">
 									Selecting <strong>Enroll</strong>? Complete the admission form first.
 									<a href="{{ route('admission.create', ['lead_id' => $lead->id]) }}"
@@ -290,8 +297,9 @@
 							@php
 								$label = $stages[$row->stage] ?? ucfirst(str_replace('_', ' ', $row->stage));
 								$rowHighlight = $row->stage === 'not_interesting';
+								$isLatestRow = $idx === 0;
 							@endphp
-							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }}">
+							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }} {{ $isLatestRow ? 'latest-followup-highlight' : '' }}">
 								<td class="text-center">{{ $idx + 1 }}</td>
 								<td>{{ $row->user?->name ?? 'System' }}</td>
 								<td>{{ $row->method ? ucfirst($row->method) : '—' }}</td>
@@ -323,7 +331,7 @@
 									<th>Email Address</th>
 									<td>{{ $lead->email ?? '—' }}</td>
 									<th>{{ $interestLabel }}</th>
-									<td>{{ $lead->program?->title ?? $lead->program?->name ?? '—' }}</td>
+									<td>{{ $interestValue }}</td>
 								</tr>
 								<tr>
 									
@@ -359,7 +367,7 @@
 								<th>{{ $locationNameLabel }}</th>
 								<td>{{ $lead->campus?->name ?? '—' }}</td>
 								<th>Remarks</th>
-								<td colspan="3">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
+								<td colspan="3" class="{{ $latestFollowup?->note ? 'latest-remarks-highlight' : '' }}">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
 							</tr>
 							
 						</tbody>
@@ -814,6 +822,18 @@
 		.followup-table .row-highlight td {
 			background: #ffeded;
 			color: #b00020;
+		}
+
+		.followup-table .latest-followup-highlight td {
+			background: #ffdfe2;
+			color: #b00020;
+			font-weight: 600;
+		}
+
+		.info-table .latest-remarks-highlight {
+			background: #ffdfe2;
+			color: #b00020;
+			font-weight: 600;
 		}
 		.table td{
 			height:20px !important;

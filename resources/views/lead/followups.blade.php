@@ -3,6 +3,49 @@
 @section('title', $pageTitle ?? 'Lead Follow-ups')
 
 @section('content')
+    @php
+        $selectedStage = $selectedStage ?? 'all';
+        $search = $search ?? '';
+        $perPage = (int) ($perPage ?? 25);
+        $currentPage = $followups->currentPage();
+        $lastPage = $followups->lastPage();
+        $pageStart = max(1, $currentPage - 2);
+        $pageEnd = min($lastPage, $currentPage + 2);
+
+        if ($pageStart <= 3) {
+            $pageStart = 1;
+            $pageEnd = min($lastPage, 5);
+        }
+
+        if ($pageEnd >= $lastPage - 2) {
+            $pageEnd = $lastPage;
+            $pageStart = max(1, $lastPage - 4);
+        }
+
+        $pageItems = [];
+
+        if ($lastPage > 0) {
+            if ($pageStart > 1) {
+                $pageItems[] = 1;
+
+                if ($pageStart > 2) {
+                    $pageItems[] = 'ellipsis-left';
+                }
+            }
+
+            foreach (range($pageStart, $pageEnd) as $pageNumber) {
+                $pageItems[] = $pageNumber;
+            }
+
+            if ($pageEnd < $lastPage) {
+                if ($pageEnd < $lastPage - 1) {
+                    $pageItems[] = 'ellipsis-right';
+                }
+
+                $pageItems[] = $lastPage;
+            }
+        }
+    @endphp
     <div class="follow-shell">
         <div id="follow-loader" class="follow-loader">
             <div class="follow-spinner">
@@ -21,30 +64,47 @@
 
                 <div class="follow-tab-bar m-0 pt-3 small" style="gap: 2px;">
                     @foreach ($tabs as $key => $label)
-                        <div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
+                        @php
+                            $tabQuery = request()->query();
+                            unset($tabQuery['page']);
+                            if ($key === 'all') {
+                                unset($tabQuery['stage']);
+                            } else {
+                                $tabQuery['stage'] = $key;
+                            }
+                            $tabUrl = request()->url() . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
+                        @endphp
+                        <a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStage === $key ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
                             <span class="label-text">{{ $label }}</span>
                             <span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
-                    <div class="follow-controls">
+                    <form method="GET" class="follow-controls" id="follow-filter-form">
+                        @if($selectedStage !== 'all')
+                            <input type="hidden" name="stage" value="{{ $selectedStage }}">
+                        @endif
                         <div class="d-flex control-flow-show-bar" style="gap: 0.5rem; align-items: center;">
                             <label>Show</label>
-                            <select class="form-select form-select-sm">
-                                <option>10</option>
-                                <option>25</option>
-                                <option>50</option>
+                            <select class="form-select form-select-sm" name="per_page" id="follow-per-page">
+                                @foreach([10, 25, 50, 100] as $option)
+                                    <option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>{{ $option }}</option>
+                                @endforeach
                             </select>
                             <label>Entries</label>
                         </div>
 
                         <div class="follow-search">
-                            <input type="text" id="follow-search" class="form-control form-control-sm" placeholder="Search...">
+                            <input type="text" name="q" id="follow-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
+                            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                            @if($search !== '' || $selectedStage !== 'all')
+                                <a href="{{ request()->url() }}" class="btn btn-default btn-sm">Reset</a>
+                            @endif
                             <i class="fa fa-search"></i>
                         </div>
-                    </div>
+                    </form>
 
                     <div class="table-responsive">
                         <table class="table table-bordered follow-table" id="follow-table">
@@ -62,7 +122,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($followups as $idx => $row)
+                                @forelse ($followups as $row)
                                     @php
                                         $actionId = 'action-' . \Illuminate\Support\Str::slug($row->lead->name ?? 'lead') . '-' . $loop->iteration;
                                         $nameUrl = !empty($row->lead?->id)
@@ -84,7 +144,7 @@
                                         }
                                     @endphp
                                     <tr data-status="{{ $row->stage_label }}">
-                                        <td class="text-start">{{ $idx + 1 }}</td>
+                                        <td class="text-start">{{ ($followups->firstItem() ?? 1) + $loop->index }}</td>
                                         <td>
                                             @if($nameUrl)
                                                 <a href="{{ $nameUrl }}" class="lead-link">
@@ -113,18 +173,52 @@
                                             @include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row->lead])
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">No follow-ups found.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     <div class="follow-footer">
-                        <div id="follow-count">Showing 1 to {{ count($followups) }} of {{ count($followups) }} Entries</div>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
-                            <li class="page-item active"><span class="page-link">1</span></li>
-                            <li class="page-item disabled"><span class="page-link">Next</span></li>
-                        </ul>
+                        <div id="follow-count">Showing {{ $followups->firstItem() ?? 0 }} to {{ $followups->lastItem() ?? 0 }} of {{ $followups->total() }} Entries</div>
+                        @if($lastPage > 1)
+                            <ul class="pagination pagination-sm mb-0 follow-pagination">
+                                <li class="page-item {{ $followups->onFirstPage() ? 'disabled' : '' }}">
+                                    @if($followups->onFirstPage())
+                                        <span class="page-link" aria-hidden="true">&lt;</span>
+                                    @else
+                                        <a class="page-link" href="{{ $followups->previousPageUrl() }}" aria-label="Previous page">&lt;</a>
+                                    @endif
+                                </li>
+
+                                @foreach($pageItems as $pageItem)
+                                    @if(is_int($pageItem))
+                                        <li class="page-item {{ $pageItem === $currentPage ? 'active' : '' }}">
+                                            @if($pageItem === $currentPage)
+                                                <span class="page-link">{{ $pageItem }}</span>
+                                            @else
+                                                <a class="page-link" href="{{ $followups->url($pageItem) }}">{{ $pageItem }}</a>
+                                            @endif
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled page-ellipsis" aria-hidden="true">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                <li class="page-item {{ $followups->hasMorePages() ? '' : 'disabled' }}">
+                                    @if($followups->hasMorePages())
+                                        <a class="page-link" href="{{ $followups->nextPageUrl() }}" aria-label="Next page">&gt;</a>
+                                    @else
+                                        <span class="page-link" aria-hidden="true">&gt;</span>
+                                    @endif
+                                </li>
+                            </ul>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -209,6 +303,59 @@
 
         .follow-stage-meta {
             line-height: 1;
+        }
+
+        .follow-tab {
+            text-decoration: none;
+        }
+
+        .follow-controls {
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .follow-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .follow-search i {
+            display: none;
+        }
+
+        .follow-search .form-control {
+            width: min(280px, 100%);
+        }
+
+        .follow-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .follow-pagination {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .follow-pagination .page-link {
+            min-width: 34px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .follow-pagination .page-item.active .page-link {
+            z-index: 1;
+        }
+
+        .follow-pagination .page-ellipsis .page-link {
+            min-width: auto;
         }
     </style>
 @endpush
@@ -328,46 +475,16 @@
                 }, 150);
             }
 
-            function filterByStatus(status) {
-                var rows = document.querySelectorAll('#follow-table tbody tr');
-                var searchVal = (document.getElementById('follow-search').value || '').toLowerCase();
-                var visible = 0;
-
-                rows.forEach(function (row) {
-                    var matchesStatus = status === 'all' || row.getAttribute('data-status') === status;
-                    var matchesSearch = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-                    var show = matchesStatus && matchesSearch;
-                    row.style.display = show ? '' : 'none';
-                    if (show) visible++;
-                });
-
-                document.getElementById('follow-count').textContent = 'Showing ' + (visible ? 1 : 0) + ' to ' + visible + ' of ' + visible + ' entries';
-            }
-
             document.addEventListener('DOMContentLoaded', function () {
                 initLeadModal();
                 revealFollowPage();
 
-                var tabs = document.querySelectorAll('.follow-tab');
-                tabs.forEach(function (tab) {
-                    tab.addEventListener('click', function () {
-                        tabs.forEach(function (item) {
-                            item.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        filterByStatus(this.getAttribute('data-status'));
+                var perPage = document.getElementById('follow-per-page');
+                if (perPage) {
+                    perPage.addEventListener('change', function () {
+                        this.form.submit();
                     });
-                });
-
-                document.getElementById('follow-search').addEventListener('input', function () {
-                    var activeTab = document.querySelector('.follow-tab.active');
-                    var status = activeTab ? activeTab.getAttribute('data-status') : 'all';
-                    filterByStatus(status);
-                });
-
-                var activeTab = document.querySelector('.follow-tab.active');
-                var initialStatus = activeTab ? activeTab.getAttribute('data-status') : 'all';
-                filterByStatus(initialStatus);
+                }
             });
         })();
     </script>

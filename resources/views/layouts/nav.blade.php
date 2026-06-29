@@ -24,6 +24,8 @@
     $canLeadListing = $can('lead.view');
     $canWebLeads = $can('web-lead.view');
     $showTrainingLeads = $canLeadFollowups || $canLeadTransfers || $canLeadListing;
+    $showCertificationLeads = $canLeadFollowups || $canLeadTransfers || $canLeadListing;
+    $showStudyAbroadLeads = $canLeadFollowups || $canLeadTransfers || $canLeadListing;
     $showCoworkingLeads = $canLeadCoworkingView;
     $showLeadModule = $canLeadCreate || $showTrainingLeads || $showCoworkingLeads || $canWebLeads;
 
@@ -173,57 +175,54 @@
                             <ul>
                                 @if($canLeadCoworkingView)
                                     <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
-                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Today's Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
-                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Successfully Registered</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
-                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Not Interested</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
-                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl">Transfer Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
-                                    <li><a href="{{ route('leads.coworking.followups') }}" class="stage-link"><span class="lbl"> All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followups'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_today_leads'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_all_leads'] ?? 0)) }}</span></a></li>
                                 @endif
                             </ul>
                         </li>
                     @endif
 
+                    @if($showCertificationLeads)
                     <li class="with-sub">
                         <span>
                             <img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp" alt="Exam Leads">
                             <span class="lbl">Exam Leads</span>
                         </span>
                         <ul>
-                            <li><a href="#" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">28</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Website Leads</span><span class="label label-custom label-pill label-danger stage-count">210</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Today</span><span class="label label-custom label-pill label-danger stage-count">140</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Contacted</span><span class="label label-custom label-pill label-danger stage-count">100</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Needs Analysis</span><span class="label label-custom label-pill label-danger stage-count">65</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Branch Visited</span><span class="label label-custom label-pill label-danger stage-count">24</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Proposal &amp; Negotiation</span><span class="label label-custom label-pill label-danger stage-count">18</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Registered</span><span class="label label-custom label-pill label-danger stage-count">44</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Booked Exams</span><span class="label label-custom label-pill label-danger stage-count">30</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Not Interested</span><span class="label label-custom label-pill label-danger stage-count">16</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Transferred Leads</span><span class="label label-custom label-pill label-danger stage-count">7</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">712</span></a></li>
+                            @if($canLeadFollowups)
+                                <li><a href="{{ route('leads.certification.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certification_followups'] ?? 0)) }}</span></a></li>
+                            @endif
+                            @if($canLeadTransfers)
+                                <li><a href="{{ route('leads.transfer', ['type' => 'certification']) }}" class="stage-link"><span class="lbl">Transferred Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certification_transfers'] ?? 0)) }}</span></a></li>
+                            @endif
+                            @if($canLeadListing)
+                                <li><a href="{{ route('leads.certification.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certification_today_leads'] ?? 0)) }}</span></a></li>
+                                <li><a href="{{ route('leads.certification.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['certification_all_leads'] ?? 0)) }}</span></a></li>
+                            @endif
                         </ul>
                     </li>
+                    @endif
 
+                    @if($showStudyAbroadLeads)
                     <li class="with-sub">
                         <span>
                             <img class="font-icon-dashboard" src="img/navbarIcons/study-abroad.webp" alt="Study Abroad Leads">
                             <span class="lbl">Study Abroad Leads</span>
                         </span>
                         <ul>
-                            <li><a href="#" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">32</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Website Leads</span><span class="label label-custom label-pill label-danger stage-count">180</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Today</span><span class="label label-custom label-pill label-danger stage-count">125</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Contacted</span><span class="label label-custom label-pill label-danger stage-count">90</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Needs Analysis</span><span class="label label-custom label-pill label-danger stage-count">58</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Branch Visited</span><span class="label label-custom label-pill label-danger stage-count">27</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Proposal &amp; Negotiation</span><span class="label label-custom label-pill label-danger stage-count">22</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Registered</span><span class="label label-custom label-pill label-danger stage-count">48</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Confirmed Visa Study</span><span class="label label-custom label-pill label-danger stage-count">19</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Not Interested</span><span class="label label-custom label-pill label-danger stage-count">21</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">Transferred Leads</span><span class="label label-custom label-pill label-danger stage-count">9</span></a></li>
-                            <li><a href="#" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">691</span></a></li>
+                            @if($canLeadFollowups)
+                                <li><a href="{{ route('leads.study-abroad.followups') }}" class="stage-link"><span class="lbl">Lead's Follow-up</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['study_abroad_followups'] ?? 0)) }}</span></a></li>
+                            @endif
+                            @if($canLeadTransfers)
+                                <li><a href="{{ route('leads.transfer', ['type' => 'study_abroad']) }}" class="stage-link"><span class="lbl">Transferred Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['study_abroad_transfers'] ?? 0)) }}</span></a></li>
+                            @endif
+                            @if($canLeadListing)
+                                <li><a href="{{ route('leads.study-abroad.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['study_abroad_today_leads'] ?? 0)) }}</span></a></li>
+                                <li><a href="{{ route('leads.study-abroad.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['study_abroad_all_leads'] ?? 0)) }}</span></a></li>
+                            @endif
                         </ul>
                     </li>
+                    @endif
 
                 </ul>
             </li>

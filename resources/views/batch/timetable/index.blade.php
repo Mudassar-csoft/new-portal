@@ -74,7 +74,7 @@
                                 <option value="">All Batches</option>
                                 @foreach($batches as $batch)
                                     <option value="{{ $batch->id }}" @selected(($filters['batch_id'] ?? null) == $batch->id)>
-                                        {{ $batch->code }} - {{ $batch->name }}
+                                        {{ $batch->code }}{{ $batch->name ? ' - ' . $batch->name : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -124,7 +124,7 @@
                                             <option value="">- Select Batch -</option>
                                             @foreach($batches as $batch)
                                                 <option value="{{ $batch->id }}" @selected((string) old('batch_id', $editingEntry?->batch_id) === (string) $batch->id)>
-                                                    {{ $batch->code }} - {{ $batch->name }}
+                                                    {{ $batch->code }}{{ $batch->name ? ' - ' . $batch->name : '' }}
                                                 </option>
                                             @endforeach
                                         </select>

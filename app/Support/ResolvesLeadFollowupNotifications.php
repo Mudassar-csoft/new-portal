@@ -11,13 +11,19 @@ use Throwable;
 
 trait ResolvesLeadFollowupNotifications
 {
-    protected function latestDueTrainingFollowupNotifications(?User $user, callable $scopeLeadQuery): Collection
+    /**
+     * @param  array<int, string>  $types
+     */
+    protected function latestDueLeadFollowupNotifications(?User $user, callable $scopeLeadQuery, array $types): Collection
     {
         $notificationCutoff = now();
 
         $latestFollowupIds = LeadFollowup::query()
             ->selectRaw('MAX(id)')
-            ->whereHas('lead', fn (Builder $leadQuery) => $scopeLeadQuery($leadQuery->training(), $user))
+            ->whereHas('lead', fn (Builder $leadQuery) => $scopeLeadQuery(
+                $leadQuery->whereIn('type', $types),
+                $user
+            ))
             ->groupBy('lead_id');
 
         return LeadFollowup::with(['lead'])

@@ -19,10 +19,12 @@ class LeadTransfer extends Model
         'status',
         'approved_by',
         'approved_at',
+        'metadata',
     ];
 
     protected $casts = [
         'approved_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     public function lead(): BelongsTo

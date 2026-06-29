@@ -113,12 +113,24 @@
                 </a>
             @endif
 
-            <a class="dropdown-item lead-action-item is-disabled" href="#" aria-disabled="true" tabindex="-1">
-                <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                    <i class="bi bi-person" style= "font-size: 18px;margin-left: -3px !important;"></i>
-                </span>
-                <span class="lead-action-label"> Login as <strong>{{ $user->name }}</strong></span>
-            </a>
+            @if(auth()->id() !== $user->id)
+                <form action="{{ route('users.impersonate', $user) }}" method="POST" onsubmit="return confirm(@json('Login as ' . $user->name . '?'));">
+                    @csrf
+                    <button type="submit" class="dropdown-item lead-action-item">
+                        <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                            <i class="bi bi-person" style="font-size: 18px; margin-left: -3px !important;"></i>
+                        </span>
+                        <span class="lead-action-label"> Login as <strong>{{ $user->name }}</strong></span>
+                    </button>
+                </form>
+            @else
+                <a class="dropdown-item lead-action-item is-disabled" href="#" aria-disabled="true" tabindex="-1">
+                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                        <i class="bi bi-person" style="font-size: 18px; margin-left: -3px !important;"></i>
+                    </span>
+                    <span class="lead-action-label"> Current User</span>
+                </a>
+            @endif
 
             <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Deactivate this portal user?');">
                 @csrf

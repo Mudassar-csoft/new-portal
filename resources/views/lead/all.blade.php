@@ -2,7 +2,7 @@
 
 @php use Illuminate\Support\Str; @endphp
 
-@section('title', 'All Leads')
+@section('title', ($moduleTitle ?? 'Lead') . ' | All Leads')
 
 @section('content')
 	@php
@@ -13,6 +13,12 @@
 			'not_interesting' => 'Not Interested',
 		];
 		$todayOnly = (bool) ($todayOnly ?? false);
+		$interestHeading = $interestHeading ?? 'Program';
+		$emptyStateMessage = $emptyStateMessage ?? 'No leads found.';
+		$indexRoute = $indexRoute ?? route('leads.index');
+		$selectedStatus = $selectedStatus ?? 'all';
+		$search = $search ?? '';
+		$perPage = (int) ($perPage ?? 25);
 	@endphp
 
 	<div class="lead-status-shell">
@@ -29,10 +35,20 @@
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
 				<div class="follow-tab-bar">
 					@foreach ($tabs as $key => $label)
-						<div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}">
+						@php
+							$tabQuery = request()->query();
+							unset($tabQuery['page']);
+							if ($key === 'all') {
+								unset($tabQuery['status']);
+							} else {
+								$tabQuery['status'] = $key;
+							}
+							$tabUrl = $indexRoute . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
+						@endphp
+						<a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStatus === $key ? 'active' : '' }}" data-status="{{ $key }}">
 							<span class="label-text">{{ $label }}</span>
 							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-						</div>
+						</a>
 					@endforeach
 				</div>
 
@@ -40,24 +56,34 @@
 					@if($todayOnly)
 						<div class="lead-filter-banner">
 							<span>Showing today&apos;s leads only.</span>
-							<a href="{{ route('leads.index') }}" class="lead-filter-banner-link">View all leads</a>
+							<a href="{{ $indexRoute }}" class="lead-filter-banner-link">View all leads</a>
 						</div>
 					@endif
-					<div class="follow-controls">
+					<form method="GET" class="follow-controls" id="lead-filter-form">
+						@if($todayOnly)
+							<input type="hidden" name="today" value="1">
+						@endif
+						@if($selectedStatus !== 'all')
+							<input type="hidden" name="status" value="{{ $selectedStatus }}">
+						@endif
 						<div class="d-flex control-flow-show-bar" style="gap:0.5rem;align-items: center;">
 							<label class="">Show</label>
-							<select class="form-select form-select-sm">
-								<option>10</option>
-								<option>25</option>
-								<option>50</option>
+							<select class="form-select form-select-sm" name="per_page" id="lead-per-page">
+								@foreach([10, 25, 50, 100] as $option)
+									<option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>{{ $option }}</option>
+								@endforeach
 							</select>
 							<label class="">Entries</label>
 						</div>
 						<div class="follow-search">
-							<input type="text" id="lead-status-search" class="form-control form-control-sm" placeholder="Search...">
+							<input type="text" name="q" id="lead-status-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
+							<button type="submit" class="btn btn-primary btn-sm">Search</button>
+							@if($search !== '' || $selectedStatus !== 'all' || $todayOnly)
+								<a href="{{ $indexRoute }}" class="btn btn-default btn-sm">Reset</a>
+							@endif
 							<i class="fa fa-search"></i>
 						</div>
-					</div>
+					</form>
 
 					<div class="table-responsive">
 						<table class="table table-bordered follow-table" id="lead-status-table">
@@ -65,7 +91,7 @@
 								<tr>
 									<th>Sr</th>
 									<th>Name</th>
-									<th>Program</th>
+									<th>{{ $interestHeading }}</th>
 									<th>Primary Contact</th>
 									<th>Campus Code</th>
 									<th>Created By</th>
@@ -76,7 +102,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@forelse ($leads as $idx => $row)
+								@forelse ($leads as $row)
 									@php
 										$actionId = 'action-' . Str::slug($row->name ?? 'lead') . '-' . $loop->iteration;
 										$statusKey = $row->status ?? 'pending';
@@ -90,13 +116,13 @@
 										};
 									@endphp
 									<tr data-status="{{ $statusKey }}">
-										<td class="text-center">{{ $idx + 1 }}</td>
+										<td class="text-center">{{ ($leads->firstItem() ?? 1) + $loop->index }}</td>
 										<td>
 											<a href="{{ route('leads.show', $row) }}" class="lead-link">
 												{{ $row->name ?? 'N/A' }}
 											</a>
 										</td>
-										<td>{{ $row->program->title ?? $row->program->name ?? 'N/A' }}</td>
+										<td>{{ $row->interest_summary ?? 'N/A' }}</td>
 										<td>{{ $row->phone ?? 'N/A' }}</td>
 										<td>{{ $row->campus?->code ?? $row->campus?->name ?? 'N/A' }}</td>
 										<td>{{ $row->createdBy?->name ?? 'Unknown' }}</td>
@@ -113,7 +139,7 @@
 									</tr>
 								@empty
 									<tr>
-										<td colspan="10" class="text-center text-muted">No training leads found.</td>
+										<td colspan="10" class="text-center text-muted">{{ $emptyStateMessage }}</td>
 									</tr>
 								@endforelse
 							</tbody>
@@ -121,11 +147,15 @@
 					</div>
 
 					<div class="follow-footer">
-						<div id="lead-status-count">Showing {{ $leads->isNotEmpty() ? 1 : 0 }} to {{ $leads->count() }} of {{ $leads->count() }} entries</div>
+						<div id="lead-status-count">Showing {{ $leads->firstItem() ?? 0 }} to {{ $leads->lastItem() ?? 0 }} of {{ $leads->total() }} entries</div>
 						<ul class="pagination pagination-sm mb-0">
-							<li class="page-item disabled"><span class="page-link">Previous</span></li>
-							<li class="page-item active"><span class="page-link">1</span></li>
-							<li class="page-item disabled"><span class="page-link">Next</span></li>
+							<li class="page-item {{ $leads->onFirstPage() ? 'disabled' : '' }}">
+								<a class="page-link" href="{{ $leads->previousPageUrl() ?: '#' }}">Previous</a>
+							</li>
+							<li class="page-item active"><span class="page-link">{{ $leads->currentPage() }}</span></li>
+							<li class="page-item {{ $leads->hasMorePages() ? '' : 'disabled' }}">
+								<a class="page-link" href="{{ $leads->nextPageUrl() ?: '#' }}">Next</a>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -237,6 +267,30 @@
 		.follow-table .action-cell {
 			min-width: 110px;
 			white-space: nowrap;
+		}
+
+		.follow-tab {
+			text-decoration: none;
+		}
+
+		.follow-controls {
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.follow-search {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-left: auto;
+		}
+
+		.follow-search i {
+			display: none;
+		}
+
+		.follow-search .form-control {
+			width: min(280px, 100%);
 		}
 
 		.lead-filter-banner {
@@ -470,38 +524,9 @@
 				}, 150);
 			}
 
-			function filterByStatus(status) {
-				var rows = document.querySelectorAll('#lead-status-table tbody tr');
-				var searchVal = (document.getElementById('lead-status-search').value || '').toLowerCase();
-				var visible = 0;
-				rows.forEach(function (row) {
-					var matchesStatus = status === 'all' || row.getAttribute('data-status') === status;
-					var matchesSearch = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-					var show = matchesStatus && matchesSearch;
-					row.style.display = show ? '' : 'none';
-					if (show) visible++;
-				});
-				document.getElementById('lead-status-count').textContent = 'Showing ' + (visible ? 1 : 0) + ' to ' + visible + ' of ' + visible + ' entries';
-			}
-
 			document.addEventListener('DOMContentLoaded', function () {
 				initLeadModal();
 				revealLeadPage();
-
-				var tabs = document.querySelectorAll('.follow-tab');
-				tabs.forEach(function (tab) {
-					tab.addEventListener('click', function () {
-						tabs.forEach(function (t) { t.classList.remove('active'); });
-						this.classList.add('active');
-						filterByStatus(this.getAttribute('data-status'));
-					});
-				});
-
-				document.getElementById('lead-status-search').addEventListener('input', function () {
-					var activeTab = document.querySelector('.follow-tab.active');
-					var status = activeTab ? activeTab.getAttribute('data-status') : 'all';
-					filterByStatus(status);
-				});
 
 				var dropdownButtons = document.querySelectorAll('.follow-action-dropdown .dropdown-toggle');
 				dropdownButtons.forEach(function (button) {
@@ -521,7 +546,12 @@
 					});
 				});
 
-				filterByStatus('all');
+				var perPage = document.getElementById('lead-per-page');
+				if (perPage) {
+					perPage.addEventListener('change', function () {
+						this.form.submit();
+					});
+				}
 			});
 		})();
 	</script>

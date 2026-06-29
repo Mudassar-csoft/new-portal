@@ -1,3 +1,7 @@
+@php
+    $impersonatorUserId = (int) session('impersonator_user_id', 0);
+    $isImpersonating = $impersonatorUserId > 0;
+@endphp
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <header class="site-header">
 		<div class="container-fluid">
@@ -338,10 +342,26 @@
                                         Guest 
                                       @endif
                                   </h3>
+                                  @if($isImpersonating)
+                                      <div style="margin-top: 6px;">
+                                          <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; background: #fff1f2; color: #b91c1c; font-size: 12px; font-weight: 700; letter-spacing: 0.02em;">
+                                              Impersonating User
+                                          </span>
+                                      </div>
+                                  @endif
                                 </div>
                               </div>
                             </div>
                             <div class="dp-main-menu ">
+                                @if($isImpersonating)
+                                    <form method="POST" action="{{ route('users.leave-impersonation') }}" class="m-0">
+                                      @csrf
+                                      @method('DELETE')
+                                      <button type="submit" class="dropdown-item ml-2 m-1 login-dropdown-item text-danger" style="width: calc(100% - 16px); text-align: left; border: 1px solid #f2c6cb; background: #fff7f7; cursor: pointer;">
+                                        <i class="fas fa-rotate-left me-2"></i> Return to Admin
+                                      </button>
+                                    </form>
+                                @endif
                                 <a href="{{ route('profile.show') }}" class="dropdown-item p-1 ml-2 m-1 login-dropdown-item">
                                   <i class="fas fa-user me-2 "></i> Profile
                                 </a>
