@@ -1352,14 +1352,14 @@ select {
 		.page-content .program-table thead th,
 		.page-content .program-table tbody td {
 			width: auto !important;
-			max-width:300px !important;
+			max-width:154px !important;
 			height: 30px !important;
 			text-align: left !important;
 			vertical-align: center !important;
 			padding-top: 0.25rem !important;
 			padding-right: 4px !important;
-			padding-bottom: 4px !important;
-			padding-left: 0.5rem !important;
+			padding-bottom: 2px !important;
+			padding-left: 8px !important;
 			line-height: 1.2 !important;
 			white-space: wrap !important;
 			/* word-break: break-word !important; */

@@ -561,6 +561,7 @@
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
 			height: 314px;
+			
 		}
 
 		.chart-statistic-box #chart_div,
@@ -584,7 +585,9 @@
 			position: absolute;
 			line-height: 1;
 			white-space: nowrap;
+			/* margin-right:15px; */
 			font-size: 11px !important;
+			
 		}
 
 		.chart-statistic-box .income-axis-top .income-axis-label {
@@ -947,7 +950,7 @@
 
 .statistic-box .number, 
 .statistic-box .caption{
-    font-size:28px !important;
+    font-size:26px !important;
 
 }
 *{
@@ -2138,7 +2141,7 @@
 						'class': 'income-axis-label',
 						text: formatAmount(tick)
 					}).css({
-						left: rightLabelLeft + 'px',
+						left: rightLabelLeft-5 + 'px',
 						top: yPosition + 'px'
 					}).appendTo(rightAxis);
 				});
@@ -2210,25 +2213,48 @@
 				var leadMap = {};
 				var admissionMap = {};
 				var hasRealCategory = false;
-
 				leadData.forEach(function (item) {
 					var category = item.label || 'No Data';
+
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
 					}
-					if (categories.indexOf(category) === -1) { categories.push(category); }
+
+					if (categories.indexOf(category) === -1) {
+						categories.push(category);
+					}
+
 					leadMap[category] = item.value;
 				});
 
 				admissionData.forEach(function (item) {
 					var category = item.label || 'No Data';
+
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
 					}
-					if (categories.indexOf(category) === -1) { categories.push(category); }
+
+					if (categories.indexOf(category) === -1) {
+						categories.push(category);
+					}
+
 					admissionMap[category] = item.value;
 				});
 
+				
+				categories = categories.slice(0, 6);
+
+				var leadValues = leadAllowed
+					? categories.map(function (category) {
+						return leadMap[category] || 0;
+					})
+					: [];
+
+				var admissionValues = admissionAllowed
+					? categories.map(function (category) {
+						return admissionMap[category] || 0;
+					})
+					: [];
 				if (hasRealCategory) {
 					categories = categories.filter(function (category) {
 						return category.toLowerCase() !== 'no data';
@@ -2255,7 +2281,7 @@
 					admissionAllowed: admissionAllowed,
 					isEmpty: isEmpty || (!leadAllowed && !admissionAllowed)
 				};
-			}
+			} 
 
 			function renderMonthlyComparisonChart() {
 				if (!(window.c3 && document.getElementById('lead-chart'))) { return; }
