@@ -2213,48 +2213,48 @@
 				var leadMap = {};
 				var admissionMap = {};
 				var hasRealCategory = false;
-leadData.forEach(function (item) {
-    var category = item.label || 'No Data';
+				leadData.forEach(function (item) {
+					var category = item.label || 'No Data';
 
-    if (category.toLowerCase() !== 'no data') {
-        hasRealCategory = true;
-    }
+					if (category.toLowerCase() !== 'no data') {
+						hasRealCategory = true;
+					}
 
-    if (categories.indexOf(category) === -1) {
-        categories.push(category);
-    }
+					if (categories.indexOf(category) === -1) {
+						categories.push(category);
+					}
 
-    leadMap[category] = item.value;
-});
+					leadMap[category] = item.value;
+				});
 
-admissionData.forEach(function (item) {
-    var category = item.label || 'No Data';
+				admissionData.forEach(function (item) {
+					var category = item.label || 'No Data';
 
-    if (category.toLowerCase() !== 'no data') {
-        hasRealCategory = true;
-    }
+					if (category.toLowerCase() !== 'no data') {
+						hasRealCategory = true;
+					}
 
-    if (categories.indexOf(category) === -1) {
-        categories.push(category);
-    }
+					if (categories.indexOf(category) === -1) {
+						categories.push(category);
+					}
 
-    admissionMap[category] = item.value;
-});
+					admissionMap[category] = item.value;
+				});
 
-// <-- YAHAN restriction lagani hai
-categories = categories.slice(0, 6);
+				
+				categories = categories.slice(0, 6);
 
-var leadValues = leadAllowed
-    ? categories.map(function (category) {
-        return leadMap[category] || 0;
-    })
-    : [];
+				var leadValues = leadAllowed
+					? categories.map(function (category) {
+						return leadMap[category] || 0;
+					})
+					: [];
 
-var admissionValues = admissionAllowed
-    ? categories.map(function (category) {
-        return admissionMap[category] || 0;
-    })
-    : [];
+				var admissionValues = admissionAllowed
+					? categories.map(function (category) {
+						return admissionMap[category] || 0;
+					})
+					: [];
 				if (hasRealCategory) {
 					categories = categories.filter(function (category) {
 						return category.toLowerCase() !== 'no data';
