@@ -1082,6 +1082,7 @@ font-size: 13px !important;
 line-height: 1.2 !important;
 text-align: center !important;
 z-index: auto !important;
+background-color:#00a8ff;
 }
 
 .btn{
@@ -1220,9 +1221,9 @@ select {
 		.follow-tab {
 			display: inline-flex;
 			align-items: center;
-			gap: 4px;
-			padding: 8px 6px;
-			font-weight: 600;
+			gap: 2px !important;
+			padding: 8px 2px;
+			font-weight: 500;
 			color: #5f6f7f;
 			cursor: pointer;
 			position: relative;
@@ -1639,6 +1640,13 @@ button[id^="action-"].btn[aria-expanded="true"] {
 
 		.control-panel:not(.dashboard-page) .page-content {
     padding-right: 67px;
+}
+.dataTables_wrapper{
+    overflow: visible !important;
+}
+
+div.dataTables_scrollBody{
+    overflow: visible !important;
 }
 /* =========================================================
    Dashboard Cards/Charts

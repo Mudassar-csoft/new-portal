@@ -19,16 +19,23 @@
                .admission-action-dropdown {
             position: relative;
         }
+.dataTables_wrapper{
+    overflow: visible !important;
+}
 
+div.dataTables_scrollBody{
+    overflow: visible !important;
+}
         .admission-action-dropdown .dropdown-menu {
             min-width: 292px;
+/*             
             position: absolute !important;
             top: 100% !important;
             left: auto !important;
             right: 0 !important;
             margin-top: 6px !important;
             margin-right: 0 !important;
-            transform: none !important;
+            transform: none !important; */
             z-index: 9999;
         }
             .admission-action-dropdown .dropdown-menu.lead-action-menu {
@@ -155,17 +162,26 @@
                     </svg>
                 </span><span class="lead-action-label">Whatsapp</span>
             </a>
+            <button type="button"
+    class="dropdown-item lead-action-item js-open-upload-admission"
+    data-admission-id="{{ $admission->id }}"
+    data-student-name="{{ $admission->student_name }}"
+    data-approval-remarks="{{ $admission->approval_remarks ?? '' }}">
+
+   <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M5 20h14v-2H5v2zm7-18L5.33 8h3.84v4h6.66V8h3.84L12 2z"/>
+        </svg>
+    </span>
+
+    <span class="lead-action-label">
+        Upload Documents
+    </span>
+</button>
+            
         </div>
 
-        <button
-                type="button"
-                class="btn btn-primary btn-sm js-open-upload-admission"
-                data-admission-id="{{ $admission->id }}"
-                data-student-name="{{ $admission->student_name }}"
-                data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
-            >
-                Upload Documents
-            </button>
+       
 
         @else
             <span class="label label-warning">Pending</span>
@@ -233,7 +249,30 @@
             </a>
 
             @if($canAdminEdit)
-                <a class="dropdown-item lead-action-item" href="#">
+                
+             <button
+                type="button"
+                class="dropdown-item lead-action-item
+                 js-open-review-admission"
+                data-admission-id="{{ $admission->id }}"
+                data-student-name="{{ $admission->student_name }}"
+                data-doc-cnic="{{ $docCnicUrl ?? '' }}"
+                data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
+                data-doc-form="{{ $docFormUrl ?? '' }}"
+                data-doc-slip="{{ $docSlipUrl ?? '' }}"
+                data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
+            >
+
+            <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2.5A2.5 2.5 0 1 0 12 9a2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+                </span>
+                            <span class="lead-action-label">
+                    Review
+                </span>
+            </button>
+            <a class="dropdown-item lead-action-item" href="#">
                     <span class="lead-action-icon lead-icon-black" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3.75 20.25h4.5l11-11a1.6 1.6 0 0 0 0-2.25l-2.25-2.25a1.6 1.6 0 0 0-2.25 0l-11 11v4.5Z"/>
@@ -243,19 +282,7 @@
                 </a>
             @endif
         </div>
-        <button
-                type="button"
-                class="btn btn-primary js-open-review-admission"
-                data-admission-id="{{ $admission->id }}"
-                data-student-name="{{ $admission->student_name }}"
-                data-doc-cnic="{{ $docCnicUrl ?? '' }}"
-                data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
-                data-doc-form="{{ $docFormUrl ?? '' }}"
-                data-doc-slip="{{ $docSlipUrl ?? '' }}"
-                data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
-            >
-                Review
-            </button>
+       
         @else
             <span class="label label-info">Waiting Approval</span>
         @endif

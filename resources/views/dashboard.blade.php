@@ -586,7 +586,7 @@
 			line-height: 1;
 			white-space: nowrap;
 			/* margin-right:15px; */
-			font-size: 11px !important;
+			font-size: 10px !important;
 			
 		}
 

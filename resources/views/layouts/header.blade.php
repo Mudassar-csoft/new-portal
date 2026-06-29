@@ -1112,6 +1112,13 @@ display: flex;
   border-radius: 50%;
 }
 .dropdown-menu.show {
+  display: block !important;
+    position: fixed !important;
+    inset: auto !important;
+    top: auto !important;
+    right: 301px !important;
+    transform: none !important;
+    z-index: 999999 !important;
     /* left: -62px !important; */
 }
 .dropdown{
