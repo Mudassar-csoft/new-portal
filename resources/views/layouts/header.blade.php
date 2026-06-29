@@ -1116,7 +1116,7 @@ display: flex;
     position: fixed !important;
     inset: auto !important;
     top: auto !important;
-    right: 301px !important;
+    right: 255px !important;
     transform: none !important;
     z-index: 999999 !important;
     /* left: -62px !important; */
