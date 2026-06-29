@@ -16,7 +16,7 @@ trait ResolvesLeadFollowupNotifications
      */
     protected function latestDueLeadFollowupNotifications(?User $user, callable $scopeLeadQuery, array $types): Collection
     {
-        $notificationNow = now();
+        $notificationNow = now($this->followupNotificationTimezone());
         $todayStart = $notificationNow->copy()->startOfDay();
         $todayEnd = $notificationNow->copy()->endOfDay();
 
@@ -69,9 +69,9 @@ trait ResolvesLeadFollowupNotifications
 
     protected function resolveFollowupNotificationDateTime(LeadFollowup $followup): ?Carbon
     {
-        $nextActionAt = $followup->next_action_date instanceof Carbon
-            ? $followup->next_action_date->copy()
-            : null;
+        $nextActionAt = $this->parseFollowupNotificationDateTime(
+            $followup->getRawOriginal('next_action_date')
+        );
 
         $leadNextFollowupAt = $this->parseFollowupNotificationDateTime(
             data_get($followup->lead?->details, 'next_followup_at')
@@ -99,9 +99,11 @@ trait ResolvesLeadFollowupNotifications
             return null;
         }
 
+        $timezone = $this->followupNotificationTimezone();
+
         foreach (['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'] as $format) {
             try {
-                $dateTime = Carbon::createFromFormat($format, $stringValue);
+                $dateTime = Carbon::createFromFormat($format, $stringValue, $timezone);
 
                 return $format === 'Y-m-d'
                     ? $dateTime->startOfDay()
@@ -112,9 +114,14 @@ trait ResolvesLeadFollowupNotifications
         }
 
         try {
-            return Carbon::parse($stringValue);
+            return Carbon::parse($stringValue, $timezone);
         } catch (Throwable) {
             return null;
         }
+    }
+
+    protected function followupNotificationTimezone(): string
+    {
+        return 'Asia/Karachi';
     }
 }
