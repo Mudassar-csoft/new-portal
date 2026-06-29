@@ -2207,54 +2207,38 @@
 			function buildComparisonChartData() {
 				var leadAllowed = !!dashboardAccessMap.training_leads;
 				var admissionAllowed = !!dashboardAccessMap.admissions;
-				var leadData = leadAllowed ? normalizeComparisonSeries(chartSeries.leads || {}) : [];
-				var admissionData = admissionAllowed ? normalizeComparisonSeries(chartSeries.admissions || {}) : [];
+var leadData = leadAllowed
+    ? normalizeComparisonSeries(chartSeries.leads || {})
+    : [];
+
+var admissionData = admissionAllowed
+    ? normalizeComparisonSeries(chartSeries.admissions || {})
+    : [];
 				var categories = [];
 				var leadMap = {};
 				var admissionMap = {};
 				var hasRealCategory = false;
-				leadData.forEach(function (item) {
-					var category = item.label || 'No Data';
 
+				leadData.forEach(function (item) {
+					
+					var category = item.label || 'No Data';
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
 					}
-
-					if (categories.indexOf(category) === -1) {
-						categories.push(category);
-					}
-
+					if (categories.indexOf(category) === -1) { categories.push(category); }
 					leadMap[category] = item.value;
 				});
 
 				admissionData.forEach(function (item) {
+					
 					var category = item.label || 'No Data';
-
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
 					}
-
-					if (categories.indexOf(category) === -1) {
-						categories.push(category);
-					}
-
+					if (categories.indexOf(category) === -1) { categories.push(category); }
 					admissionMap[category] = item.value;
 				});
 
-				
-				categories = categories.slice(0, 6);
-
-				var leadValues = leadAllowed
-					? categories.map(function (category) {
-						return leadMap[category] || 0;
-					})
-					: [];
-
-				var admissionValues = admissionAllowed
-					? categories.map(function (category) {
-						return admissionMap[category] || 0;
-					})
-					: [];
 				if (hasRealCategory) {
 					categories = categories.filter(function (category) {
 						return category.toLowerCase() !== 'no data';
