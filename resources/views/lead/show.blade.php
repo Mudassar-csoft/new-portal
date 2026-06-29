@@ -34,6 +34,13 @@
 		$registrationButtonLabel = $isCoworkingLead ? 'Open Coworking Registration' : 'Open Registration Form';
 		$registrationStageLabel = $isCoworkingLead ? 'Registered' : 'Register';
 		$leadLocationDisplay = $leadLocationCode ?? $leadLocationName ?? 'N/A';
+		$defaultCampusRecord = $campuses->firstWhere('id', (int) ($defaultFollowupCampusId ?? 0));
+		$defaultCampusDisplay = $defaultCampusRecord?->code
+			?? $defaultCampusRecord?->name
+			?? $leadLocationDisplay;
+		$defaultCampusFallbackLabel = !empty($previousFollowupCampusId ?? null)
+			? 'Same as previous follow-up'
+			: 'Same as lead';
 		$statusLabel = match ($lead->status) {
 			'registered' => $stages['registered'] ?? 'Registered',
 			'enrolled' => $isCoworkingLead ? ($stages['registered'] ?? 'Registered') : ($stages['enroll'] ?? 'Enrolled'),
@@ -150,7 +157,7 @@
 								<div class="form-group col-lg-3 col-md-6 followup-toggle followup-hide-on-close" id="campus-wrap">
 									<label class="form-label ">{{ $locationSelectLabel }}</label>
 									<select class="form-control" name="campus_id" id="campus_id">
-										<option value="">Same as lead ({{ $leadLocationDisplay }})</option>
+										<option value="">{{ $defaultCampusFallbackLabel }} ({{ $defaultCampusDisplay }})</option>
 										@foreach ($campuses as $campus)
 											<option value="{{ $campus->id }}" @selected((string) old('campus_id', $defaultFollowupCampusId ?? $lead->campus_id) === (string) $campus->id)>
 												{{ $isCoworkingLead ? (($campus->code ?? 'N/A') . ' - ' . $campus->name) : ($campus->name . ' (' . ($campus->code ?? $campus->city ?? $campus->country) . ')') }}

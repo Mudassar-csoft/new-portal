@@ -245,7 +245,7 @@ class LeadController extends Controller
 
         LeadFollowup::create([
             'lead_id' => $lead->id,
-            'campus_id' => $this->resolveLeadCampusScopeId($lead),
+            'campus_id' => $this->resolveFollowupCampusId($lead),
             'user_id' => $request->user()?->id,
             'method' => null,
             'probability' => null,
@@ -258,12 +258,21 @@ class LeadController extends Controller
         return Redirect::back()->with('status', 'Lead marked as not interested.');
     }
 
-    public function addFollowup(Request $request, Lead $lead): RedirectResponse
+    public function addFollowup(Request $request, Lead $lead): RedirectResponse|JsonResponse
     {
         $this->ensureLeadCampusAccess($lead);
 
         if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
-            return Redirect::back()->with('error', 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.');
+            $message = 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $message,
+                    'errors' => ['stage' => [$message]],
+                ], 422);
+            }
+
+            return Redirect::back()->withErrors(['stage' => $message]);
         }
 
         $request->merge([
@@ -336,35 +345,41 @@ class LeadController extends Controller
             $this->syncLeadProfileFromFollowup($lead, $validated);
         }
 
-        $followupCampusId = $validated['campus_id'] ?? $lead->campus_id;
-
-        if (! $followupCampusId && $lead->type === 'coworking') {
-            $followupCampusId = $this->resolveCoworkingCampus($lead)?->id;
-        }
-
-        $nextActionAt = $this->normalizeFollowupDateTime($validated['next_action_date'] ?? null);
+        $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true);
+        $followupCampusId = $this->resolveFollowupCampusId($lead, $validated['campus_id'] ?? null);
+        $nextActionAt = $isTerminalStage
+            ? null
+            : $this->normalizeFollowupDateTime($validated['next_action_date'] ?? null);
         $leadStatusAfterFollowup = $this->resolveLeadStatusForFollowupStage($lead, $validated['stage']);
 
-        LeadFollowup::create([
-            'lead_id' => $lead->id,
-            'campus_id' => $followupCampusId,
-            'user_id' => $request->user()?->id,
-            'method' => $validated['method'] ?? null,
-            'probability' => $validated['probability'] ?? null,
-            'note' => $validated['note'] ?? null,
-            'next_action_date' => $nextActionAt,
-            'stage' => $validated['stage'],
-            'lead_status' => $leadStatusAfterFollowup,
-        ]);
+        DB::transaction(function () use ($followupCampusId, $lead, $leadStatusAfterFollowup, $nextActionAt, $request, $validated, $isTerminalStage): void {
+            LeadFollowup::create([
+                'lead_id' => $lead->id,
+                'campus_id' => $followupCampusId,
+                'user_id' => $request->user()?->id,
+                'method' => $validated['method'] ?? null,
+                'probability' => $validated['probability'] ?? null,
+                'note' => $validated['note'] ?? null,
+                'next_action_date' => $nextActionAt,
+                'stage' => $validated['stage'],
+                'lead_status' => $leadStatusAfterFollowup,
+            ]);
 
-        $this->syncLeadNextFollowupAt(
-            $lead,
-            in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true) ? null : $nextActionAt
-        );
+            $this->syncLeadNextFollowupAt(
+                $lead,
+                $isTerminalStage ? null : $nextActionAt
+            );
 
-        if (in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true)) {
-            $lead->update([
-                'status' => $leadStatusAfterFollowup,
+            if ($isTerminalStage) {
+                $lead->update([
+                    'status' => $leadStatusAfterFollowup,
+                ]);
+            }
+        });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => 'Follow-up added.',
             ]);
         }
 
@@ -401,10 +416,6 @@ class LeadController extends Controller
         $leadLocationName = $isCoworkingLead
             ? ($resolvedCoworkingCampus?->name ?? $resolvedCoworkingCampus?->title)
             : $lead->campus?->name;
-        $defaultFollowupCampusId = $isCoworkingLead
-            ? ($resolvedCoworkingCampus?->id ?? $lead->campus_id)
-            : $lead->campus_id;
-
         if ($isCoworkingLead) {
             $lead->setRelation('program', new Program([
                 'title' => data_get($lead->details, 'space_required'),
@@ -436,6 +447,8 @@ class LeadController extends Controller
         $currentStage = $this->normalizeFollowupStage($lead->type, $followups->first()->stage ?? 'new');
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
+        $previousFollowupCampusId = $this->resolvePreviousFollowupCampusId($lead);
+        $defaultFollowupCampusId = $this->resolveFollowupCampusId($lead);
         $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
         $interestHeading = $this->leadInterestHeading($lead->type);
         $interestValue = $this->leadInterestValue($lead);
@@ -463,6 +476,7 @@ class LeadController extends Controller
             'nextFollowup' => $nextFollowup,
             'campuses' => $campuses,
             'defaultFollowupCampusId' => $defaultFollowupCampusId,
+            'previousFollowupCampusId' => $previousFollowupCampusId,
             'isCoworkingLead' => $isCoworkingLead,
             'isFollowupClosed' => $isFollowupClosed,
             'usesTrainingConversionFlow' => $usesTrainingConversionFlow,
@@ -852,6 +866,71 @@ class LeadController extends Controller
         $resolvedCampusId = (int) ($this->resolveCoworkingCampus($lead)?->id ?? 0);
 
         return $resolvedCampusId > 0 ? $resolvedCampusId : null;
+    }
+
+    private function resolveFollowupCampusId(Lead $lead, mixed $requestedCampusId = null): ?int
+    {
+        $candidateCampusIds = [];
+
+        foreach ([
+            $requestedCampusId,
+            $this->resolvePreviousFollowupCampusId($lead),
+            $lead->campus?->id,
+            $lead->campus_id,
+            $this->resolveCoworkingCampus($lead)?->id,
+        ] as $candidateCampusId) {
+            $campusId = (int) ($candidateCampusId ?? 0);
+
+            if ($campusId <= 0 || in_array($campusId, $candidateCampusIds, true)) {
+                continue;
+            }
+
+            $candidateCampusIds[] = $campusId;
+        }
+
+        if ($candidateCampusIds === []) {
+            return null;
+        }
+
+        $validCampusIds = Campus::query()
+            ->whereIn('id', $candidateCampusIds)
+            ->pluck('id')
+            ->map(fn ($campusId) => (int) $campusId)
+            ->all();
+
+        foreach ($candidateCampusIds as $campusId) {
+            if (in_array($campusId, $validCampusIds, true)) {
+                return $campusId;
+            }
+        }
+
+        return null;
+    }
+
+    private function resolvePreviousFollowupCampusId(Lead $lead): ?int
+    {
+        if ($lead->relationLoaded('followups')) {
+            $followup = $lead->followups
+                ->sortByDesc(function (LeadFollowup $followup): int {
+                    return $followup->created_at?->getTimestamp() ?? $followup->id;
+                })
+                ->first(function (LeadFollowup $followup): bool {
+                    return (int) ($followup->campus_id ?? 0) > 0;
+                });
+
+            $campusId = (int) ($followup?->campus_id ?? 0);
+
+            return $campusId > 0 ? $campusId : null;
+        }
+
+        $campusId = (int) LeadFollowup::query()
+            ->where('lead_id', $lead->id)
+            ->whereNotNull('campus_id')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->value('campus_id');
+
+        return $campusId > 0 ? $campusId : null;
     }
 
     private function currentUserCampusScopeId(): ?int
