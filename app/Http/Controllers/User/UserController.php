@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Campus;
 use App\Models\HrEmployee;
 use App\Models\User;
+use App\Models\UserLoginLog;
 use App\Models\User\Permission;
 use App\Models\User\Role;
+use App\Support\AccessMap;
 use App\Support\PermissionCatalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -21,6 +24,7 @@ use Yajra\DataTables\Facades\DataTables;
 class UserController extends Controller
 {
     private const EMAIL_DOMAIN = 'career.edu.pk';
+    private const IMPERSONATOR_SESSION_KEY = 'impersonator_user_id';
 
     public function index(Request $request)
     {
@@ -298,6 +302,67 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('status', 'User restored.');
     }
 
+    public function impersonate(Request $request, User $user): RedirectResponse
+    {
+        $this->ensureAdminAccess();
+
+        if ($request->session()->has(self::IMPERSONATOR_SESSION_KEY)) {
+            return redirect()->route('users.index')
+                ->with('error', 'Stop the current impersonation before logging in as another user.');
+        }
+
+        if ((int) $user->id === (int) $request->user()->id) {
+            return redirect()->route('users.index')
+                ->with('error', 'You are already logged in with this account.');
+        }
+
+        $adminUser = $request->user();
+
+        $request->session()->put(self::IMPERSONATOR_SESSION_KEY, $adminUser->id);
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        $this->logUserSessionAction($adminUser->id, 'impersonation_start', $request, 'Impersonating user #'.$user->id);
+        $this->logUserSessionAction($user->id, 'impersonation_login', $request, 'Impersonated by admin #'.$adminUser->id);
+
+        return redirect()->to(AccessMap::firstAccessibleRouteFor($user))
+            ->with('welcome', $user->name);
+    }
+
+    public function leaveImpersonation(Request $request): RedirectResponse
+    {
+        $originalUserId = (int) $request->session()->get(self::IMPERSONATOR_SESSION_KEY, 0);
+
+        if ($originalUserId <= 0) {
+            return redirect()->back()->with('error', 'No active impersonation session was found.');
+        }
+
+        $originalUser = User::withoutGlobalScope('not_deleted')->find($originalUserId);
+
+        if (! $originalUser || ! $originalUser->isAdmin() || $originalUser->at_deleted !== null) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => 'The original admin account is no longer available. Please log in again.']);
+        }
+
+        $impersonatedUser = $request->user();
+
+        Auth::login($originalUser);
+        $request->session()->forget(self::IMPERSONATOR_SESSION_KEY);
+        $request->session()->regenerate();
+
+        $this->logUserSessionAction($originalUser->id, 'impersonation_stop', $request, 'Returned from impersonated user #'.optional($impersonatedUser)->id);
+        if ($impersonatedUser) {
+            $this->logUserSessionAction($impersonatedUser->id, 'impersonation_logout', $request, 'Admin #'.$originalUser->id.' returned to the original account');
+        }
+
+        return redirect()->route('users.index')
+            ->with('status', 'Returned to the admin account.');
+    }
+
     private function isLastAdmin(User $user): bool
     {
         $userIsAdmin = $user->roles->whereIn('slug', ['owner', 'admin'])->isNotEmpty();
@@ -386,6 +451,18 @@ class UserController extends Controller
             ->where('email', $email)
             ->when($ignoreUserId !== null, fn ($query) => $query->where('id', '!=', $ignoreUserId))
             ->exists();
+    }
+
+    private function logUserSessionAction(int $userId, string $action, Request $request, ?string $location = null): void
+    {
+        UserLoginLog::create([
+            'user_id' => $userId,
+            'action' => $action,
+            'ip_address' => $request->ip(),
+            'location' => $location ?? $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'logged_at' => now(),
+        ]);
     }
 
 }
