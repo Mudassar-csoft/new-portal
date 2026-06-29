@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
@@ -66,7 +67,10 @@ class AdmissionController extends Controller
         $campuses = Campus::query()
             ->orderBy('name')
             ->get();
-        $programs = Program::query()->orderBy('title')->get();
+        $programs = Program::query()
+            ->where('status', 'active')
+            ->orderByRaw('COALESCE(title, name)')
+            ->get();
         $batches = $this->admissionBatches();
 
         $isAnotherCourseEnrollment = (bool) ($sourceRegistration || $sourceAdmission);
@@ -213,7 +217,10 @@ class AdmissionController extends Controller
             'source_registration_id' => ['nullable', 'exists:registrations,id'],
             'source_admission_id' => ['nullable', 'exists:admissions,id'],
             'campus_id' => ['required', 'exists:campuses,id'],
-            'program_id' => ['required', 'exists:programs,id'],
+            'program_id' => [
+                'required',
+                Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active')),
+            ],
             'batch_id' => ['required', 'exists:batches,id'],
             'student_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'regex:/^03\d{9}$/'],
@@ -261,11 +268,12 @@ class AdmissionController extends Controller
             $batch = Batch::query()
                 ->whereKey($validated['batch_id'])
                 ->where('campus_id', $campus->id)
+                ->where('program_id', $program->id)
                 ->first();
 
             if (! $batch) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
-                    'batch_id' => ['The selected batch does not belong to the selected campus.'],
+                    'batch_id' => ['The selected batch does not belong to the selected campus and course.'],
                 ]);
             }
 
@@ -887,6 +895,7 @@ class AdmissionController extends Controller
         $recentWindow = $today->copy()->subDays(30);
 
         return Batch::query()
+            ->whereHas('program', fn ($query) => $query->where('status', 'active'))
             ->where(function ($query) use ($today, $recentWindow) {
                 $query
                     ->where(function ($builder) use ($today, $recentWindow) {
