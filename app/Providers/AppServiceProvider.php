@@ -470,9 +470,7 @@ class AppServiceProvider extends ServiceProvider
                         ->count();
                 }
 
-                $studentAdmissionQuery = $hasApprovalStatus
-                    ? (clone $admissionBaseQuery)->approved()
-                    : clone $admissionBaseQuery;
+                $studentAdmissionQuery = clone $admissionBaseQuery;
 
                 $admissionSummary = $studentAdmissionQuery
                     ->selectRaw('COUNT(*) as total')

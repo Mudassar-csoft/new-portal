@@ -35,7 +35,7 @@ class StudentRecordController extends Controller
         $config = $this->resolveScope($scope);
 
         if ($request->ajax()) {
-            $query = $this->scopeQueryToUserCampus(Admission::query()->approved(), $request->user())
+            $query = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with([
                     'campus:id,code,name',
                     'program:id,code,title,name',
