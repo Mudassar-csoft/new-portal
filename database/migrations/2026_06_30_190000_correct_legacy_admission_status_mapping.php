@@ -61,6 +61,27 @@ return new class extends Migration
             return;
         }
 
+        $currentCampusLookup = $this->buildExistsLookup('campuses', array_values(array_filter(array_merge(
+            array_map(
+                fn (array $snapshot): int => (int) ($snapshot['campus_id'] ?? 0),
+                array_values($admissionSnapshots)
+            ),
+            array_map(
+                fn (array $row): int => (int) ($row['campus_id'] ?? 0),
+                array_values($legacyRowsByAdmissionId)
+            )
+        ), fn (int $id): bool => $id > 0)));
+        $currentProgramLookup = $this->buildExistsLookup('programs', array_values(array_filter(array_merge(
+            array_map(
+                fn (array $snapshot): int => (int) ($snapshot['program_id'] ?? 0),
+                array_values($admissionSnapshots)
+            ),
+            array_map(
+                fn (array $row): int => (int) ($row['program_id'] ?? 0),
+                array_values($legacyRowsByAdmissionId)
+            )
+        ), fn (int $id): bool => $id > 0)));
+
         $hasCertificatesTable = Schema::hasTable('certificates');
         $existingCertificatesByAdmissionId = [];
         $existingCertificateNumbers = [];
@@ -97,6 +118,8 @@ return new class extends Migration
         DB::transaction(function () use (
             &$admissionSnapshots,
             $legacyRowsByAdmissionId,
+            $currentCampusLookup,
+            $currentProgramLookup,
             $hasCertificatesTable,
             &$existingCertificatesByAdmissionId,
             &$existingCertificateNumbers
@@ -150,6 +173,8 @@ return new class extends Migration
                     $admissionId,
                     $legacyRow,
                     $admissionSnapshots[$admissionId],
+                    $currentCampusLookup,
+                    $currentProgramLookup,
                     $certificateStatus,
                     $certificateNumber
                 );
@@ -184,12 +209,16 @@ return new class extends Migration
     /**
      * @param  array<string, mixed>  $legacyRow
      * @param  array<string, mixed>  $admissionSnapshot
+     * @param  array<int, true>  $currentCampusLookup
+     * @param  array<int, true>  $currentProgramLookup
      * @return array<string, mixed>
      */
     private function buildLegacyCertificatePayload(
         int $admissionId,
         array $legacyRow,
         array $admissionSnapshot,
+        array $currentCampusLookup,
+        array $currentProgramLookup,
         string $certificateStatus,
         string $certificateNumber
     ): array {
@@ -199,11 +228,19 @@ return new class extends Migration
             ?? now()->format('Y-m-d H:i:s');
         $statusTimestamp = $this->normalizeDateTime($legacyRow['updated_at'])
             ?? $createdAt;
+        $campusId = $this->resolveExistingForeignKey([
+            $admissionSnapshot['campus_id'] ?? null,
+            $this->nullableInt($legacyRow['campus_id'] ?? null),
+        ], $currentCampusLookup);
+        $programId = $this->resolveExistingForeignKey([
+            $admissionSnapshot['program_id'] ?? null,
+            $this->nullableInt($legacyRow['program_id'] ?? null),
+        ], $currentProgramLookup);
 
         return [
             'admission_id' => $admissionId,
-            'campus_id' => $admissionSnapshot['campus_id'] ?? $this->nullableInt($legacyRow['campus_id'] ?? null),
-            'program_id' => $admissionSnapshot['program_id'] ?? $this->nullableInt($legacyRow['program_id'] ?? null),
+            'campus_id' => $campusId,
+            'program_id' => $programId,
             'certificate_number' => $certificateNumber,
             'status' => $certificateStatus,
             'requested_by' => null,
@@ -298,6 +335,40 @@ return new class extends Migration
         $importNote = 'Imported from legacy admissions.sql status '.$legacyStatus.'.';
 
         return $remarks !== null ? $remarks.' | '.$importNote : $importNote;
+    }
+
+    /**
+     * @param  list<int|null>  $candidates
+     * @param  array<int, true>  $existingIds
+     */
+    private function resolveExistingForeignKey(array $candidates, array $existingIds): ?int
+    {
+        foreach ($candidates as $candidate) {
+            if ($candidate !== null && isset($existingIds[$candidate])) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  list<int>  $ids
+     * @return array<int, true>
+     */
+    private function buildExistsLookup(string $table, array $ids): array
+    {
+        $ids = array_values(array_filter(array_unique(array_map('intval', $ids)), fn (int $id) => $id > 0));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return DB::table($table)
+            ->whereIn('id', $ids)
+            ->pluck('id')
+            ->mapWithKeys(fn ($id) => [(int) $id => true])
+            ->all();
     }
 
     /**
