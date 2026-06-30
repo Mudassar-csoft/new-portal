@@ -343,7 +343,7 @@ class DashboardController extends Controller
             'contacted', 'new' => 'info',
             'pending' => 'warning',
             'transferred' => 'orange',
-            'not_interesting', 'not_interested', 'inactive' => 'muted',
+            'not_interesting', 'Not_Interested', 'inactive' => 'muted',
             default => 'primary',
         };
     }
