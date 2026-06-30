@@ -1316,7 +1316,7 @@ select {
 			background: #00A8FF !important;
 			background-color: #00A8FF !important;
 			color: #fff !important;
-			border-color: #00A8FF !important;
+			border-color: #00A8FF ;
 		}
 
 		.page-content .tbl-typical th > div::before {
