@@ -25,6 +25,7 @@ class UserController extends Controller
 {
     private const EMAIL_DOMAIN = 'career.edu.pk';
     private const IMPERSONATOR_SESSION_KEY = 'impersonator_user_id';
+    private const IMPERSONATOR_DASHBOARD_CAMPUS_SESSION_KEY = 'impersonator_dashboard_campus_id';
 
     public function index(Request $request)
     {
@@ -319,8 +320,19 @@ class UserController extends Controller
         $adminUser = $request->user();
 
         $request->session()->put(self::IMPERSONATOR_SESSION_KEY, $adminUser->id);
+        $request->session()->put(
+            self::IMPERSONATOR_DASHBOARD_CAMPUS_SESSION_KEY,
+            (int) $request->session()->get('dashboard_campus_id', 0)
+        );
         Auth::login($user);
         $request->session()->regenerate();
+
+        $impersonatedCampusId = (int) ($user->campus_id ?? 0);
+        if ($impersonatedCampusId > 0) {
+            $request->session()->put('dashboard_campus_id', $impersonatedCampusId);
+        } else {
+            $request->session()->forget('dashboard_campus_id');
+        }
 
         $this->logUserSessionAction($adminUser->id, 'impersonation_start', $request, 'Impersonating user #'.$user->id);
         $this->logUserSessionAction($user->id, 'impersonation_login', $request, 'Impersonated by admin #'.$adminUser->id);
@@ -349,10 +361,18 @@ class UserController extends Controller
         }
 
         $impersonatedUser = $request->user();
+        $previousDashboardCampusId = (int) $request->session()->get(self::IMPERSONATOR_DASHBOARD_CAMPUS_SESSION_KEY, 0);
 
         Auth::login($originalUser);
         $request->session()->forget(self::IMPERSONATOR_SESSION_KEY);
+        $request->session()->forget(self::IMPERSONATOR_DASHBOARD_CAMPUS_SESSION_KEY);
         $request->session()->regenerate();
+
+        if ($previousDashboardCampusId > 0) {
+            $request->session()->put('dashboard_campus_id', $previousDashboardCampusId);
+        } else {
+            $request->session()->forget('dashboard_campus_id');
+        }
 
         $this->logUserSessionAction($originalUser->id, 'impersonation_stop', $request, 'Returned from impersonated user #'.optional($impersonatedUser)->id);
         if ($impersonatedUser) {
