@@ -804,7 +804,7 @@ $programLabels = Program::query()
             $monthStartValue = $monthStart->toDateString();
             $monthEndValue = $monthEnd->toDateString();
 
-            $weeklyByCampus = DB::table('fee_collections')
+            $weeklyQuery = DB::table('fee_collections')
                 ->select('campus_id')
                 ->selectRaw(
                     "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) BETWEEN 1 AND 7 THEN net_amount ELSE 0 END) as week_1",
@@ -832,7 +832,9 @@ $programLabels = Program::query()
                 ->where(function ($query) {
                     $query->whereNull('status')
                         ->orWhere('status', '!=', 'paid');
-                })
+                });
+
+            $weeklyByCampus = $weeklyQuery
                 ->groupBy('campus_id')
                 ->get()
                 ->keyBy('campus_id');
@@ -866,7 +868,7 @@ $programLabels = Program::query()
             return [];
         }
 
-        $rows = FeeCollection::query()
+        $rowsQuery = FeeCollection::query()
             ->with([
                 'program:id,code,title,name',
                 'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,admission_date,fee_package,discounted_fee,roll_number',
@@ -877,24 +879,14 @@ $programLabels = Program::query()
                 $query->whereNull('status')
                     ->orWhere('status', '!=', 'paid');
             })
-            ->where(function ($query) use ($monthStart, $monthEnd) {
-                if (Schema::hasColumn('fee_collections', 'due_at')) {
-                    $query->whereBetween('due_at', [$monthStart->toDateString(), $monthEnd->toDateString()])
-                        ->orWhere(function ($fallback) use ($monthStart, $monthEnd) {
-                            $fallback->whereNull('due_at')
-                                ->whereBetween(DB::raw('DATE(created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
-                        });
-
-                    return;
-                }
-
-                $query->whereBetween(DB::raw('DATE(created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
-            })
             ->orderBy('program_id')
             ->orderByRaw($this->pendingRecoveryReferenceDateExpression())
             ->orderBy('installment_no')
-            ->orderBy('id')
-            ->get([
+            ->orderBy('id');
+
+        $this->applyPendingRecoveryMonthFilter($rowsQuery, $monthStart, $monthEnd);
+
+        $rows = $rowsQuery->get([
                 'id',
                 'registration_id',
                 'admission_id',
@@ -1001,7 +993,7 @@ $programLabels = Program::query()
         }
 
         $referenceDate = $this->pendingRecoveryReferenceDateExpression();
-        $bounds = DB::table('fee_collections')
+        $boundsQuery = DB::table('fee_collections')
             ->selectRaw("MIN({$referenceDate}) as min_date")
             ->selectRaw("MAX({$referenceDate}) as max_date")
             ->whereNotNull('campus_id')
@@ -1009,8 +1001,13 @@ $programLabels = Program::query()
             ->where(function ($query) {
                 $query->whereNull('status')
                     ->orWhere('status', '!=', 'paid');
-            })
-            ->first();
+            });
+
+        if (Schema::hasColumn('fee_collections', 'due_at')) {
+            $boundsQuery->whereNotNull('due_at');
+        }
+
+        $bounds = $boundsQuery->first();
 
         $minYear = $bounds?->min_date ? Carbon::parse($bounds->min_date)->year : $selectedYear;
         $maxYear = $bounds?->max_date ? Carbon::parse($bounds->max_date)->year : $selectedYear;
@@ -1049,10 +1046,22 @@ $programLabels = Program::query()
     private function pendingRecoveryReferenceDateExpression(): string
     {
         if (Schema::hasColumn('fee_collections', 'due_at')) {
-            return 'COALESCE(due_at, DATE(created_at))';
+            return 'due_at';
         }
 
         return 'DATE(created_at)';
+    }
+
+    private function applyPendingRecoveryMonthFilter($query, Carbon $monthStart, Carbon $monthEnd): void
+    {
+        if (Schema::hasColumn('fee_collections', 'due_at')) {
+            $query->whereNotNull('due_at')
+                ->whereBetween('due_at', [$monthStart->toDateString(), $monthEnd->toDateString()]);
+
+            return;
+        }
+
+        $query->whereBetween(DB::raw('DATE(created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
     }
 
     private function pendingRecoveryProgramKey(FeeCollection $row): string

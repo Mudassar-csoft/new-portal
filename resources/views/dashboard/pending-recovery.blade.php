@@ -10,6 +10,8 @@
         $selectedYear = (int) ($selectedYear ?? now()->year);
         $monthLabel = $monthOptions[$selectedMonth] ?? now()->format('F');
         $campusLabel = $selectedCampus?->code ?: $selectedCampus?->name;
+        $monthGrandTotal = (float) $rows->sum('month_total');
+        $overallGrandTotal = (float) $rows->sum('overall_total');
     @endphp
 
     <div class="pending-recovery-shell">
@@ -41,7 +43,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-4 d-flex align-items-end">
+                <div class="form-group col-md-4 d-flex align-items-end pending-recovery-action-cell">
                     <button type="submit" class="btn btn-primary pending-recovery-button">Filter</button>
                 </div>
             </div>
@@ -71,6 +73,8 @@
                                     <a
                                         href="{{ route('dashboard.pending-recovery.campus', ['campus' => $row['campus_id'], 'month' => $selectedMonth, 'year' => $selectedYear]) }}"
                                         class="pending-recovery-campus-link"
+                                        target="_blank"
+                                        rel="noopener"
                                     >
                                         {{ $row['campus_code'] ?? 'N/A' }}
                                     </a>
@@ -90,6 +94,13 @@
                             <td colspan="7" class="pending-recovery-empty">No pending recovery data found.</td>
                         </tr>
                     @endforelse
+                    @if($rows->isNotEmpty())
+                        <tr class="pending-recovery-total-row">
+                            <td colspan="5" class="pending-recovery-total-label">Total</td>
+                            <td class="pending-recovery-total-value">{{ number_format($monthGrandTotal, 0) }}</td>
+                            <td class="pending-recovery-total-value">{{ number_format($overallGrandTotal, 0) }}</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -187,6 +198,19 @@
             color: #005d9a;
             text-decoration: underline;
         }
+        .pending-recovery-total-row td {
+            background: #ffffff !important;
+            font-size: 20px;
+            font-weight: 700;
+            color: #12314c;
+        }
+        .pending-recovery-total-label {
+            text-align: center !important;
+            color: #0ea5c6 !important;
+        }
+        .pending-recovery-total-value {
+            text-align: center !important;
+        }
         .pending-recovery-empty {
             color: #6b7280 !important;
             background: #fff !important;
@@ -194,6 +218,9 @@
         @media (max-width: 767px) {
             .pending-recovery-heading {
                 font-size: 18px;
+            }
+            .pending-recovery-action-cell {
+                align-items: stretch !important;
             }
             .pending-recovery-button {
                 width: 100%;

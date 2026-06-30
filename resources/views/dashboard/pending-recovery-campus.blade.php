@@ -1,6 +1,7 @@
 @extends('layouts.theme')
 
 @section('title', 'Campus Pending Recovery Report')
+@section('body_class', 'pending-recovery-report-page')
 
 @section('content')
     @php
@@ -8,6 +9,7 @@
         $selectedMonth = (int) ($selectedMonth ?? now()->month);
         $selectedYear = (int) ($selectedYear ?? now()->year);
         $monthOptions = $monthOptions ?? [];
+        $reportGrandTotal = (float) $sections->sum('section_total');
         $campusTitle = trim(implode('-', array_filter([
             $campus->code ?? null,
             $campus->title ?: ($campus->name ?? null),
@@ -42,6 +44,7 @@
                 </div>
                 <div class="form-group col-md-4 d-flex align-items-end justify-content-between flex-wrap campus-recovery-actions">
                     <button type="submit" class="btn btn-primary campus-recovery-button">Filter</button>
+                    <button type="button" class="btn btn-default campus-recovery-print" onclick="window.print()">Print</button>
                     <a href="{{ route('dashboard.pending-recovery', ['month' => $selectedMonth, 'year' => $selectedYear]) }}" class="btn btn-default campus-recovery-back">Back</a>
                 </div>
             </div>
@@ -95,13 +98,42 @@
         @empty
             <div class="campus-recovery-empty">No pending recovery data found for this campus in the selected month.</div>
         @endforelse
+
+        @if($sections->isNotEmpty())
+            <div class="campus-recovery-summary">
+                <div class="campus-recovery-summary-title">Report Summary</div>
+                <table class="table table-bordered campus-recovery-summary-table">
+                    <tbody>
+                        <tr>
+                            <td class="campus-recovery-summary-label">Grand Total</td>
+                            <td class="campus-recovery-summary-value">{{ number_format($reportGrandTotal, 0) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 @endsection
 
 @push('styles')
     <style>
+        body.pending-recovery-report-page .site-header,
+        body.pending-recovery-report-page .side-menu,
+        body.pending-recovery-report-page .control-panel-container {
+            display: none !important;
+        }
+        body.pending-recovery-report-page.with-side-menu .page-content,
+        body.pending-recovery-report-page .page-content {
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+        body.pending-recovery-report-page.with-side-menu .page-content > .container-fluid,
+        body.pending-recovery-report-page .page-content > .container-fluid {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
         .campus-recovery-shell {
-            padding: 8px 0 20px;
+            padding: 0 0 20px;
         }
         .campus-recovery-heading-box {
             border: 1px solid #121212;
@@ -142,6 +174,7 @@
             gap: 8px;
         }
         .campus-recovery-button,
+        .campus-recovery-print,
         .campus-recovery-back {
             min-width: 86px;
             height: 46px;
@@ -197,16 +230,70 @@
             color: #6b7280;
             font-size: 16px;
         }
+        .campus-recovery-summary {
+            margin-top: 24px;
+        }
+        .campus-recovery-summary-title {
+            border: 1px solid #121212;
+            border-bottom: 0;
+            background: #fff;
+            padding: 8px 10px;
+            font-size: 28px;
+            line-height: 1.25;
+            font-weight: 500;
+            color: #1f2937;
+        }
+        .campus-recovery-summary-table {
+            margin-bottom: 0;
+            background: #fff;
+        }
+        .campus-recovery-summary-table td {
+            border: 1px solid #121212 !important;
+            background: #8788db;
+            padding: 8px 10px;
+            font-size: 20px;
+            line-height: 1.2;
+            color: #1f2937;
+        }
+        .campus-recovery-summary-label {
+            text-align: center;
+            font-weight: 500;
+        }
+        .campus-recovery-summary-value {
+            width: 36%;
+            text-align: center;
+            font-weight: 500;
+        }
+        @media print {
+            body.pending-recovery-report-page,
+            body.pending-recovery-report-page * {
+                visibility: visible !important;
+            }
+            body.pending-recovery-report-page .campus-recovery-filter,
+            body.pending-recovery-report-page .campus-recovery-print,
+            body.pending-recovery-report-page .campus-recovery-back,
+            body.pending-recovery-report-page .campus-recovery-button {
+                display: none !important;
+            }
+            body.pending-recovery-report-page .page-content {
+                padding: 0 !important;
+            }
+            .campus-recovery-shell {
+                padding: 0 !important;
+            }
+        }
         @media (max-width: 767px) {
             .campus-recovery-campus-name {
                 font-size: 20px;
                 margin-bottom: 14px;
             }
             .campus-recovery-report-title,
-            .campus-recovery-course-title {
+            .campus-recovery-course-title,
+            .campus-recovery-summary-title {
                 font-size: 18px;
             }
             .campus-recovery-button,
+            .campus-recovery-print,
             .campus-recovery-back {
                 width: 100%;
             }
