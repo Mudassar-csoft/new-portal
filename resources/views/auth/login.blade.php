@@ -7,13 +7,14 @@
 	<title>Career Institute - Sign In</title>
 	<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
 	<link rel="preload" as="image" href="{{ asset('theme/img/Career-Institute-logo.webp') }}" fetchpriority="high">
-
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 	<style>
 		* {
 			margin: 0;
 			padding: 0;
 			box-sizing: border-box;
-			font-family: Arial, sans-serif;
+			font-family: 'Proxima Nova', sans-serif;
 		}
 
 		body {
@@ -229,6 +230,24 @@
 			text-align: center;
 			color: #fff6f6;
 		}
+		.password-field {
+			position: relative;
+		}
+
+		.password-field input {
+			width: 100%;
+			padding-right: 45px;
+		}
+
+		.toggle-password {
+			position: absolute;
+			right: 15px;
+			top: 50%;
+			transform: translateY(-50%);
+			cursor: pointer;
+			color: #4b4a5d;
+			font-size: 14px;
+		}
 
 		@media (max-width: 768px) {
 			.container {
@@ -319,16 +338,23 @@
 					@enderror
 				</div>
 
-				<div class="input-group">
+				<div class="input-group password-wrapper">
 					<label>Password</label>
-					<input
-						type="password"
-						name="password"
-						placeholder="Enter password"
-						class="@error('password') is-invalid @enderror"
-						autocomplete="current-password"
-						required
-					>
+
+					<div class="password-field">
+						<input
+							type="password"
+							id="password"
+							name="password"
+							placeholder="Enter password"
+							class="@error('password') is-invalid @enderror"
+							autocomplete="current-password"
+							required
+						>
+						<span class="toggle-password" onclick="togglePassword()">
+							<i class="fa fa-eye" id="toggleIcon"></i>
+						</span>
+					</div>
 					@error('password')
 						<div class="field-error">{{ $message }}</div>
 					@enderror
@@ -367,11 +393,24 @@
 			</div>
 		</div>
 	</div>
+<script>
+	function togglePassword() {
+		const password = document.getElementById('password');
+		const icon = document.getElementById('toggleIcon');
+
+		if (password.type === "password") {
+			password.type = "text";
+			icon.classList.remove("fa-eye");
+			icon.classList.add("fa-eye-slash");
+		} else {
+			password.type = "password";
+			icon.classList.remove("fa-eye-slash");
+			icon.classList.add("fa-eye");
+		}
+	}
+	</script>
 </body>
 </html>
-
-
-
 
 
 
