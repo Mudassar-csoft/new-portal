@@ -374,6 +374,7 @@
 									</div>
 								</div>
 							</div>
+							<small class="text-muted d-block mt-1" id="admission-fee-type-hint"></small>
 							@error('fee_type')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -830,6 +831,7 @@
 			const discountedFeeEl = document.getElementById('admission-discounted-fee');
 			const feeTypeFull = document.getElementById('admission-fee-type-full');
 			const feeTypeInst = document.getElementById('admission-fee-type-installments');
+			const feeTypeHintEl = document.getElementById('admission-fee-type-hint');
 			const installmentsBlock = document.getElementById('installments-block');
 			const installmentsRows = document.getElementById('installments-rows');
 			const installmentsTotalEl = document.getElementById('installments-total');
@@ -843,19 +845,67 @@
 				return Math.round((Number(n) || 0) * 100) / 100;
 			}
 
-			function programInstallmentsMax() {
+			function selectedProgramOption() {
+				if (!programEl) {
+					return null;
+				}
+
+				if (programEl.value !== '') {
+					for (const option of programEl.options) {
+						if (option.value === programEl.value) {
+							return option;
+						}
+					}
+				}
+
+				return programEl.selectedIndex >= 0
+					? programEl.options[programEl.selectedIndex]
+					: null;
+			}
+
+			function selectedProgramInstallments() {
+				const option = selectedProgramOption();
+				const optionInstallments = option ? Number(option.getAttribute('data-installments')) : NaN;
+
+				if (Number.isFinite(optionInstallments) && optionInstallments > 0) {
+					return Math.max(1, optionInstallments);
+				}
+
 				const prog = programMap[programEl.value];
+
 				return prog ? Math.max(1, Number(prog.installments) || 1) : 1;
+			}
+
+			function programInstallmentsMax() {
+				return selectedProgramInstallments();
 			}
 
 			function programAllowsInstallments() {
 				return programInstallmentsMax() > 1;
 			}
 
+			function updateFeeTypeHint() {
+				if (!feeTypeHintEl) {
+					return;
+				}
+
+				const max = programInstallmentsMax();
+
+				if (!programEl.value) {
+					feeTypeHintEl.textContent = 'Select a course first to load fee type options.';
+					return;
+				}
+
+				feeTypeHintEl.textContent = max > 1
+					? 'This course allows up to ' + max + ' installments.'
+					: 'This course supports full fee only.';
+			}
+
 			function syncFeeTypeAvailability() {
 				const allowsInstallments = programAllowsInstallments();
 
 				feeTypeInst.disabled = !allowsInstallments;
+				updateFeeTypeHint();
 
 				if (!allowsInstallments && feeTypeInst.checked) {
 					feeTypeFull.checked = true;
@@ -865,6 +915,7 @@
 			function recalcFees() {
 				const programId = programEl.value;
 				const campusId = campusEl.value;
+				const option = selectedProgramOption();
 				const prog = programMap[programId];
 				if (!prog) {
 					currentFee = 0;
@@ -879,7 +930,8 @@
 					rebuildInstallments();
 					return;
 				}
-				currentFee = Number(prog.fee) || 0;
+				const optionFee = option ? Number(option.getAttribute('data-fee-raw')) : NaN;
+				currentFee = Number.isFinite(optionFee) ? optionFee : (Number(prog.fee) || 0);
 				const key = programId + ':' + (campusId || 'any');
 				const fallbackKey = programId + ':any';
 				maxDiscountPercent = Number(
@@ -1056,6 +1108,22 @@
 				}
 			}
 
+			function refreshProgramPricingState() {
+				refreshBatchOptions();
+				refreshPreviewNumbers();
+				recalcFees();
+				toggleInstallmentsBlock();
+			}
+
+			function queueProgramPricingStateRefresh() {
+				if (window.requestAnimationFrame) {
+					window.requestAnimationFrame(refreshProgramPricingState);
+					return;
+				}
+
+				window.setTimeout(refreshProgramPricingState, 0);
+			}
+
 			const regNumberEl = document.getElementById('admission-registration-number');
 			const rollNumberEl = document.getElementById('admission-roll-number');
 			const receiptNumberEl = document.getElementById('admission-receipt-number');
@@ -1151,11 +1219,11 @@
 			}
 
 			campusEl.addEventListener('change', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
-			programEl.addEventListener('change', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
+			programEl.addEventListener('change', queueProgramPricingStateRefresh);
 			if (batchEl) batchEl.addEventListener('change', refreshPreviewNumbers);
 
 			if (window.jQuery) {
-				jQuery(programEl).on('change select2:select', function () { refreshBatchOptions(); refreshPreviewNumbers(); recalcFees(); });
+				jQuery(programEl).on('change select2:select select2:clear select2:close', queueProgramPricingStateRefresh);
 			}
 
 			refreshBatchOptions();
