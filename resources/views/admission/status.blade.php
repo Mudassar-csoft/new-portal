@@ -91,13 +91,10 @@
                         </thead>
                         <tbody>
                             @forelse ($admissions as $idx => $row)
-                                @php
-                                    $isApproved = ($row->approval_status ?? \App\Models\Admission::APPROVAL_STATUS_APPROVED) === \App\Models\Admission::APPROVAL_STATUS_APPROVED;
-                                @endphp
                                 <tr data-entry-row="1">
                                     <td class="text-center">{{ $idx + 1 }}</td>
                                     <td>
-                                        @if($isApproved && $row->registration_id && $canStudentView)
+                                        @if($row->registration_id && $canStudentView)
                                             <a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
                                                 {{ $row->student_name }}
                                             </a>
