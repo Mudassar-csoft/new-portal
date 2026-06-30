@@ -37,6 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/live-data', [DashboardController::class, 'liveData'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard.live-data');
+    Route::get('/dashboard/pending-recovery', [DashboardController::class, 'pendingRecovery'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.pending-recovery');
+    Route::get('/dashboard/pending-recovery/campus/{campus}', [DashboardController::class, 'pendingRecoveryCampusReport'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.pending-recovery.campus');
     Route::get('/', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard');

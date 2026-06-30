@@ -248,10 +248,12 @@
 							<article class="statistic-box green mr-1">
 								<div class="stat-inner m">
 									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show pending recovery"><i class="fa fa-eye"></i></button>
-									<div class="number stat-number" data-value="RS. {{ number_format((float) ($stats['pendingRecoveryRaw'] ?? 0), 0) }}" data-target="stat-4" data-stat-key="pendingRecovery" data-format="currency" data-mask-mode="icon"></div>
-									<div class="caption ">
-										<div class="caption-text">Pending Recovery</div>
-									</div>
+									<a href="{{ route('dashboard.pending-recovery') }}" class="stat-card-link" aria-label="Open pending recovery report">
+										<div class="number stat-number" data-value="RS. {{ number_format((float) ($stats['pendingRecoveryRaw'] ?? 0), 0) }}" data-target="stat-4" data-stat-key="pendingRecovery" data-format="currency" data-mask-mode="icon"></div>
+										<div class="caption ">
+											<div class="caption-text">Pending Recovery</div>
+										</div>
+									</a>
 								</div>
 							</article>
 						</div><!--.col-->
