@@ -130,7 +130,6 @@ class StudentRecordController extends Controller
         $this->backfillRegistrationFee($registration);
 
         $admission = Admission::query()
-            ->approved()
             ->with([
                 'batch',
                 'campus',
