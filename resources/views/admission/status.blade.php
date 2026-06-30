@@ -430,13 +430,13 @@
 
         .admission-action-dropdown .dropdown-menu {
             min-width: 292px;
-            position: absolute !important;
+            /* position: absolute !important;
             top: 100% !important;
             left: auto !important;
             right: 0 !important;
             margin-top: 6px !important;
             margin-right: 0 !important;
-            transform: none !important;
+            transform: none !important; */
             z-index: 9999;
         }
 

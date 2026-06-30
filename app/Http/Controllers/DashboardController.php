@@ -518,19 +518,14 @@ class DashboardController extends Controller
                 ->groupBy('registrations.campus_id')
                 ->pluck('aggregate', 'campus_id')
             : collect();
+$programIds = Program::query()
+    ->orderByDesc('id')   // latest programs
+    ->take(12)            // sirf latest 12 programs
+    ->pluck('id');
 
+$leadCountsByProgram = $leadCountsByProgram->only($programIds);
 
-            
-   $programIds = collect($leadCountsByProgram->keys())
-    ->merge($admissionCountsByProgram->keys())
-    ->filter()
-    ->unique()
-    ->sortDesc()
-    ->slice(0, 6)
-    ->values();
-
-$leadCountsByProgram = $leadCountsByProgram->only($programIds)->take(6);
-$admissionCountsByProgram = $admissionCountsByProgram->only($programIds)->take(6);
+$admissionCountsByProgram = $admissionCountsByProgram->only($programIds);
 
 $programLabels = Program::query()
     ->whereIn('id', $programIds)
@@ -539,10 +534,6 @@ $programLabels = Program::query()
         $label = $program->code ?: ($program->title ?: ($program->name ?: 'Program #' . $program->id));
         return [$program->id => $label];
     });
-
-
-
-
         // $programLabels = Program::query()
         //     ->whereIn(
         //         'id',
