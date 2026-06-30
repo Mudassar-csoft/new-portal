@@ -20,8 +20,7 @@
 	$registrationModalTitle = $isCoworkingLead
 		? 'Create New Coworking Space Registration (All fields marked with * are required)'
 		: 'Create New Registration (All fields marked with * are required)';
-	$canMarkNotInterested = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true)
-		&& auth()->user()?->hasAnyPermission('lead.followup.update');
+	$canMarkNotInterested = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
 	$canAdminEdit = auth()->user()?->isAdmin();
 @endphp
 

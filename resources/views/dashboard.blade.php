@@ -24,7 +24,7 @@
 		$showIncomeChart = $canViewIncome && !$hasRecipientDashboardRole && !$hasAdmissionDashboardRole;
 		$showAdmissionProgressWidget = $canViewAdmissions && $hasAdmissionDashboardRole && !$hasAdminDashboardRole;
 		$showMonthCollectionCard = $canViewIncome && !$hasRecipientDashboardRole;
-		$showPendingRecoveryCard = $canViewLeads && !$hasRecipientDashboardRole;
+		$showPendingRecoveryCard = ($canViewAdmissions || $canViewIncome) && !$hasRecipientDashboardRole;
 		$stats = $dashboard['stats'] ?? [];
 		$incomeSummary = $dashboard['incomeSummary'] ?? [];
 		$dailyActivity = $dashboard['dailyActivity'] ?? [];
@@ -247,11 +247,13 @@
 						<div class="{{ $statCardColumnClass }} ">
 							<article class="statistic-box green mr-1">
 								<div class="stat-inner m">
-									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show current month pending"><i class="fa fa-eye"></i></button>
-									<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentMonthPending'] ?? 0)) }}" data-target="stat-4" data-stat-key="currentMonthPending" data-format="number" data-mask-mode="icon"></div>
-									<div class="caption ">
-										<div class="caption-text">Pending Recovery</div>
-									</div>
+									<button class="stat-eye stat-eye-inline" data-target="stat-4" aria-label="Show pending recovery"><i class="fa fa-eye"></i></button>
+									<a href="{{ route('dashboard.pending-recovery') }}" class="stat-card-link" aria-label="Open pending recovery report">
+										<div class="number stat-number" data-value="RS. {{ number_format((float) ($stats['pendingRecoveryRaw'] ?? 0), 0) }}" data-target="stat-4" data-stat-key="pendingRecovery" data-format="currency" data-mask-mode="icon"></div>
+										<div class="caption ">
+											<div class="caption-text">Pending Recovery</div>
+										</div>
+									</a>
 								</div>
 							</article>
 						</div><!--.col-->
@@ -2155,7 +2157,7 @@
 				setStatValue('todayLeads', stats.todayLeads || 0, 'number');
 				setStatValue('currentStudents', stats.currentStudents || 0, 'number');
 				setStatValue('currentMonthCollection', stats.currentMonthCollectionRaw || 0, 'currency');
-				setStatValue('currentMonthPending', stats.currentMonthPending || 0, 'number');
+				setStatValue('pendingRecovery', stats.pendingRecoveryRaw || 0, 'currency');
 			}
 
 			function renderIncomeSummary(payload) {
