@@ -16,10 +16,10 @@ Route::put('/leads/{lead}', [LeadController::class, 'update'])
     ->middleware('permission:lead.update')
     ->name('leads.update');
 Route::post('/leads/{lead}/not-interested', [LeadController::class, 'markNotInterested'])
-    ->middleware('permission:lead.followup.update')
+    ->middleware('permission:lead.view')
     ->name('leads.not-interested');
 Route::post('/leads/{lead}/followups', [LeadController::class, 'addFollowup'])
-    ->middleware('permission:lead.followup.update')
+    ->middleware('permission:lead.view')
     ->name('leads.followups.store');
 
 Route::get('/leads/follow-ups', [LeadController::class, 'followups'])
