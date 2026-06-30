@@ -1153,7 +1153,7 @@ $programLabels = Program::query()
             return 'N/A';
         }
 
-        return Carbon::parse($value)->format('Y-m-d');
+        return Carbon::parse($value)->format('d-M-y');
     }
 
     private function coworkingCollectionTotalForRange(Carbon $start, Carbon $end, ?int $campusId = null): float
