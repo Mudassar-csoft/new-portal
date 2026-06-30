@@ -48,6 +48,8 @@ class LeadController extends Controller
 
     public function create(Request $request): View|RedirectResponse
     {
+        $this->ensureLeadCreatePermission($request);
+
         $webLead = null;
         $leadPrefill = [];
 
@@ -96,6 +98,8 @@ class LeadController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureLeadCreatePermission($request);
+
         $webLead = null;
         if ($request->filled('web_lead_id')) {
             $webLead = WebLead::query()->find($request->integer('web_lead_id'));
@@ -171,7 +175,24 @@ class LeadController extends Controller
                 return $lead;
             });
 
-            return Redirect::route($this->leadFollowupsRouteName($lead->type))->with('status', 'Lead created with initial follow-up.');
+            $statusMessage = 'Lead created with initial follow-up.';
+            $followupPermissions = $lead->type === 'coworking'
+                ? ['lead.coworking.view']
+                : ['lead.followup.view'];
+
+            if ($request->user()?->hasAnyPermission($followupPermissions) ?? false) {
+                return Redirect::route($this->leadFollowupsRouteName($lead->type))->with('status', $statusMessage);
+            }
+
+            if ($request->user()?->hasAnyPermission(['lead.view']) ?? false) {
+                return Redirect::route('leads.show', $lead)->with('status', $statusMessage);
+            }
+
+            if ($webLead && ($request->user()?->hasAnyPermission(['web-lead.view']) ?? false)) {
+                return Redirect::route('web-leads.show', $webLead->fresh())->with('status', $statusMessage);
+            }
+
+            return Redirect::route('dashboard')->with('status', $statusMessage);
         } catch (Throwable $e) {
             logger()->error('Lead create failed.', [
                 'user_id' => $request->user()?->id,
@@ -1754,6 +1775,27 @@ class LeadController extends Controller
             'origins' => ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'],
             'marketingSources' => ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'],
         ];
+    }
+
+    private function ensureLeadCreatePermission(Request $request): void
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            abort(403, 'You do not have permission to create leads.');
+        }
+
+        if ($user->hasAnyPermission(['lead.create'])) {
+            return;
+        }
+
+        $isWebLeadConversion = $request->filled('web_lead') || $request->filled('web_lead_id');
+
+        abort_unless(
+            $isWebLeadConversion && $user->hasAnyPermission(['web-lead.create']),
+            403,
+            'You do not have permission to create leads.'
+        );
     }
 
     private function buildLeadPrefillFromLead(Lead $lead): array

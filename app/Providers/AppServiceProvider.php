@@ -47,13 +47,16 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.header', function ($view): void {
             $currentUser = auth()->user();
-            $webLeadSourceLabels = WebLead::sourceLabels();
+            $webLeadSourceLabels = WebLead::leadManagementSourceLabels();
             $webLeadNotificationCounts = array_fill_keys(array_keys($webLeadSourceLabels), 0);
             $webLeadNotifications = [];
             $followupNotifications = collect();
             $followupNotificationCount = 0;
             $invoiceOverdueNotifications = collect();
             $invoiceOverdueNotificationCount = 0;
+            $canViewWebLeadNotifications = $currentUser?->hasAnyPermission(['web-lead.view']) ?? false;
+            $canViewFollowupNotifications = false;
+            $canViewInvoiceNotifications = false;
             $dashboardCampuses = collect();
             $activeDashboardCampus = null;
             $dashboardAllowsAllCampuses = (bool) ($currentUser?->isAdmin() ?? false);
@@ -90,9 +93,12 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
-                if (Schema::hasTable('web_leads')) {
+                if ($canViewWebLeadNotifications && Schema::hasTable('web_leads')) {
+                    $allowedSourceTypes = array_keys($webLeadSourceLabels);
+
                     $webLeadNotificationCounts = WebLead::query()
                         ->pending()
+                        ->whereIn('source_type', $allowedSourceTypes)
                         ->selectRaw('source_type, COUNT(*) as aggregate')
                         ->groupBy('source_type')
                         ->pluck('aggregate', 'source_type')
@@ -112,6 +118,9 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 if (Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
+                    $canViewFollowupNotifications = ($currentUser?->hasAnyPermission(['lead.followup.view']) ?? false)
+                        || ($currentUser?->hasAnyPermission(['lead.coworking.view']) ?? false);
+
                     if ($currentUser?->hasAnyPermission(['lead.followup.view']) ?? false) {
                         $followupNotifications = $followupNotifications->concat(
                             $this->latestDueLeadFollowupNotifications(
@@ -145,7 +154,9 @@ class AppServiceProvider extends ServiceProvider
                     $followupNotifications = $followupNotifications->take(5)->values();
                 }
 
-                if (($currentUser?->hasAnyPermission(['finance.receivable.view', 'finance.receivable.update', 'finance.receivable.create']) ?? false)
+                $canViewInvoiceNotifications = $currentUser?->hasAnyPermission(['finance.receivable.view', 'finance.receivable.update', 'finance.receivable.create']) ?? false;
+
+                if ($canViewInvoiceNotifications
                     && Schema::hasTable('finance_other_charges')
                     && Schema::hasColumn('finance_other_charges', 'due_date')
                     && Schema::hasColumn('finance_other_charges', 'balance_amount')
@@ -174,10 +185,13 @@ class AppServiceProvider extends ServiceProvider
                 'webLeadNotificationCounts' => $webLeadNotificationCounts,
                 'webLeadNotifications' => $webLeadNotifications,
                 'webLeadNotificationTotal' => array_sum($webLeadNotificationCounts),
+                'canViewWebLeadNotifications' => $canViewWebLeadNotifications,
                 'followupNotifications' => $followupNotifications,
                 'followupNotificationCount' => $followupNotificationCount,
+                'canViewFollowupNotifications' => $canViewFollowupNotifications,
                 'invoiceOverdueNotifications' => $invoiceOverdueNotifications,
                 'invoiceOverdueNotificationCount' => $invoiceOverdueNotificationCount,
+                'canViewInvoiceNotifications' => $canViewInvoiceNotifications,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
                 'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,

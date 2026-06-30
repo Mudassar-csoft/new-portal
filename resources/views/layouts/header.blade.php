@@ -36,13 +36,19 @@
                   @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
                   @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
                   @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
-                  @php($FeeAlert = $webLeadNotifications['Fee_Alert'] ?? collect())
                   @php($overdueInvoices = $invoiceOverdueNotifications ?? collect())
                   @php($followupItems = $followupNotifications ?? collect())
+                  @php($hasWebLeadNotifications = (bool) ($canViewWebLeadNotifications ?? false))
+                  @php($hasFollowupNotifications = (bool) ($canViewFollowupNotifications ?? false))
+                  @php($hasInvoiceNotifications = (bool) ($canViewInvoiceNotifications ?? false))
+                  @php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications)
 
+                  @if(!$hasVisibleNotificationPanels)
+                    <div class="text-center p-4 text-muted">No notifications available.</div>
+                  @else
                   <div class="notif-accordion">
 
-                    
+                    @if($hasFollowupNotifications)
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
                         <span>Leads Follow Up</span>
@@ -78,8 +84,9 @@
                         @endif
                       </div>
                     </div>
+                    @endif
 
-
+                    @if($hasWebLeadNotifications)
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="false">
                         <span>Quick Leads</span>
@@ -219,40 +226,9 @@
                         @endif
                       </div>
                     </div>
-                    <div class="notif-accordion-item notif-hover-card">
-                      <button class="notif-accordion-toggle" type="button" data-target="#notif-fee-alert" aria-expanded="false">
-                        <span>Pending Fee Alert</span>
-                        <span class="count">{{ $webLeadNotificationCounts['Fee_Alert'] ?? 0 }}</span>
-                      </button>
-                      <div class="notif-accordion-panel" id="notif-fee-alert">
-                        @if ($FeeAlert->isEmpty())
-                          <div class="text-center p-4 text-muted">No Pending Fee Alert notifications.</div>
-                        @else
-                          <div class="table-responsive">
-                            <table class="table table-sm mb-0 notification-table">
-                              <thead>
-                                <tr>
-                                  <th>Full Name</th>
-                                  <th>Date</th>
-                                  <th>Time</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @foreach ($FeeAlert as $webLead)
-                                  <tr>
-                                    <td>
-                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
-                                    </td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
-                                  </tr>
-                                @endforeach
-                              </tbody>
-                            </table>
-                          </div>
-                        @endif
-                      </div>
-                    </div>
+                    @endif
+
+                    @if($hasInvoiceNotifications)
                     <div class="notif-accordion-item notif-hover-card">
                       <button class="notif-accordion-toggle" type="button" data-target="#notif-overdue-invoices" aria-expanded="false">
                         <span>Overdue Invoices</span>
@@ -290,12 +266,16 @@
                         @endif
                       </div>
                     </div>
+                    @endif
 
                   </div>
+                  @endif
 
+                  @if($hasWebLeadNotifications)
                   <div class="dropdown-menu-notif-more">
                     <a href="{{ route('web-leads.index') }}">See more</a>
                   </div>
+                  @endif
                 </div>
 						</div>
             

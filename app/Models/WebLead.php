@@ -60,6 +60,16 @@ class WebLead extends Model
         ];
     }
 
+    public static function leadManagementSourceLabels(): array
+    {
+        return [
+            self::SOURCE_QUICK_LEAD => 'Quick Leads',
+            self::SOURCE_WEBSITE_ENROLLMENT => 'Website Enrollments',
+            self::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
+            self::SOURCE_BROCHURE_DOWNLOAD => 'Brochure Downloads',
+        ];
+    }
+
     public static function statusLabels(): array
     {
         return [

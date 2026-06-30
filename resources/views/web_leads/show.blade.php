@@ -9,6 +9,8 @@
             \App\Models\WebLead::STATUS_NOT_INTERESTED => 'label-danger',
             default => 'label-warning',
         };
+        $canCreateLeadFromWebLead = auth()->user()?->hasAnyPermission(['lead.create', 'web-lead.create']) ?? false;
+        $canUpdateWebLead = auth()->user()?->hasAnyPermission(['web-lead.update']) ?? false;
     @endphp
 
     <div class="box-typical box-typical-dashboard panel panel-default web-lead-detail-card">
@@ -27,11 +29,15 @@
 
             <div class="web-lead-actions mb-3">
                 @if ($webLead->isActionable())
-                    <a href="{{ route('leads.create', ['web_lead' => $webLead->id]) }}" class="btn btn-inline btn-primary-outline">Create Lead</a>
-                    <form method="POST" action="{{ route('web-leads.not-interested', $webLead) }}" class="d-inline-block">
-                        @csrf
-                        <button type="submit" class="btn btn-inline btn-danger-outline">Not Interested</button>
-                    </form>
+                    @if($canCreateLeadFromWebLead)
+                        <a href="{{ route('leads.create', ['web_lead' => $webLead->id]) }}" class="btn btn-inline btn-primary-outline">Create Lead</a>
+                    @endif
+                    @if($canUpdateWebLead)
+                        <form method="POST" action="{{ route('web-leads.not-interested', $webLead) }}" class="d-inline-block">
+                            @csrf
+                            <button type="submit" class="btn btn-inline btn-danger-outline">Not Interested</button>
+                        </form>
+                    @endif
                 @elseif ($webLead->converted_to_lead_id)
                     <a href="{{ route('leads.show', $webLead->converted_to_lead_id) }}" class="btn btn-inline btn-success-outline">Open CRM Lead</a>
                 @endif

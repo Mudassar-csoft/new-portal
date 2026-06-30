@@ -35,13 +35,6 @@
 							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
 						</a>
 					@endforeach
-
-					@foreach (($externalTabs ?? []) as $externalTab)
-						<a class="follow-tab notification-link-tab" href="{{ $externalTab['url'] }}" style="display: flex; align-items: center; gap: 3px;">
-							<span class="label-text">{{ $externalTab['label'] }}</span>
-							<span class="badge {{ $externalTab['badge'] ?? 'badge-danger' }}">{{ $externalTab['count'] ?? 0 }}</span>
-						</a>
-					@endforeach
 				</div>
 
 				<div class="box-typical-body panel-body follow-body">
