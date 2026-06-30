@@ -245,7 +245,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			top: 50%;
 			transform: translateY(-50%);
 			cursor: pointer;
-			color: #4b4a5d;
+			color: gray;
 			font-size: 14px;
 		}
 
