@@ -729,7 +729,7 @@ height: 26vh !important;
 }
 
 .follow-footer {
-padding: 4px 2px !important;
+padding: 63px 2px !important;
 display: flex;
     align-items: baseline !important;
 }
@@ -1316,7 +1316,7 @@ select {
 			background: #00A8FF !important;
 			background-color: #00A8FF !important;
 			color: #fff !important;
-			border-color: #00A8FF !important;
+			border-color: #00A8FF ;
 		}
 
 		.page-content .tbl-typical th > div::before {

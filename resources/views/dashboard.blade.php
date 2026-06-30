@@ -429,11 +429,11 @@
 						<tbody id="recent-admissions-body">
 							@forelse($admissionRows as $row)
 								<tr>
-									<td>
+									<!-- <td>
 										<span class="daily-status-badge daily-status-badge--{{ $row['status_tone'] ?? 'primary' }}">
 											{{ $row['status_label'] ?? 'Enrolled' }}
 										</span>
-									</td>
+									</td> -->
 									<td>
 										@if(!empty($row['detail_url']))
 											<a href="{{ $row['detail_url'] }}" class="daily-student-name daily-student-name-link">{{ $row['student_name'] ?? 'N/A' }}</a>
@@ -2178,14 +2178,32 @@
 					var studentNameHtml = row && row.detail_url
 						? '<a href="' + escapeHtml(row.detail_url) + '" class="daily-student-name daily-student-name-link">' + escapeHtml(row.student_name || 'N/A') + '</a>'
 						: '<div class="daily-student-name">' + escapeHtml(row.student_name || 'N/A') + '</div>';
+					return '<tr><td>' + studentNameHtml + campusLine + '</td><td class="daily-phone">' + escapeHtml(row.phone || 'N/A') + '</td><td class="daily-date">' + escapeHtml(row.date_label || 'N/A') + '</td></tr>';
+				}).join('');
+			}
+
+						function buildActivityRow(rows, emptyMessage, defaultStatus) {
+				if (!Array.isArray(rows) || !rows.length) {
+					return '<tr><td colspan="4" class="daily-empty-state">' + escapeHtml(emptyMessage) + '</td></tr>';
+				}
+
+				return rows.map(function (row) {
+					var campusLine = row && row.show_campus ? '<div class="daily-student-campus">' + escapeHtml(row.campus || 'Campus') + '</div>' : '';
+					var studentNameHtml = row && row.detail_url
+						? '<a href="' + escapeHtml(row.detail_url) + '" class="daily-student-name daily-student-name-link">' + escapeHtml(row.student_name || 'N/A') + '</a>'
+						: '<div class="daily-student-name">' + escapeHtml(row.student_name || 'N/A') + '</div>';
 					return '<tr><td><span class="daily-status-badge daily-status-badge--' + escapeHtml(row.status_tone || 'primary') + '">' + escapeHtml(row.status_label || defaultStatus) + '</span></td><td>' + studentNameHtml + campusLine + '</td><td class="daily-phone">' + escapeHtml(row.phone || 'N/A') + '</td><td class="daily-date">' + escapeHtml(row.date_label || 'N/A') + '</td></tr>';
 				}).join('');
 			}
 
+
+
+
+			
 			function renderActivityTables(payload) {
 				var dailyActivity = (payload || {}).dailyActivity || {};
 				var admissionsActivity = (payload || {}).admissionsActivity || {};
-				$('#recent-leads-body').html(buildActivityRows(dailyActivity.rows || [], 'No lead activity available.', 'New'));
+				$('#recent-leads-body').html(buildActivityRow(dailyActivity.rows || [], 'No lead activity available.', 'New'));
 				$('#recent-admissions-body').html(buildActivityRows(admissionsActivity.rows || [], 'No admissions available.', 'Enrolled'));
 			}
 

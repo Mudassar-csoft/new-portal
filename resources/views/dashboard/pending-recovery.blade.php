@@ -43,18 +43,18 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-4 d-flex align-items-end pending-recovery-action-cell">
-                    <button type="submit" class="btn btn-primary pending-recovery-button">Filter</button>
+                <div class="form-group col-md-4 d-flex align-items-end pending-recovery-action-cell mt-4 pt-2">
+                    <button type="submit" class="btn btn-primary pending-recovery-button ">Filter</button>
                 </div>
             </div>
         </form>
 
-        <div class="table-responsive pending-recovery-table-wrap">
+        <div class=" pending-recovery-table-wrap m-3 mr-3">
             <table class="table table-bordered pending-recovery-table">
                 <thead>
                     <tr>
-                        <th colspan="6">Pending Recovery {{ $monthLabel }} {{ $selectedYear }}</th>
-                        <th rowspan="2">Overall Pending</th>
+                        <th class=" pending-border" colspan="6"><h4 class="text-center mt-2"> Pending Recovery {{ $monthLabel }} {{ $selectedYear }}  </h4></th>
+                        <th rowspan="2"><h4 class="text-center mt-2">Overall Pending</h4></th>
                     </tr>
                     <tr>
                         <th>Campus Code</th>
@@ -109,14 +109,20 @@
 
 @push('styles')
     <style>
+        .pending-border{
+            border-bottom:1px solid gray;
+        }
         .pending-recovery-shell {
             padding: 8px 0 18px;
+            background:white;
+            border-radius:5px;
         }
         .pending-recovery-heading {
             font-size: 22px;
             font-weight: 500;
             color: #2d2d2d;
             margin-bottom: 6px;
+            padding:14px;
         }
         .pending-recovery-campus {
             color: #6b7280;
@@ -143,6 +149,9 @@
             border-radius: 6px;
             box-shadow: none;
         }
+        .page-content .table thead th{
+            text-align:center !important;
+        }
         .pending-recovery-button {
             min-width: 78px;
             height: 48px;
@@ -159,22 +168,29 @@
         .pending-recovery-table-wrap {
             border-radius: 0;
             overflow: hidden;
+            width: auto;
         }
         .pending-recovery-table {
             margin-bottom: 0;
             background: #fff;
         }
-        .pending-recovery-table thead th {
-            background: #1ea7ef;
+        .pending-recovery-table thead th{
+            /* background: #1ea7ef !important; */
             color: #fff;
             text-align: center;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 700 !important;
             vertical-align: middle;
-            border-color: #cfd8e6;
+            border-color: white !important;
             padding: 16px 12px;
         }
-        .pending-recovery-table tbody td {
+         .pending-recovery-table thead th h4{
+           
+            font-size: 16px;
+            font-weight: 700 !important;
+          
+        }
+        .pending-recovery-table tbody td{
             text-align: center;
             vertical-align: middle;
             border-color: #d6dbe7;
@@ -220,7 +236,7 @@
                 font-size: 18px;
             }
             .pending-recovery-action-cell {
-                align-items: stretch !important;
+                /* align-items: stretch !important; */
             }
             .pending-recovery-button {
                 width: 100%;

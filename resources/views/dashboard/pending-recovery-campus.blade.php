@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('dashboard.pending-recovery.campus', $campus) }}" class="campus-recovery-filter">
+        <!-- <form method="GET" action="{{ route('dashboard.pending-recovery.campus', $campus) }}" class="campus-recovery-filter">
             <div class="form-row">
                 <div class="form-group col-md-4">
                     <label class="campus-recovery-label">Select Month:</label>
@@ -48,7 +48,7 @@
                     <a href="{{ route('dashboard.pending-recovery', ['month' => $selectedMonth, 'year' => $selectedYear]) }}" class="btn btn-default campus-recovery-back">Back</a>
                 </div>
             </div>
-        </form>
+        </form> -->
 
         @forelse($sections as $section)
             <div class="campus-recovery-section">
@@ -188,7 +188,7 @@
             border-bottom: 0;
             background: #fff;
             padding: 8px 10px;
-            font-size: 28px;
+            font-size: 20px;
             line-height: 1.25;
             font-weight: 500;
             color: #1f2937;
@@ -238,7 +238,7 @@
             border-bottom: 0;
             background: #fff;
             padding: 8px 10px;
-            font-size: 28px;
+            font-size: 20px;
             line-height: 1.25;
             font-weight: 500;
             color: #1f2937;
@@ -303,4 +303,11 @@
             }
         }
     </style>
+@endpush
+@push('scripts')
+<script>
+    window.onload = function () {
+        window.print();
+    };
+</script>
 @endpush
