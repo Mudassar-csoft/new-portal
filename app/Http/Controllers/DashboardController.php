@@ -915,7 +915,10 @@ $programLabels = Program::query()
                 $detailRows = $programRows->values()->map(function (FeeCollection $row, int $index) use ($admissionTotals) {
                     $admission = $row->admission;
                     $totals = $admissionTotals->get($row->admission_id);
-                    $feePackage = $this->pendingRecoveryAdmissionFeePackage($admission);
+                    $scheduledAdmissionFee = round((float) (($totals->received_total ?? 0) + ($totals->pending_total ?? 0)), 2);
+                    $feePackage = $scheduledAdmissionFee > 0
+                        ? $scheduledAdmissionFee
+                        : $this->pendingRecoveryAdmissionFeePackage($admission);
 
                     return [
                         'sr' => $index + 1,
