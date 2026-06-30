@@ -10,5 +10,5 @@ Route::get('/web-leads/{webLead}', [WebLeadController::class, 'show'])
     ->middleware('permission:web-lead.view')
     ->name('web-leads.show');
 Route::post('/web-leads/{webLead}/not-interested', [WebLeadController::class, 'markNotInterested'])
-    ->middleware('permission:web-lead.update')
+    ->middleware('permission:web-lead.view,web-lead.update')
     ->name('web-leads.not-interested');

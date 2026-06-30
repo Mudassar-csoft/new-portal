@@ -9,8 +9,8 @@
             \App\Models\WebLead::STATUS_NOT_INTERESTED => 'label-danger',
             default => 'label-warning',
         };
-        $canCreateLeadFromWebLead = auth()->user()?->hasAnyPermission(['lead.create', 'web-lead.create']) ?? false;
-        $canUpdateWebLead = auth()->user()?->hasAnyPermission(['web-lead.update']) ?? false;
+        $canCreateLeadFromWebLead = auth()->user()?->hasAnyPermission(['lead.create', 'web-lead.view', 'web-lead.create']) ?? false;
+        $canUpdateWebLead = auth()->user()?->hasAnyPermission(['web-lead.view', 'web-lead.update']) ?? false;
     @endphp
 
     <div class="box-typical box-typical-dashboard panel panel-default web-lead-detail-card">

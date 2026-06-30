@@ -1,7 +1,7 @@
 @php
 	$actionId = $actionId ?? ('web-lead-action-' . uniqid());
-	$canCreateLeadFromWebLead = auth()->user()?->hasAnyPermission(['lead.create', 'web-lead.create']) ?? false;
-	$canUpdateWebLead = auth()->user()?->hasAnyPermission(['web-lead.update']) ?? false;
+	$canCreateLeadFromWebLead = auth()->user()?->hasAnyPermission(['lead.create', 'web-lead.view', 'web-lead.create']) ?? false;
+	$canUpdateWebLead = auth()->user()?->hasAnyPermission(['web-lead.view', 'web-lead.update']) ?? false;
 @endphp
 
 <div class="dropdown follow-action-dropdown">

@@ -1792,7 +1792,7 @@ class LeadController extends Controller
         $isWebLeadConversion = $request->filled('web_lead') || $request->filled('web_lead_id');
 
         abort_unless(
-            $isWebLeadConversion && $user->hasAnyPermission(['web-lead.create']),
+            $isWebLeadConversion && $user->hasAnyPermission(['web-lead.view', 'web-lead.create']),
             403,
             'You do not have permission to create leads.'
         );
