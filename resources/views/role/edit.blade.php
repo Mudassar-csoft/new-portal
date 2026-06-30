@@ -20,12 +20,23 @@
                     @csrf
                     @method('PUT')
 
-                     <div class="form-row">
+                    <div class="form-row">
                         <div class="form-group col-md-2">
                             <label class="required form-label-role">Name</label>
                         </div>
                         <div class="form-group col-md-10">
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Admin" required>
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name', $role->name) }}"
+                                placeholder="Admin"
+                                @if($role->is_system) readonly @endif
+                                required
+                            >
+                            @if($role->is_system)
+                                <small class="text-muted">System role names are fixed and cannot be changed.</small>
+                            @endif
                             @error('name')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
@@ -37,7 +48,8 @@
                             <label class="form-label-role">Slug</label>
                         </div>
                         <div class="form-group col-md-10">
-                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}" placeholder="admin">
+                            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $role->slug) }}" placeholder="admin" readonly>
+                            <small class="text-muted">Slug stays fixed after the role is created.</small>
                             @error('slug')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
@@ -49,7 +61,7 @@
                             <label class="form-label-role">Description</label>
                         </div>
                         <div class="form-group col-md-10">
-                            <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description') }}</textarea>
+                            <textarea name="description" class="form-control @error('description') is-invalid @enderror" rows="2" placeholder="Optional description">{{ old('description', $role->description) }}</textarea>
                             @error('description')
                                 <div class="field-error ">{{ $message }}</div>
                             @enderror
