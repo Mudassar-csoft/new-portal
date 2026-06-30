@@ -235,10 +235,12 @@
 							<article class="statistic-box yellow">
 								<div class="stat-inner">
 									<button class="stat-eye stat-eye-inline" data-target="stat-3" aria-label="Show current month collection"><i class="fa fa-eye"></i></button>
-									<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
-									<div class="caption ">
-										<div class="caption-text">{{ now()->format('F') }} Collection</div>
-									</div>
+									<a href="{{ route('dashboard.collection') }}" class="stat-card-link" aria-label="Open collection report">
+										<div class="number stat-number" data-value="RS. {{ $stats['currentMonthCollection'] ?? '0' }}" data-target="stat-3" data-stat-key="currentMonthCollection" data-format="currency" data-mask-mode="icon"></div>
+										<div class="caption ">
+											<div class="caption-text">{{ now()->format('F') }} Collection</div>
+										</div>
+									</a>
 								</div>
 							</article>
 						</div><!--.col-->

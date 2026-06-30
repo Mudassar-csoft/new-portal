@@ -48,7 +48,20 @@ class StudentRecordController extends Controller
 
             return DataTables::eloquent($query)
                 ->addIndexColumn()
-                ->editColumn('student_name', fn (Admission $admission) => e($admission->student_name ?: 'N/A'))
+                ->editColumn('student_name', function (Admission $admission) {
+                    $studentName = e($admission->student_name ?: 'N/A');
+                    $registrationId = (int) ($admission->registration_id ?: optional($admission->registration)->id ?: 0);
+
+                    if ($registrationId <= 0) {
+                        return $studentName;
+                    }
+
+                    return sprintf(
+                        '<a href="%s" class="table-name-link">%s</a>',
+                        e(route('student.show', $registrationId)),
+                        $studentName
+                    );
+                })
                 ->editColumn('roll_number', fn (Admission $admission) => e($admission->roll_number ?: 'N/A'))
                 ->editColumn('phone', fn (Admission $admission) => e($admission->phone ?: 'N/A'))
                 ->editColumn('registration_number', fn (Admission $admission) => e($admission->registration_number ?: optional($admission->registration)->registration_number ?: 'N/A'))
@@ -106,7 +119,7 @@ class StudentRecordController extends Controller
                             ->orWhere('name', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['status_badge', 'certificate_status', 'actions'])
+                ->rawColumns(['student_name', 'status_badge', 'certificate_status', 'actions'])
                 ->make(true);
         }
 

@@ -101,6 +101,50 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function collection(Request $request): View
+    {
+        $dashboardAccess = $this->resolveDashboardAccess($request->user());
+        abort_unless((bool) ($dashboardAccess['income'] ?? false), 403);
+
+        $selectedCampusId = $this->resolveCampusId($request);
+        $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
+            ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'title', 'campus_type'])
+            : null;
+
+        [$selectedMonths, $selectedYear] = $this->resolveCollectionPeriod($request);
+
+        return view('dashboard.collection', [
+            'summary' => $this->buildCollectionRows($selectedMonths, $selectedYear, $selectedCampusId),
+            'selectedMonths' => $selectedMonths,
+            'selectedYear' => $selectedYear,
+            'monthOptions' => $this->pendingRecoveryMonthOptions(),
+            'yearOptions' => $this->collectionYearOptions($selectedCampusId, $selectedYear),
+            'selectedCampus' => $selectedCampus,
+        ]);
+    }
+
+    public function collectionCampusReport(Request $request, Campus $campus): View
+    {
+        $dashboardAccess = $this->resolveDashboardAccess($request->user());
+        abort_unless((bool) ($dashboardAccess['income'] ?? false), 403);
+
+        $this->ensureDashboardCampusAccess((int) $campus->id, $request->user());
+
+        [$selectedMonths, $selectedYear] = $this->resolveCollectionPeriod($request);
+        [$reportStart, $reportEnd] = $this->collectionMonthRange($selectedMonths, $selectedYear);
+
+        return view('dashboard.collection-campus', [
+            'campus' => $campus,
+            'sections' => $this->buildCollectionCampusSections((int) $campus->id, $selectedMonths, $selectedYear),
+            'selectedMonths' => $selectedMonths,
+            'selectedYear' => $selectedYear,
+            'monthOptions' => $this->pendingRecoveryMonthOptions(),
+            'yearOptions' => $this->collectionYearOptions((int) $campus->id, $selectedYear),
+            'reportStart' => $reportStart,
+            'reportEnd' => $reportEnd,
+        ]);
+    }
+
     private function requiredTablesExist(): bool
     {
         return Schema::hasTable('campuses')
@@ -750,6 +794,334 @@ $programLabels = Program::query()
             + $this->coworkingCollectionTotalForRange($start, $end, $campusId);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildCollectionRows(array $selectedMonths, int $selectedYear, ?int $campusId = null): array
+    {
+        if (!Schema::hasTable('campuses')) {
+            return [
+                'mode' => count($selectedMonths) === 1 ? 'weekly' : 'monthly',
+                'rows' => [],
+                'columns' => [],
+                'grand_totals' => [],
+            ];
+        }
+
+        $campuses = Campus::query()
+            ->when($campusId, fn ($query, $id) => $query->whereKey($id))
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
+        $entriesByCampus = $this->paidCollectionEntriesForMonths($selectedMonths, $selectedYear, $campusId)
+            ->groupBy('campus_id');
+
+        if (count($selectedMonths) === 1) {
+            $rows = $campuses->map(function (Campus $campus) use ($entriesByCampus) {
+                $campusEntries = collect($entriesByCampus->get($campus->id, []));
+                $weeklyTotals = [
+                    'week_1' => 0.0,
+                    'week_2' => 0.0,
+                    'week_3' => 0.0,
+                    'week_4' => 0.0,
+                ];
+
+                foreach ($campusEntries as $entry) {
+                    $day = (int) ($entry['timestamp']?->day ?? 0);
+                    $bucket = $day >= 22
+                        ? 'week_4'
+                        : ($day >= 15
+                            ? 'week_3'
+                            : ($day >= 8 ? 'week_2' : 'week_1'));
+
+                    $weeklyTotals[$bucket] += (float) ($entry['amount'] ?? 0);
+                }
+
+                $monthTotal = array_sum($weeklyTotals);
+
+                return [
+                    'campus_id' => (int) $campus->id,
+                    'campus_code' => (string) ($campus->code ?: $campus->name ?: ('Campus #' . $campus->id)),
+                    'week_1' => round((float) $weeklyTotals['week_1'], 2),
+                    'week_2' => round((float) $weeklyTotals['week_2'], 2),
+                    'week_3' => round((float) $weeklyTotals['week_3'], 2),
+                    'week_4' => round((float) $weeklyTotals['week_4'], 2),
+                    'total_collection' => round((float) $monthTotal, 2),
+                ];
+            })->values();
+
+            return [
+                'mode' => 'weekly',
+                'rows' => $rows->all(),
+                'columns' => [
+                    ['key' => 'week_1', 'label' => '1st Week'],
+                    ['key' => 'week_2', 'label' => '2nd Week'],
+                    ['key' => 'week_3', 'label' => '3rd Week'],
+                    ['key' => 'week_4', 'label' => '4th Week'],
+                ],
+                'grand_totals' => [
+                    'week_1' => round((float) $rows->sum('week_1'), 2),
+                    'week_2' => round((float) $rows->sum('week_2'), 2),
+                    'week_3' => round((float) $rows->sum('week_3'), 2),
+                    'week_4' => round((float) $rows->sum('week_4'), 2),
+                    'total_collection' => round((float) $rows->sum('total_collection'), 2),
+                ],
+            ];
+        }
+
+        $monthOptions = $this->pendingRecoveryMonthOptions();
+        $columns = collect($selectedMonths)->map(function (int $month) use ($monthOptions) {
+            return [
+                'key' => 'month_' . $month,
+                'label' => Carbon::createFromDate(2000, $month, 1, $this->dashboardTimezone())->format('M'),
+                'full_label' => $monthOptions[$month] ?? Carbon::createFromDate(2000, $month, 1, $this->dashboardTimezone())->format('F'),
+            ];
+        })->values();
+
+        $rows = $campuses->map(function (Campus $campus) use ($entriesByCampus, $selectedMonths) {
+            $campusEntries = collect($entriesByCampus->get($campus->id, []));
+            $row = [
+                'campus_id' => (int) $campus->id,
+                'campus_code' => (string) ($campus->code ?: $campus->name ?: ('Campus #' . $campus->id)),
+                'total_collection' => 0.0,
+            ];
+
+            foreach ($selectedMonths as $month) {
+                $key = 'month_' . $month;
+                $amount = (float) $campusEntries
+                    ->filter(fn ($entry) => (int) ($entry['timestamp']?->month ?? 0) === $month)
+                    ->sum('amount');
+
+                $row[$key] = round($amount, 2);
+                $row['total_collection'] += $amount;
+            }
+
+            $row['total_collection'] = round((float) $row['total_collection'], 2);
+
+            return $row;
+        })->values();
+
+        $grandTotals = [
+            'total_collection' => round((float) $rows->sum('total_collection'), 2),
+        ];
+
+        foreach ($selectedMonths as $month) {
+            $key = 'month_' . $month;
+            $grandTotals[$key] = round((float) $rows->sum($key), 2);
+        }
+
+        return [
+            'mode' => 'monthly',
+            'rows' => $rows->all(),
+            'columns' => $columns->all(),
+            'grand_totals' => $grandTotals,
+        ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildCollectionCampusSections(int $campusId, array $selectedMonths, int $selectedYear): array
+    {
+        [$reportStart, $reportEnd] = $this->collectionMonthRange($selectedMonths, $selectedYear);
+        [$queryStart, $queryEnd] = $this->queryTimestampRange($reportStart, $reportEnd);
+        $sections = [];
+
+        if (Schema::hasTable('fee_collections')) {
+            $feeRows = FeeCollection::query()
+                ->with([
+                    'registration:id,registration_number,student_name,guardian_name',
+                    'admission:id,registration_id,program_id,student_name,guardian_name,admission_date,roll_number',
+                    'admission.registration:id,registration_number,student_name,guardian_name',
+                    'admission.program:id,code,title,name',
+                    'program:id,code,title,name',
+                ])
+                ->where('campus_id', $campusId)
+                ->whereIn('fee_type', ['registration', 'admission'])
+                ->where('status', 'paid')
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
+                ->orderBy('paid_at')
+                ->orderBy('created_at')
+                ->orderBy('id')
+                ->get([
+                    'id',
+                    'registration_id',
+                    'admission_id',
+                    'program_id',
+                    'fee_type',
+                    'installment_no',
+                    'net_amount',
+                    'paid_at',
+                    'created_at',
+                ])
+                ->filter(fn (FeeCollection $row) => $this->timestampMatchesCollectionPeriod(
+                    $this->resolveCollectionGraphTimestamp($row->paid_at, $row->created_at),
+                    $selectedMonths,
+                    $selectedYear
+                ))
+                ->values();
+
+            $registrationRows = $feeRows
+                ->where('fee_type', 'registration')
+                ->values()
+                ->map(function (FeeCollection $row, int $index) {
+                    $registration = $row->registration ?: $row->admission?->registration;
+
+                    return [
+                        'sr' => $index + 1,
+                        'registration_number' => (string) ($registration?->registration_number ?: 'N/A'),
+                        'name' => (string) ($registration?->student_name ?: $row->admission?->student_name ?: 'N/A'),
+                        'father_name' => (string) ($registration?->guardian_name ?: $row->admission?->guardian_name ?: 'N/A'),
+                        'paid_amount' => round((float) $row->net_amount, 2),
+                        'paid_date' => $this->collectionFormatDate($row->paid_at, 'Y-m-d'),
+                        'created_datetime' => $this->collectionFormatDateTime($row->created_at),
+                    ];
+                });
+
+            if ($registrationRows->isNotEmpty()) {
+                $sections[] = [
+                    'key' => 'registration',
+                    'title' => 'Registration Fee',
+                    'rows' => $registrationRows->all(),
+                    'section_total' => round((float) $registrationRows->sum('paid_amount'), 2),
+                ];
+            }
+
+            $admissionRows = $feeRows
+                ->where('fee_type', 'admission')
+                ->values()
+                ->map(function (FeeCollection $row, int $index) {
+                    $admission = $row->admission;
+                    $program = $row->program ?: $admission?->program;
+
+                    return [
+                        'sr' => $index + 1,
+                        'roll_number' => (string) ($admission?->roll_number ?: 'N/A'),
+                        'name' => (string) ($admission?->student_name ?: 'N/A'),
+                        'father_name' => (string) ($admission?->guardian_name ?: 'N/A'),
+                        'course_title' => (string) ($program?->title ?: $program?->name ?: $program?->code ?: 'N/A'),
+                        'admission_date' => $this->collectionFormatDate($admission?->admission_date, 'Y-m-d'),
+                        'paid_amount' => round((float) $row->net_amount, 2),
+                        'fee_type_label' => $this->collectionFeeTypeLabel($row),
+                        'paid_date' => $this->collectionFormatDate($row->paid_at, 'Y-m-d'),
+                        'created_datetime' => $this->collectionFormatDateTime($row->created_at),
+                    ];
+                });
+
+            if ($admissionRows->isNotEmpty()) {
+                $sections[] = [
+                    'key' => 'admission',
+                    'title' => 'Admission Fee (Installment + Full Fee)',
+                    'rows' => $admissionRows->all(),
+                    'section_total' => round((float) $admissionRows->sum('paid_amount'), 2),
+                ];
+            }
+        }
+
+        if (Schema::hasTable('coworking_registration_receipts')) {
+            $coworkingRows = CoworkingRegistrationReceipt::query()
+                ->where('campus_id', $campusId)
+                ->where('receipt_type', 'coworking_charge')
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
+                ->orderBy('paid_at')
+                ->orderBy('created_at')
+                ->orderBy('id')
+                ->get([
+                    'id',
+                    'receipt_number',
+                    'amount',
+                    'paid_at',
+                    'created_at',
+                ])
+                ->filter(fn (CoworkingRegistrationReceipt $row) => $this->timestampMatchesCollectionPeriod(
+                    $this->resolveCollectionGraphTimestamp($row->paid_at, $row->created_at),
+                    $selectedMonths,
+                    $selectedYear
+                ))
+                ->values()
+                ->map(function (CoworkingRegistrationReceipt $row, int $index) {
+                    return [
+                        'sr' => $index + 1,
+                        'receipt_number' => (string) ($row->receipt_number ?: ('CW-' . $row->id)),
+                        'paid_amount' => round((float) $row->amount, 2),
+                        'paid_date' => $this->collectionFormatDate($row->paid_at, 'Y-m-d'),
+                        'created_datetime' => $this->collectionFormatDateTime($row->created_at),
+                    ];
+                });
+
+            if ($coworkingRows->isNotEmpty()) {
+                $sections[] = [
+                    'key' => 'coworking',
+                    'title' => 'Coworking Fee',
+                    'rows' => $coworkingRows->all(),
+                    'section_total' => round((float) $coworkingRows->sum('paid_amount'), 2),
+                ];
+            }
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, array<string, mixed>>
+     */
+    private function paidCollectionEntriesForMonths(array $selectedMonths, int $selectedYear, ?int $campusId = null)
+    {
+        if ($selectedMonths === []) {
+            return collect();
+        }
+
+        [$reportStart, $reportEnd] = $this->collectionMonthRange($selectedMonths, $selectedYear);
+        [$queryStart, $queryEnd] = $this->queryTimestampRange($reportStart, $reportEnd);
+
+        $feeEntries = Schema::hasTable('fee_collections')
+            ? FeeCollection::query()
+                ->whereIn('fee_type', ['registration', 'admission'])
+                ->where('status', 'paid')
+                ->whereNotNull('paid_at')
+                ->whereNotNull('campus_id')
+                ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
+                ->get(['campus_id', 'paid_at', 'created_at', 'net_amount'])
+                ->map(function (FeeCollection $fee) {
+                    return [
+                        'campus_id' => (int) $fee->campus_id,
+                        'timestamp' => $this->resolveCollectionGraphTimestamp($fee->paid_at, $fee->created_at),
+                        'amount' => (float) $fee->net_amount,
+                    ];
+                })
+            : collect();
+
+        $coworkingEntries = Schema::hasTable('coworking_registration_receipts')
+            ? CoworkingRegistrationReceipt::query()
+                ->where('receipt_type', 'coworking_charge')
+                ->whereNotNull('paid_at')
+                ->whereNotNull('campus_id')
+                ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
+                ->whereBetween('paid_at', [$queryStart, $queryEnd])
+                ->get(['campus_id', 'paid_at', 'created_at', 'amount'])
+                ->map(function (CoworkingRegistrationReceipt $receipt) {
+                    return [
+                        'campus_id' => (int) $receipt->campus_id,
+                        'timestamp' => $this->resolveCollectionGraphTimestamp($receipt->paid_at, $receipt->created_at),
+                        'amount' => (float) $receipt->amount,
+                    ];
+                })
+            : collect();
+
+        return $feeEntries
+            ->concat($coworkingEntries)
+            ->filter(fn ($entry) => $this->timestampMatchesCollectionPeriod(
+                $entry['timestamp'] ?? null,
+                $selectedMonths,
+                $selectedYear
+            ))
+            ->values();
+    }
+
     private function feeCollectionTotalForRange(Carbon $start, Carbon $end, ?int $campusId = null): float
     {
         if (!Schema::hasTable('fee_collections')) {
@@ -947,6 +1319,156 @@ $programLabels = Program::query()
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array{0: array<int, int>, 1: int}
+     */
+    private function resolveCollectionPeriod(Request $request): array
+    {
+        $now = $this->dashboardNow();
+        $rawMonths = $request->input('months', []);
+
+        if (!is_array($rawMonths)) {
+            $rawMonths = $rawMonths !== null && $rawMonths !== ''
+                ? [$rawMonths]
+                : [];
+        }
+
+        if ($rawMonths === [] && $request->filled('month')) {
+            $rawMonths = [$request->input('month')];
+        }
+
+        $months = collect($rawMonths)
+            ->map(fn ($month) => (int) $month)
+            ->filter(fn (int $month) => $month >= 1 && $month <= 12)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        if ($months === []) {
+            $months = [(int) $now->month];
+        }
+
+        $year = (int) $request->input('year', $now->year);
+
+        if ($year < 2000 || $year > 2100) {
+            $year = (int) $now->year;
+        }
+
+        return [$months, $year];
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function collectionYearOptions(?int $campusId, int $selectedYear): array
+    {
+        $years = [$selectedYear];
+
+        if (Schema::hasTable('fee_collections')) {
+            $bounds = FeeCollection::query()
+                ->selectRaw('MIN(paid_at) as min_date')
+                ->selectRaw('MAX(paid_at) as max_date')
+                ->whereIn('fee_type', ['registration', 'admission'])
+                ->where('status', 'paid')
+                ->whereNotNull('paid_at')
+                ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
+                ->first();
+
+            if ($bounds?->min_date) {
+                $years[] = Carbon::parse($bounds->min_date)->year;
+            }
+
+            if ($bounds?->max_date) {
+                $years[] = Carbon::parse($bounds->max_date)->year;
+            }
+        }
+
+        if (Schema::hasTable('coworking_registration_receipts')) {
+            $bounds = CoworkingRegistrationReceipt::query()
+                ->selectRaw('MIN(paid_at) as min_date')
+                ->selectRaw('MAX(paid_at) as max_date')
+                ->where('receipt_type', 'coworking_charge')
+                ->whereNotNull('paid_at')
+                ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
+                ->first();
+
+            if ($bounds?->min_date) {
+                $years[] = Carbon::parse($bounds->min_date)->year;
+            }
+
+            if ($bounds?->max_date) {
+                $years[] = Carbon::parse($bounds->max_date)->year;
+            }
+        }
+
+        $startYear = min($years);
+        $endYear = max($years);
+        $options = [];
+
+        for ($year = $endYear; $year >= $startYear; $year--) {
+            $options[$year] = $year;
+        }
+
+        return $options !== [] ? $options : [$selectedYear => $selectedYear];
+    }
+
+    /**
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    private function collectionMonthRange(array $selectedMonths, int $selectedYear): array
+    {
+        $months = $selectedMonths !== [] ? $selectedMonths : [(int) $this->dashboardNow()->month];
+        $startMonth = min($months);
+        $endMonth = max($months);
+
+        return [
+            Carbon::createFromDate($selectedYear, $startMonth, 1, $this->dashboardTimezone())->startOfMonth(),
+            Carbon::createFromDate($selectedYear, $endMonth, 1, $this->dashboardTimezone())->endOfMonth(),
+        ];
+    }
+
+    private function timestampMatchesCollectionPeriod(?Carbon $timestamp, array $selectedMonths, int $selectedYear): bool
+    {
+        if (!$timestamp) {
+            return false;
+        }
+
+        return (int) $timestamp->year === $selectedYear
+            && in_array((int) $timestamp->month, $selectedMonths, true);
+    }
+
+    private function collectionFormatDate($value, string $format = 'Y-m-d'): string
+    {
+        if (!$value) {
+            return 'N/A';
+        }
+
+        return $this->normalizeTimestamp($value)
+            ?->timezone($this->dashboardTimezone())
+            ->format($format) ?? 'N/A';
+    }
+
+    private function collectionFormatDateTime($value): string
+    {
+        if (!$value) {
+            return 'N/A';
+        }
+
+        return $this->normalizeTimestamp($value)
+            ?->timezone($this->dashboardTimezone())
+            ->format('d-M-Y h:i A') ?? 'N/A';
+    }
+
+    private function collectionFeeTypeLabel(FeeCollection $row): string
+    {
+        if ($row->installment_no) {
+            return $this->ordinalLabel((int) $row->installment_no) . ' Installment';
+        }
+
+        return 'Full Fee';
     }
 
     /**
