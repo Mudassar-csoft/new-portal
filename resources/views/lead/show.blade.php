@@ -41,6 +41,7 @@
 		$defaultCampusFallbackLabel = !empty($previousFollowupCampusId ?? null)
 			? 'Same as previous follow-up'
 			: 'Same as lead';
+		$canUpdateFollowups = auth()->user()?->hasAnyPermission('lead.followup.update') ?? false;
 		$statusLabel = match ($lead->status) {
 			'registered' => $stages['registered'] ?? 'Registered',
 			'enrolled' => $isCoworkingLead ? ($stages['registered'] ?? 'Registered') : ($stages['enroll'] ?? 'Enrolled'),
@@ -100,13 +101,17 @@
 					<div class="alert alert-warning mb-0 followup-closed-banner">
 						This lead is marked as <strong>{{ $statusLabel }}</strong>. No further follow-ups can be added.
 					</div>
+				@elseif(!$canUpdateFollowups)
+					<div class="alert alert-info mb-0 followup-closed-banner">
+						You do not have permission to add follow-ups for this lead.
+					</div>
 				@else
 					<button id="toggle-followup-form" class="btn btn-primary btn-sm">
 						Add Follow-Up
 					</button>
 				@endif
 			</div>
-			@if(!$isClosed)
+			@if(!$isClosed && $canUpdateFollowups)
 			<div class="card followup-form card-elevated" id="followup-form-card" style="display: none;">
 				<div class="card-body">
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
@@ -1422,6 +1427,10 @@
 						renderFollowupErrors(form, data.errors || {});
 						showAlert('Error', data.message || 'Please fix the highlighted fields and try again.', 'error');
 						return;
+					}
+
+					if (response.status === 403) {
+						throw new Error('You do not have permission to add follow-ups for this lead.');
 					}
 
 					if (!response.ok) {
