@@ -123,7 +123,7 @@ class DashboardController extends Controller
                 'previousMonthAdmissions' => 0,
                 'currentMonthCollection' => '0',
                 'currentMonthCollectionRaw' => 0,
-                'currentMonthPending' => 0,
+                'pendingRecoveryRaw' => 0,
                 'todayCollectionRaw' => 0,
                 'weekCollectionRaw' => 0,
             ],
@@ -178,6 +178,7 @@ class DashboardController extends Controller
         $canViewLeads = (bool) ($dashboardAccess['leads'] ?? false);
         $canViewAdmissions = (bool) ($dashboardAccess['admissions'] ?? false);
         $canViewIncome = (bool) ($dashboardAccess['income'] ?? false);
+        $canViewRecovery = $canViewAdmissions || $canViewIncome;
         $incomeNow = $this->dashboardNow();
         $incomeToday = $incomeNow->copy()->startOfDay();
         $incomeWeekStart = $incomeToday->copy()->subDays(6);
@@ -200,7 +201,8 @@ class DashboardController extends Controller
 
         $currentStudents = (int) DB::table('admissions')
             ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
+            ->when($campusId, fn ($query, $id) => $query->where('registrations.campus_id', $id))
+            ->where('admissions.student_status', 'enrolled')
             ->count();
         $currentStudents = $canViewAdmissions ? $currentStudents : 0;
 
@@ -233,11 +235,8 @@ class DashboardController extends Controller
             'previousMonthAdmissions' => $previousMonthAdmissions,
             'currentMonthCollection' => number_format((float) $monthCollection, 0),
             'currentMonthCollectionRaw' => (float) $monthCollection,
-            'currentMonthPending' => $canViewLeads
-                ? $this->leadQueryForDashboard($campusId, $dashboardAccess)
-                    ->where('status', 'pending')
-                    ->whereBetween('created_at', [$monthStart, $monthEnd])
-                    ->count()
+            'pendingRecoveryRaw' => $canViewRecovery
+                ? $this->pendingRecoveryTotal($campusId)
                 : 0,
             'todayCollectionRaw' => (float) $todayCollection,
             'weekCollectionRaw' => (float) $weekCollection,
@@ -712,6 +711,21 @@ $programLabels = Program::query()
             ->whereNotNull('paid_at')
             ->when($campusId, fn ($q, $id) => $q->where('campus_id', $id))
             ->whereBetween('paid_at', [$queryStart, $queryEnd])
+            ->sum('net_amount');
+    }
+
+    private function pendingRecoveryTotal(?int $campusId = null): float
+    {
+        if (!Schema::hasTable('fee_collections')) {
+            return 0;
+        }
+
+        return (float) FeeCollection::query()
+            ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
+            ->where(function ($query) {
+                $query->whereNull('status')
+                    ->orWhere('status', '!=', 'paid');
+            })
             ->sum('net_amount');
     }
 
