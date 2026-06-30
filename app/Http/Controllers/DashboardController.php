@@ -773,12 +773,12 @@ $programLabels = Program::query()
             return 0;
         }
 
-        return (float) FeeCollection::query()
-            ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
-            ->where(function ($query) {
-                $query->whereNull('status')
-                    ->orWhere('status', '!=', 'paid');
-            })
+        $query = FeeCollection::query()
+            ->when($campusId, fn ($builder, $id) => $builder->where('campus_id', $id));
+
+        $this->applyPendingRecoveryEloquentFilters($query);
+
+        return (float) $query
             ->sum('net_amount');
     }
 
@@ -805,7 +805,7 @@ $programLabels = Program::query()
             $monthEndValue = $monthEnd->toDateString();
 
             $weeklyQuery = DB::table('fee_collections')
-                ->select('campus_id')
+                ->select('fee_collections.campus_id')
                 ->selectRaw(
                     "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) BETWEEN 1 AND 7 THEN net_amount ELSE 0 END) as week_1",
                     [$monthStartValue, $monthEndValue]
@@ -827,15 +827,13 @@ $programLabels = Program::query()
                     [$monthStartValue, $monthEndValue]
                 )
                 ->selectRaw('SUM(net_amount) as overall_total')
-                ->whereNotNull('campus_id')
-                ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
-                ->where(function ($query) {
-                    $query->whereNull('status')
-                        ->orWhere('status', '!=', 'paid');
-                });
+                ->whereNotNull('fee_collections.campus_id')
+                ->when($campusId, fn ($query, $id) => $query->where('fee_collections.campus_id', $id));
+
+            $this->applyPendingRecoveryQueryBuilderFilters($weeklyQuery);
 
             $weeklyByCampus = $weeklyQuery
-                ->groupBy('campus_id')
+                ->groupBy('fee_collections.campus_id')
                 ->get()
                 ->keyBy('campus_id');
         }
@@ -872,23 +870,18 @@ $programLabels = Program::query()
             ->with([
                 'program:id,code,title,name',
                 'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,admission_date,fee_package,discounted_fee,roll_number',
-                'registration:id,campus_id,program_id,student_name,guardian_name,registered_at,registration_number,fee,discount,net_payable',
             ])
             ->where('campus_id', $campusId)
-            ->where(function ($query) {
-                $query->whereNull('status')
-                    ->orWhere('status', '!=', 'paid');
-            })
             ->orderBy('program_id')
             ->orderByRaw($this->pendingRecoveryReferenceDateExpression())
             ->orderBy('installment_no')
             ->orderBy('id');
 
+        $this->applyPendingRecoveryEloquentFilters($rowsQuery);
         $this->applyPendingRecoveryMonthFilter($rowsQuery, $monthStart, $monthEnd);
 
         $rows = $rowsQuery->get([
                 'id',
-                'registration_id',
                 'admission_id',
                 'program_id',
                 'fee_type',
@@ -906,46 +899,30 @@ $programLabels = Program::query()
         $admissionTotals = FeeCollection::query()
             ->select('admission_id')
             ->selectRaw("SUM(CASE WHEN status = 'paid' THEN net_amount ELSE 0 END) as received_total")
-            ->selectRaw("SUM(CASE WHEN status IS NULL OR status != 'paid' THEN net_amount ELSE 0 END) as pending_total")
+            ->selectRaw("SUM(CASE WHEN status = 'pending' THEN net_amount ELSE 0 END) as pending_total")
             ->where('fee_type', 'admission')
             ->whereIn('admission_id', $rows->pluck('admission_id')->filter()->unique()->values())
+            ->whereHas('admission', fn ($query) => $query->where('student_status', 'enrolled'))
             ->groupBy('admission_id')
             ->get()
             ->keyBy('admission_id');
 
-        $registrationTotals = FeeCollection::query()
-            ->select('registration_id')
-            ->selectRaw("SUM(CASE WHEN status = 'paid' THEN net_amount ELSE 0 END) as received_total")
-            ->selectRaw("SUM(CASE WHEN status IS NULL OR status != 'paid' THEN net_amount ELSE 0 END) as pending_total")
-            ->where('fee_type', 'registration')
-            ->whereIn('registration_id', $rows->pluck('registration_id')->filter()->unique()->values())
-            ->groupBy('registration_id')
-            ->get()
-            ->keyBy('registration_id');
-
         return $rows
             ->groupBy(fn (FeeCollection $row) => $this->pendingRecoveryProgramKey($row))
-            ->map(function ($programRows) use ($admissionTotals, $registrationTotals) {
+            ->map(function ($programRows) use ($admissionTotals) {
                 $firstRow = $programRows->first();
 
-                $detailRows = $programRows->values()->map(function (FeeCollection $row, int $index) use ($admissionTotals, $registrationTotals) {
-                    $registration = $row->registration;
+                $detailRows = $programRows->values()->map(function (FeeCollection $row, int $index) use ($admissionTotals) {
                     $admission = $row->admission;
-                    $isAdmissionFee = $row->fee_type === 'admission' && $row->admission_id;
-                    $totals = $isAdmissionFee
-                        ? $admissionTotals->get($row->admission_id)
-                        : $registrationTotals->get($row->registration_id);
-
-                    $feePackage = $isAdmissionFee
-                        ? $this->pendingRecoveryAdmissionFeePackage($admission)
-                        : $this->pendingRecoveryRegistrationFeePackage($registration);
+                    $totals = $admissionTotals->get($row->admission_id);
+                    $feePackage = $this->pendingRecoveryAdmissionFeePackage($admission);
 
                     return [
                         'sr' => $index + 1,
-                        'roll_no' => (string) ($admission?->roll_number ?: $registration?->registration_number ?: 'N/A'),
-                        'name' => (string) ($admission?->student_name ?: $registration?->student_name ?: 'N/A'),
-                        'father_name' => (string) ($admission?->guardian_name ?: $registration?->guardian_name ?: 'N/A'),
-                        'admission_date' => $this->pendingRecoveryFormatDate($admission?->admission_date ?? $registration?->registered_at),
+                        'roll_no' => (string) ($admission?->roll_number ?: 'N/A'),
+                        'name' => (string) ($admission?->student_name ?: 'N/A'),
+                        'father_name' => (string) ($admission?->guardian_name ?: 'N/A'),
+                        'admission_date' => $this->pendingRecoveryFormatDate($admission?->admission_date),
                         'fee_package' => round((float) $feePackage, 2),
                         'total_received' => round((float) ($totals->received_total ?? 0), 2),
                         'total_pending' => round((float) ($totals->pending_total ?? 0), 2),
@@ -996,15 +973,13 @@ $programLabels = Program::query()
         $boundsQuery = DB::table('fee_collections')
             ->selectRaw("MIN({$referenceDate}) as min_date")
             ->selectRaw("MAX({$referenceDate}) as max_date")
-            ->whereNotNull('campus_id')
-            ->when($campusId, fn ($query, $id) => $query->where('campus_id', $id))
-            ->where(function ($query) {
-                $query->whereNull('status')
-                    ->orWhere('status', '!=', 'paid');
-            });
+            ->whereNotNull('fee_collections.campus_id')
+            ->when($campusId, fn ($query, $id) => $query->where('fee_collections.campus_id', $id));
+
+        $this->applyPendingRecoveryQueryBuilderFilters($boundsQuery);
 
         if (Schema::hasColumn('fee_collections', 'due_at')) {
-            $boundsQuery->whereNotNull('due_at');
+            $boundsQuery->whereNotNull('fee_collections.due_at');
         }
 
         $bounds = $boundsQuery->first();
@@ -1046,22 +1021,37 @@ $programLabels = Program::query()
     private function pendingRecoveryReferenceDateExpression(): string
     {
         if (Schema::hasColumn('fee_collections', 'due_at')) {
-            return 'due_at';
+            return 'fee_collections.due_at';
         }
 
-        return 'DATE(created_at)';
+        return 'DATE(fee_collections.created_at)';
     }
 
     private function applyPendingRecoveryMonthFilter($query, Carbon $monthStart, Carbon $monthEnd): void
     {
         if (Schema::hasColumn('fee_collections', 'due_at')) {
-            $query->whereNotNull('due_at')
-                ->whereBetween('due_at', [$monthStart->toDateString(), $monthEnd->toDateString()]);
+            $query->whereNotNull('fee_collections.due_at')
+                ->whereBetween('fee_collections.due_at', [$monthStart->toDateString(), $monthEnd->toDateString()]);
 
             return;
         }
 
-        $query->whereBetween(DB::raw('DATE(created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
+        $query->whereBetween(DB::raw('DATE(fee_collections.created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
+    }
+
+    private function applyPendingRecoveryEloquentFilters($query): void
+    {
+        $query->where('fee_type', 'admission')
+            ->where('status', 'pending')
+            ->whereHas('admission', fn ($builder) => $builder->where('student_status', 'enrolled'));
+    }
+
+    private function applyPendingRecoveryQueryBuilderFilters($query): void
+    {
+        $query->join('admissions', 'admissions.id', '=', 'fee_collections.admission_id')
+            ->where('fee_collections.fee_type', 'admission')
+            ->where('fee_collections.status', 'pending')
+            ->where('admissions.student_status', 'enrolled');
     }
 
     private function pendingRecoveryProgramKey(FeeCollection $row): string
