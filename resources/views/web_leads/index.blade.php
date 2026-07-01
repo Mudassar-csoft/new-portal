@@ -53,7 +53,7 @@
 						</div>
 						<div class="follow-search">
 							<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, email, city...">
-							<button type="submit" class="btn btn-primary btn-sm">Search</button>
+							<!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
 						</div>
 					</form>
 
