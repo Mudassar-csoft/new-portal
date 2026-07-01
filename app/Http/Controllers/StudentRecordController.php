@@ -220,17 +220,6 @@ class StudentRecordController extends Controller
     {
         $this->ensureCampusAccess((int) ($feeCollection->campus_id ?? 0), $request->user(), 'You are not allowed to update fee records from another campus.');
 
-        if ($feeCollection->admission_id) {
-            $approvedAdmissionExists = Admission::query()
-                ->approved()
-                ->whereKey($feeCollection->admission_id)
-                ->exists();
-
-            if (! $approvedAdmissionExists) {
-                return back()->with('error', 'Installments can only be collected for approved admissions.');
-            }
-        }
-
         $validated = $request->validate([
             'paid_amount' => ['required', 'numeric', 'min:0.01'],
         ]);
