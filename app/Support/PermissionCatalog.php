@@ -44,8 +44,7 @@ class PermissionCatalog
     public static function groupedFromCollection(Collection $permissions): array
     {
         $permissionsBySlug = $permissions->keyBy(fn (Permission $permission) => self::canonicalKey($permission));
-
-        return collect(self::sidebarPermissionEntries())
+        $sidebarPermissions = collect(self::sidebarPermissionEntries())
             ->map(function (array $entry) use ($permissionsBySlug): ?array {
                 $permission = collect($entry['slugs'])
                     ->map(fn (string $slug) => $permissionsBySlug->get($slug))
@@ -66,7 +65,32 @@ class PermissionCatalog
                     'label' => $entry['label'],
                 ];
             })
-            ->filter()
+            ->filter();
+
+        $usedPermissionIds = $sidebarPermissions
+            ->pluck('id')
+            ->map(fn (mixed $id) => (int) $id)
+            ->all();
+
+        $remainingPermissions = $permissions
+            ->reject(fn (Permission $permission): bool => in_array((int) $permission->id, $usedPermissionIds, true))
+            ->map(function (Permission $permission): array {
+                $meta = self::permissionMeta($permission);
+
+                return [
+                    'id' => (int) $permission->id,
+                    'moduleKey' => $meta['moduleKey'],
+                    'moduleLabel' => self::moduleLabel($meta['moduleKey']),
+                    'moduleOrder' => self::moduleSortOrder($meta['moduleKey']),
+                    'section' => $meta['section'],
+                    'sectionOrder' => $meta['sectionOrder'],
+                    'order' => $meta['order'],
+                    'label' => $meta['label'],
+                ];
+            });
+
+        return $sidebarPermissions
+            ->concat($remainingPermissions)
             ->groupBy('moduleKey')
             ->map(function (Collection $groupPermissions, string $moduleKey): array {
                 $sortedPermissions = $groupPermissions

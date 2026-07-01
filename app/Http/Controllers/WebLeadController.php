@@ -58,14 +58,7 @@ class WebLeadController extends Controller
 
     public function index(Request $request): View
     {
-        $sourceTabs = [
-            'all' => 'All Pending',
-            WebLead::SOURCE_QUICK_LEAD => 'Quick Lead',
-            WebLead::SOURCE_WEBSITE_ENROLLMENT => 'Course Enrollment',
-            WebLead::SOURCE_WEBSITE_ADMISSION => 'Website Admissions',
-            WebLead::SOURCE_BROCHURE_DOWNLOAD => 'Brochure Download',
-            WebLead::SOURCE_FEE_ALERT => 'Pending Fee Alert',
-        ];
+        $sourceTabs = ['all' => 'All Pending'] + WebLead::leadManagementSourceLabels();
 
         $badgeColors = [
             'all' => 'badge-default',
@@ -73,7 +66,6 @@ class WebLeadController extends Controller
             WebLead::SOURCE_WEBSITE_ENROLLMENT => 'badge-success',
             WebLead::SOURCE_WEBSITE_ADMISSION => 'badge-info',
             WebLead::SOURCE_BROCHURE_DOWNLOAD => 'badge-warning',
-            WebLead::SOURCE_FEE_ALERT => 'badge-secondary',
         ];
 
         $activeTab = $request->string('tab')->toString();
@@ -85,27 +77,15 @@ class WebLeadController extends Controller
 
         $search = trim($request->string('search')->toString());
 
-        $allSourceTypes = WebLead::query()
-            ->whereNotNull('source_type')
-            ->distinct()
-            ->orderBy('source_type')
-            ->pluck('source_type')
-            ->filter(fn (?string $sourceType) => $sourceType !== null && $sourceType !== '')
-            ->values()
-            ->all();
-
-        foreach ($allSourceTypes as $sourceType) {
-            if (! array_key_exists($sourceType, $sourceTabs)) {
-                $sourceTabs[$sourceType] = Str::headline((string) $sourceType);
-                $badgeColors[$sourceType] = 'badge-secondary';
-            }
-        }
-
         if (! array_key_exists($activeTab, $sourceTabs)) {
             $activeTab = 'all';
         }
 
-        $countQuery = WebLead::query()->pending();
+        $managedSourceTypes = array_keys(WebLead::leadManagementSourceLabels());
+
+        $countQuery = WebLead::query()
+            ->pending()
+            ->whereIn('source_type', $managedSourceTypes);
 
         $sourceCounts = (clone $countQuery)
             ->selectRaw('source_type, COUNT(*) as aggregate')
@@ -126,6 +106,7 @@ class WebLeadController extends Controller
 
         $webLeadsQuery = WebLead::query()
             ->pending()
+            ->whereIn('source_type', $managedSourceTypes)
             ->with(['convertedLead', 'handledBy']);
 
         if ($activeTab !== 'all') {
@@ -150,21 +131,6 @@ class WebLeadController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        $externalTabs = [
-            [
-                'label' => 'Lead Follow Up',
-                'count' => $this->followupNotificationCount(),
-                'url' => route('leads.followups'),
-                'badge' => 'badge-danger',
-            ],
-            [
-                'label' => 'Overdue Invoices',
-                'count' => $this->overdueInvoiceCount(),
-                'url' => route('finance.receivables', ['status' => 'overdue']),
-                'badge' => 'badge-danger',
-            ],
-        ];
-
         return view('web_leads.index', compact(
             'webLeads',
             'sourceTabs',
@@ -172,8 +138,7 @@ class WebLeadController extends Controller
             'tabCounts',
             'activeTab',
             'search',
-            'perPage',
-            'externalTabs'
+            'perPage'
         ));
     }
 

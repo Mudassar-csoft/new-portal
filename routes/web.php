@@ -43,6 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/pending-recovery/campus/{campus}', [DashboardController::class, 'pendingRecoveryCampusReport'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard.pending-recovery.campus');
+    Route::get('/dashboard/collection', [DashboardController::class, 'collection'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.collection');
+    Route::get('/dashboard/collection/campus/{campus}', [DashboardController::class, 'collectionCampusReport'])
+        ->middleware('permission:dashboard.view')
+        ->name('dashboard.collection.campus');
     Route::get('/', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard');
