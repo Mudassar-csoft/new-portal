@@ -41,10 +41,8 @@
                             <option value="{{ $monthNumber }}" @selected(in_array((int) $monthNumber, $selectedMonths, true))>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <small class="collection-help">Select one month for week-wise view, multiple for month-wise.</small>
-                    <div class="mt-3">
-                        <a href="{{ route('dashboard.collection') }}" class="btn btn-danger">Clear</a>
-                    </div>
+                    <!-- <small class="collection-help">Select one month for week-wise view, multiple for month-wise.</small> -->
+                   
                 </div>
                 <div class="form-group col-md-4">
                     <label class="collection-label">Select Year:</label>
@@ -54,8 +52,9 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-4 d-flex align-items-start collection-action-cell mt-4 pt-2">
-                    <button type="submit" class="btn btn-primary collection-button">Filter</button>
+                <div class="form-group col-md-4 d-flex align-items-start collection-action-cell mt-4  pt-2">
+                    <button type="submit" class="btn btn-primary-outline collection-button mr-2">Filter</button>
+                     <a href="{{ route('dashboard.collection') }}" class="btn btn-danger-outline">Clear</a>
                 </div>
             </div>
         </form>
@@ -179,30 +178,33 @@
             font-size: 13px;
         }
 
-        .collection-button {
+        /* .collection-button {
             min-width: 78px;
             height: 48px;
             border-radius: 6px;
             background: #17a8f5;
             border-color: #17a8f5;
             font-weight: 600;
-        }
+        } */
 
-        .collection-button:hover,
+        /* .collection-button:hover,
         .collection-button:focus {
             background: #0994de;
             border-color: #0994de;
-        }
+        } */
 
         .collection-table-wrap {
             border-radius: 0;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             width: auto;
         }
 
         .collection-table {
             margin-bottom: 0;
             background: #fff;
+            width: max-content;
+            min-width: 100%;
         }
 
         .collection-table thead th,
@@ -215,6 +217,9 @@
             vertical-align: middle;
             border-color: #fff !important;
             padding: 16px 12px;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .collection-table thead th h4 {
@@ -229,6 +234,9 @@
             padding: 16px 12px;
             font-size: 15px;
             color: #2f3b52;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .collection-table tbody tr:nth-child(odd) td {

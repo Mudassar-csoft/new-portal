@@ -1833,7 +1833,7 @@ margin-top: -2px;
     [class*="summary-grid"],
     [class*="scope-grid"],
     .inventory-summary {
-        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+        /* grid-template-columns: repeat(1, minmax(0, 1fr)) !important; */
     }
 	.kpi-value, .batch-scope-card strong , .program-scope-card,.campus-scope-card{
           

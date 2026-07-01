@@ -47,24 +47,24 @@
 
             <div class="campus-recovery-metrics">
                 <div class="campus-recovery-metric-card">
-                    <span class="campus-recovery-metric-label">Programs</span>
                     <strong class="campus-recovery-metric-value">{{ number_format($programCount) }}</strong>
+                    <span class="campus-recovery-metric-label">Programs</span>
                 </div>
                 <div class="campus-recovery-metric-card">
-                    <span class="campus-recovery-metric-label">Students Due</span>
                     <strong class="campus-recovery-metric-value">{{ number_format($studentCount) }}</strong>
+                    <span class="campus-recovery-metric-label">Students Due</span>
                 </div>
                 <div class="campus-recovery-metric-card">
-                    <span class="campus-recovery-metric-label">Total Received</span>
                     <strong class="campus-recovery-metric-value">Rs. {{ number_format($totalReceived, 0) }}</strong>
+                    <span class="campus-recovery-metric-label">Total Received</span>
                 </div>
                 <div class="campus-recovery-metric-card">
-                    <span class="campus-recovery-metric-label">Overall Pending</span>
                     <strong class="campus-recovery-metric-value">Rs. {{ number_format($overallPending, 0) }}</strong>
+                    <span class="campus-recovery-metric-label">Overall Pending</span>
                 </div>
                 <div class="campus-recovery-metric-card campus-recovery-metric-card--highlight">
-                    <span class="campus-recovery-metric-label">This Month Recovery</span>
                     <strong class="campus-recovery-metric-value">Rs. {{ number_format($reportGrandTotal, 0) }}</strong>
+                    <span class="campus-recovery-metric-label">This Month Recovery</span>
                 </div>
             </div>
         </section>
@@ -183,7 +183,7 @@
         body.pending-recovery-report-page .page-content {
             padding: 0 !important;
             margin: 0 !important;
-            background: linear-gradient(180deg, #eef6ff 0%, #f7fbff 100%);
+            background: linear-gradient(180deg, #fff8f1 0%, #ffffff 100%);
         }
 
         body.pending-recovery-report-page.with-side-menu .page-content > .container-fluid,
@@ -192,13 +192,14 @@
         }
 
         .campus-recovery-report {
-            max-width: 1280px;
+            /* max-width: 1280px; */
             margin: 0 auto;
             padding: 24px 18px 30px;
             color: #12263f;
             font-family: "Segoe UI", "Helvetica Neue", sans-serif;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            background: white;
         }
 
         .campus-recovery-toolbar {
@@ -222,14 +223,14 @@
 
         .campus-recovery-toolbar-link {
             background: #fff;
-            color: #0f4c81;
-            box-shadow: 0 10px 30px rgba(15, 76, 129, 0.12);
+            color: #00A8FF;
+            /* box-shadow: 0 10px 30px rgba(138, 45, 29, 0.12); */
         }
 
         .campus-recovery-toolbar-button {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            background: #00A8FF;
             color: #fff;
-            box-shadow: 0 14px 36px rgba(2, 132, 199, 0.28);
+            /* box-shadow: 0 14px 36px rgba(234, 88, 12, 0.28); */
             cursor: pointer;
         }
 
@@ -240,12 +241,12 @@
         }
 
         .campus-recovery-hero {
-            border: 1px solid #d7e3f2;
-            border-top: 6px solid #0ea5e9;
-            background: linear-gradient(140deg, #ffffff 0%, #eef7ff 100%);
+            border: 1px solid #00A8FF;
+            border-top: 6px solid #00A8FF;
+            background: white;
             border-radius: 24px;
             padding: 24px 28px;
-            box-shadow: 0 22px 50px rgba(15, 76, 129, 0.10);
+            /* box-shadow: 0 22px 50px rgba(138, 45, 29, 0.10); */
             margin-bottom: 18px;
         }
 
@@ -268,8 +269,7 @@
             min-width: 18px;
             height: 72px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+            background: linear-gradient(180deg, #3ccffb 0%, #0c90c2 100%);
         }
 
         .campus-recovery-brand-eyebrow {
@@ -277,7 +277,7 @@
             font-weight: 700;
             letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #0284c7;
+            color: gray;
             margin-bottom: 8px;
         }
 
@@ -293,7 +293,7 @@
             font-size: 20px;
             line-height: 1.3;
             font-weight: 600;
-            color: #35516d;
+            color: gray;
         }
 
         .campus-recovery-period-card {
@@ -301,8 +301,7 @@
             padding: 16px 18px;
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.92);
-            border: 1px solid #dce7f4;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+            border: 1px solid #00A8FF;
         }
 
         .campus-recovery-period-card span,
@@ -315,7 +314,7 @@
             font-weight: 700;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: #64819c;
+            color: gray;
             margin-bottom: 6px;
         }
 
@@ -324,7 +323,7 @@
         .campus-recovery-section-total strong,
         .campus-recovery-summary-card strong {
             display: block;
-            font-size: 20px;
+            font-size: 18px;
             line-height: 1.2;
             color: #12263f;
         }
@@ -338,16 +337,17 @@
         .campus-recovery-metric-card,
         .campus-recovery-summary-card {
             border-radius: 18px;
-            border: 1px solid #dce7f4;
+            border: 1px solid #00A8FF;
             background: rgba(255, 255, 255, 0.95);
             padding: 14px 16px;
-            box-shadow: 0 12px 30px rgba(15, 76, 129, 0.06);
+            text-align:center;
+            /* box-shadow: 0 12px 30px rgba(138, 45, 29, 0.06); */
         }
 
         .campus-recovery-metric-card--highlight,
         .campus-recovery-summary-card--accent {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
-            border-color: #0369a1;
+            background: #00A8FF;
+            border-color: #00A8FF;
         }
 
         .campus-recovery-metric-card--highlight .campus-recovery-metric-label,
@@ -359,10 +359,10 @@
 
         .campus-recovery-section {
             margin-bottom: 18px;
-            border: 1px solid #d7e3f2;
+            border: 1px solid #00A8FF;
             border-radius: 22px;
             background: #fff;
-            box-shadow: 0 18px 44px rgba(15, 76, 129, 0.08);
+            /* box-shadow: 0 18px 44px rgba(138, 45, 29, 0.08); */
             overflow: hidden;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -373,9 +373,9 @@
             justify-content: space-between;
             align-items: flex-end;
             gap: 16px;
-            padding: 16px 20px 14px;
-            border-bottom: 1px solid #e4edf7;
-            background: linear-gradient(180deg, #fcfdff 0%, #f5f9ff 100%);
+            padding: 10px 20px 14px;
+            border-bottom: 1px solid #f6e6db;
+            /* background: linear-gradient(180deg, #fffdfa 0%, #fff5ed 100%); */
         }
 
         .campus-recovery-course-title {
@@ -391,14 +391,16 @@
         }
 
         .campus-recovery-table-wrap {
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .campus-recovery-table {
             margin-bottom: 0;
             background: #fff;
-            width: 100%;
-            table-layout: fixed;
+            width: max-content;
+            min-width: 100%;
+            table-layout: auto;
             border-collapse: collapse;
         }
 
@@ -411,8 +413,8 @@
         .campus-recovery-table .col-installment { width: 8%; }
 
         .campus-recovery-table thead th {
-            background: #eef6ff;
-            color: #28435d;
+            background: #fff3e8;
+            color: #6f3f2d;
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 0.05em;
@@ -422,17 +424,19 @@
 
         .campus-recovery-table th,
         .campus-recovery-table td {
-            border: 1px solid #d9e3ee !important;
+            border: 1px solid #00A8FF !important;
             padding: 9px 8px;
             color: #17324d;
             vertical-align: top;
             font-size: 12px;
             line-height: 1.35;
-            word-break: break-word;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .campus-recovery-table tbody tr:nth-child(even) td {
-            background: #fbfdff;
+            background: #ffffff;
         }
 
         .numeric-cell,
@@ -442,10 +446,10 @@
         }
 
         .campus-recovery-total-row td {
-            background: #edf7ff;
+            background: #fff;
             font-size: 13px;
             line-height: 1.3;
-            border-top: 2px solid #0ea5e9 !important;
+            border-top: 2px solid #00a8ff !important;
         }
 
         .campus-recovery-total-label {
@@ -456,18 +460,18 @@
 
         .campus-recovery-total-value {
             font-weight: 800;
-            color: #0f4c81;
+            color: #8a2d1d;
         }
 
         .campus-recovery-empty {
-            border: 1px dashed #c7d7e9;
+            border: 1px dashed #e4c6b3;
             border-radius: 20px;
             background: #fff;
             padding: 28px;
             text-align: center;
             color: #6b7280;
             font-size: 16px;
-            box-shadow: 0 18px 44px rgba(15, 76, 129, 0.06);
+            /* box-shadow: 0 18px 44px rgba(138, 45, 29, 0.06); */
         }
 
         .campus-recovery-summary {
@@ -491,7 +495,7 @@
         }
 
         .campus-recovery-summary-card strong {
-            font-size: 22px;
+            font-size: 18px;
         }
 
         .no-print {
@@ -551,7 +555,7 @@
             }
 
             .campus-recovery-campus-name {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .campus-recovery-report-title {
@@ -583,8 +587,8 @@
             .campus-recovery-toolbar,
             .campus-recovery-hero-top,
             .campus-recovery-section-head {
-                flex-direction: column;
-                align-items: stretch;
+                /* flex-direction: column;
+                align-items: stretch; */
             }
 
             .campus-recovery-brand {
@@ -592,7 +596,7 @@
             }
 
             .campus-recovery-campus-name {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .campus-recovery-report-title {
@@ -601,7 +605,7 @@
 
             .campus-recovery-metrics,
             .campus-recovery-summary-grid {
-                grid-template-columns: 1fr;
+                /* grid-template-columns: 1fr; */
             }
 
             .campus-recovery-period-card,
@@ -611,13 +615,22 @@
             }
         }
     </style>
+    <style>
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+}
+</style>
 @endpush
 @push('scripts')
+
 <script>
-    window.addEventListener('load', function () {
-        window.setTimeout(function () {
-            window.print();
-        }, 180);
-    });
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        window.print();
+    }, 180);
+});
 </script>
 @endpush
