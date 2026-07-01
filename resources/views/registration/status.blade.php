@@ -5,6 +5,10 @@
 @section('content')
 	@php
 		$registrations = $registrations ?? collect();
+		$activePeriod = $activePeriod ?? 'all';
+		$periodCounts = $periodCounts ?? [];
+		$search = $search ?? '';
+		$perPage = $perPage ?? 25;
 
 		$tabs = [
 			'all' => 'All',
@@ -19,45 +23,51 @@
 			'month' => 'badge-info',
 			'year' => 'badge-primary',
 		];
-
-		$tabCounts = [];
-		foreach ($tabs as $key => $label) {
-			$tabCounts[$key] = match ($key) {
-				'today' => $registrations->filter(fn($r) => optional($r->registered_at)->isToday())->count(),
-				'month' => $registrations->filter(fn($r) => optional($r->registered_at)->isSameMonth(now()))->count(),
-				'year' => $registrations->filter(fn($r) => optional($r->registered_at)->isSameYear(now()))->count(),
-				default => $registrations->count(),
-			};
-		}
 	@endphp
 
 	<div class="reg-status-shell">
 		<div class="follow-card box-typical box-typical-dashboard panel panel-default">
 			<div class="follow-tab-bar">
 				@foreach ($tabs as $key => $label)
-					<div class="follow-tab {{ $loop->first ? 'active' : '' }}" data-status="{{ $key }}">
+					<a
+						class="follow-tab {{ $activePeriod === $key ? 'active' : '' }}"
+						href="{{ route('registration.status', array_filter([
+							'period' => $key !== 'all' ? $key : null,
+							'search' => $search !== '' ? $search : null,
+							'per_page' => $perPage !== 25 ? $perPage : null,
+						], static fn ($value) => $value !== null && $value !== '')) }}"
+					>
 						<span class="label-text">{{ $label }}</span>
-						<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-					</div>
+						<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $periodCounts[$key] ?? 0 }}</span>
+					</a>
 				@endforeach
 			</div>
 
 			<div class="box-typical-body panel-body follow-body">
-				<div class="follow-controls">
-					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
+				<form method="GET" action="{{ route('registration.status') }}" class="follow-controls">
+					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
+					<div class="d-flex follow-status-meta" style="gap:0.5rem;align-items: center; flex-wrap: wrap;">
 						<label class="mr-2 mb-0">Show</label>
-						<select class="form-control form-control-sm">
-							<option>10</option>
-							<option>25</option>
-							<option>50</option>
+						<select name="per_page" class="form-control form-control-sm follow-per-page" onchange="this.form.submit()">
+							@foreach ([10, 25, 50, 100] as $option)
+								<option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
+							@endforeach
 						</select>
 						<label class="ml-2 mb-0">Entries</label>
+						<a
+							href="{{ route('registration.status', array_filter([
+								'period' => $activePeriod !== 'all' ? $activePeriod : null,
+							], static fn ($value) => $value !== null && $value !== '')) }}"
+							class="btn btn-default btn-sm"
+						>
+							Reset
+						</a>
 					</div>
 					<div class="follow-search">
-						<input type="text" id="reg-search" class="form-control form-control-sm" placeholder="Search...">
-						<i class="fa fa-search"></i>
+						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, course, campus...">
+						<button type="submit" class="btn btn-primary btn-sm">Search</button>
 					</div>
-				</div>
+				</form>
 
 				<div class="table-responsive">
 					<table class="table table-bordered follow-table" id="reg-table">
@@ -77,7 +87,6 @@
 						<tbody>
 							@foreach ($registrations as $idx => $row)
 								@php
-									$regDate = optional($row->registered_at ?? $row->created_at)->format('Y-m-d');
 									$statusLabel = $row->admission
 										? 'Enrolled'
 										: ucfirst((string) ($row->status ?: 'registered'));
@@ -86,12 +95,12 @@
 										: match ((string) $row->status) {
 											'registered' => 'label-info',
 											'pending' => 'label-warning',
-											'cancelled', 'cancelled_registration' => 'label-danger',
+										'cancelled', 'cancelled_registration' => 'label-danger',
 											default => 'label-default',
 										};
 								@endphp
-								<tr data-date="{{ $regDate }}">
-									<td class="text-center">{{ $idx + 1 }}</td>
+								<tr>
+									<td class="text-center">{{ ($registrations->firstItem() ?? 1) + $idx }}</td>
 									<td>
 										<a href="{{ route('student.show', $row) }}" class="student-name-link {{ $row->admission ? '' : 'student-name-link--pending' }}" title="View student detail">
 											{{ $row->student_name }}
@@ -113,11 +122,41 @@
 				</div>
 
 				<div class="follow-footer">
-					<div id="reg-count">Showing 1 to {{ count($registrations) }} of {{ count($registrations) }} entries</div>
+					<div id="reg-count">Showing {{ $registrations->firstItem() ?? 0 }} to {{ $registrations->lastItem() ?? 0 }} of {{ $registrations->total() ?? 0 }} entries</div>
+					@php
+						$currentPage = $registrations->currentPage();
+						$lastPage = $registrations->lastPage();
+						$startPage = max(1, $currentPage - 2);
+						$endPage = min($lastPage, $currentPage + 2);
+					@endphp
 					<ul class="pagination pagination-sm mb-0">
-						<li class="page-item disabled"><span class="page-link">Previous</span></li>
-						<li class="page-item active"><span class="page-link">1</span></li>
-						<li class="page-item disabled"><span class="page-link">Next</span></li>
+						<li class="page-item {{ $registrations->onFirstPage() ? 'disabled' : '' }}">
+							<a class="page-link" href="{{ $registrations->onFirstPage() ? '#' : $registrations->previousPageUrl() }}">Previous</a>
+						</li>
+
+						@if ($startPage > 1)
+							<li class="page-item"><a class="page-link" href="{{ $registrations->url(1) }}">1</a></li>
+							@if ($startPage > 2)
+								<li class="page-item disabled"><span class="page-link">...</span></li>
+							@endif
+						@endif
+
+						@for ($page = $startPage; $page <= $endPage; $page++)
+							<li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
+								<a class="page-link" href="{{ $registrations->url($page) }}">{{ $page }}</a>
+							</li>
+						@endfor
+
+						@if ($endPage < $lastPage)
+							@if ($endPage < $lastPage - 1)
+								<li class="page-item disabled"><span class="page-link">...</span></li>
+							@endif
+							<li class="page-item"><a class="page-link" href="{{ $registrations->url($lastPage) }}">{{ $lastPage }}</a></li>
+						@endif
+
+						<li class="page-item {{ $registrations->hasMorePages() ? '' : 'disabled' }}">
+							<a class="page-link" href="{{ $registrations->hasMorePages() ? $registrations->nextPageUrl() : '#' }}">Next</a>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -162,6 +201,17 @@
 		.follow-card, .follow-body {
     overflow: visible !important;
 }
+		.follow-tab-bar .follow-tab {
+			text-decoration: none;
+		}
+		.follow-status-meta {
+			font-size: 13px;
+			font-weight: 500;
+			color: #64748b;
+		}
+		.follow-per-page {
+			width: 84px;
+		}
 		.registration-action-dropdown{
 			position: relative;
 		}
@@ -197,61 +247,4 @@
 @endpush
 
 @push('scripts')
-	<script>
-		(function () {
-			function isSameMonth(dateStr) {
-				var d = new Date(dateStr);
-				var n = new Date();
-				return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
-			}
-
-			function isSameYear(dateStr) {
-				var d = new Date(dateStr);
-				var n = new Date();
-				return d.getFullYear() === n.getFullYear();
-			}
-
-			function filterByStatus(status) {
-				var rows = document.querySelectorAll('#reg-table tbody tr');
-				var searchVal = (document.getElementById('reg-search').value || '').toLowerCase();
-				var visible = 0;
-				rows.forEach(function (row) {
-					var date = row.getAttribute('data-date');
-					var matchesStatus = true;
-					if (status === 'today') {
-						var today = new Date().toISOString().slice(0, 10);
-						matchesStatus = date === today;
-					} else if (status === 'month') {
-						matchesStatus = isSameMonth(date);
-					} else if (status === 'year') {
-						matchesStatus = isSameYear(date);
-					}
-					var matchesSearch = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-					var show = matchesStatus && matchesSearch;
-					row.style.display = show ? '' : 'none';
-					if (show) visible++;
-				});
-				document.getElementById('reg-count').textContent = 'Showing ' + (visible ? 1 : 0) + ' to ' + visible + ' of ' + visible + ' entries';
-			}
-
-			document.addEventListener('DOMContentLoaded', function () {
-				var tabs = document.querySelectorAll('.follow-tab');
-				tabs.forEach(function (tab) {
-					tab.addEventListener('click', function () {
-						tabs.forEach(function (t) { t.classList.remove('active'); });
-						this.classList.add('active');
-						filterByStatus(this.getAttribute('data-status'));
-					});
-				});
-
-				document.getElementById('reg-search').addEventListener('input', function () {
-					var activeTab = document.querySelector('.follow-tab.active');
-					var status = activeTab ? activeTab.getAttribute('data-status') : 'all';
-					filterByStatus(status);
-				});
-
-				filterByStatus('all');
-			});
-		})();
-	</script>
 @endpush
