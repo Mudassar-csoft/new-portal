@@ -383,13 +383,13 @@
                         <p class="admission-modal__student" id="reviewAdmissionStudent"></p>
 
                         <div class="admission-doc-list">
-                        <span class="admission-doc-link">CNIC Front Side<a href="#" target="_blank" rel="noopener" id="reviewDocCnic" class="eye-span"><i class="fa fa-eye"></i></a></span>
-                            <div class="admission-doc-link"> CNIC Back Side<span class="text-right eye-span"><a href="#" target="_blank" rel="noopener" id="reviewDocCnicBack"><i class="fa fa-eye"></i></a></span></div>
+                        <span class="admission-doc-link">CNIC Front Side<a href="#" id="reviewDocCnic" class="eye-span js-review-doc-preview" data-doc-title="CNIC Front Side"><i class="fa fa-eye"></i></a></span>
+                            <div class="admission-doc-link"> CNIC Back Side<span class="text-right eye-span"><a href="#" id="reviewDocCnicBack" class="js-review-doc-preview" data-doc-title="CNIC Back Side"><i class="fa fa-eye"></i></a></span></div>
 
                             <div class="admission-doc-link">
                                 Admission Form
                                 <span class="text-right eye-span">
-                                    <a href="#" target="_blank" rel="noopener" id="reviewDocForm">
+                                    <a href="#" id="reviewDocForm" class="js-review-doc-preview" data-doc-title="Admission Form">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 </span>
@@ -398,7 +398,7 @@
                             <div class="admission-doc-link">
                                 Paid Slip With Authorized Stamp
                                 <span class="text-right eye-span-4">
-                                    <a href="#" target="_blank" rel="noopener" id="reviewDocSlip">
+                                    <a href="#" id="reviewDocSlip" class="js-review-doc-preview" data-doc-title="Paid Slip With Authorized Stamp">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 </span>
@@ -420,6 +420,22 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <div class="admission-modal admission-document-modal" id="reviewDocumentPreviewModal" aria-hidden="true">
+            <div class="admission-modal__backdrop" data-admission-document-close></div>
+            <div class="admission-modal__dialog admission-document-modal__dialog">
+                <div class="admission-modal__header">
+                    <h4 class="admission-modal__title" id="reviewDocumentPreviewTitle">Document Preview</h4>
+                    <button type="button" class="admission-modal__close" data-admission-document-close>&times;</button>
+                </div>
+                <div class="admission-document-modal__body">
+                    <iframe id="reviewDocumentPreviewFrame" class="admission-document-modal__frame" title="Admission document preview"></iframe>
+                </div>
+                <div class="admission-modal__footer">
+                    <button type="button" class="btn btn-danger-outline" data-admission-document-close>Close</button>
+                </div>
             </div>
         </div>
     @endif
@@ -710,6 +726,39 @@
             color: #94a3b8;
             pointer-events: none;
             background: #f8fafc;
+        }
+
+        .admission-doc-link a.is-disabled {
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .admission-document-modal {
+            z-index: 1200;
+        }
+
+        .admission-document-modal__dialog {
+            max-width: 980px;
+            height: min(86vh, 760px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admission-document-modal__body {
+            flex: 1;
+            min-height: 0;
+            padding: 12px;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+
+        .admission-document-modal__frame {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #dbe3ec;
+            border-radius: 6px;
+            background: white;
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -1223,6 +1272,9 @@
                 var studentLabel = document.getElementById('reviewAdmissionStudent');
                 var remarksInput = document.getElementById('reviewAdmissionRemarks');
                 var previousRemark = document.getElementById('reviewAdmissionPreviousRemark');
+                var documentModal = document.getElementById('reviewDocumentPreviewModal');
+                var documentFrame = document.getElementById('reviewDocumentPreviewFrame');
+                var documentTitle = document.getElementById('reviewDocumentPreviewTitle');
                 var reviewBase = @json(url('/admission'));
 
                 if (!modal || !form) {
@@ -1238,10 +1290,76 @@
                     if (url) {
                         element.href = url;
                         element.classList.remove('is-disabled');
+                        var activeRow = element.closest('.admission-doc-link');
+                        if (activeRow) {
+                            activeRow.classList.remove('is-disabled');
+                        }
                     } else {
                         element.href = '#';
                         element.classList.add('is-disabled');
+                        var disabledRow = element.closest('.admission-doc-link');
+                        if (disabledRow) {
+                            disabledRow.classList.add('is-disabled');
+                        }
                     }
+                }
+
+                function openDocumentPreview(link) {
+                    var url = link.getAttribute('href');
+                    if (!documentModal || !documentFrame || !url || url === '#' || link.classList.contains('is-disabled')) {
+                        return;
+                    }
+
+                    documentTitle.textContent = link.getAttribute('data-doc-title') || 'Document Preview';
+                    documentFrame.src = url;
+                    documentModal.classList.add('is-open');
+                    documentModal.setAttribute('aria-hidden', 'false');
+                }
+
+                function fitImageInsidePreview() {
+                    if (!documentFrame) {
+                        return;
+                    }
+
+                    try {
+                        var frameDocument = documentFrame.contentDocument || documentFrame.contentWindow.document;
+                        if (!frameDocument) {
+                            return;
+                        }
+
+                        var image = frameDocument.querySelector('img');
+                        if (!image) {
+                            return;
+                        }
+
+                        frameDocument.documentElement.style.height = '100%';
+                        frameDocument.body.style.height = '100%';
+                        frameDocument.body.style.margin = '0';
+                        frameDocument.body.style.display = 'flex';
+                        frameDocument.body.style.alignItems = 'center';
+                        frameDocument.body.style.justifyContent = 'center';
+                        frameDocument.body.style.overflow = 'hidden';
+                        frameDocument.body.style.background = '#111827';
+
+                        image.style.width = '100%';
+                        image.style.height = '100%';
+                        image.style.maxWidth = '100%';
+                        image.style.maxHeight = '100%';
+                        image.style.objectFit = 'contain';
+                        image.style.display = 'block';
+                    } catch (error) {
+                        // Browser PDF viewers may block frame styling; images remain handled when accessible.
+                    }
+                }
+
+                function closeDocumentPreview() {
+                    if (!documentModal || !documentFrame) {
+                        return;
+                    }
+
+                    documentModal.classList.remove('is-open');
+                    documentModal.setAttribute('aria-hidden', 'true');
+                    documentFrame.src = 'about:blank';
                 }
 
                 function openModal(button) {
@@ -1271,6 +1389,7 @@
                 }
 
                 function closeModal() {
+                    closeDocumentPreview();
                     modal.classList.remove('is-open');
                     modal.setAttribute('aria-hidden', 'true');
                 }
@@ -1285,8 +1404,34 @@
                     element.addEventListener('click', closeModal);
                 });
 
+                document.querySelectorAll('.js-review-doc-preview').forEach(function (link) {
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        openDocumentPreview(this);
+                    });
+                });
+
+                if (documentModal) {
+                    documentModal.querySelectorAll('[data-admission-document-close]').forEach(function (element) {
+                        element.addEventListener('click', closeDocumentPreview);
+                    });
+                }
+
+                if (documentFrame) {
+                    documentFrame.addEventListener('load', fitImageInsidePreview);
+                }
+
                 document.addEventListener('keydown', function (event) {
-                    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                    if (event.key !== 'Escape') {
+                        return;
+                    }
+
+                    if (documentModal && documentModal.classList.contains('is-open')) {
+                        closeDocumentPreview();
+                        return;
+                    }
+
+                    if (modal.classList.contains('is-open')) {
                         closeModal();
                     }
                 });

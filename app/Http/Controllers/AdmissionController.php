@@ -73,16 +73,22 @@ class AdmissionController extends Controller
             ->get();
         $batches = $this->admissionBatches();
 
-        $isAnotherCourseEnrollment = (bool) ($sourceRegistration || $sourceAdmission);
+        $isAnotherCourseEnrollment = $this->isAnotherCourseEnrollment($sourceRegistration, $sourceAdmission);
         $formDefaults = $this->buildAdmissionFormDefaults($lead, $sourceRegistration, $sourceAdmission, $isAnotherCourseEnrollment);
         $selectedProgramId = (int) ($request->old('program_id', $formDefaults['program_id'] ?? 0) ?? 0);
-        $existingRegistration = ($lead && ! $isAnotherCourseEnrollment)
-            ? Registration::query()
-                ->where('lead_id', $lead->id)
-                ->when($selectedProgramId > 0, fn ($query) => $query->where('program_id', $selectedProgramId))
-                ->latest()
-                ->first()
-            : null;
+        $existingRegistration = null;
+
+        if (! $isAnotherCourseEnrollment) {
+            $existingRegistration = $sourceRegistration;
+
+            if (! $existingRegistration && $lead) {
+                $existingRegistration = Registration::query()
+                    ->where('lead_id', $lead->id)
+                    ->when($selectedProgramId > 0, fn ($query) => $query->where('program_id', $selectedProgramId))
+                    ->latest()
+                    ->first();
+            }
+        }
 
         $disallowedProgramIds = $isAnotherCourseEnrollment
             ? $this->resolveStudentProgramIds($lead, $sourceRegistration, $sourceAdmission)
@@ -299,7 +305,11 @@ class AdmissionController extends Controller
                 $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
             }
 
-            $isAnotherCourseEnrollment = (bool) ($sourceAdmission || $sourceRegistration);
+            $isAnotherCourseEnrollment = $this->isAnotherCourseEnrollment(
+                $sourceRegistration,
+                $sourceAdmission,
+                (int) $validated['program_id']
+            );
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
@@ -383,13 +393,19 @@ class AdmissionController extends Controller
                 $lead->update($leadUpdates);
             }
 
-            $registration = (! $isAnotherCourseEnrollment && $lead)
-                ? Registration::query()
-                    ->where('lead_id', $lead->id)
-                    ->where('program_id', $validated['program_id'])
-                    ->latest()
-                    ->first()
-                : null;
+            $registration = null;
+
+            if (! $isAnotherCourseEnrollment) {
+                $registration = $sourceRegistration;
+
+                if (! $registration && $lead) {
+                    $registration = Registration::query()
+                        ->where('lead_id', $lead->id)
+                        ->where('program_id', $validated['program_id'])
+                        ->latest()
+                        ->first();
+                }
+            }
             if (!$registration) {
                 $regNumbers = $this->previewNumbers($campus->code);
                 $registration = Registration::create([
@@ -1156,6 +1172,38 @@ class AdmissionController extends Controller
         }
 
         return $defaults;
+    }
+
+    private function isAnotherCourseEnrollment(
+        ?Registration $sourceRegistration,
+        ?Admission $sourceAdmission,
+        ?int $selectedProgramId = null
+    ): bool {
+        if ($sourceAdmission) {
+            return true;
+        }
+
+        if (! $sourceRegistration) {
+            return false;
+        }
+
+        $hasExistingAdmission = $sourceRegistration->relationLoaded('admission')
+            ? $sourceRegistration->admission !== null
+            : $sourceRegistration->admission()->exists();
+
+        if ($hasExistingAdmission) {
+            return true;
+        }
+
+        if ($selectedProgramId !== null && $selectedProgramId > 0) {
+            $sourceProgramId = (int) ($sourceRegistration->program_id ?? 0);
+
+            if ($sourceProgramId > 0 && $sourceProgramId !== $selectedProgramId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

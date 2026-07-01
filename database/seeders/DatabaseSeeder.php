@@ -25,6 +25,9 @@ class DatabaseSeeder extends Seeder
             BatchSeeder::class,
             DemoAcademicSeeder::class,
             FinanceSetupSeeder::class,
+            WebLeadSeeder::class,
+            DashboardModuleSeeder::class,
+            DashboardReportSeeder::class,
         ]);
     }
 }

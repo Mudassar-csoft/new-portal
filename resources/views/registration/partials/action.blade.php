@@ -90,7 +90,7 @@
 					<path d="M9 12h6"/>
 					<path d="M9 15.5h6"/>
 				</svg>
-			</span><span class="lead-action-label">Enroll To Another Course</span>
+			</span><span class="lead-action-label">Create Admission / Enroll</span>
 		</a>
 
 		<a class="dropdown-item lead-action-item" href="#">

@@ -167,12 +167,15 @@
         }
         .pending-recovery-table-wrap {
             border-radius: 0;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             width: auto;
         }
         .pending-recovery-table {
             margin-bottom: 0;
             background: #fff;
+            width: max-content;
+            min-width: 100%;
         }
         .pending-recovery-table thead th{
             /* background: #1ea7ef !important; */
@@ -183,6 +186,9 @@
             vertical-align: middle;
             border-color: white !important;
             padding: 16px 12px;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
          .pending-recovery-table thead th h4{
            
@@ -197,6 +203,9 @@
             padding: 16px 12px;
             font-size: 15px;
             color: #2f3b52;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
         .pending-recovery-table tbody tr:nth-child(odd) td {
             background: #f5f4ff;

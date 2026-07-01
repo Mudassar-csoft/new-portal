@@ -72,7 +72,12 @@
                                   @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                                      @if(!empty($followup->is_placeholder))
+                                        <span class="notification-name-link">{{ $followup->lead->name ?? 'N/A' }}</span>
+                                        <div class="text-muted">{{ $followup->counselor ?? 'Counselor' }} - {{ $followup->status ?? 'Pending' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                                      @endif
                                     </td>
                                     <td>{{ optional($notificationDueAt)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($notificationDueAt)->format('h:i A') ?? 'N/A' }}</td>
@@ -109,7 +114,12 @@
                                 @foreach ($quickLeads as $webLead)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
                                     </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
@@ -144,7 +154,12 @@
                                 @foreach ($websiteEnrollments as $webLead)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->batch ?? 'Batch Pending' }} - {{ $webLead->status ?? 'New' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
                                     </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
@@ -179,7 +194,12 @@
                                 @foreach ($websiteAdmissions as $webLead)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
                                     </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
@@ -214,7 +234,12 @@
                                 @foreach ($brochureDownloads as $webLead)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
                                     </td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
                                     <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
@@ -251,9 +276,13 @@
                                 @foreach ($overdueInvoices as $invoice)
                                   <tr>
                                     <td>
-                                      <a class="notification-name-link" href="{{ route('finance.receivables.show', $invoice) }}">
-                                        {{ $invoice->invoice_number ?: 'Invoice' }}
-                                      </a>
+                                      @if(!empty($invoice->is_placeholder))
+                                        <span class="notification-name-link">{{ $invoice->invoice_number ?: 'Invoice' }}</span>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('finance.receivables.show', $invoice) }}">
+                                          {{ $invoice->invoice_number ?: 'Invoice' }}
+                                        </a>
+                                      @endif
                                       <div class="text-muted">{{ $invoice->student_name ?: ($invoice->campus->code ?? 'N/A') }}</div>
                                     </td>
                                     <td>{{ optional($invoice->due_date)->format('d-M-y') ?? 'N/A' }}</td>
