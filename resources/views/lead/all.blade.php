@@ -77,7 +77,7 @@
 						</div>
 						<div class="follow-search">
 							<input type="text" name="q" id="lead-status-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
-							<button type="submit" class="btn btn-primary btn-sm">Search</button>
+							<!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
 							@if($search !== '' || $selectedStatus !== 'all' || $todayOnly)
 								<a href="{{ $indexRoute }}" class="btn btn-default btn-sm">Reset</a>
 							@endif

@@ -99,7 +99,7 @@
 
                         <div class="follow-search">
                             <input type="text" name="q" id="follow-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
-                            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                            <!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
                             @if($search !== '' || $selectedWindow !== 'today')
                                 <a href="{{ request()->url() }}" class="btn btn-default btn-sm">Reset</a>
                             @endif
