@@ -89,10 +89,10 @@
                 </div>
             </div>
 
-            <div class="web-lead-panel mt-3">
+            <!-- <div class="web-lead-panel mt-3">
                 <h4 class="form-label">Raw Payload</h4>
                 <pre class="web-lead-payload">{{ json_encode($webLead->payload ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
-            </div>
+            </div> -->
         </div>
     </div>
 @endsection

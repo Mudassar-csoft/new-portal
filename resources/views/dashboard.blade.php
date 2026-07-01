@@ -420,7 +420,7 @@
 					<table class="tbl-typical daily-activity-table admission-activity-table">
 						<thead>
 							<tr>
-								<th><div>Status</div></th>
+								<!-- <th><div>Status</div></th> -->
 								<th><div>Student Name</div></th>
 								<th><div>Phone Number</div></th>
 								<th><div>Date</div></th>
