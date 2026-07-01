@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -454,7 +455,7 @@ class AdmissionController extends Controller
                         'notes' => 'Registration fee auto-collected during admission.',
                     ]);
 
-                    app(FinanceAccountingService::class)->syncFeeCollection($registrationFee);
+                    $this->syncFeeCollectionSafely($registrationFee);
                 }
             } else {
                 $registration->update([
@@ -623,7 +624,7 @@ class AdmissionController extends Controller
                     $isInstallment = $feeType === 'installments';
                     $isPaid = !$isInstallment || $isFirstInstallment;
 
-                    $feeCollection = FeeCollection::create([
+                    $feeCollection = FeeCollection::create($this->filterToExistingTableColumns('fee_collections', [
                         'lead_id' => $lead?->id,
                         'registration_id' => $registration?->id,
                         'admission_id' => $admission->id,
@@ -646,10 +647,10 @@ class AdmissionController extends Controller
                         'notes' => $isPaid
                             ? ($isInstallment ? 'First installment paid at admission.' : 'Admission fee collected.')
                             : 'Installment ' . ($index + 1) . ' scheduled.',
-                    ]);
+                    ]));
 
                     if ($isPaid) {
-                        app(FinanceAccountingService::class)->syncFeeCollection($feeCollection);
+                        $this->syncFeeCollectionSafely($feeCollection);
                     }
                 }
             }
@@ -1078,10 +1079,10 @@ class AdmissionController extends Controller
 
             try {
                 return DB::transaction(function () use ($rollNumber, $receiptNumber, $attributes) {
-                    return Admission::create(array_merge($attributes, [
+                    return Admission::create($this->filterToExistingTableColumns('admissions', array_merge($attributes, [
                         'roll_number' => $rollNumber,
                         'receipt_number' => $receiptNumber,
-                    ]));
+                    ])));
                 });
             } catch (QueryException $e) {
                 $msg = $e->getMessage();
@@ -1204,6 +1205,34 @@ class AdmissionController extends Controller
         }
 
         return false;
+    }
+
+    private function syncFeeCollectionSafely(FeeCollection $feeCollection): void
+    {
+        try {
+            app(FinanceAccountingService::class)->syncFeeCollection($feeCollection);
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    private function filterToExistingTableColumns(string $table, array $attributes): array
+    {
+        static $columnCache = [];
+
+        if (!array_key_exists($table, $columnCache)) {
+            $columnCache[$table] = array_flip(Schema::getColumnListing($table));
+        }
+
+        return array_filter(
+            $attributes,
+            fn ($value, $column) => array_key_exists($column, $columnCache[$table]),
+            ARRAY_FILTER_USE_BOTH
+        );
     }
 
     /**
