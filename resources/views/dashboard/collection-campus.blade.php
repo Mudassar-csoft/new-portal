@@ -212,8 +212,9 @@
 @push('styles')
     <style>
         @page {
-            size: A4 landscape;
-            margin: 10mm;
+            size: A4 portrait;
+            margin: 2mm;
+            white-space: nowrap;
         }
 
         body.collection-report-page .site-header,
@@ -435,14 +436,16 @@
         }
 
         .collection-table-wrap {
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .collection-detail-table {
             margin-bottom: 0;
             background: #fff;
-            width: 100%;
-            table-layout: fixed;
+            width: max-content;
+            min-width: 100%;
+            table-layout: auto;
             border-collapse: collapse;
         }
 
@@ -464,7 +467,9 @@
             vertical-align: top;
             font-size: 12px;
             line-height: 1.35;
-            word-break: break-word;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .collection-detail-table tbody tr:nth-child(even) td {
@@ -638,15 +643,22 @@
                 text-align: left;
             }
         }
-    </style>
+    </style><style>
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 1mm;
+    }
+}
+</style>
 @endpush
-
 @push('scripts')
+
 <script>
-    window.addEventListener('load', function () {
-        window.setTimeout(function () {
-            window.print();
-        }, 180);
-    });
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        window.print();
+    }, 180);
+});
 </script>
 @endpush

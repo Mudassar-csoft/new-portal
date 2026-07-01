@@ -195,13 +195,16 @@
 
         .collection-table-wrap {
             border-radius: 0;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             width: auto;
         }
 
         .collection-table {
             margin-bottom: 0;
             background: #fff;
+            width: max-content;
+            min-width: 100%;
         }
 
         .collection-table thead th,
@@ -214,6 +217,9 @@
             vertical-align: middle;
             border-color: #fff !important;
             padding: 16px 12px;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .collection-table thead th h4 {
@@ -228,6 +234,9 @@
             padding: 16px 12px;
             font-size: 15px;
             color: #2f3b52;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
         }
 
         .collection-table tbody tr:nth-child(odd) td {

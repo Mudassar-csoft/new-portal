@@ -16,7 +16,6 @@ use App\Models\Registration;
 use App\Models\StudentAttendance;
 use App\Models\User;
 use App\Models\WebLead;
-use App\Support\PlaceholderDashboardData;
 use App\Support\ResolvesLeadFollowupNotifications;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -180,33 +179,6 @@ class AppServiceProvider extends ServiceProvider
             } catch (Throwable) {
                 // Keep empty notification data when the table is unavailable.
             }
-
-            $placeholderWebLeads = PlaceholderDashboardData::webLeadCollection()->groupBy('source_type');
-            foreach (array_keys($webLeadSourceLabels) as $sourceType) {
-                $existingRows = collect($webLeadNotifications[$sourceType] ?? []);
-                $neededRows = max(0, 12 - $existingRows->count());
-                $webLeadNotifications[$sourceType] = $existingRows
-                    ->concat(collect($placeholderWebLeads->get($sourceType, []))->take($neededRows))
-                    ->values();
-                $webLeadNotificationCounts[$sourceType] = max(
-                    12,
-                    (int) ($webLeadNotificationCounts[$sourceType] ?? 0)
-                );
-            }
-
-            $followupNotifications = collect($followupNotifications)
-                ->concat(PlaceholderDashboardData::followups()->take(max(0, 12 - collect($followupNotifications)->count())))
-                ->values();
-            $followupNotificationCount = max(12, $followupNotificationCount);
-
-            $invoiceOverdueNotifications = collect($invoiceOverdueNotifications)
-                ->concat(PlaceholderDashboardData::overdueInvoices()->take(max(0, 12 - collect($invoiceOverdueNotifications)->count())))
-                ->values();
-            $invoiceOverdueNotificationCount = max(12, $invoiceOverdueNotificationCount);
-
-            $canViewWebLeadNotifications = true;
-            $canViewFollowupNotifications = true;
-            $canViewInvoiceNotifications = true;
 
             $view->with([
                 'webLeadSourceLabels' => $webLeadSourceLabels,
