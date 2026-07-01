@@ -672,16 +672,17 @@ class AdmissionController extends Controller
             throw $e;
         } catch (Throwable $e) {
             report($e);
+            $errorMessage = $this->admissionSaveErrorMessage($e);
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Unable to save the admission right now. Please try again.',
+                    'message' => $errorMessage,
                 ], 500);
             }
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Unable to save the admission right now. Please try again.');
+                ->with('error', $errorMessage);
         }
     }
 
@@ -1214,6 +1215,22 @@ class AdmissionController extends Controller
         } catch (Throwable $e) {
             report($e);
         }
+    }
+
+    private function admissionSaveErrorMessage(Throwable $e): string
+    {
+        $message = $e instanceof QueryException
+            ? ($e->getPrevious()?->getMessage() ?: $e->getMessage())
+            : $e->getMessage();
+
+        $message = trim((string) preg_replace('/\s+/', ' ', (string) $message));
+        $message = preg_replace('/ \(Connection:.*$/', '', $message) ?: $message;
+
+        if ($message === '') {
+            return 'Unable to save the admission right now. Please try again.';
+        }
+
+        return Str::limit($message, 500);
     }
 
     /**
