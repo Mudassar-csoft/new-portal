@@ -682,8 +682,19 @@ class AdmissionController extends Controller
             $activePeriod = 'all';
         }
 
+        $search = trim((string) $request->query('search', ''));
+        $perPage = (int) $request->integer('per_page', 25);
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
+
+        $countBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), auth()->user());
+
         $baseQuery = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
-            ->with(['program', 'campus'])
+            ->with([
+                'program:id,code,title,name',
+                'campus:id,code,name',
+            ])
             ->withCount([
                 'feeCollections as pending_admission_fee_count' => fn ($query) => $query
                     ->where('fee_type', 'admission')
@@ -691,17 +702,17 @@ class AdmissionController extends Controller
             ]);
 
         $scopeCounts = [
-            'all' => (clone $baseQuery)->count(),
-            'pending' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_PENDING)->count(),
-            'requested' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)->count(),
-            'approved' => (clone $baseQuery)->where('approval_status', Admission::APPROVAL_STATUS_APPROVED)->count(),
+            'all' => (clone $countBaseQuery)->count(),
+            'pending' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_PENDING)->count(),
+            'requested' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)->count(),
+            'approved' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_APPROVED)->count(),
         ];
 
         $periodCounts = [
             'all' => $scopeCounts['all'],
-            'today' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'today')->count(),
-            'month' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'month')->count(),
-            'year' => $this->applyAdmissionPeriodFilter(clone $baseQuery, 'year')->count(),
+            'today' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'today')->count(),
+            'month' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'month')->count(),
+            'year' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'year')->count(),
         ];
 
         $admissions = (clone $baseQuery)
@@ -709,11 +720,41 @@ class AdmissionController extends Controller
             ->when($activeScope === 'requested', fn ($query) => $query->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED))
             ->when($activeScope === 'approved', fn ($query) => $query->where('approval_status', Admission::APPROVAL_STATUS_APPROVED))
             ->when($activeScope === 'all', fn ($query) => $this->applyAdmissionPeriodFilter($query, $activePeriod))
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($builder) use ($search) {
+                    $builder
+                        ->where('student_name', 'like', '%' . $search . '%')
+                        ->orWhere('guardian_name', 'like', '%' . $search . '%')
+                        ->orWhere('phone', 'like', '%' . $search . '%')
+                        ->orWhere('roll_number', 'like', '%' . $search . '%')
+                        ->orWhere('registration_number', 'like', '%' . $search . '%')
+                        ->orWhereHas('program', function ($programQuery) use ($search) {
+                            $programQuery
+                                ->where('title', 'like', '%' . $search . '%')
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('code', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('campus', function ($campusQuery) use ($search) {
+                            $campusQuery
+                                ->where('code', 'like', '%' . $search . '%')
+                                ->orWhere('name', 'like', '%' . $search . '%');
+                        });
+                });
+            })
             ->orderByDesc('admission_date')
             ->orderByDesc('id')
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('admission.status', compact('admissions', 'activeScope', 'scopeCounts', 'activePeriod', 'periodCounts'));
+        return view('admission.status', compact(
+            'admissions',
+            'activeScope',
+            'scopeCounts',
+            'activePeriod',
+            'periodCounts',
+            'search',
+            'perPage'
+        ));
     }
 
     public function uploadDocuments(Request $request, Admission $admission): RedirectResponse

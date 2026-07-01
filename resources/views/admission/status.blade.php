@@ -9,6 +9,8 @@
         $activePeriod = $activePeriod ?? 'all';
         $scopeCounts = $scopeCounts ?? [];
         $periodCounts = $periodCounts ?? [];
+        $search = $search ?? '';
+        $perPage = $perPage ?? 25;
         $canStudentView = auth()->user()?->hasAnyPermission(['student.view']) ?? false;
         $canAdmissionUpload = auth()->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
         $canReviewApproval = auth()->user()?->isAdmin() ?? false;
@@ -63,18 +65,58 @@
                 @endforeach
             </div>
 
-            
+            @if($activeScope === 'all')
+                <div class="follow-tab-bar follow-tab-bar--sub">
+                    @foreach ($periods as $periodKey => $periodLabel)
+                        <a
+                            href="{{ route('admission.status', array_filter([
+                                'scope' => 'all',
+                                'period' => $periodKey !== 'all' ? $periodKey : null,
+                                'search' => $search !== '' ? $search : null,
+                                'per_page' => $perPage !== 25 ? $perPage : null,
+                            ], static fn ($value) => $value !== null && $value !== '')) }}"
+                            class="follow-tab {{ $activePeriod === $periodKey ? 'active' : '' }}"
+                        >
+                            <span class="label-text">{{ $periodLabel }}</span>
+                            <span class="badge badge-secondary">{{ (int) ($periodCounts[$periodKey] ?? 0) }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="box-typical-body panel-body follow-body">
-                <div class="follow-controls">
+                <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+                    <input type="hidden" name="scope" value="{{ $activeScope }}">
+                    @if($activeScope === 'all')
+                        <input type="hidden" name="period" value="{{ $activePeriod }}">
+                    @endif
+
                     <div class="follow-status-copy">
-                        {{ $activeScope === 'all' ? ($periods[$activePeriod] ?? 'All Admissions') : ($scopes[$activeScope] ?? 'Admission Status') }}
+                        <div>{{ $activeScope === 'all' ? ($periods[$activePeriod] ?? 'All Admissions') : ($scopes[$activeScope] ?? 'Admission Status') }}</div>
+                        <div class="follow-status-meta">
+                            <label>Show</label>
+                            <select name="per_page" class="form-control form-control-sm follow-per-page" onchange="this.form.submit()">
+                                @foreach ([10, 25, 50, 100] as $option)
+                                    <option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
+                                @endforeach
+                            </select>
+                            <span>entries</span>
+                            <a
+                                href="{{ route('admission.status', array_filter([
+                                    'scope' => $activeScope !== 'pending' ? $activeScope : null,
+                                    'period' => $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : null,
+                                ], static fn ($value) => $value !== null && $value !== '')) }}"
+                                class="btn btn-default btn-sm"
+                            >
+                                Reset
+                            </a>
+                        </div>
                     </div>
                     <div class="follow-search">
-                        <input type="text" id="adm-search" class="form-control form-control-sm" placeholder="Search...">
-                        <i class="fa fa-search"></i>
+                        <input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, course, campus...">
+                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
                     </div>
-                </div>
+                </form>
 
                 <div class="table-responsive">
                     <table class="table table-bordered follow-table" id="adm-table">
@@ -91,8 +133,8 @@
                         </thead>
                         <tbody>
                             @forelse ($admissions as $idx => $row)
-                                <tr data-entry-row="1">
-                                    <td class="text-center">{{ $idx + 1 }}</td>
+                                <tr>
+                                    <td class="text-center">{{ ($admissions->firstItem() ?? 1) + $idx }}</td>
                                     <td>
                                         @if($row->registration_id && $canStudentView)
                                             <a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
@@ -115,7 +157,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr data-empty-row="1">
+                                <tr>
                                     <td colspan="7" class="text-center text-muted">No admissions found.</td>
                                 </tr>
                             @endforelse
@@ -124,9 +166,43 @@
                 </div>
 
                 <div class="follow-footer">
-                    <div id="adm-count">Showing {{ $admissions->count() ? 1 : 0 }} to {{ $admissions->count() }} of {{ $admissions->count() }} entries</div>
+                    <div id="adm-count">
+                        Showing {{ $admissions->firstItem() ?? 0 }} to {{ $admissions->lastItem() ?? 0 }} of {{ $admissions->total() ?? 0 }} entries
+                    </div>
+                    @php
+                        $currentPage = $admissions->currentPage();
+                        $lastPage = $admissions->lastPage();
+                        $startPage = max(1, $currentPage - 2);
+                        $endPage = min($lastPage, $currentPage + 2);
+                    @endphp
                     <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><span class="page-link">1</span></li>
+                        <li class="page-item {{ $admissions->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $admissions->onFirstPage() ? '#' : $admissions->previousPageUrl() }}">Previous</a>
+                        </li>
+
+                        @if ($startPage > 1)
+                            <li class="page-item"><a class="page-link" href="{{ $admissions->url(1) }}">1</a></li>
+                            @if ($startPage > 2)
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            @endif
+                        @endif
+
+                        @for ($page = $startPage; $page <= $endPage; $page++)
+                            <li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $admissions->url($page) }}">{{ $page }}</a>
+                            </li>
+                        @endfor
+
+                        @if ($endPage < $lastPage)
+                            @if ($endPage < $lastPage - 1)
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            @endif
+                            <li class="page-item"><a class="page-link" href="{{ $admissions->url($lastPage) }}">{{ $lastPage }}</a></li>
+                        @endif
+
+                        <li class="page-item {{ $admissions->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $admissions->hasMorePages() ? $admissions->nextPageUrl() : '#' }}">Next</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -419,9 +495,27 @@
         }
 
         .follow-status-copy {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
             font-size: 15px;
             font-weight: 600;
             color: #334155;
+        }
+
+        .follow-status-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .follow-per-page {
+            width: 84px;
         }
 
         .admission-action-dropdown {
@@ -657,38 +751,6 @@
 @endpush
 
 @push('scripts')
-    <script>
-            (function () {
-            function updateVisibleCount() {
-                var rows = Array.prototype.slice.call(document.querySelectorAll('#adm-table tbody tr[data-entry-row="1"]'));
-                var visibleRows = rows.filter(function (row) {
-                    return row.style.display !== 'none';
-                }).length;
-
-                var countEl = document.getElementById('adm-count');
-                if (countEl) {
-                    countEl.textContent = 'Showing ' + (visibleRows ? 1 : 0) + ' to ' + visibleRows + ' of ' + visibleRows + ' entries';
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var searchInput = document.getElementById('adm-search');
-                if (searchInput) {
-                    searchInput.addEventListener('input', function () {
-                        var searchVal = (this.value || '').toLowerCase();
-                        document.querySelectorAll('#adm-table tbody tr[data-entry-row="1"]').forEach(function (row) {
-                            var show = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-                            row.style.display = show ? '' : 'none';
-                        });
-                        updateVisibleCount();
-                    });
-                }
-
-                updateVisibleCount();
-            });
-        })();
-    </script>
-
     @if($canAdmissionUpload)
         <script>
             (function () {
