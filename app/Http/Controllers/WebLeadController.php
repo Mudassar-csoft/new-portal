@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FinanceOtherCharge;
 use App\Models\WebLead;
+use App\Support\PlaceholderDashboardData;
 use App\Support\ResolvesLeadFollowupNotifications;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -130,6 +131,25 @@ class WebLeadController extends Controller
             ->latest('id')
             ->paginate($perPage)
             ->withQueryString();
+
+        if ($webLeads->total() === 0) {
+            $placeholderCounts = PlaceholderDashboardData::webLeadCounts();
+            foreach ($sourceTabs as $sourceType => $label) {
+                if ($sourceType === 'all') {
+                    continue;
+                }
+
+                $tabCounts[$sourceType] = max((int) ($tabCounts[$sourceType] ?? 0), (int) ($placeholderCounts[$sourceType] ?? 0));
+            }
+
+            $tabCounts['all'] = max((int) ($tabCounts['all'] ?? 0), array_sum($placeholderCounts));
+            $webLeads = PlaceholderDashboardData::webLeadPaginator(
+                $activeTab,
+                $search,
+                $perPage,
+                max(1, (int) $request->integer('page', 1))
+            );
+        }
 
         return view('web_leads.index', compact(
             'webLeads',

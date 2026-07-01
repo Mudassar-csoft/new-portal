@@ -27,25 +27,64 @@
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
 
-            <div class="web-lead-actions mb-3">
-                @if ($webLead->isActionable())
-                    @if($canCreateLeadFromWebLead)
-                        <a href="{{ route('leads.create', ['web_lead' => $webLead->id]) }}" class="btn btn-inline btn-primary-outline">Create Lead</a>
-                    @endif
-                    @if($canUpdateWebLead)
-                        <form method="POST" action="{{ route('web-leads.not-interested', $webLead) }}" class="d-inline-block">
-                            @csrf
-                            <button type="submit" class="btn btn-inline btn-danger-outline">Not Interested</button>
-                        </form>
-                    @endif
-                @elseif ($webLead->converted_to_lead_id)
-                    <a href="{{ route('leads.show', $webLead->converted_to_lead_id) }}" class="btn btn-inline btn-success-outline">Open CRM Lead</a>
+           <div class="web-lead-actions mb-3">
+
+    <div class="dropdown d-inline-block">
+        <button class="btn btn-inline btn-primary dropdown-toggle"
+                type="button"
+                id="actionDropdown"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false">
+            Action
+        </button>
+
+        <div class="dropdown-menu" aria-labelledby="actionDropdown">
+
+            @if ($webLead->isActionable())
+
+                @if($canCreateLeadFromWebLead)
+                    <a class="dropdown-item"
+                       href="{{ route('leads.create', ['web_lead' => $webLead->id]) }}">
+                        Create Lead
+                    </a>
                 @endif
 
-                <a href="{{ route('web-leads.index', array_filter([
+                @if($canUpdateWebLead)
+                    <form method="POST"
+                          action="{{ route('web-leads.not-interested', $webLead) }}"
+                          style="margin:0;">
+                        @csrf
+                        <button type="submit"
+                                class="dropdown-item text-danger"
+                                style="cursor:pointer;">
+                            Not Interested
+                        </button>
+                    </form>
+                @endif
+
+            @elseif ($webLead->converted_to_lead_id)
+
+                <a class="dropdown-item"
+                   href="{{ route('leads.show', $webLead->converted_to_lead_id) }}">
+                    Open CRM Lead
+                </a>
+
+            @endif
+
+            <div class="dropdown-divider"></div>
+
+            <a class="dropdown-item"
+               href="{{ route('web-leads.index', array_filter([
                     'tab' => $webLead->source_type,
-                ], static fn ($value) => $value !== null && $value !== '')) }}" class="btn btn-inline btn-default">Back</a>
-            </div>
+                ], static fn ($value) => $value !== null && $value !== '')) }}">
+                Back
+            </a>
+
+        </div>
+    </div>
+
+</div>
 
             <div class="row">
                 <div class="col-md-6">

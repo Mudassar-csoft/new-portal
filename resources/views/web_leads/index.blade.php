@@ -40,7 +40,7 @@
 				<div class="box-typical-body panel-body follow-body">
 					<form method="GET" action="{{ route('web-leads.index') }}" class="follow-controls">
 						<input type="hidden" id="web-lead-tab-input" name="tab" value="{{ $activeTab !== 'all' ? $activeTab : '' }}">
-						<div class="d-flex" style="gap:0.5rem;align-items: center; flex-wrap: wrap;">
+						<div class="d-flex" style="gap:0.5rem;">
 							<label>Show</label>
 							<select name="per_page" id="web-lead-per-page" class="form-control form-control-sm" style="width: 86px;">
 								@foreach ([10, 25, 50, 100] as $option)
@@ -49,7 +49,7 @@
 							</select>
 							<label>Entries</label>
 
-							<a href="{{ route('web-leads.index', $activeTab !== 'all' ? ['tab' => $activeTab] : []) }}" class="btn btn-default btn-sm">Reset</a>
+							<!-- <a href="{{ route('web-leads.index', $activeTab !== 'all' ? ['tab' => $activeTab] : []) }}" class="btn btn-default btn-sm">Reset</a> -->
 						</div>
 						<div class="follow-search">
 							<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, email, city...">
@@ -62,13 +62,15 @@
 							<thead>
 								<tr>
 									<th>Sr</th>
-									<th>Lead Type</th>
+									<!-- <th>Lead Type</th> -->
 									<th>Name</th>
+									<th>Program</th>
 									<th>Contact No</th>
 									<th>Email</th>
 									<th>City</th>
-									<th>Interested Program</th>
-									<th>Submitted</th>
+									<th>Date</th>
+									<th>Time</th>
+									<th>Campus Code</th>
 									<th class="text-left">Action</th>
 								</tr>
 							</thead>
@@ -79,24 +81,34 @@
 									@endphp
 									<tr>
 										<td class="text-start">{{ ($webLeads->firstItem() ?? 1) + $loop->index }}</td>
-										<td>{{ $webLead->source_label }}</td>
+										<!-- <td>{{ $webLead->source_label }}</td> -->
 										<td>
-											<a href="{{ route('web-leads.show', $webLead) }}" class="lead-link">
-												{{ $webLead->full_name }}
-											</a>
+											@if(!empty($webLead->is_placeholder))
+												<span class="lead-link">{{ $webLead->full_name }}</span>
+											@else
+												<a href="{{ route('web-leads.show', $webLead) }}" class="lead-link">
+													{{ $webLead->full_name }}
+												</a>
+											@endif
 										</td>
+										<td>{{ $webLead->interested_program ?: 'N/A' }}</td>
 										<td>{{ $webLead->phone ?: 'N/A' }}</td>
 										<td>{{ $webLead->email ?: 'N/A' }}</td>
 										<td>{{ $webLead->city ?: 'N/A' }}</td>
-										<td>{{ $webLead->interested_program ?: 'N/A' }}</td>
-										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td>
+										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y') ?? 'N/A' }}</td>
+										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+										<td>{{ $webLead->campus_id ?: 'N/A' }}</td>
 										<td class=" action-cell">
-											@include('web_leads.action', ['actionId' => $actionId, 'webLead' => $webLead])
+											@if(!empty($webLead->is_placeholder))
+												<span class="badge badge-info">{{ $webLead->source_label ?? 'Sample' }}</span>
+											@else
+												@include('web_leads.action', ['actionId' => $actionId, 'webLead' => $webLead])
+											@endif
 										</td>
 									</tr>
 								@empty
 									<tr id="web-lead-empty-row">
-										<td colspan="9" class="text-center text-muted">No pending web leads found for the current filters.</td>
+										<td colspan="10" class="text-center text-muted">No pending web leads found for the current filters.</td>
 									</tr>
 								@endforelse
 							</tbody>

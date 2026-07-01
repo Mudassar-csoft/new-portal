@@ -220,6 +220,7 @@
         body.collection-report-page .side-menu,
         body.collection-report-page .control-panel-container {
             display: none !important;
+            
         }
 
         body.collection-report-page.with-side-menu .page-content,
@@ -235,13 +236,14 @@
         }
 
         .collection-report {
-            max-width: 1280px;
+            /* max-width: 1280px; */
             margin: 0 auto;
             padding: 24px 18px 30px;
             color: #12263f;
             font-family: "Segoe UI", "Helvetica Neue", sans-serif;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            background:white;
         }
 
         .collection-toolbar {
@@ -265,14 +267,14 @@
 
         .collection-toolbar-link {
             background: #fff;
-            color: #8a2d1d;
-            box-shadow: 0 10px 30px rgba(138, 45, 29, 0.12);
+            color: #00A8FF;
+            /* box-shadow: 0 10px 30px rgba(138, 45, 29, 0.12); */
         }
 
         .collection-toolbar-button {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            background: #00A8FF;
             color: #fff;
-            box-shadow: 0 14px 36px rgba(234, 88, 12, 0.28);
+            /* box-shadow: 0 14px 36px rgba(234, 88, 12, 0.28); */
             cursor: pointer;
         }
 
@@ -283,12 +285,12 @@
         }
 
         .collection-hero {
-            border: 1px solid #f2d7c2;
-            border-top: 6px solid #f97316;
-            background: linear-gradient(140deg, #ffffff 0%, #fff3e8 100%);
+            border: 1px solid #00A8FF;
+            border-top: 6px solid #00A8FF;
+            background: ;
             border-radius: 24px;
             padding: 24px 28px;
-            box-shadow: 0 22px 50px rgba(138, 45, 29, 0.10);
+            /* box-shadow: 0 22px 50px rgba(138, 45, 29, 0.10); */
             margin-bottom: 18px;
         }
 
@@ -311,7 +313,7 @@
             min-width: 18px;
             height: 72px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #fb923c 0%, #c2410c 100%);
+            background: linear-gradient(180deg, #3ccffb 0%, #0c90c2 100%);
         }
 
         .collection-brand-eyebrow {
@@ -319,7 +321,7 @@
             font-weight: 700;
             letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #c2410c;
+            color: gray;
             margin-bottom: 8px;
         }
 
@@ -335,7 +337,7 @@
             font-size: 20px;
             line-height: 1.3;
             font-weight: 600;
-            color: #6f3f2d;
+            color: gray;
         }
 
         .collection-period-card {
@@ -343,7 +345,7 @@
             padding: 16px 18px;
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.92);
-            border: 1px solid #f3decf;
+            border: 1px solid #00A8FF;
         }
 
         .collection-period-card span,
@@ -355,7 +357,7 @@
             font-weight: 700;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: #8a6a58;
+            color: gray;
             margin-bottom: 6px;
         }
 
@@ -364,7 +366,7 @@
         .collection-section-total strong,
         .collection-summary-card strong {
             display: block;
-            font-size: 20px;
+            font-size: 18px;
             line-height: 1.2;
             color: #12263f;
         }
@@ -378,16 +380,18 @@
         .collection-metric-card,
         .collection-summary-card {
             border-radius: 18px;
-            border: 1px solid #f3decf;
+             border: 1px solid #00A8FF;
+             text-align: center;
+             padding:auto;
             background: rgba(255, 255, 255, 0.95);
             padding: 14px 16px;
-            box-shadow: 0 12px 30px rgba(138, 45, 29, 0.06);
+            /* box-shadow: 0 12px 30px rgba(138, 45, 29, 0.06); */
         }
 
         .collection-metric-card--highlight,
         .collection-summary-card--accent {
-            background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
-            border-color: #c2410c;
+            background: #00A8FF;
+            border-color: #00A8FF;
         }
 
         .collection-metric-card--highlight .collection-metric-label,
@@ -399,10 +403,10 @@
 
         .collection-section {
             margin-bottom: 18px;
-            border: 1px solid #f2ddce;
+            border: 1px solid #00A8FF;;
             border-radius: 22px;
             background: #fff;
-            box-shadow: 0 18px 44px rgba(138, 45, 29, 0.08);
+            /* box-shadow: 0 18px 44px rgba(138, 45, 29, 0.08); */
             overflow: hidden;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -413,9 +417,9 @@
             justify-content: space-between;
             align-items: flex-end;
             gap: 16px;
-            padding: 16px 20px 14px;
+            padding: 10px 20px 14px;
             border-bottom: 1px solid #f6e6db;
-            background: linear-gradient(180deg, #fffdfa 0%, #fff5ed 100%);
+            /* background: linear-gradient(180deg, #fffdfa 0%, #fff5ed 100%); */
         }
 
         .collection-section-title {
@@ -454,7 +458,7 @@
 
         .collection-detail-table th,
         .collection-detail-table td {
-            border: 1px solid #ecdacd !important;
+            border: 1px solid #00A8FF !important;
             padding: 9px 8px;
             color: #17324d;
             vertical-align: top;
@@ -464,7 +468,7 @@
         }
 
         .collection-detail-table tbody tr:nth-child(even) td {
-            background: #fffaf5;
+            background: #ffffff;
         }
 
         .numeric-cell,
@@ -474,10 +478,10 @@
         }
 
         .collection-total-row td {
-            background: #fff1e7;
+            background: #;
             font-size: 13px;
             line-height: 1.3;
-            border-top: 2px solid #f97316 !important;
+            border-top: 2px solid #00a8ff !important;
         }
 
         .collection-total-label {
@@ -499,7 +503,7 @@
             text-align: center;
             color: #6b7280;
             font-size: 16px;
-            box-shadow: 0 18px 44px rgba(138, 45, 29, 0.06);
+            /* box-shadow: 0 18px 44px rgba(138, 45, 29, 0.06); */
         }
 
         .collection-summary {
@@ -523,7 +527,7 @@
         }
 
         .collection-summary-card strong {
-            font-size: 22px;
+            font-size: 18px;
         }
 
         .no-print {
@@ -579,7 +583,7 @@
             }
 
             .collection-campus-name {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .collection-report-title {
@@ -611,8 +615,9 @@
             .collection-toolbar,
             .collection-hero-top,
             .collection-section-head {
-                flex-direction: column;
-                align-items: stretch;
+                /* flex-direction: column;
+                align-items: stretch; */
+                font-size:15px;
             }
 
             .collection-brand {
@@ -620,7 +625,7 @@
             }
 
             .collection-campus-name {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .collection-report-title {
