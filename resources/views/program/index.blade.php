@@ -177,14 +177,7 @@
                     </div>
 
                     <div class="follow-footer">
-                        <div id="program-status-count">
-                            @if($programs->total() > 0)
-                                Showing {{ $programs->firstItem() }} to {{ $programs->lastItem() }} of {{ $programs->total() }} entries
-                            @else
-                                Showing 0 to 0 of 0 entries
-                            @endif
-                        </div>
-                        {{ $programs->links() }}
+                        @include('partials.follow-pagination', ['paginator' => $programs, 'countId' => 'program-status-count'])
                     </div>
                 </div>
             </div>

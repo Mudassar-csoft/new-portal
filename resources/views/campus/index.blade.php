@@ -171,14 +171,7 @@
                     </div>
 
                     <div class="follow-footer campus-footer">
-                        <div id="campus-status-count">
-                            @if($campuses->total() > 0)
-                                Showing {{ $campuses->firstItem() }} to {{ $campuses->lastItem() }} of {{ $campuses->total() }} entries
-                            @else
-                                Showing 0 to 0 of 0 entries
-                            @endif
-                        </div>
-                        {{ $campuses->links() }}
+                        @include('partials.follow-pagination', ['paginator' => $campuses, 'countId' => 'campus-status-count'])
                     </div>
                 </div>
             </div>

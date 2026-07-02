@@ -9,6 +9,8 @@
         $activePeriod = $activePeriod ?? 'all';
         $scopeCounts = $scopeCounts ?? [];
         $periodCounts = $periodCounts ?? [];
+        $search = $search ?? '';
+        $perPage = $perPage ?? 25;
         $canStudentView = auth()->user()?->hasAnyPermission(['student.view']) ?? false;
         $canAdmissionUpload = auth()->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
         $canReviewApproval = auth()->user()?->isAdmin() ?? false;
@@ -66,15 +68,23 @@
             
 
             <div class="box-typical-body panel-body follow-body">
-                <div class="follow-controls">
+                <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+                    <input type="hidden" name="scope" value="{{ $activeScope }}">
+                    @if($activeScope === 'all')
+                        <input type="hidden" name="period" value="{{ $activePeriod }}">
+                    @endif
+                    <input type="hidden" name="per_page" value="{{ $perPage }}">
+
                     <div class="follow-status-copy">
                         {{ $activeScope === 'all' ? ($periods[$activePeriod] ?? 'All Admissions') : ($scopes[$activeScope] ?? 'Admission Status') }}
                     </div>
                     <div class="follow-search">
-                        <input type="text" id="adm-search" class="form-control form-control-sm" placeholder="Search...">
-                        <i class="fa fa-search"></i>
+                        <input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+                        <button type="submit" class="adm-search-submit" aria-label="Search">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
-                </div>
+                </form>
 
                 <div class="table-responsive">
                     <table class="table table-bordered follow-table" id="adm-table">
@@ -124,44 +134,7 @@
                 </div>
 
                 <div class="follow-footer">
-                    <div id="adm-count">
-                        Showing {{ $admissions->firstItem() ?? 0 }} to {{ $admissions->lastItem() ?? 0 }} of {{ $admissions->total() ?? 0 }} entries
-                    </div>
-                    @php
-                        $currentPage = $admissions->currentPage();
-                        $lastPage = $admissions->lastPage();
-                        $startPage = max(1, $currentPage - 2);
-                        $endPage = min($lastPage, $currentPage + 2);
-                    @endphp
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item {{ $admissions->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $admissions->onFirstPage() ? '#' : $admissions->previousPageUrl() }}">Previous</a>
-                        </li>
-
-                        @if ($startPage > 1)
-                            <li class="page-item"><a class="page-link" href="{{ $admissions->url(1) }}">1</a></li>
-                            @if ($startPage > 2)
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            @endif
-                        @endif
-
-                        @for ($page = $startPage; $page <= $endPage; $page++)
-                            <li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $admissions->url($page) }}">{{ $page }}</a>
-                            </li>
-                        @endfor
-
-                        @if ($endPage < $lastPage)
-                            @if ($endPage < $lastPage - 1)
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            @endif
-                            <li class="page-item"><a class="page-link" href="{{ $admissions->url($lastPage) }}">{{ $lastPage }}</a></li>
-                        @endif
-
-                        <li class="page-item {{ $admissions->hasMorePages() ? '' : 'disabled' }}">
-                            <a class="page-link" href="{{ $admissions->hasMorePages() ? $admissions->nextPageUrl() : '#' }}">Next</a>
-                        </li>
-                    </ul>
+                    @include('partials.follow-pagination', ['paginator' => $admissions, 'countId' => 'adm-count'])
                 </div>
             </div>
         </div>
@@ -474,6 +447,30 @@
             color: #334155;
         }
 
+        .follow-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .follow-search .form-control {
+            width: min(280px, 100%);
+        }
+
+        .adm-search-submit {
+            border: 0;
+            background: transparent;
+            color: #8a97a8;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .adm-search-submit:hover,
+        .adm-search-submit:focus {
+            color: #1593ff;
+        }
+
         .admission-action-dropdown {
             position: relative;
         }
@@ -740,36 +737,6 @@
 @endpush
 
 @push('scripts')
-    <script>
-            (function () {
-            function updateVisibleCount() {
-                var rows = Array.prototype.slice.call(document.querySelectorAll('#adm-table tbody tr[data-entry-row="1"]'));
-                var visibleRows = rows.filter(function (row) {
-                    return row.style.display !== 'none';
-                }).length;
-
-                var countEl = document.getElementById('adm-count');
-                if (countEl) {
-                    countEl.textContent = 'Showing ' + (visibleRows ? 1 : 0) + ' to ' + visibleRows + ' of ' + visibleRows + ' entries';
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var searchInput = document.getElementById('adm-search');
-                if (searchInput) {
-                    searchInput.addEventListener('input', function () {
-                        var searchVal = (this.value || '').toLowerCase();
-                        document.querySelectorAll('#adm-table tbody tr[data-entry-row="1"]').forEach(function (row) {
-                            var show = row.innerText.toLowerCase().indexOf(searchVal) !== -1;
-                            row.style.display = show ? '' : 'none';
-                        });
-                        updateVisibleCount();
-                    });
-                }
-            });
-        })();
-    </script>
-
     @if($canAdmissionUpload)
         <script>
             (function () {

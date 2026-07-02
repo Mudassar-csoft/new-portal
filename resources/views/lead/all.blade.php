@@ -147,16 +147,7 @@
 					</div>
 
 					<div class="follow-footer">
-						<div id="lead-status-count">Showing {{ $leads->firstItem() ?? 0 }} to {{ $leads->lastItem() ?? 0 }} of {{ $leads->total() }} entries</div>
-						<ul class="pagination pagination-sm mb-0">
-							<li class="page-item {{ $leads->onFirstPage() ? 'disabled' : '' }}">
-								<a class="page-link" href="{{ $leads->previousPageUrl() ?: '#' }}">Previous</a>
-							</li>
-							<li class="page-item active"><span class="page-link">{{ $leads->currentPage() }}</span></li>
-							<li class="page-item {{ $leads->hasMorePages() ? '' : 'disabled' }}">
-								<a class="page-link" href="{{ $leads->nextPageUrl() ?: '#' }}">Next</a>
-							</li>
-						</ul>
+						@include('partials.follow-pagination', ['paginator' => $leads, 'countId' => 'lead-status-count'])
 					</div>
 				</div>
 			</div>

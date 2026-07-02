@@ -175,14 +175,7 @@
                     </div>
 
                     <div class="follow-footer">
-                        <div id="batch-status-count">
-                            @if($batches->total() > 0)
-                                Showing {{ $batches->firstItem() }} to {{ $batches->lastItem() }} of {{ $batches->total() }} entries
-                            @else
-                                Showing 0 to 0 of 0 entries
-                            @endif
-                        </div>
-                        {{ $batches->links() }}
+                        @include('partials.follow-pagination', ['paginator' => $batches, 'countId' => 'batch-status-count'])
                     </div>
                 </div>
             </div>

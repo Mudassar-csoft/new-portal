@@ -122,38 +122,7 @@
 						$endPage = min($lastPage, $currentPage + 2);
 					@endphp
 					<div class="follow-footer">
-						<div id="web-lead-count">
-							Showing {{ $webLeads->firstItem() ?? 0 }} to {{ $webLeads->lastItem() ?? 0 }} of {{ $webLeads->total() }} entries
-						</div>
-						<ul class="pagination pagination-sm mb-0">
-							<li class="page-item {{ $webLeads->onFirstPage() ? 'disabled' : '' }}">
-								<a class="page-link" href="{{ $webLeads->onFirstPage() ? '#' : $webLeads->previousPageUrl() }}">Previous</a>
-							</li>
-
-							@if ($startPage > 1)
-								<li class="page-item"><a class="page-link" href="{{ $webLeads->url(1) }}">1</a></li>
-								@if ($startPage > 2)
-									<li class="page-item disabled"><span class="page-link">...</span></li>
-								@endif
-							@endif
-
-							@for ($page = $startPage; $page <= $endPage; $page++)
-								<li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
-									<a class="page-link" href="{{ $webLeads->url($page) }}">{{ $page }}</a>
-								</li>
-							@endfor
-
-							@if ($endPage < $lastPage)
-								@if ($endPage < $lastPage - 1)
-									<li class="page-item disabled"><span class="page-link">...</span></li>
-								@endif
-								<li class="page-item"><a class="page-link" href="{{ $webLeads->url($lastPage) }}">{{ $lastPage }}</a></li>
-							@endif
-
-							<li class="page-item {{ $webLeads->hasMorePages() ? '' : 'disabled' }}">
-								<a class="page-link" href="{{ $webLeads->hasMorePages() ? $webLeads->nextPageUrl() : '#' }}">Next</a>
-							</li>
-						</ul>
+						@include('partials.follow-pagination', ['paginator' => $webLeads, 'countId' => 'web-lead-count'])
 					</div>
 				</div>
 			</div>

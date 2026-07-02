@@ -188,42 +188,7 @@
                     </div>
 
                     <div class="follow-footer">
-                        <div id="follow-count">Showing {{ $followups->firstItem() ?? 0 }} to {{ $followups->lastItem() ?? 0 }} of {{ $followups->total() }} Entries</div>
-                        @if($lastPage > 1)
-                            <ul class="pagination pagination-sm mb-0 follow-pagination">
-                                <li class="page-item {{ $followups->onFirstPage() ? 'disabled' : '' }}">
-                                    @if($followups->onFirstPage())
-                                        <span class="page-link" aria-hidden="true">&lt;</span>
-                                    @else
-                                        <a class="page-link" href="{{ $followups->previousPageUrl() }}" aria-label="Previous page">&lt;</a>
-                                    @endif
-                                </li>
-
-                                @foreach($pageItems as $pageItem)
-                                    @if(is_int($pageItem))
-                                        <li class="page-item {{ $pageItem === $currentPage ? 'active' : '' }}">
-                                            @if($pageItem === $currentPage)
-                                                <span class="page-link">{{ $pageItem }}</span>
-                                            @else
-                                                <a class="page-link" href="{{ $followups->url($pageItem) }}">{{ $pageItem }}</a>
-                                            @endif
-                                        </li>
-                                    @else
-                                        <li class="page-item disabled page-ellipsis" aria-hidden="true">
-                                            <span class="page-link">...</span>
-                                        </li>
-                                    @endif
-                                @endforeach
-
-                                <li class="page-item {{ $followups->hasMorePages() ? '' : 'disabled' }}">
-                                    @if($followups->hasMorePages())
-                                        <a class="page-link" href="{{ $followups->nextPageUrl() }}" aria-label="Next page">&gt;</a>
-                                    @else
-                                        <span class="page-link" aria-hidden="true">&gt;</span>
-                                    @endif
-                                </li>
-                            </ul>
-                        @endif
+                        @include('partials.follow-pagination', ['paginator' => $followups, 'countId' => 'follow-count'])
                     </div>
                 </div>
             </div>
@@ -342,26 +307,6 @@
             flex-wrap: wrap;
         }
 
-        .follow-pagination {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .follow-pagination .page-link {
-            min-width: 34px;
-            text-align: center;
-            border-radius: 8px;
-        }
-
-        .follow-pagination .page-item.active .page-link {
-            z-index: 1;
-        }
-
-        .follow-pagination .page-ellipsis .page-link {
-            min-width: auto;
-        }
     </style>
 @endpush
 
