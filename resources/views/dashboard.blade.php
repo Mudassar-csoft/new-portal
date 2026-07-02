@@ -603,6 +603,9 @@
 			transform: translateY(-50%);
 			text-align: right;
 			font-size: 11px !important;
+			right: 12px;
+			left: auto;
+			max-width: calc(100% - 24px);
 		}
 
 		.chart-statistic-box .tbl-data {
@@ -2115,7 +2118,6 @@
 				}
 
 				var xLabelTop = Math.max(6, chartArea.top - 16);
-				var rightLabelLeft = chartArea.left + chartArea.width + 8;
 
 				points.forEach(function (point, index) {
 					var xPosition;
@@ -2145,7 +2147,7 @@
 						'class': 'income-axis-label',
 						text: formatAmount(tick)
 					}).css({
-						left: rightLabelLeft-5 + 'px',
+						right: '12px',
 						top: yPosition + 'px'
 					}).appendTo(rightAxis);
 				});
@@ -2500,7 +2502,7 @@ var admissionData = admissionAllowed
 					},
 					chartArea: {
 						left: 20,
-						right: 48,
+						right: 64,
 						top: 36,
 						bottom: 24,
 						width: '100%',
