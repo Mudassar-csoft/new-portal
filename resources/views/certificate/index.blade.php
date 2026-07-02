@@ -137,7 +137,13 @@
                                     @endphp
                                     <tr>
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td>{{ $cert->student_name ?? 'N/A' }}</td>
+                                        <td>
+                                            @if((int) ($cert->registration_id ?? 0) > 0)
+                                                <a href="{{ route('student.show', $cert->registration_id) }}">{{ $cert->student_name ?? 'N/A' }}</a>
+                                            @else
+                                                {{ $cert->student_name ?? 'N/A' }}
+                                            @endif
+                                        </td>
                                         <td>{{ $cert->registration_number ?? 'N/A' }}</td>
                                         <td>{{ $cert->program?->title ?? $cert->program?->name ?? 'N/A' }}</td>
                                         <td>{{ $cert->campus?->code ?? $cert->campus?->name ?? 'N/A' }}</td>
