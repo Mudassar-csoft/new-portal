@@ -122,13 +122,10 @@
                             <thead>
                                 <tr>
                                     <th>Sr</th>
-                                    <th>Certificate #</th>
                                     <th>Student</th>
-                                    <th>Roll / Reg No</th>
+                                    <th>Reg No</th>
                                     <th>Programme</th>
                                     <th>Campus</th>
-                                    <th>Status Date</th>
-                                    <th>Status</th>
                                     <th class="text-left">Action</th>
                                 </tr>
                             </thead>
@@ -140,28 +137,17 @@
                                     @endphp
                                     <tr>
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td><strong>{{ 'CERT-ADM-' . str_pad((string) $cert->id, 6, '0', STR_PAD_LEFT) }}</strong></td>
                                         <td>{{ $cert->student_name ?? 'N/A' }}</td>
-                                        <td>
-                                            {{ $cert->roll_number ?? 'N/A' }}
-                                            <br>
-                                            <span class="text-muted">{{ $cert->registration_number ?? '' }}</span>
-                                        </td>
+                                        <td>{{ $cert->registration_number ?? 'N/A' }}</td>
                                         <td>{{ $cert->program?->title ?? $cert->program?->name ?? 'N/A' }}</td>
                                         <td>{{ $cert->campus?->code ?? $cert->campus?->name ?? 'N/A' }}</td>
-                                        <td>{{ optional($cert->status_updated_at)->format('d-M-Y') ?? optional($cert->updated_at)->format('d-M-Y') ?? 'N/A' }}</td>
-                                        <td>
-                                            <span class="label {{ $statusLabelClasses[$statusKey] ?? 'label-default' }}">
-                                                {{ $statusLabels[$statusKey] ?? ucfirst($statusKey) }}
-                                            </span>
-                                        </td>
                                         <td class="action-cell">
                                             @include('certificate.partials.action', ['actionId' => 'cert-action-' . $cert->id])
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted">No certificates found for the selected filters.</td>
+                                        <td colspan="6" class="text-center text-muted">No certificates found for the selected filters.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
