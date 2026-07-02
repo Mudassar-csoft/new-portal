@@ -375,6 +375,58 @@ text-align: left !important;
 
 }
 
+.page-content table thead th.follow-sortable,
+.page-content table.dataTable thead th.sorting,
+.page-content table.dataTable thead th.sorting_asc,
+.page-content table.dataTable thead th.sorting_desc {
+    position: relative;
+    cursor: pointer;
+    padding-right: 26px !important;
+    user-select: none;
+}
+
+.page-content table thead th.follow-sortable::before,
+.page-content table thead th.follow-sortable::after,
+.page-content table.dataTable thead th.sorting::before,
+.page-content table.dataTable thead th.sorting::after,
+.page-content table.dataTable thead th.sorting_asc::before,
+.page-content table.dataTable thead th.sorting_asc::after,
+.page-content table.dataTable thead th.sorting_desc::before,
+.page-content table.dataTable thead th.sorting_desc::after {
+    position: absolute;
+    right: 10px;
+    color: currentColor;
+    opacity: 0.28;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.page-content table thead th.follow-sortable::before,
+.page-content table.dataTable thead th.sorting::before,
+.page-content table.dataTable thead th.sorting_asc::before,
+.page-content table.dataTable thead th.sorting_desc::before {
+    content: "▲";
+    top: calc(50% - 11px);
+}
+
+.page-content table thead th.follow-sortable::after,
+.page-content table.dataTable thead th.sorting::after,
+.page-content table.dataTable thead th.sorting_asc::after,
+.page-content table.dataTable thead th.sorting_desc::after {
+    content: "▼";
+    top: calc(50% + 1px);
+}
+
+.page-content table thead th.follow-sortable.is-sorted-asc::before,
+.page-content table.dataTable thead th.sorting_asc::before {
+    opacity: 0.78;
+}
+
+.page-content table thead th.follow-sortable.is-sorted-desc::after,
+.page-content table.dataTable thead th.sorting_desc::after {
+    opacity: 0.78;
+}
+
 .table-responsive {
 text-align: left !important;
 }
@@ -2279,6 +2331,164 @@ margin-left: 0;
 				});
 			}
 
+			function getManualTableRows($table) {
+				return $table.find('tbody tr').filter(function () {
+					return !$(this).is('[data-empty-row], .dataTables_empty') && !$(this).find('td[colspan]').length;
+				});
+			}
+
+			function getFollowFooterCount($controls, context) {
+				var $scope = context.$wrapper && context.$wrapper.length
+					? context.$wrapper
+					: $controls.closest('.follow-body, .panel-body, .box-typical-body, .card-body, .follow-shell');
+
+				return $scope.find('.follow-footer').first().children('div').first();
+			}
+
+			function updateManualFilterCount($controls, context, visibleRows, totalRows, hasSearch) {
+				var $count = getFollowFooterCount($controls, context);
+				if (!$count.length) {
+					return;
+				}
+
+				if (!$count.data('followOriginalText')) {
+					$count.data('followOriginalText', $.trim($count.text()));
+				}
+
+				if (!hasSearch) {
+					$count.text($count.data('followOriginalText'));
+					return;
+				}
+
+				var label = /entries/i.test($count.data('followOriginalText')) ? 'entries' : 'Entries';
+				$count.text('Showing ' + (visibleRows ? 1 : 0) + ' to ' + visibleRows + ' of ' + visibleRows + ' ' + label);
+			}
+
+			function applyManualTableSearch($controls, context, $searchInput) {
+				if (context.api || !context.$table.length || !$searchInput.length) {
+					return;
+				}
+
+				var query = $.trim(String($searchInput.val() || '')).toLowerCase();
+				var $rows = getManualTableRows(context.$table);
+				var visibleRows = 0;
+
+				$rows.each(function () {
+					var $row = $(this);
+					var matches = !query || $row.text().toLowerCase().indexOf(query) !== -1;
+					$row.toggle(matches);
+
+					if (matches) {
+						visibleRows++;
+					}
+				});
+
+				context.$table.find('tbody tr[data-empty-row]').toggle(!query && !$rows.length);
+				updateManualFilterCount($controls, context, visibleRows, $rows.length, !!query);
+			}
+
+			function bindManualFollowSearch($controls, context, $searchInput) {
+				if (context.api || !$searchInput.length || $searchInput.data('followManualSearchReady')) {
+					return;
+				}
+
+				$searchInput.on('input.followManualSearch keyup.followManualSearch', function () {
+					applyManualTableSearch($controls, context, $searchInput);
+				});
+
+				$searchInput.data('followManualSearchReady', true);
+				applyManualTableSearch($controls, context, $searchInput);
+			}
+
+			function normalizeSortText(value) {
+				return $.trim(String(value || '')).replace(/\s+/g, ' ');
+			}
+
+			function parseSortNumber(value) {
+				var normalized = normalizeSortText(value).replace(/rs\.?/ig, '').replace(/[, ]/g, '');
+				if (!normalized || !/^-?\d+(\.\d+)?$/.test(normalized)) {
+					return null;
+				}
+
+				return Number(normalized);
+			}
+
+			function parseSortDate(value) {
+				var text = normalizeSortText(value);
+				var parsed = Date.parse(text);
+				return Number.isFinite(parsed) ? parsed : null;
+			}
+
+			function compareSortValues(left, right) {
+				var leftNumber = parseSortNumber(left);
+				var rightNumber = parseSortNumber(right);
+
+				if (leftNumber !== null && rightNumber !== null) {
+					return leftNumber - rightNumber;
+				}
+
+				var leftDate = parseSortDate(left);
+				var rightDate = parseSortDate(right);
+
+				if (leftDate !== null && rightDate !== null) {
+					return leftDate - rightDate;
+				}
+
+				return normalizeSortText(left).localeCompare(normalizeSortText(right), undefined, {
+					numeric: true,
+					sensitivity: 'base'
+				});
+			}
+
+			function bindManualTableSorting(context) {
+				if (context.api || !context.$table.length || context.$table.data('followManualSortReady')) {
+					return;
+				}
+
+				var $headers = context.$table.find('thead th');
+				if (!$headers.length) {
+					return;
+				}
+
+				$headers.each(function (index) {
+					var $header = $(this);
+					if ($header.attr('colspan') || $header.hasClass('no-sort')) {
+						return;
+					}
+
+					$header.addClass('follow-sortable').attr('role', 'button').attr('tabindex', '0');
+
+					function sortColumn() {
+						var direction = $header.data('followSortDirection') === 'asc' ? 'desc' : 'asc';
+						var rows = getManualTableRows(context.$table).get();
+
+						$headers.removeClass('is-sorted-asc is-sorted-desc').removeData('followSortDirection');
+						$header.addClass(direction === 'asc' ? 'is-sorted-asc' : 'is-sorted-desc');
+						$header.data('followSortDirection', direction);
+
+						rows.sort(function (leftRow, rightRow) {
+							var leftText = $(leftRow).children().eq(index).text();
+							var rightText = $(rightRow).children().eq(index).text();
+							var result = compareSortValues(leftText, rightText);
+
+							return direction === 'asc' ? result : -result;
+						});
+
+						context.$table.children('tbody').append(rows);
+					}
+
+					$header.on('click.followManualSort', sortColumn);
+					$header.on('keydown.followManualSort', function (event) {
+						if (event.key === 'Enter' || event.key === ' ') {
+							event.preventDefault();
+							sortColumn();
+						}
+					});
+				});
+
+				context.$table.data('followManualSortReady', true);
+			}
+
 			function storeInitialTableState(context) {
 				if (!context.$table.length || context.$table.data('followInitialState')) {
 					return;
@@ -2390,6 +2600,7 @@ margin-left: 0;
 				} else {
 					context.$table.removeClass('follow-table-density-compact');
 					context.$table.find('tbody tr').show();
+					context.$table.find('thead th').removeClass('is-sorted-asc is-sorted-desc').removeData('followSortDirection');
 
 					if ($.isArray(initialState.columnVisibility)) {
 						$.each(initialState.columnVisibility, function (index, visible) {
@@ -2642,6 +2853,9 @@ margin-left: 0;
 					if ($searchInput.length) {
 						$searchInput.attr('placeholder', 'Search');
 					}
+
+					bindManualFollowSearch($controls, context, $searchInput);
+					bindManualTableSorting(context);
 
 					$controls.data('followToolbarReady', true);
 					updateColumnDropdownState(context);
