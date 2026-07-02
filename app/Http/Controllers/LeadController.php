@@ -1513,6 +1513,10 @@ class LeadController extends Controller
         $todayStart = now()->startOfDay();
         $todayEnd = now()->endOfDay();
 
+        if ($window === 'pending') {
+            $query->where('status', 'pending');
+        }
+
         return $query->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($todayEnd, $todayStart, $window) {
             $latestFollowupQuery->whereNotNull('next_action_date');
 
