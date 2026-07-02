@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -73,16 +74,22 @@ class AdmissionController extends Controller
             ->get();
         $batches = $this->admissionBatches();
 
-        $isAnotherCourseEnrollment = (bool) ($sourceRegistration || $sourceAdmission);
+        $isAnotherCourseEnrollment = $this->isAnotherCourseEnrollment($sourceRegistration, $sourceAdmission);
         $formDefaults = $this->buildAdmissionFormDefaults($lead, $sourceRegistration, $sourceAdmission, $isAnotherCourseEnrollment);
         $selectedProgramId = (int) ($request->old('program_id', $formDefaults['program_id'] ?? 0) ?? 0);
-        $existingRegistration = ($lead && ! $isAnotherCourseEnrollment)
-            ? Registration::query()
-                ->where('lead_id', $lead->id)
-                ->when($selectedProgramId > 0, fn ($query) => $query->where('program_id', $selectedProgramId))
-                ->latest()
-                ->first()
-            : null;
+        $existingRegistration = null;
+
+        if (! $isAnotherCourseEnrollment) {
+            $existingRegistration = $sourceRegistration;
+
+            if (! $existingRegistration && $lead) {
+                $existingRegistration = Registration::query()
+                    ->where('lead_id', $lead->id)
+                    ->when($selectedProgramId > 0, fn ($query) => $query->where('program_id', $selectedProgramId))
+                    ->latest()
+                    ->first();
+            }
+        }
 
         $disallowedProgramIds = $isAnotherCourseEnrollment
             ? $this->resolveStudentProgramIds($lead, $sourceRegistration, $sourceAdmission)
@@ -299,7 +306,11 @@ class AdmissionController extends Controller
                 $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
             }
 
-            $isAnotherCourseEnrollment = (bool) ($sourceAdmission || $sourceRegistration);
+            $isAnotherCourseEnrollment = $this->isAnotherCourseEnrollment(
+                $sourceRegistration,
+                $sourceAdmission,
+                (int) $validated['program_id']
+            );
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
@@ -383,13 +394,19 @@ class AdmissionController extends Controller
                 $lead->update($leadUpdates);
             }
 
-            $registration = (! $isAnotherCourseEnrollment && $lead)
-                ? Registration::query()
-                    ->where('lead_id', $lead->id)
-                    ->where('program_id', $validated['program_id'])
-                    ->latest()
-                    ->first()
-                : null;
+            $registration = null;
+
+            if (! $isAnotherCourseEnrollment) {
+                $registration = $sourceRegistration;
+
+                if (! $registration && $lead) {
+                    $registration = Registration::query()
+                        ->where('lead_id', $lead->id)
+                        ->where('program_id', $validated['program_id'])
+                        ->latest()
+                        ->first();
+                }
+            }
             if (!$registration) {
                 $regNumbers = $this->previewNumbers($campus->code);
                 $registration = Registration::create([
@@ -438,7 +455,7 @@ class AdmissionController extends Controller
                         'notes' => 'Registration fee auto-collected during admission.',
                     ]);
 
-                    app(FinanceAccountingService::class)->syncFeeCollection($registrationFee);
+                    $this->syncFeeCollectionSafely($registrationFee);
                 }
             } else {
                 $registration->update([
@@ -607,7 +624,7 @@ class AdmissionController extends Controller
                     $isInstallment = $feeType === 'installments';
                     $isPaid = !$isInstallment || $isFirstInstallment;
 
-                    $feeCollection = FeeCollection::create([
+                    $feeCollection = FeeCollection::create($this->filterToExistingTableColumns('fee_collections', [
                         'lead_id' => $lead?->id,
                         'registration_id' => $registration?->id,
                         'admission_id' => $admission->id,
@@ -630,10 +647,10 @@ class AdmissionController extends Controller
                         'notes' => $isPaid
                             ? ($isInstallment ? 'First installment paid at admission.' : 'Admission fee collected.')
                             : 'Installment ' . ($index + 1) . ' scheduled.',
-                    ]);
+                    ]));
 
                     if ($isPaid) {
-                        app(FinanceAccountingService::class)->syncFeeCollection($feeCollection);
+                        $this->syncFeeCollectionSafely($feeCollection);
                     }
                 }
             }
@@ -655,16 +672,17 @@ class AdmissionController extends Controller
             throw $e;
         } catch (Throwable $e) {
             report($e);
+            $errorMessage = $this->admissionSaveErrorMessage($e);
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Unable to save the admission right now. Please try again.',
+                    'message' => $errorMessage,
                 ], 500);
             }
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Unable to save the admission right now. Please try again.');
+                ->with('error', $errorMessage);
         }
     }
 
@@ -1062,10 +1080,10 @@ class AdmissionController extends Controller
 
             try {
                 return DB::transaction(function () use ($rollNumber, $receiptNumber, $attributes) {
-                    return Admission::create(array_merge($attributes, [
+                    return Admission::create($this->filterToExistingTableColumns('admissions', array_merge($attributes, [
                         'roll_number' => $rollNumber,
                         'receipt_number' => $receiptNumber,
-                    ]));
+                    ])));
                 });
             } catch (QueryException $e) {
                 $msg = $e->getMessage();
@@ -1156,6 +1174,82 @@ class AdmissionController extends Controller
         }
 
         return $defaults;
+    }
+
+    private function isAnotherCourseEnrollment(
+        ?Registration $sourceRegistration,
+        ?Admission $sourceAdmission,
+        ?int $selectedProgramId = null
+    ): bool {
+        if ($sourceAdmission) {
+            return true;
+        }
+
+        if (! $sourceRegistration) {
+            return false;
+        }
+
+        $hasExistingAdmission = $sourceRegistration->relationLoaded('admission')
+            ? $sourceRegistration->admission !== null
+            : $sourceRegistration->admission()->exists();
+
+        if ($hasExistingAdmission) {
+            return true;
+        }
+
+        if ($selectedProgramId !== null && $selectedProgramId > 0) {
+            $sourceProgramId = (int) ($sourceRegistration->program_id ?? 0);
+
+            if ($sourceProgramId > 0 && $sourceProgramId !== $selectedProgramId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function syncFeeCollectionSafely(FeeCollection $feeCollection): void
+    {
+        try {
+            app(FinanceAccountingService::class)->syncFeeCollection($feeCollection);
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    private function admissionSaveErrorMessage(Throwable $e): string
+    {
+        $message = $e instanceof QueryException
+            ? ($e->getPrevious()?->getMessage() ?: $e->getMessage())
+            : $e->getMessage();
+
+        $message = trim((string) preg_replace('/\s+/', ' ', (string) $message));
+        $message = preg_replace('/ \(Connection:.*$/', '', $message) ?: $message;
+
+        if ($message === '') {
+            return 'Unable to save the admission right now. Please try again.';
+        }
+
+        return Str::limit($message, 500);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    private function filterToExistingTableColumns(string $table, array $attributes): array
+    {
+        static $columnCache = [];
+
+        if (!array_key_exists($table, $columnCache)) {
+            $columnCache[$table] = array_flip(Schema::getColumnListing($table));
+        }
+
+        return array_filter(
+            $attributes,
+            fn ($value, $column) => array_key_exists($column, $columnCache[$table]),
+            ARRAY_FILTER_USE_BOTH
+        );
     }
 
     /**

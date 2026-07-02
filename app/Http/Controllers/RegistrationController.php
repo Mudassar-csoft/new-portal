@@ -235,15 +235,67 @@ class RegistrationController extends Controller
         return response()->json($this->previewNumbers($campus->code));
     }
 
-    public function status(): View
+    public function status(Request $request): View
     {
+        $activePeriod = (string) $request->query('period', 'all');
+        if (!in_array($activePeriod, ['all', 'today', 'month', 'year'], true)) {
+            $activePeriod = 'all';
+        }
+
+        $search = trim((string) $request->query('search', ''));
+        $perPage = (int) $request->integer('per_page', 25);
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 25;
+        }
+
+        $countBaseQuery = $this->scopeQueryToUserCampus(Registration::query(), auth()->user());
+
+        $periodCounts = [
+            'all' => (clone $countBaseQuery)->count(),
+            'today' => $this->applyRegistrationPeriodFilter(clone $countBaseQuery, 'today')->count(),
+            'month' => $this->applyRegistrationPeriodFilter(clone $countBaseQuery, 'month')->count(),
+            'year' => $this->applyRegistrationPeriodFilter(clone $countBaseQuery, 'year')->count(),
+        ];
+
         $registrations = $this->scopeQueryToUserCampus(Registration::query(), auth()->user())
-            ->with(['campus', 'admission'])
+            ->with([
+                'campus:id,code,name',
+                'admission:id,registration_id',
+            ])
+            ->when($activePeriod !== 'all', fn ($query) => $this->applyRegistrationPeriodFilter($query, $activePeriod))
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($builder) use ($search) {
+                    $builder
+                        ->where('student_name', 'like', '%' . $search . '%')
+                        ->orWhere('guardian_name', 'like', '%' . $search . '%')
+                        ->orWhere('phone', 'like', '%' . $search . '%')
+                        ->orWhere('registration_number', 'like', '%' . $search . '%')
+                        ->orWhere('receipt_number', 'like', '%' . $search . '%')
+                        ->orWhereHas('campus', function ($campusQuery) use ($search) {
+                            $campusQuery
+                                ->where('code', 'like', '%' . $search . '%')
+                                ->orWhere('name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('program', function ($programQuery) use ($search) {
+                            $programQuery
+                                ->where('title', 'like', '%' . $search . '%')
+                                ->orWhere('name', 'like', '%' . $search . '%')
+                                ->orWhere('code', 'like', '%' . $search . '%');
+                        });
+                });
+            })
             ->orderByDesc('registered_at')
             ->orderByDesc('id')
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('registration.status', compact('registrations'));
+        return view('registration.status', compact(
+            'registrations',
+            'activePeriod',
+            'periodCounts',
+            'search',
+            'perPage'
+        ));
     }
 
     public function voucher(Registration $registration): View
@@ -372,5 +424,45 @@ class RegistrationController extends Controller
             'address' => 'postal address',
             'remarks' => 'remarks',
         ];
+    }
+
+    private function applyRegistrationPeriodFilter($query, string $period)
+    {
+        return match ($period) {
+            'today' => $query->where(function ($builder) {
+                $builder
+                    ->whereDate('registered_at', today())
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('registered_at')
+                            ->whereDate('created_at', today());
+                    });
+            }),
+            'month' => $query->where(function ($builder) {
+                $builder
+                    ->where(function ($nested) {
+                        $nested
+                            ->whereNotNull('registered_at')
+                            ->whereYear('registered_at', now()->year)
+                            ->whereMonth('registered_at', now()->month);
+                    })
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('registered_at')
+                            ->whereYear('created_at', now()->year)
+                            ->whereMonth('created_at', now()->month);
+                    });
+            }),
+            'year' => $query->where(function ($builder) {
+                $builder
+                    ->whereYear('registered_at', now()->year)
+                    ->orWhere(function ($nested) {
+                        $nested
+                            ->whereNull('registered_at')
+                            ->whereYear('created_at', now()->year);
+                    });
+            }),
+            default => $query,
+        };
     }
 }
