@@ -7,6 +7,10 @@
         $activeScope = $activeScope ?? 'all';
         $scopeCards = $scopeCards ?? [];
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'search' => null];
+        $currentUser = auth()->user();
+        $campusOptionCount = $campuses->count();
+        $showActionColumn = $activeScope !== 'requested'
+            || ($currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false);
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',
@@ -91,7 +95,9 @@
                             <div class="program-filter-field">
                                 <label class="form-label">Campus</label>
                                 <select class="form-control form-control-sm" name="campus_id">
-                                    <option value="">All Campuses</option>
+                                    @if($campusOptionCount > 1)
+                                        <option value="">All Campuses</option>
+                                    @endif
                                     @foreach($campuses as $campus)
                                         <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
                                             {{ $campus->code }} - {{ $campus->name }}
@@ -126,7 +132,9 @@
                                     <th>Reg No</th>
                                     <th>Programme</th>
                                     <th>Campus</th>
-                                    <th class="text-left">Action</th>
+                                    @if($showActionColumn)
+                                        <th class="text-left">Action</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,13 +155,15 @@
                                         <td>{{ $cert->registration_number ?? 'N/A' }}</td>
                                         <td>{{ $cert->program?->title ?? $cert->program?->name ?? 'N/A' }}</td>
                                         <td>{{ $cert->campus?->code ?? $cert->campus?->name ?? 'N/A' }}</td>
-                                        <td class="action-cell">
-                                            @include('certificate.partials.action', ['actionId' => 'cert-action-' . $cert->id])
-                                        </td>
+                                        @if($showActionColumn)
+                                            <td class="action-cell">
+                                                @include('certificate.partials.action', ['actionId' => 'cert-action-' . $cert->id, 'activeScope' => $activeScope])
+                                            </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted">No certificates found for the selected filters.</td>
+                                        <td colspan="{{ $showActionColumn ? 6 : 5 }}" class="text-center text-muted">No certificates found for the selected filters.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

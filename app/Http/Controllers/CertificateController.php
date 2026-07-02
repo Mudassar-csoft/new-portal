@@ -163,9 +163,14 @@ class CertificateController extends Controller
                 ->with('error', 'Only requested certificates can be approved.');
         }
 
+        $validated = $request->validate([
+            'remarks' => ['nullable', 'string'],
+        ]);
+
         $admission->update([
             'student_status' => Admission::CERTIFICATE_STATUS_APPROVED,
             'status_updated_at' => now(),
+            'remarks' => $this->mergeCertificateRemarks($admission->remarks, $validated['remarks'] ?? null),
         ]);
 
         return redirect()->route('certificate.index')
@@ -184,9 +189,14 @@ class CertificateController extends Controller
                 ->with('error', 'Only requested or approved certificates can be rejected.');
         }
 
+        $validated = $request->validate([
+            'remarks' => ['nullable', 'string'],
+        ]);
+
         $admission->update([
             'student_status' => Admission::CERTIFICATE_REQUESTABLE_STATUS,
             'status_updated_at' => now(),
+            'remarks' => $this->mergeCertificateRemarks($admission->remarks, $validated['remarks'] ?? null),
         ]);
 
         return redirect()->route('certificate.index')
@@ -362,5 +372,21 @@ class CertificateController extends Controller
             Admission::STUDENT_STATUS_BADGE_CLASSES,
             array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
         );
+    }
+
+    private function mergeCertificateRemarks(?string $currentRemarks, ?string $newRemarks): ?string
+    {
+        $current = trim((string) $currentRemarks);
+        $incoming = trim((string) $newRemarks);
+
+        if ($incoming === '') {
+            return $current !== '' ? $current : null;
+        }
+
+        if ($current === '') {
+            return $incoming;
+        }
+
+        return $current . PHP_EOL . $incoming;
     }
 }

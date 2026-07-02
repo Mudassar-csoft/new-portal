@@ -1,6 +1,24 @@
 @php
     $actionId = $actionId ?? ('cert-action-' . $cert->id);
     $status = $cert->student_status ?? 'requested';
+    $user = auth()->user();
+    $requestedScopeOnly = ($activeScope ?? null) === 'requested';
+    $canEditRemarks = ($user?->isAdmin() ?? false) && ($user?->hasAnyPermission(['certificate.update']) ?? false);
+    $canApprove = $user?->hasAnyPermission(['certificate.approve']) ?? false;
+    $canReject = $user?->hasAnyPermission(['certificate.reject']) ?? false;
+    $canSendToPrinting = $user?->hasAnyPermission(['certificate.send-to-printing']) ?? false;
+    $canMarkReady = $user?->hasAnyPermission(['certificate.mark-ready']) ?? false;
+    $canMarkDelivered = $user?->hasAnyPermission(['certificate.mark-delivered']) ?? false;
+    $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
+
+    $showEditRemarks = ! $requestedScopeOnly && $canEditRemarks;
+    $showApprove = $status === 'requested' && $canApprove;
+    $showReject = in_array($status, ['requested', 'approved'], true) && $canReject;
+    $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
+    $showMarkReady = ! $requestedScopeOnly && $status === 'printing' && $canMarkReady;
+    $showMarkDelivered = ! $requestedScopeOnly && $status === 'ready' && $canMarkDelivered;
+    $showDelete = ! $requestedScopeOnly && $status !== 'delivered' && $canDelete;
+    $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showDelete;
 @endphp
 
 @once
@@ -37,22 +55,24 @@
     @endpush
 @endonce
 
+@if($hasActions)
 <div class="dropdown follow-action-dropdown">
     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-display="static" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Actions
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-        @if(auth()->user()?->isAdmin())
+        @if($showEditRemarks)
             <a class="dropdown-item lead-action-item" href="{{ route('certificate.edit', $cert) }}">
                 <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
                 <span class="lead-action-label">Edit Remarks</span>
             </a>
         @endif
 
-        @if($status === 'requested')
-            <form method="POST" action="{{ route('certificate.approve', $cert) }}" onsubmit="return confirm('Approve this certificate request?');">
+        @if($showApprove)
+            <form method="POST" action="{{ route('certificate.approve', $cert) }}" onsubmit="return promptCertificateRemark(this, 'Approve this certificate request?');">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="remarks" value="">
                 <button type="submit" class="dropdown-item lead-action-item">
                     <span class="lead-action-icon lead-icon-green"><i class="fa fa-check"></i></span>
                     <span class="lead-action-label">Approve</span>
@@ -60,10 +80,11 @@
             </form>
         @endif
 
-        @if(in_array($status, ['requested', 'approved'], true))
-            <form method="POST" action="{{ route('certificate.reject', $cert) }}" onsubmit="return confirm('Reject this certificate?');">
+        @if($showReject)
+            <form method="POST" action="{{ route('certificate.reject', $cert) }}" onsubmit="return promptCertificateRemark(this, 'Reject this certificate?');">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="remarks" value="">
                 <button type="submit" class="dropdown-item lead-action-item">
                     <span class="lead-action-icon lead-icon-red"><i class="fa fa-ban"></i></span>
                     <span class="lead-action-label">Reject</span>
@@ -71,7 +92,7 @@
             </form>
         @endif
 
-        @if($status === 'approved')
+        @if($showSendToPrinting)
             <form method="POST" action="{{ route('certificate.send-to-printing', $cert) }}">
                 @csrf
                 @method('PATCH')
@@ -82,7 +103,7 @@
             </form>
         @endif
 
-        @if($status === 'printing')
+        @if($showMarkReady)
             <form method="POST" action="{{ route('certificate.mark-ready', $cert) }}">
                 @csrf
                 @method('PATCH')
@@ -93,7 +114,7 @@
             </form>
         @endif
 
-        @if($status === 'ready')
+        @if($showMarkDelivered)
             <form method="POST" action="{{ route('certificate.mark-delivered', $cert) }}" onsubmit="return promptDelivery(this, '{{ addslashes($cert->student_name ?? '') }}');">
                 @csrf
                 @method('PATCH')
@@ -105,7 +126,7 @@
             </form>
         @endif
 
-        @if($status !== 'delivered')
+        @if($showDelete)
             <form method="POST" action="{{ route('certificate.destroy', $cert) }}" onsubmit="return confirm('Remove this certificate request and move the student back to pending?');">
                 @csrf
                 @method('DELETE')
@@ -117,10 +138,22 @@
         @endif
     </div>
 </div>
+@endif
 
 @once
     @push('scripts')
         <script>
+            function promptCertificateRemark(form, message) {
+                if (!form) return false;
+                var remarks = window.prompt((message || 'Add remarks') + '\n\nRemarks (optional):', '');
+                if (remarks === null) return false;
+                var remarksInput = form.querySelector('input[name=remarks]');
+                if (remarksInput) {
+                    remarksInput.value = remarks;
+                }
+                return true;
+            }
+
             function promptDelivery(form, defaultName) {
                 var to = window.prompt('Delivered to (name)?', defaultName || '');
                 if (to === null) return false;
