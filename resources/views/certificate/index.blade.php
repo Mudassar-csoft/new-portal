@@ -23,7 +23,6 @@
             'printing' => 'label-primary',
             'ready' => 'label-success',
             'delivered' => 'label-default',
-            'rejected' => 'label-danger',
         ];
     @endphp
 
@@ -128,7 +127,7 @@
                                     <th>Roll / Reg No</th>
                                     <th>Programme</th>
                                     <th>Campus</th>
-                                    <th>Requested</th>
+                                    <th>Status Date</th>
                                     <th>Status</th>
                                     <th class="text-left">Action</th>
                                 </tr>
@@ -137,23 +136,23 @@
                                 @forelse($certificates as $idx => $cert)
                                     @php
                                         $rowIndex = ($certificates->firstItem() ?? 0) + $idx;
-                                        $statusKey = $cert->status ?? 'requested';
+                                        $statusKey = $cert->student_status ?? 'requested';
                                     @endphp
                                     <tr>
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td><strong>{{ $cert->certificate_number }}</strong></td>
-                                        <td>{{ $cert->admission?->student_name ?? 'N/A' }}</td>
+                                        <td><strong>{{ 'CERT-ADM-' . str_pad((string) $cert->id, 6, '0', STR_PAD_LEFT) }}</strong></td>
+                                        <td>{{ $cert->student_name ?? 'N/A' }}</td>
                                         <td>
-                                            {{ $cert->admission?->roll_number ?? 'N/A' }}
+                                            {{ $cert->roll_number ?? 'N/A' }}
                                             <br>
-                                            <span class="text-muted">{{ $cert->admission?->registration_number ?? '' }}</span>
+                                            <span class="text-muted">{{ $cert->registration_number ?? '' }}</span>
                                         </td>
                                         <td>{{ $cert->program?->title ?? $cert->program?->name ?? 'N/A' }}</td>
                                         <td>{{ $cert->campus?->code ?? $cert->campus?->name ?? 'N/A' }}</td>
-                                        <td>{{ optional($cert->requested_at)->format('d-M-Y') ?? 'N/A' }}</td>
+                                        <td>{{ optional($cert->status_updated_at)->format('d-M-Y') ?? optional($cert->updated_at)->format('d-M-Y') ?? 'N/A' }}</td>
                                         <td>
                                             <span class="label {{ $statusLabelClasses[$statusKey] ?? 'label-default' }}">
-                                                {{ ucfirst($statusKey) }}
+                                                {{ $statusLabels[$statusKey] ?? ucfirst($statusKey) }}
                                             </span>
                                         </td>
                                         <td class="action-cell">

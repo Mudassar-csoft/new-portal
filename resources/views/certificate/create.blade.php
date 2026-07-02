@@ -56,7 +56,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">Pick the student admission this certificate is being issued for.</small>
+                                <small class="text-muted">Pick an enrolled student admission to move into certificate request.</small>
                             </div>
                         </div>
 

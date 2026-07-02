@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admission;
-use App\Models\Certificate;
 use App\Models\FeeCollection;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
@@ -11,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -72,28 +70,20 @@ class StudentRecordController extends Controller
                 ->addColumn('program_name', fn (Admission $admission) => e(optional($admission->program)->title ?? optional($admission->program)->name ?? 'N/A'))
                 ->addColumn('batch_name', fn (Admission $admission) => e(optional($admission->batch)->code ?? optional($admission->batch)->name ?? 'N/A'))
                 ->addColumn('status_badge', function (Admission $admission) {
-                    $label = self::STATUS_OPTIONS[$admission->student_status] ?? ucfirst(str_replace('_', ' ', (string) $admission->student_status));
-                    $class = match ($admission->student_status) {
-                        'enrolled' => 'label-success',
-                        'concluded' => 'label-primary',
-                        'frozen' => 'label-warning',
-                        'incomplete' => 'label-default',
-                        'suspended' => 'label-info',
-                        'admission_cancelled' => 'label-danger',
-                        'dropped' => 'label-danger',
-                        default => 'label-default',
-                    };
+                    $label = $this->studentStatusLabel($admission->student_status);
+                    $class = $this->studentStatusClass($admission->student_status);
 
                     return '<span class="label ' . $class . '">' . e($label) . '</span>';
                 })
                 ->addColumn('certificate_status', function (Admission $admission) {
-                    if (!$admission->certificate_delivered_at) {
-                        return '<span class="label label-default">Pending</span>';
+                    [$label, $class] = $this->certificateStatusMeta($admission);
+                    $details = '';
+
+                    if (($admission->student_status ?? null) === Admission::CERTIFICATE_STATUS_DELIVERED && $admission->certificate_delivered_at) {
+                        $details = '<div class="text-muted small mt-1">' . e($admission->certificate_delivered_at->format('d-M-Y')) . '</div>';
                     }
 
-                    return '<span class="label label-success">Delivered</span><div class="text-muted small mt-1">'
-                        . e(optional($admission->certificate_delivered_at)->format('d-M-Y'))
-                        . '</div>';
+                    return '<span class="label ' . e($class) . '">' . e($label) . '</span>' . $details;
                 })
                 ->addColumn('actions', fn (Admission $admission) => view('student.partials.action', [
                     'admission' => $admission,
@@ -144,8 +134,6 @@ class StudentRecordController extends Controller
 
         $this->backfillRegistrationFee($registration);
 
-        $certificatesFeatureAvailable = Schema::hasTable('certificates');
-
         $admissionQuery = Admission::query()
             ->with([
                 'batch',
@@ -155,10 +143,6 @@ class StudentRecordController extends Controller
             ])
             ->where('registration_id', $registration->id)
             ->latest('id');
-
-        if ($certificatesFeatureAvailable) {
-            $admissionQuery->with('latestCertificate');
-        }
 
         $admission = $admissionQuery->first();
         $feeCollectionsQuery = FeeCollection::query()
@@ -187,23 +171,14 @@ class StudentRecordController extends Controller
             'totalFee' => $totalFee,
             'pendingFee' => $pendingFee,
             'statusOptions' => self::STATUS_OPTIONS,
-            'certificatesFeatureAvailable' => $certificatesFeatureAvailable,
-            'certificateStatusLabels' => [
-                Certificate::STATUS_REQUESTED => 'Requested',
-                Certificate::STATUS_APPROVED => 'Approved',
-                Certificate::STATUS_PRINTING => 'Printing',
-                Certificate::STATUS_READY => 'Ready',
-                Certificate::STATUS_DELIVERED => 'Delivered',
-                Certificate::STATUS_REJECTED => 'Rejected',
-            ],
-            'certificateStatusClasses' => [
-                Certificate::STATUS_REQUESTED => 'label-warning',
-                Certificate::STATUS_APPROVED => 'label-info',
-                Certificate::STATUS_PRINTING => 'label-primary',
-                Certificate::STATUS_READY => 'label-success',
-                Certificate::STATUS_DELIVERED => 'label-default',
-                Certificate::STATUS_REJECTED => 'label-danger',
-            ],
+            'certificateStatusLabels' => array_intersect_key(
+                Admission::STUDENT_STATUS_LABELS,
+                array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
+            ),
+            'certificateStatusClasses' => array_intersect_key(
+                Admission::STUDENT_STATUS_BADGE_CLASSES,
+                array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
+            ),
         ]);
     }
 
@@ -353,6 +328,8 @@ class StudentRecordController extends Controller
         ]);
 
         $admission->update([
+            'student_status' => Admission::CERTIFICATE_STATUS_DELIVERED,
+            'status_updated_at' => now(),
             'certificate_delivered_at' => now(),
             'certificate_delivered_by' => $request->user()?->id,
             'certificate_delivery_notes' => $validated['certificate_delivery_notes'] ?? $admission->certificate_delivery_notes,
@@ -368,7 +345,11 @@ class StudentRecordController extends Controller
         }
 
         if ($scope === 'alumni') {
-            $query->whereNotNull('certificate_delivered_at');
+            $query->where(function ($studentQuery) {
+                $studentQuery
+                    ->where('student_status', Admission::CERTIFICATE_STATUS_DELIVERED)
+                    ->orWhereNotNull('certificate_delivered_at');
+            });
             return;
         }
 
@@ -525,5 +506,40 @@ class StudentRecordController extends Controller
 
             $remainder = 0.0;
         }
+    }
+
+    private function studentStatusLabel(?string $status): string
+    {
+        return Admission::STUDENT_STATUS_LABELS[$status] ?? ucfirst(str_replace('_', ' ', (string) $status));
+    }
+
+    private function studentStatusClass(?string $status): string
+    {
+        return Admission::STUDENT_STATUS_BADGE_CLASSES[$status] ?? 'label-default';
+    }
+
+    /**
+     * @return array{0:string,1:string}
+     */
+    private function certificateStatusMeta(Admission $admission): array
+    {
+        $status = (string) ($admission->student_status ?? '');
+
+        if ($status === Admission::CERTIFICATE_REQUESTABLE_STATUS) {
+            return ['Pending', 'label-default'];
+        }
+
+        if (in_array($status, Admission::CERTIFICATE_WORKFLOW_STATUSES, true)) {
+            return [
+                $this->studentStatusLabel($status),
+                $this->studentStatusClass($status),
+            ];
+        }
+
+        if ($admission->certificate_delivered_at) {
+            return ['Delivered', 'label-default'];
+        }
+
+        return ['Pending', 'label-default'];
     }
 }

@@ -3,20 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admission;
-use App\Models\Campus;
-use App\Models\Certificate;
 use App\Models\Program;
-use Carbon\Carbon;
+use App\Support\ResolvesCampusScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
 {
+    use ResolvesCampusScope;
+
     private const ALLOWED_SCOPES = [
         'all',
         'requested',
@@ -24,27 +21,23 @@ class CertificateController extends Controller
         'printing',
         'ready',
         'delivered',
-        'rejected',
     ];
 
-    public function index(Request $request): View|RedirectResponse
+    public function index(Request $request): View
     {
-        if (! $this->certificateModuleReady()) {
-            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
-        }
-
         $scope = (string) $request->query('scope', 'all');
-        if (!in_array($scope, self::ALLOWED_SCOPES, true)) {
+        if (! in_array($scope, self::ALLOWED_SCOPES, true)) {
             $scope = 'all';
         }
 
-        $query = Certificate::query()
-            ->with(['admission', 'campus', 'program', 'requester', 'approver', 'deliverer']);
+        $query = $this->certificateWorkflowQuery($request->user())
+            ->with(['campus', 'program']);
 
         $this->applyScope($query, $scope);
         $this->applyFilters($query, $request);
 
         $certificates = $query
+            ->orderByDesc('status_updated_at')
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
@@ -53,7 +46,7 @@ class CertificateController extends Controller
             'certificates' => $certificates,
             'activeScope' => $scope,
             'scopeCards' => $this->buildScopeCards($request),
-            'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name']),
+            'campuses' => $this->campusOptionsForUser($request->user(), ['id', 'code', 'name']),
             'programs' => Program::query()->orderByRaw('COALESCE(title, name)')->get(['id', 'code', 'title', 'name']),
             'filters' => [
                 'scope' => $scope,
@@ -62,22 +55,20 @@ class CertificateController extends Controller
                 'search' => $request->input('search'),
             ],
             'pageTitle' => $this->resolvePageTitle($scope),
+            'statusLabels' => $this->certificateStatusLabels(),
+            'statusClasses' => $this->certificateStatusClasses(),
         ]);
     }
 
-    public function create(Request $request): View|RedirectResponse
+    public function create(Request $request): View
     {
-        if (! $this->certificateModuleReady()) {
-            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
-        }
-
         $admissionId = $request->integer('admission_id') ?: null;
         $selectedAdmission = $admissionId
-            ? $this->certificateEligibleAdmissionsQuery()->with(['program', 'campus'])->find($admissionId)
+            ? $this->certificateEligibleAdmissionsQuery($request->user())->with(['program', 'campus'])->find($admissionId)
             : null;
 
         return view('certificate.create', [
-            'admissions' => $this->certificateEligibleAdmissionsQuery()
+            'admissions' => $this->certificateEligibleAdmissionsQuery($request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
                 ->orderByDesc('admission_date')
                 ->limit(500)
@@ -88,58 +79,55 @@ class CertificateController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        if (! $this->certificateModuleReady()) {
-            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
-        }
-
         $validated = $request->validate([
             'admission_id' => ['required', 'exists:admissions,id'],
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $admission = $this->certificateEligibleAdmissionsQuery()->findOrFail($validated['admission_id']);
-
-        $existingCertificate = Certificate::query()
-            ->where('admission_id', $admission->id)
-            ->latest('id')
-            ->first();
-
-        if ($existingCertificate) {
-            return redirect()->route('certificate.index')
-                ->with('error', 'A certificate record already exists for this student.');
+        $admission = $this->certificateEligibleAdmissionsQuery($request->user())->find($validated['admission_id']);
+        if (! $admission) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Only enrolled students can be moved into certificate request.');
         }
 
-        Certificate::create([
-            'admission_id' => $admission->id,
-            'campus_id' => $admission->campus_id,
-            'program_id' => $admission->program_id,
-            'certificate_number' => $this->generateCertificateNumber(),
-            'status' => Certificate::STATUS_REQUESTED,
-            'requested_by' => optional($request->user())->id,
-            'requested_at' => now(),
-            'remarks' => $validated['remarks'] ?? null,
-        ]);
+        $updates = [
+            'student_status' => Admission::CERTIFICATE_STATUS_REQUESTED,
+            'status_updated_at' => now(),
+        ];
 
-        return redirect()->route('certificate.index')
+        if (filled($validated['remarks'] ?? null)) {
+            $updates['remarks'] = $validated['remarks'];
+        }
+
+        $admission->update($updates);
+
+        return redirect()->route('certificate.index', ['scope' => 'requested'])
             ->with('status', 'Certificate request created.');
     }
 
-    public function edit(Certificate $certificate): View
+    public function edit(Admission $admission): View
     {
-        $certificate->load(['admission.program', 'admission.campus']);
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access certificate records from another campus.');
+        $this->ensureCertificateWorkflowAdmission($admission);
 
         return view('certificate.edit', [
-            'certificate' => $certificate,
+            'admission' => $admission->load(['program', 'campus']),
+            'statusLabels' => $this->certificateStatusLabels(),
+            'statusClasses' => $this->certificateStatusClasses(),
         ]);
     }
 
-    public function update(Request $request, Certificate $certificate): RedirectResponse
+    public function update(Request $request, Admission $admission): RedirectResponse
     {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+        $this->ensureCertificateWorkflowAdmission($admission);
+
         $validated = $request->validate([
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $certificate->update([
+        $admission->update([
             'remarks' => $validated['remarks'] ?? null,
         ]);
 
@@ -147,93 +135,105 @@ class CertificateController extends Controller
             ->with('status', 'Certificate updated.');
     }
 
-    public function destroy(Certificate $certificate): RedirectResponse
+    public function destroy(Request $request, Admission $admission): RedirectResponse
     {
-        if ($certificate->status === Certificate::STATUS_DELIVERED) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+        $this->ensureCertificateWorkflowAdmission($admission);
+
+        if (($admission->student_status ?? null) === Admission::CERTIFICATE_STATUS_DELIVERED) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Delivered certificates cannot be deleted.');
         }
 
-        $certificate->delete();
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_REQUESTABLE_STATUS,
+            'status_updated_at' => now(),
+        ]);
 
         return redirect()->route('certificate.index')
-            ->with('status', 'Certificate removed.');
+            ->with('status', 'Certificate request removed. Student is back in pending certificate stage.');
     }
 
-    public function approve(Request $request, Certificate $certificate): RedirectResponse
+    public function approve(Request $request, Admission $admission): RedirectResponse
     {
-        if ($certificate->status !== Certificate::STATUS_REQUESTED) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+
+        if (($admission->student_status ?? null) !== Admission::CERTIFICATE_STATUS_REQUESTED) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Only requested certificates can be approved.');
         }
 
-        $certificate->update([
-            'status' => Certificate::STATUS_APPROVED,
-            'approved_by' => optional($request->user())->id,
-            'approved_at' => now(),
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_STATUS_APPROVED,
+            'status_updated_at' => now(),
         ]);
 
         return redirect()->route('certificate.index')
             ->with('status', 'Certificate approved.');
     }
 
-    public function reject(Request $request, Certificate $certificate): RedirectResponse
+    public function reject(Request $request, Admission $admission): RedirectResponse
     {
-        if (!in_array($certificate->status, [Certificate::STATUS_REQUESTED, Certificate::STATUS_APPROVED], true)) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+
+        if (! in_array(($admission->student_status ?? null), [
+            Admission::CERTIFICATE_STATUS_REQUESTED,
+            Admission::CERTIFICATE_STATUS_APPROVED,
+        ], true)) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Only requested or approved certificates can be rejected.');
         }
 
-        $validated = $request->validate([
-            'rejection_reason' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        $certificate->update([
-            'status' => Certificate::STATUS_REJECTED,
-            'rejected_by' => optional($request->user())->id,
-            'rejected_at' => now(),
-            'rejection_reason' => $validated['rejection_reason'] ?? null,
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_REQUESTABLE_STATUS,
+            'status_updated_at' => now(),
         ]);
 
         return redirect()->route('certificate.index')
-            ->with('status', 'Certificate rejected.');
+            ->with('status', 'Certificate request rejected. Student moved back to pending certificate stage.');
     }
 
-    public function sendToPrinting(Certificate $certificate): RedirectResponse
+    public function sendToPrinting(Request $request, Admission $admission): RedirectResponse
     {
-        if ($certificate->status !== Certificate::STATUS_APPROVED) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+
+        if (($admission->student_status ?? null) !== Admission::CERTIFICATE_STATUS_APPROVED) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Only approved certificates can be sent to printing.');
         }
 
-        $certificate->update([
-            'status' => Certificate::STATUS_PRINTING,
-            'printing_at' => now(),
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_STATUS_PRINTING,
+            'status_updated_at' => now(),
         ]);
 
         return redirect()->route('certificate.index')
             ->with('status', 'Certificate sent to printing.');
     }
 
-    public function markReady(Certificate $certificate): RedirectResponse
+    public function markReady(Request $request, Admission $admission): RedirectResponse
     {
-        if ($certificate->status !== Certificate::STATUS_PRINTING) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+
+        if (($admission->student_status ?? null) !== Admission::CERTIFICATE_STATUS_PRINTING) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Only printing certificates can be marked ready.');
         }
 
-        $certificate->update([
-            'status' => Certificate::STATUS_READY,
-            'ready_at' => now(),
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_STATUS_READY,
+            'status_updated_at' => now(),
         ]);
 
         return redirect()->route('certificate.index')
             ->with('status', 'Certificate marked ready for collection.');
     }
 
-    public function markDelivered(Request $request, Certificate $certificate): RedirectResponse
+    public function markDelivered(Request $request, Admission $admission): RedirectResponse
     {
-        if ($certificate->status !== Certificate::STATUS_READY) {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update certificate records from another campus.');
+
+        if (($admission->student_status ?? null) !== Admission::CERTIFICATE_STATUS_READY) {
             return redirect()->route('certificate.index')
                 ->with('error', 'Only ready certificates can be marked delivered.');
         }
@@ -242,21 +242,17 @@ class CertificateController extends Controller
             'delivered_to' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $certificate->update([
-            'status' => Certificate::STATUS_DELIVERED,
-            'delivered_at' => now(),
-            'delivered_by' => optional($request->user())->id,
-            'delivered_to' => $validated['delivered_to'] ?? $certificate->admission?->student_name,
-        ]);
+        $deliveredTo = trim((string) ($validated['delivered_to'] ?? ''));
 
-        // Mirror onto the admission for legacy compatibility
-        if ($certificate->admission_id) {
-            Admission::query()->where('id', $certificate->admission_id)->update([
-                'certificate_delivered_at' => now(),
-                'certificate_delivered_by' => optional($request->user())->id,
-                'certificate_delivery_notes' => 'Certificate ' . $certificate->certificate_number . ' delivered.',
-            ]);
-        }
+        $admission->update([
+            'student_status' => Admission::CERTIFICATE_STATUS_DELIVERED,
+            'status_updated_at' => now(),
+            'certificate_delivered_at' => now(),
+            'certificate_delivered_by' => optional($request->user())->id,
+            'certificate_delivery_notes' => $deliveredTo !== ''
+                ? 'Delivered to: ' . $deliveredTo
+                : 'Certificate delivered.',
+        ]);
 
         return redirect()->route('certificate.index')
             ->with('status', 'Certificate delivered.');
@@ -265,7 +261,7 @@ class CertificateController extends Controller
     private function applyScope(Builder $query, string $scope): void
     {
         if ($scope !== 'all' && in_array($scope, self::ALLOWED_SCOPES, true)) {
-            $query->where('status', $scope);
+            $query->where('student_status', $scope);
         }
     }
 
@@ -278,24 +274,22 @@ class CertificateController extends Controller
                 $keyword = trim((string) $request->input('search'));
                 $q->where(function (Builder $inner) use ($keyword) {
                     $inner
-                        ->where('certificate_number', 'like', "%{$keyword}%")
-                        ->orWhere('delivered_to', 'like', "%{$keyword}%")
-                        ->orWhereHas('admission', function (Builder $a) use ($keyword) {
-                            $a->where('student_name', 'like', "%{$keyword}%")
-                                ->orWhere('roll_number', 'like', "%{$keyword}%")
-                                ->orWhere('registration_number', 'like', "%{$keyword}%");
-                        });
+                        ->where('student_name', 'like', "%{$keyword}%")
+                        ->orWhere('roll_number', 'like', "%{$keyword}%")
+                        ->orWhere('registration_number', 'like', "%{$keyword}%")
+                        ->orWhere('remarks', 'like', "%{$keyword}%")
+                        ->orWhere('certificate_delivery_notes', 'like', "%{$keyword}%");
                 });
             });
     }
 
     private function buildScopeCards(Request $request): array
     {
-        $counts = Certificate::query()
-            ->tap(fn (Builder $q) => $this->applyFilters($q, $request))
-            ->selectRaw('status, COUNT(*) as aggregate')
-            ->groupBy('status')
-            ->pluck('aggregate', 'status');
+        $counts = $this->certificateWorkflowQuery($request->user())
+            ->tap(fn (Builder $query) => $this->applyFilters($query, $request))
+            ->selectRaw('student_status, COUNT(*) as aggregate')
+            ->groupBy('student_status')
+            ->pluck('aggregate', 'student_status');
 
         $total = (int) $counts->sum();
 
@@ -320,59 +314,53 @@ class CertificateController extends Controller
     private function resolvePageTitle(string $scope): string
     {
         return match ($scope) {
-            'requested' => 'Certificates — Request for Approval',
-            'approved' => 'Certificates — Approved',
-            'printing' => 'Certificates — On Printing',
-            'ready' => 'Certificates — Ready',
-            'delivered' => 'Certificates — Delivered',
-            'rejected' => 'Certificates — Rejected',
+            'requested' => 'Certificates - Request for Approval',
+            'approved' => 'Certificates - Approved',
+            'printing' => 'Certificates - On Printing',
+            'ready' => 'Certificates - Ready',
+            'delivered' => 'Certificates - Delivered',
             default => 'Certificate Management',
         };
     }
 
-    private function certificateEligibleAdmissionsQuery(): Builder
+    private function certificateEligibleAdmissionsQuery($user = null): Builder
     {
-        $query = Admission::query()
-            ->where('student_status', 'enrolled');
+        return $this->scopeQueryToUserCampus(Admission::query(), $user)
+            ->where('student_status', Admission::CERTIFICATE_REQUESTABLE_STATUS);
+    }
 
-        if ($this->certificateModuleReady()) {
-            $query->whereNotIn(
-                'id',
-                Certificate::query()
-                    ->whereNotNull('admission_id')
-                    ->select('admission_id')
-            );
+    private function certificateWorkflowQuery($user = null): Builder
+    {
+        return $this->scopeQueryToUserCampus(Admission::query(), $user)
+            ->certificateWorkflow();
+    }
+
+    private function ensureCertificateWorkflowAdmission(Admission $admission): void
+    {
+        if (! in_array((string) ($admission->student_status ?? ''), Admission::CERTIFICATE_WORKFLOW_STATUSES, true)) {
+            abort(404);
         }
-
-        return $query;
     }
 
-    private function certificateModuleReady(): bool
+    /**
+     * @return array<string, string>
+     */
+    private function certificateStatusLabels(): array
     {
-        return Schema::hasTable('certificates');
+        return array_intersect_key(
+            Admission::STUDENT_STATUS_LABELS,
+            array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
+        );
     }
 
-    private function generateCertificateNumber(): string
+    /**
+     * @return array<string, string>
+     */
+    private function certificateStatusClasses(): array
     {
-        $year = Carbon::now()->year;
-        $prefix = 'CERT-' . $year . '-';
-
-        return DB::transaction(function () use ($prefix, $year) {
-            $maxSeq = Certificate::query()
-                ->where('certificate_number', 'like', $prefix . '%')
-                ->lockForUpdate()
-                ->count();
-
-            $candidate = $prefix . str_pad((string) ($maxSeq + 1), 5, '0', STR_PAD_LEFT);
-
-            // Fallback in case of legacy gaps
-            $i = $maxSeq + 1;
-            while (Certificate::query()->where('certificate_number', $candidate)->exists()) {
-                $i++;
-                $candidate = $prefix . str_pad((string) $i, 5, '0', STR_PAD_LEFT);
-            }
-
-            return $candidate;
-        });
+        return array_intersect_key(
+            Admission::STUDENT_STATUS_BADGE_CLASSES,
+            array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
+        );
     }
 }

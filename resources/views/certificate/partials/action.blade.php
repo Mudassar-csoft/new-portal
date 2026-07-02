@@ -1,6 +1,6 @@
 @php
     $actionId = $actionId ?? ('cert-action-' . $cert->id);
-    $status = $cert->status ?? 'requested';
+    $status = $cert->student_status ?? 'requested';
 @endphp
 
 @once
@@ -94,7 +94,7 @@
         @endif
 
         @if($status === 'ready')
-            <form method="POST" action="{{ route('certificate.mark-delivered', $cert) }}" onsubmit="return promptDelivery(this, '{{ addslashes($cert->admission?->student_name ?? '') }}');">
+            <form method="POST" action="{{ route('certificate.mark-delivered', $cert) }}" onsubmit="return promptDelivery(this, '{{ addslashes($cert->student_name ?? '') }}');">
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="delivered_to" value="">
@@ -106,7 +106,7 @@
         @endif
 
         @if($status !== 'delivered')
-            <form method="POST" action="{{ route('certificate.destroy', $cert) }}" onsubmit="return confirm('Delete this certificate record?');">
+            <form method="POST" action="{{ route('certificate.destroy', $cert) }}" onsubmit="return confirm('Remove this certificate request and move the student back to pending?');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item lead-action-item">

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Admission extends Model
@@ -16,6 +15,50 @@ class Admission extends Model
     public const APPROVAL_STATUS_PENDING = 'pending';
     public const APPROVAL_STATUS_REQUESTED = 'approval_requested';
     public const APPROVAL_STATUS_APPROVED = 'approved';
+    public const CERTIFICATE_REQUESTABLE_STATUS = 'enrolled';
+    public const CERTIFICATE_STATUS_REQUESTED = 'requested';
+    public const CERTIFICATE_STATUS_APPROVED = 'approved';
+    public const CERTIFICATE_STATUS_PRINTING = 'printing';
+    public const CERTIFICATE_STATUS_READY = 'ready';
+    public const CERTIFICATE_STATUS_DELIVERED = 'delivered';
+
+    public const STUDENT_STATUS_LABELS = [
+        'enrolled' => 'Enrolled',
+        'concluded' => 'Concluded',
+        'frozen' => 'Frozen',
+        'incomplete' => 'Incomplete',
+        'suspended' => 'Suspended',
+        'admission_cancelled' => 'Cancelled',
+        'dropped' => 'Dropped',
+        self::CERTIFICATE_STATUS_REQUESTED => 'Requested',
+        self::CERTIFICATE_STATUS_APPROVED => 'Approved',
+        self::CERTIFICATE_STATUS_PRINTING => 'Printing',
+        self::CERTIFICATE_STATUS_READY => 'Ready',
+        self::CERTIFICATE_STATUS_DELIVERED => 'Delivered',
+    ];
+
+    public const STUDENT_STATUS_BADGE_CLASSES = [
+        'enrolled' => 'label-success',
+        'concluded' => 'label-primary',
+        'frozen' => 'label-warning',
+        'incomplete' => 'label-default',
+        'suspended' => 'label-info',
+        'admission_cancelled' => 'label-danger',
+        'dropped' => 'label-danger',
+        self::CERTIFICATE_STATUS_REQUESTED => 'label-warning',
+        self::CERTIFICATE_STATUS_APPROVED => 'label-info',
+        self::CERTIFICATE_STATUS_PRINTING => 'label-primary',
+        self::CERTIFICATE_STATUS_READY => 'label-success',
+        self::CERTIFICATE_STATUS_DELIVERED => 'label-default',
+    ];
+
+    public const CERTIFICATE_WORKFLOW_STATUSES = [
+        self::CERTIFICATE_STATUS_REQUESTED,
+        self::CERTIFICATE_STATUS_APPROVED,
+        self::CERTIFICATE_STATUS_PRINTING,
+        self::CERTIFICATE_STATUS_READY,
+        self::CERTIFICATE_STATUS_DELIVERED,
+    ];
 
     protected $fillable = [
         'registration_id',
@@ -117,13 +160,13 @@ class Admission extends Model
         return $this->hasMany(FeeCollection::class);
     }
 
-    public function latestCertificate(): HasOne
-    {
-        return $this->hasOne(Certificate::class)->latestOfMany();
-    }
-
     public function scopeApproved(Builder $query): Builder
     {
         return $query->where('approval_status', self::APPROVAL_STATUS_APPROVED);
+    }
+
+    public function scopeCertificateWorkflow(Builder $query): Builder
+    {
+        return $query->whereIn('student_status', self::CERTIFICATE_WORKFLOW_STATUSES);
     }
 }

@@ -162,11 +162,9 @@
                                         $admissionTotal = $admissionFees->sum('net_amount');
                                         $admissionPaid = $admissionFees->where('status', 'paid')->sum('net_amount');
                                         $feeStatus = $admissionPaid >= $admissionTotal && $admissionTotal > 0 ? 'Paid' : ($admissionTotal > 0 ? 'Pending' : '—');
-                                        $latestCertificate = $admission->latestCertificate;
+                                        $certificateStatus = (string) ($admission->student_status ?? '');
                                         $canRequestCertificate = auth()->user()?->hasAnyPermission('certificate.create') ?? false;
-                                        $canOpenCertificateRequest = ($certificatesFeatureAvailable ?? false)
-                                            && $latestCertificate === null
-                                            && (($admission->student_status ?? null) === 'enrolled')
+                                        $canOpenCertificateRequest = $certificateStatus === 'enrolled'
                                             && $canRequestCertificate;
                                     @endphp
                                     <tr>
@@ -185,19 +183,18 @@
                                         <td>{{ $admission->batch?->code ?? $admission->batch?->name ?? '—' }}</td>
                                         <td>{{ $admission->campus?->code ?? $admission->campus?->name ?? '—' }}</td>
                                         <td>
-                                            @if($latestCertificate)
-                                                @php($certificateStatus = $latestCertificate->status ?? 'requested')
+                                            @if(isset($certificateStatusLabels[$certificateStatus]))
                                                 <span class="label {{ $certificateStatusClasses[$certificateStatus] ?? 'label-default' }}">
                                                     {{ $certificateStatusLabels[$certificateStatus] ?? ucfirst($certificateStatus) }}
                                                 </span>
-                                            @elseif($admission->certificate_delivered_at)
-                                                <span class="label label-success">Delivered</span>
                                             @elseif($canOpenCertificateRequest)
                                                 <a href="{{ route('certificate.create', ['admission_id' => $admission->id]) }}"
                                                    class="label label-default student-cert-request-link"
                                                    title="Request certificate approval">
                                                     Pending
                                                 </a>
+                                            @elseif($admission->certificate_delivered_at)
+                                                <span class="label label-default">Delivered</span>
                                             @else
                                                 <span class="label label-default">Pending</span>
                                             @endif

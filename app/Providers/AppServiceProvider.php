@@ -6,7 +6,6 @@ use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\BatchTimetable;
 use App\Models\Campus;
-use App\Models\Certificate;
 use App\Models\FinanceOtherCharge;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
@@ -481,7 +480,7 @@ class AppServiceProvider extends ServiceProvider
                     ->selectRaw("SUM(CASE WHEN student_status = 'suspended' THEN 1 ELSE 0 END) as student_suspended")
                     ->selectRaw("SUM(CASE WHEN student_status = 'admission_cancelled' THEN 1 ELSE 0 END) as student_admission_cancelled")
                     ->selectRaw("SUM(CASE WHEN student_status = 'dropped' THEN 1 ELSE 0 END) as student_dropped")
-                    ->selectRaw('SUM(CASE WHEN certificate_delivered_at IS NOT NULL THEN 1 ELSE 0 END) as student_alumni')
+                    ->selectRaw("SUM(CASE WHEN student_status = 'delivered' OR certificate_delivered_at IS NOT NULL THEN 1 ELSE 0 END) as student_alumni")
                     ->first();
 
                 if ($can('admission.view')) {
@@ -567,17 +566,20 @@ class AppServiceProvider extends ServiceProvider
                 $sidebarCounts['campus_suspended_franchise'] = (int) ($campusSummary?->campus_suspended_franchise ?? 0);
             }
 
-            if ($can('certificate.view') && Schema::hasTable('certificates')) {
-                $certificateCounts = Certificate::query()
-                    ->selectRaw('status, COUNT(*) as aggregate')
-                    ->groupBy('status')
-                    ->pluck('aggregate', 'status');
+            if ($can('certificate.view') && Schema::hasTable('admissions')) {
+                $certificateCounts = $this->scopeQueryToUserCampus(
+                    Admission::query()->certificateWorkflow(),
+                    $user
+                )
+                    ->selectRaw('student_status, COUNT(*) as aggregate')
+                    ->groupBy('student_status')
+                    ->pluck('aggregate', 'student_status');
 
-                $sidebarCounts['certificate_requested'] = (int) ($certificateCounts[Certificate::STATUS_REQUESTED] ?? 0);
-                $sidebarCounts['certificate_approved'] = (int) ($certificateCounts[Certificate::STATUS_APPROVED] ?? 0);
-                $sidebarCounts['certificate_printing'] = (int) ($certificateCounts[Certificate::STATUS_PRINTING] ?? 0);
-                $sidebarCounts['certificate_ready'] = (int) ($certificateCounts[Certificate::STATUS_READY] ?? 0);
-                $sidebarCounts['certificate_delivered'] = (int) ($certificateCounts[Certificate::STATUS_DELIVERED] ?? 0);
+                $sidebarCounts['certificate_requested'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_REQUESTED] ?? 0);
+                $sidebarCounts['certificate_approved'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_APPROVED] ?? 0);
+                $sidebarCounts['certificate_printing'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_PRINTING] ?? 0);
+                $sidebarCounts['certificate_ready'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_READY] ?? 0);
+                $sidebarCounts['certificate_delivered'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_DELIVERED] ?? 0);
                 $sidebarCounts['certificate_all'] = (int) $certificateCounts->sum();
             }
         } catch (Throwable) {
