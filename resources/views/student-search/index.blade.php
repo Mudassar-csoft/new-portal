@@ -41,9 +41,16 @@
                     @else
                         <div class="search-summary">
                             Found <strong>{{ $totalMatches }}</strong> result{{ $totalMatches === 1 ? '' : 's' }}
-                            ({{ $admissions->count() }} admission{{ $admissions->count() === 1 ? '' : 's' }},
-                            {{ ($registrations ?? collect())->count() }} registration{{ ($registrations ?? collect())->count() === 1 ? '' : 's' }},
-                            {{ $leads->count() }} lead{{ $leads->count() === 1 ? '' : 's' }}).
+                            in
+                            @if($resultType === 'admissions')
+                                <strong>admissions</strong>.
+                            @elseif($resultType === 'registrations')
+                                <strong>registrations</strong>.
+                            @elseif($resultType === 'leads')
+                                <strong>leads</strong>.
+                            @else
+                                search results.
+                            @endif
                         </div>
 
                         @if($admissions->isNotEmpty())
@@ -59,31 +66,29 @@
                                             <th>Programme</th>
                                             <th>Primary Contact</th>
                                             <th>Campus Code</th>
-                                            <!-- <th>Admission Date</th> -->
-                                            <!-- <th>Status</th> -->
-                                            <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($admissions as $idx => $a)
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
-                                                <td><strong>{{ $a->student_name ?? 'N/A' }}</strong></td>
+                                                <td>
+                                                    @php
+                                                        $admissionRegistrationId = (int) ($a->registration_id ?? 0);
+                                                    @endphp
+                                                    @if($admissionRegistrationId > 0)
+                                                        <a href="{{ route('student.show', $admissionRegistrationId) }}" class="student-search-name-link">
+                                                            {{ $a->student_name ?? 'N/A' }}
+                                                        </a>
+                                                    @else
+                                                        <strong>{{ $a->student_name ?? 'N/A' }}</strong>
+                                                    @endif
+                                                </td>
                                                 <!-- <td>{{ $a->roll_number ?: 'N/A' }}</td> -->
                                                 <!-- <td>{{ $a->registration_number ?: 'N/A' }}</td> -->
                                                 <td>{{ $a->program?->title ?? $a->program?->name ?? 'N/A' }}</td>
                                                 <td>{{ $a->phone ?: 'N/A' }}</td>
                                                 <td>{{ $a->campus?->code ?? $a->campus?->name ?? 'N/A' }}</td>
-                                                <!-- <td>{{ optional($a->admission_date)->format('d-M-Y') ?? 'N/A' }}</td> -->
-                                                <!-- <td>
-                                                    <span class="label label-info">{{ ucfirst($a->student_status ?? 'enrolled') }}</span>
-                                                </td> -->
-                                                <td class="text-right">
-                                                    <a href="{{ $a->registration_id ? route('student.show', $a->registration_id) : route('admission.status') }}" class="btn btn-primary">
-                                                        <!-- <i class="fa fa-eye"></i>  -->
-                                                        Action
-                                                    </a>
-                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -104,31 +109,22 @@
                                             <th>Programme</th>
                                             <th>Primary Contact</th>
                                             <th>Campus Code</th>
-                                            <!-- <th>Admission Date</th> -->
-                                            <!-- <th>Status</th> -->
-                                            <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($registrations as $idx => $r)
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
-                                                <td><strong>{{ $r->student_name ?? 'N/A' }}</strong></td>
+                                                <td>
+                                                    <a href="{{ route('student.show', $r->id) }}" class="student-search-name-link">
+                                                        {{ $r->student_name ?? 'N/A' }}
+                                                    </a>
+                                                </td>
                                                 <td>{{ $r->program?->title ?? $r->program?->name ?? 'N/A' }}</td>
                                                 <td>{{ $r->phone ?: 'N/A' }}</td>
                                                 <!-- <td>{{ $r->registration_number ?: 'N/A' }}</td> -->
                                                 <!-- <td>{{ $r->receipt_number ?: 'N/A' }}</td> -->
                                                 <td>{{ $r->campus?->code ?? $r->campus?->name ?? 'N/A' }}</td>
-                                                <!-- <td>
-                                                    <span class="label label-{{ $r->status === 'registered' ? 'info' : 'default' }}">
-                                                        {{ ucfirst($r->status ?? 'pending') }}
-                                                    </span>
-                                                </td> -->
-                                                <td class="text-right">
-                                                    <a href="{{ route('registration.status') }}" class="btn btn-sm btn-primary">
-                                                        Action
-                                                    </a>
-                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -149,31 +145,21 @@
                                             <th>Programme</th>
                                             <th>Primary Contact</th>
                                             <th>Campus Code</th>
-                                            <!-- <th>Admission Date</th> -->
-                                            <!-- <th>Status</th> -->
-                                            <th class="text-right">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($leads as $idx => $lead)
                                             <tr>
                                                 <td class="text-center">{{ $idx + 1 }}</td>
-                                                <td><strong style=" color: #0a6fd1;">{{ $lead->name ?? 'N/A' }}</strong></td>
+                                                <td>
+                                                    <a href="{{ route('leads.show', $lead->id) }}" class="student-search-name-link">
+                                                        {{ $lead->name ?? 'N/A' }}
+                                                    </a>
+                                                </td>
                                                 <td>{{ $lead->program?->title ?? $lead->program?->name ?? 'N/A' }}</td>
                                                 <td>{{ $lead->phone ?: 'N/A' }}</td>
                                                 <!-- <td>{{ $lead->email ?: 'N/A' }}</td> -->
                                                 <td>{{ $lead->campus?->code ?? $lead->campus?->name ?? 'N/A' }}</td>
-                                                <!-- <td>
-                                                    <span class="label label-{{ $lead->status === 'registered' ? 'info' : ($lead->status === 'enrolled' ? 'success' : 'primary') }}">
-                                                        {{ ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')) }}
-                                                    </span>
-                                                </td> -->
-                                                <td class="text-right">
-                                                    <a href="{{ route('leads.show', $lead->id) }}" class="btn btn-primary">
-                                                        <!-- <i class="fa fa-eye"></i>  -->
-                                                        Action
-                                                    </a>
-                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -229,6 +215,16 @@
 
         .follow-table th, .follow-table td { padding: 6px 10px; vertical-align: middle; }
         .table-responsive { overflow: visible !important; }
+        .student-search-name-link {
+            color: #0a6fd1;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .student-search-name-link:hover,
+        .student-search-name-link:focus {
+            color: #0856a3;
+            text-decoration: underline;
+        }
 
         .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }

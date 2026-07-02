@@ -21,12 +21,13 @@ class StudentSearchController extends Controller
         $admissions = collect();
         $registrations = collect();
         $leads = collect();
+        $resultType = null;
 
         if ($query !== '') {
             $needle = '%' . $query . '%';
             $normalizedDigitsNeedle = $normalizedDigits !== '' ? '%' . $normalizedDigits . '%' : null;
 
-            $admissions = $this->scopeQueryToUserCampus(Admission::query()->approved(), $request->user())
+            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('student_name', 'like', $needle)
@@ -46,41 +47,65 @@ class StudentSearchController extends Controller
                 ->limit(50)
                 ->get();
 
-            $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
-                ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
-                    $q->where('student_name', 'like', $needle)
-                        ->orWhere('phone', 'like', $needle)
-                        ->orWhere('cnic', 'like', $needle)
-                        ->orWhere('registration_number', 'like', $needle)
-                        ->orWhere('receipt_number', 'like', $needle);
+            if ($admissions->isNotEmpty()) {
+                $resultType = 'admissions';
+            } else {
+                $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
+                    ->with(['program:id,code,title,name', 'campus:id,code,name'])
+                    ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
+                        $q->where('student_name', 'like', $needle)
+                            ->orWhere('phone', 'like', $needle)
+                            ->orWhere('cnic', 'like', $needle)
+                            ->orWhere('registration_number', 'like', $needle)
+                            ->orWhere('receipt_number', 'like', $needle);
 
-                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
-                        $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                        if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                            $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                        }
+                    })
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+
+                if ($registrations->isNotEmpty()) {
+                    $resultType = 'registrations';
+                } else {
+                    $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                        ->with(['program:id,code,title,name', 'campus:id,code,name'])
+                        ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
+                            $q->where('name', 'like', $needle)
+                                ->orWhere('phone', 'like', $needle)
+                                ->orWhere('email', 'like', $needle);
+
+                            if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                                $q->orWhere('phone', 'like', $normalizedDigitsNeedle);
+                            }
+                        })
+                        ->orderByDesc('id')
+                        ->limit(50)
+                        ->get();
+
+                    if ($leads->isNotEmpty()) {
+                        $resultType = 'leads';
                     }
-                })
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
-
-            $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
-                ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                ->where(function ($q) use ($needle) {
-                    $q->where('name', 'like', $needle)
-                        ->orWhere('phone', 'like', $needle)
-                        ->orWhere('email', 'like', $needle);
-                })
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+                }
+            }
         }
+
+        $totalMatches = match ($resultType) {
+            'admissions' => $admissions->count(),
+            'registrations' => $registrations->count(),
+            'leads' => $leads->count(),
+            default => 0,
+        };
 
         return view('student-search.index', [
             'query' => $query,
             'admissions' => $admissions,
             'registrations' => $registrations,
             'leads' => $leads,
-            'totalMatches' => $admissions->count() + $registrations->count() + $leads->count(),
+            'resultType' => $resultType,
+            'totalMatches' => $totalMatches,
         ]);
     }
 }
