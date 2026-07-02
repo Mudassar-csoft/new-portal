@@ -17,8 +17,16 @@
 		$emptyStateMessage = $emptyStateMessage ?? 'No leads found.';
 		$indexRoute = $indexRoute ?? route('leads.index');
 		$selectedStatus = $selectedStatus ?? 'all';
-		$search = $search ?? '';
 		$perPage = (int) ($perPage ?? 25);
+		$filters = $filters ?? ['campus_id' => null, 'program_id' => null, 'created_from' => null, 'created_to' => null];
+		$campuses = $campuses ?? collect();
+		$programs = $programs ?? collect();
+		$showCampusFilter = $campuses->count() > 1;
+		$resetQuery = array_filter([
+			'today' => $todayOnly ? 1 : null,
+			'status' => $selectedStatus !== 'all' ? $selectedStatus : null,
+		]);
+		$resetUrl = $indexRoute . (count($resetQuery) ? '?' . http_build_query($resetQuery) : '');
 	@endphp
 
 	<div class="lead-status-shell">
@@ -59,7 +67,7 @@
 							<a href="{{ $indexRoute }}" class="lead-filter-banner-link">View all leads</a>
 						</div>
 					@endif
-					<form method="GET" class="follow-controls" id="lead-filter-form">
+					<form method="GET" action="{{ $indexRoute }}" class="follow-controls" id="lead-filter-form">
 						@if($todayOnly)
 							<input type="hidden" name="today" value="1">
 						@endif
@@ -75,13 +83,46 @@
 							</select>
 							<label class="">Entries</label>
 						</div>
-						<div class="follow-search">
-							<input type="text" name="q" id="lead-status-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
-							<!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
-							@if($search !== '' || $selectedStatus !== 'all' || $todayOnly)
-								<a href="{{ $indexRoute }}" class="btn btn-default btn-sm">Reset</a>
+
+						<div class="lead-filter-row">
+							@if($showCampusFilter)
+								<div class="lead-filter-field">
+									<label class="form-label">Campus</label>
+									<select class="form-control form-control-sm lead-auto-submit" name="campus_id">
+										<option value="">All Campuses</option>
+										@foreach($campuses as $campus)
+											<option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
+												{{ $campus->code ?: $campus->name }}{{ $campus->code && $campus->name ? ' - ' . $campus->name : '' }}
+											</option>
+										@endforeach
+									</select>
+								</div>
 							@endif
-							<i class="fa fa-search"></i>
+
+							<div class="lead-filter-field">
+								<label class="form-label">Programme</label>
+								<select class="form-control form-control-sm lead-auto-submit" name="program_id">
+									<option value="">All Programmes</option>
+									@foreach($programs as $program)
+										<option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
+											{{ $program->title ?: $program->name }}
+										</option>
+									@endforeach
+								</select>
+							</div>
+
+							<div class="lead-filter-field lead-date-range-field">
+								<label class="form-label">Created Date Range</label>
+								<div class="lead-date-range-inputs">
+									<input type="date" name="created_from" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_from'] ?? '' }}">
+									<span class="lead-date-range-separator">to</span>
+									<input type="date" name="created_to" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_to'] ?? '' }}">
+								</div>
+							</div>
+
+							<div class="lead-filter-actions">
+								<a href="{{ $resetUrl }}" class="btn btn-default btn-sm">Reset</a>
+							</div>
 						</div>
 					</form>
 
@@ -269,19 +310,53 @@
 			flex-wrap: wrap;
 		}
 
-		.follow-search {
+		.lead-filter-row {
+			display: flex;
+			flex: 1 1 100%;
+			flex-wrap: wrap;
+			align-items: end;
+			gap: 14px;
+		}
+
+		.lead-filter-field {
+			flex: 1 1 220px;
+			min-width: 210px;
+		}
+
+		.lead-filter-field .form-label {
+			font-size: 13px;
+			font-weight: 600;
+			color: #54667a;
+			margin-bottom: 4px;
+			display: block;
+		}
+
+		.lead-date-range-field {
+			flex: 1.4 1 320px;
+		}
+
+		.lead-date-range-inputs {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.lead-date-range-inputs .form-control {
+			min-width: 0;
+		}
+
+		.lead-date-range-separator {
+			color: #6b7b8f;
+			font-size: 13px;
+			font-weight: 600;
+			text-transform: uppercase;
+		}
+
+		.lead-filter-actions {
 			display: flex;
 			align-items: center;
 			gap: 8px;
 			margin-left: auto;
-		}
-
-		.follow-search i {
-			display: none;
-		}
-
-		.follow-search .form-control {
-			width: min(280px, 100%);
 		}
 
 		.lead-filter-banner {
@@ -413,6 +488,18 @@
     min-height: 21px !important;
     background: #fff
 }
+
+		@media (max-width: 767px) {
+			.lead-date-range-inputs {
+				flex-direction: column;
+				align-items: stretch;
+			}
+
+			.lead-filter-actions {
+				width: 100%;
+				margin-left: 0;
+			}
+		}
 		
 		
 	</style>
@@ -543,6 +630,14 @@
 						this.form.submit();
 					});
 				}
+
+				document.querySelectorAll('.lead-auto-submit').forEach(function (field) {
+					field.addEventListener('change', function () {
+						if (this.form) {
+							this.form.submit();
+						}
+					});
+				});
 			});
 		})();
 	</script>
