@@ -205,7 +205,7 @@
                             <thead>
                                 <tr>
                                     <th>Course Title</th>
-                                    <th>Registeration</th>
+                                    <th>Amount</th>
                                     <th>Installment</th>
                                     <th>Due Date</th>
                                     <th>Collected At</th>
