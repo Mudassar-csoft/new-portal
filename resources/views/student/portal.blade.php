@@ -422,7 +422,7 @@
                                 <tr>
                                     <th>Course Title</th>
                                     <th>Fee Type</th>
-                                    <th>Registration</th>
+                                    <th>Amount</th>
                                     <th>Installment</th>
                                     <th>Fee Status</th>
                                     <th>Due Date</th>
