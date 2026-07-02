@@ -155,7 +155,9 @@ class LeadController extends Controller
                     'lead_id' => $lead->id,
                     'campus_id' => $lead->campus_id,
                     'user_id' => $request->user()?->id,
-                    'note' => 'Initial follow-up created automatically.',
+                    'note' => trim((string) ($details['remarks'] ?? '')) !== ''
+                        ? trim((string) $details['remarks'])
+                        : 'Initial follow-up created automatically.',
                     'method' => $initialMethod,
                     'probability' => $initialProbability,
                     'next_action_date' => $initialNextAt,
