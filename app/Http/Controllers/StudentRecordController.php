@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admission;
+use App\Models\Certificate;
 use App\Models\FeeCollection;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
@@ -148,6 +149,7 @@ class StudentRecordController extends Controller
                 'campus',
                 'program',
                 'certificateDeliveredBy',
+                'latestCertificate',
             ])
             ->where('registration_id', $registration->id)
             ->latest('id')
@@ -178,6 +180,22 @@ class StudentRecordController extends Controller
             'totalFee' => $totalFee,
             'pendingFee' => $pendingFee,
             'statusOptions' => self::STATUS_OPTIONS,
+            'certificateStatusLabels' => [
+                Certificate::STATUS_REQUESTED => 'Requested',
+                Certificate::STATUS_APPROVED => 'Approved',
+                Certificate::STATUS_PRINTING => 'Printing',
+                Certificate::STATUS_READY => 'Ready',
+                Certificate::STATUS_DELIVERED => 'Delivered',
+                Certificate::STATUS_REJECTED => 'Rejected',
+            ],
+            'certificateStatusClasses' => [
+                Certificate::STATUS_REQUESTED => 'label-warning',
+                Certificate::STATUS_APPROVED => 'label-info',
+                Certificate::STATUS_PRINTING => 'label-primary',
+                Certificate::STATUS_READY => 'label-success',
+                Certificate::STATUS_DELIVERED => 'label-default',
+                Certificate::STATUS_REJECTED => 'label-danger',
+            ],
         ]);
     }
 

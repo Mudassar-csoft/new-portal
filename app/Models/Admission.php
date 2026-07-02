@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Admission extends Model
@@ -114,6 +115,11 @@ class Admission extends Model
     public function feeCollections(): HasMany
     {
         return $this->hasMany(FeeCollection::class);
+    }
+
+    public function latestCertificate(): HasOne
+    {
+        return $this->hasOne(Certificate::class)->latestOfMany();
     }
 
     public function scopeApproved(Builder $query): Builder

@@ -64,12 +64,11 @@ class CertificateController extends Controller
     {
         $admissionId = $request->integer('admission_id') ?: null;
         $selectedAdmission = $admissionId
-            ? Admission::query()->approved()->with(['program', 'campus'])->find($admissionId)
+            ? $this->certificateEligibleAdmissionsQuery()->with(['program', 'campus'])->find($admissionId)
             : null;
 
         return view('certificate.create', [
-            'admissions' => Admission::query()
-                ->approved()
+            'admissions' => $this->certificateEligibleAdmissionsQuery()
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
                 ->orderByDesc('admission_date')
                 ->limit(500)
@@ -85,7 +84,17 @@ class CertificateController extends Controller
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $admission = Admission::query()->approved()->findOrFail($validated['admission_id']);
+        $admission = $this->certificateEligibleAdmissionsQuery()->findOrFail($validated['admission_id']);
+
+        $existingCertificate = Certificate::query()
+            ->where('admission_id', $admission->id)
+            ->latest('id')
+            ->first();
+
+        if ($existingCertificate) {
+            return redirect()->route('certificate.index')
+                ->with('error', 'A certificate record already exists for this student.');
+        }
 
         Certificate::create([
             'admission_id' => $admission->id,
@@ -306,6 +315,13 @@ class CertificateController extends Controller
             'rejected' => 'Certificates — Rejected',
             default => 'Certificate Management',
         };
+    }
+
+    private function certificateEligibleAdmissionsQuery(): Builder
+    {
+        return Admission::query()
+            ->where('student_status', 'enrolled')
+            ->whereDoesntHave('latestCertificate');
     }
 
     private function generateCertificateNumber(): string
