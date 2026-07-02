@@ -271,14 +271,7 @@
                     </div>
 
                     <div class="follow-footer">
-                        <div>
-                            @if($entries->total() > 0)
-                                Showing {{ $entries->firstItem() }} to {{ $entries->lastItem() }} of {{ $entries->total() }} entries
-                            @else
-                                Showing 0 to 0 of 0 entries
-                            @endif
-                        </div>
-                        {{ $entries->links() }}
+                        @include('partials.follow-pagination', ['paginator' => $entries])
                     </div>
                 </div>
             </div>

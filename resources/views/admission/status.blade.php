@@ -65,24 +65,7 @@
                 @endforeach
             </div>
 
-            @if($activeScope === 'all')
-                <div class="follow-tab-bar follow-tab-bar--sub">
-                    @foreach ($periods as $periodKey => $periodLabel)
-                        <a
-                            href="{{ route('admission.status', array_filter([
-                                'scope' => 'all',
-                                'period' => $periodKey !== 'all' ? $periodKey : null,
-                                'search' => $search !== '' ? $search : null,
-                                'per_page' => $perPage !== 25 ? $perPage : null,
-                            ], static fn ($value) => $value !== null && $value !== '')) }}"
-                            class="follow-tab {{ $activePeriod === $periodKey ? 'active' : '' }}"
-                        >
-                            <span class="label-text">{{ $periodLabel }}</span>
-                            <span class="badge badge-secondary">{{ (int) ($periodCounts[$periodKey] ?? 0) }}</span>
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+            
 
             <div class="box-typical-body panel-body follow-body">
                 <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
@@ -90,31 +73,16 @@
                     @if($activeScope === 'all')
                         <input type="hidden" name="period" value="{{ $activePeriod }}">
                     @endif
+                    <input type="hidden" name="per_page" value="{{ $perPage }}">
 
                     <div class="follow-status-copy">
-                        <div>{{ $activeScope === 'all' ? ($periods[$activePeriod] ?? 'All Admissions') : ($scopes[$activeScope] ?? 'Admission Status') }}</div>
-                        <div class="follow-status-meta">
-                            <label>Show</label>
-                            <select name="per_page" class="form-control form-control-sm follow-per-page" onchange="this.form.submit()">
-                                @foreach ([10, 25, 50, 100] as $option)
-                                    <option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
-                                @endforeach
-                            </select>
-                            <span>entries</span>
-                            <a
-                                href="{{ route('admission.status', array_filter([
-                                    'scope' => $activeScope !== 'pending' ? $activeScope : null,
-                                    'period' => $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : null,
-                                ], static fn ($value) => $value !== null && $value !== '')) }}"
-                                class="btn btn-default btn-sm"
-                            >
-                                Reset
-                            </a>
-                        </div>
+                        {{ $activeScope === 'all' ? ($periods[$activePeriod] ?? 'All Admissions') : ($scopes[$activeScope] ?? 'Admission Status') }}
                     </div>
                     <div class="follow-search">
-                        <input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, course, campus...">
-                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                        <input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+                        <button type="submit" class="adm-search-submit" aria-label="Search">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </form>
 
@@ -133,7 +101,7 @@
                         </thead>
                         <tbody>
                             @forelse ($admissions as $idx => $row)
-                                <tr>
+                                <tr data-entry-row="1">
                                     <td class="text-center">{{ ($admissions->firstItem() ?? 1) + $idx }}</td>
                                     <td>
                                         @if($row->registration_id && $canStudentView)
@@ -157,7 +125,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr data-empty-row="1">
                                     <td colspan="7" class="text-center text-muted">No admissions found.</td>
                                 </tr>
                             @endforelse
@@ -166,44 +134,7 @@
                 </div>
 
                 <div class="follow-footer">
-                    <div id="adm-count">
-                        Showing {{ $admissions->firstItem() ?? 0 }} to {{ $admissions->lastItem() ?? 0 }} of {{ $admissions->total() ?? 0 }} entries
-                    </div>
-                    @php
-                        $currentPage = $admissions->currentPage();
-                        $lastPage = $admissions->lastPage();
-                        $startPage = max(1, $currentPage - 2);
-                        $endPage = min($lastPage, $currentPage + 2);
-                    @endphp
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item {{ $admissions->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $admissions->onFirstPage() ? '#' : $admissions->previousPageUrl() }}">Previous</a>
-                        </li>
-
-                        @if ($startPage > 1)
-                            <li class="page-item"><a class="page-link" href="{{ $admissions->url(1) }}">1</a></li>
-                            @if ($startPage > 2)
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            @endif
-                        @endif
-
-                        @for ($page = $startPage; $page <= $endPage; $page++)
-                            <li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $admissions->url($page) }}">{{ $page }}</a>
-                            </li>
-                        @endfor
-
-                        @if ($endPage < $lastPage)
-                            @if ($endPage < $lastPage - 1)
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            @endif
-                            <li class="page-item"><a class="page-link" href="{{ $admissions->url($lastPage) }}">{{ $lastPage }}</a></li>
-                        @endif
-
-                        <li class="page-item {{ $admissions->hasMorePages() ? '' : 'disabled' }}">
-                            <a class="page-link" href="{{ $admissions->hasMorePages() ? $admissions->nextPageUrl() : '#' }}">Next</a>
-                        </li>
-                    </ul>
+                    @include('partials.follow-pagination', ['paginator' => $admissions, 'countId' => 'adm-count'])
                 </div>
             </div>
         </div>
@@ -511,27 +442,33 @@
         }
 
         .follow-status-copy {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
             font-size: 15px;
             font-weight: 600;
             color: #334155;
         }
 
-        .follow-status-meta {
+        .follow-search {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
-            font-size: 13px;
-            font-weight: 500;
-            color: #64748b;
+            margin-left: auto;
         }
 
-        .follow-per-page {
-            width: 84px;
+        .follow-search .form-control {
+            width: min(280px, 100%);
+        }
+
+        .adm-search-submit {
+            border: 0;
+            background: transparent;
+            color: #8a97a8;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .adm-search-submit:hover,
+        .adm-search-submit:focus {
+            color: #1593ff;
         }
 
         .admission-action-dropdown {

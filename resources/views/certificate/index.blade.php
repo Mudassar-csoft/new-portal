@@ -170,14 +170,7 @@
                     </div>
 
                     <div class="follow-footer">
-                        <div>
-                            @if($certificates->total() > 0)
-                                Showing {{ $certificates->firstItem() }} to {{ $certificates->lastItem() }} of {{ $certificates->total() }} entries
-                            @else
-                                Showing 0 to 0 of 0 entries
-                            @endif
-                        </div>
-                        {{ $certificates->links() }}
+                        @include('partials.follow-pagination', ['paginator' => $certificates])
                     </div>
                 </div>
             </div>

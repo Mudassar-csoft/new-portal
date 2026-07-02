@@ -46,26 +46,20 @@
 			<div class="box-typical-body panel-body follow-body">
 				<form method="GET" action="{{ route('registration.status') }}" class="follow-controls">
 					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
-					<div class="d-flex follow-status-meta" style="gap:0.5rem;align-items: center; flex-wrap: wrap;">
+					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>
-						<select name="per_page" class="form-control form-control-sm follow-per-page" onchange="this.form.submit()">
+						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
 							@foreach ([10, 25, 50, 100] as $option)
 								<option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
 							@endforeach
 						</select>
 						<label class="ml-2 mb-0">Entries</label>
-						<a
-							href="{{ route('registration.status', array_filter([
-								'period' => $activePeriod !== 'all' ? $activePeriod : null,
-							], static fn ($value) => $value !== null && $value !== '')) }}"
-							class="btn btn-default btn-sm"
-						>
-							Reset
-						</a>
 					</div>
 					<div class="follow-search">
-						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search name, phone, course, campus...">
-						<button type="submit" class="btn btn-primary btn-sm">Search</button>
+						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+						<!-- <button type="submit" class="reg-search-submit" aria-label="Search">
+							<i class="fa fa-search"></i>
+						</button> -->
 					</div>
 				</form>
 
@@ -122,42 +116,7 @@
 				</div>
 
 				<div class="follow-footer">
-					<div id="reg-count">Showing {{ $registrations->firstItem() ?? 0 }} to {{ $registrations->lastItem() ?? 0 }} of {{ $registrations->total() ?? 0 }} entries</div>
-					@php
-						$currentPage = $registrations->currentPage();
-						$lastPage = $registrations->lastPage();
-						$startPage = max(1, $currentPage - 2);
-						$endPage = min($lastPage, $currentPage + 2);
-					@endphp
-					<ul class="pagination pagination-sm mb-0">
-						<li class="page-item {{ $registrations->onFirstPage() ? 'disabled' : '' }}">
-							<a class="page-link" href="{{ $registrations->onFirstPage() ? '#' : $registrations->previousPageUrl() }}">Previous</a>
-						</li>
-
-						@if ($startPage > 1)
-							<li class="page-item"><a class="page-link" href="{{ $registrations->url(1) }}">1</a></li>
-							@if ($startPage > 2)
-								<li class="page-item disabled"><span class="page-link">...</span></li>
-							@endif
-						@endif
-
-						@for ($page = $startPage; $page <= $endPage; $page++)
-							<li class="page-item {{ $page === $currentPage ? 'active' : '' }}">
-								<a class="page-link" href="{{ $registrations->url($page) }}">{{ $page }}</a>
-							</li>
-						@endfor
-
-						@if ($endPage < $lastPage)
-							@if ($endPage < $lastPage - 1)
-								<li class="page-item disabled"><span class="page-link">...</span></li>
-							@endif
-							<li class="page-item"><a class="page-link" href="{{ $registrations->url($lastPage) }}">{{ $lastPage }}</a></li>
-						@endif
-
-						<li class="page-item {{ $registrations->hasMorePages() ? '' : 'disabled' }}">
-							<a class="page-link" href="{{ $registrations->hasMorePages() ? $registrations->nextPageUrl() : '#' }}">Next</a>
-						</li>
-					</ul>
+					@include('partials.follow-pagination', ['paginator' => $registrations, 'countId' => 'reg-count'])
 				</div>
 			</div>
 		</div>
@@ -169,6 +128,11 @@
 		/* .reg-status-shell {
 			padding: 8px 0 16px;
 		} */
+
+		.reg-status-shell {
+			max-width: 100%;
+			overflow-x: hidden;
+		}
 
 		.action-cell {
 			min-width: 110px;
@@ -196,7 +160,8 @@
 			border-bottom-color: #54667a;
 		}
 		.table-responsive {
-			overflow: visible !important;
+			overflow-x: hidden !important;
+			overflow-y: visible !important;
 		}
 		.follow-card, .follow-body {
     overflow: visible !important;
@@ -204,13 +169,16 @@
 		.follow-tab-bar .follow-tab {
 			text-decoration: none;
 		}
-		.follow-status-meta {
-			font-size: 13px;
-			font-weight: 500;
-			color: #64748b;
+		.reg-search-submit {
+			border: 0;
+			background: transparent;
+			color: #8a97a8;
+			line-height: 1;
+			padding: 0;
 		}
-		.follow-per-page {
-			width: 84px;
+		.reg-search-submit:hover,
+		.reg-search-submit:focus {
+			color: #1593ff;
 		}
 		.registration-action-dropdown{
 			position: relative;
@@ -229,18 +197,18 @@
 
 		@media (max-width: 768px) {
 			.reg-status-shell .table-responsive {
-				overflow-x: auto !important;
-				-webkit-overflow-scrolling: touch;
+				overflow-x: hidden !important;
 			}
 
 			.reg-status-shell .follow-table {
-				width: max-content !important;
-				min-width: 100% !important;
+				width: 100% !important;
+				min-width: 0 !important;
 			}
 
 			.reg-status-shell .follow-table th,
 			.reg-status-shell .follow-table td {
-				white-space: nowrap;
+				white-space: normal;
+				word-break: break-word;
 			}
 		}
 	</style>
