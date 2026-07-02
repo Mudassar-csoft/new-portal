@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -143,17 +144,23 @@ class StudentRecordController extends Controller
 
         $this->backfillRegistrationFee($registration);
 
-        $admission = Admission::query()
+        $certificatesFeatureAvailable = Schema::hasTable('certificates');
+
+        $admissionQuery = Admission::query()
             ->with([
                 'batch',
                 'campus',
                 'program',
                 'certificateDeliveredBy',
-                'latestCertificate',
             ])
             ->where('registration_id', $registration->id)
-            ->latest('id')
-            ->first();
+            ->latest('id');
+
+        if ($certificatesFeatureAvailable) {
+            $admissionQuery->with('latestCertificate');
+        }
+
+        $admission = $admissionQuery->first();
         $feeCollectionsQuery = FeeCollection::query()
             ->where('registration_id', $registration->id);
 
@@ -180,6 +187,7 @@ class StudentRecordController extends Controller
             'totalFee' => $totalFee,
             'pendingFee' => $pendingFee,
             'statusOptions' => self::STATUS_OPTIONS,
+            'certificatesFeatureAvailable' => $certificatesFeatureAvailable,
             'certificateStatusLabels' => [
                 Certificate::STATUS_REQUESTED => 'Requested',
                 Certificate::STATUS_APPROVED => 'Approved',

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -26,8 +27,12 @@ class CertificateController extends Controller
         'rejected',
     ];
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if (! $this->certificateModuleReady()) {
+            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
+        }
+
         $scope = (string) $request->query('scope', 'all');
         if (!in_array($scope, self::ALLOWED_SCOPES, true)) {
             $scope = 'all';
@@ -60,8 +65,12 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
+        if (! $this->certificateModuleReady()) {
+            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
+        }
+
         $admissionId = $request->integer('admission_id') ?: null;
         $selectedAdmission = $admissionId
             ? $this->certificateEligibleAdmissionsQuery()->with(['program', 'campus'])->find($admissionId)
@@ -79,6 +88,10 @@ class CertificateController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (! $this->certificateModuleReady()) {
+            return redirect()->back()->with('error', 'Certificate module is not ready on this server yet. Run the certificates migration first.');
+        }
+
         $validated = $request->validate([
             'admission_id' => ['required', 'exists:admissions,id'],
             'remarks' => ['nullable', 'string'],
@@ -319,9 +332,24 @@ class CertificateController extends Controller
 
     private function certificateEligibleAdmissionsQuery(): Builder
     {
-        return Admission::query()
-            ->where('student_status', 'enrolled')
-            ->whereDoesntHave('latestCertificate');
+        $query = Admission::query()
+            ->where('student_status', 'enrolled');
+
+        if ($this->certificateModuleReady()) {
+            $query->whereNotIn(
+                'id',
+                Certificate::query()
+                    ->whereNotNull('admission_id')
+                    ->select('admission_id')
+            );
+        }
+
+        return $query;
+    }
+
+    private function certificateModuleReady(): bool
+    {
+        return Schema::hasTable('certificates');
     }
 
     private function generateCertificateNumber(): string

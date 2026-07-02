@@ -164,7 +164,8 @@
                                         $feeStatus = $admissionPaid >= $admissionTotal && $admissionTotal > 0 ? 'Paid' : ($admissionTotal > 0 ? 'Pending' : '—');
                                         $latestCertificate = $admission->latestCertificate;
                                         $canRequestCertificate = auth()->user()?->hasAnyPermission('certificate.create') ?? false;
-                                        $canOpenCertificateRequest = $latestCertificate === null
+                                        $canOpenCertificateRequest = ($certificatesFeatureAvailable ?? false)
+                                            && $latestCertificate === null
                                             && (($admission->student_status ?? null) === 'enrolled')
                                             && $canRequestCertificate;
                                     @endphp
