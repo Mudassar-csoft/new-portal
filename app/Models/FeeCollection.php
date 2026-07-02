@@ -64,4 +64,9 @@ class FeeCollection extends Model
     {
         return $this->belongsTo(Program::class);
     }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

@@ -891,14 +891,18 @@ class AdmissionController extends Controller
 
         $admission->load(['program', 'campus', 'batch', 'registration.lead']);
 
-        $paidFees = FeeCollection::query()
+        $admissionFeeRows = FeeCollection::query()
+            ->with(['campus', 'creator'])
             ->where('admission_id', $admission->id)
             ->where('fee_type', 'admission')
-            ->where('status', 'paid')
-            ->orderBy('paid_at')
             ->orderBy('installment_no')
+            ->orderBy('due_at')
+            ->orderBy('paid_at')
             ->orderBy('id')
             ->get();
+        $paidFees = $admissionFeeRows
+            ->where('status', 'paid')
+            ->values();
 
         $selectedFee = null;
 
@@ -924,6 +928,7 @@ class AdmissionController extends Controller
 
         return view('admission.voucher', compact(
             'admission',
+            'admissionFeeRows',
             'selectedFee',
             'registrationFeeTotal',
             'admissionFeeTotal',

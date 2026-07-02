@@ -228,7 +228,7 @@ class StudentRecordController extends Controller
         try {
             $alreadyCollected = false;
 
-            DB::transaction(function () use ($feeCollection, $paid, &$alreadyCollected) {
+            DB::transaction(function () use ($feeCollection, $paid, $request, &$alreadyCollected) {
                 $lockedFee = FeeCollection::query()
                     ->with(['campus', 'admission.campus', 'registration.campus'])
                     ->lockForUpdate()
@@ -255,6 +255,7 @@ class StudentRecordController extends Controller
                         : $lockedFee->receipt_number,
                     'status' => 'paid',
                     'paid_at' => now(),
+                    'created_by' => $request->user()?->id,
                 ]);
 
                 $this->redistributeInstallmentDifference($nextPending, $diff);

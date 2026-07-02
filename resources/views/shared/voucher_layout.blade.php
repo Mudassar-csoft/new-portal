@@ -27,6 +27,10 @@
     $totalPaid = (float) ($totalPaid ?? ($registrationFee + $courseTuitionFee + $examFee + $fine + $others));
     $currency = $currency ?? 'Rs.';
     $copies = $copies ?? ['Student Copy', 'Campus Copy'];
+    $campusFooterLabel = $campusFooterLabel ?? $campusName;
+    $campusAddress = trim((string) ($campusAddress ?? ''));
+    $campusPhone = trim((string) ($campusPhone ?? ''));
+    $campusWebsite = trim((string) ($campusWebsite ?? 'www.career.edu.pk'));
     $formattedStudentName = trim($studentName . ($guardianName !== '' ? ' ' . $guardianLabel . ' ' . $guardianName : ''));
 
     $formatAmount = static function ($amount) use ($currency) {
@@ -55,6 +59,11 @@
             ? $voucherDiscountDisplay . ' (' . $formattedDiscountAmount . ')'
             : $formattedDiscountAmount;
     }
+
+    $statusPrimaryLabel = $statusPrimaryLabel ?? ($originalFee > 0 ? 'Original Fee' : null);
+    $statusPrimaryDisplay = $statusPrimaryDisplay ?? ($originalFee > 0 ? $formatAmount($originalFee) : '');
+    $statusSecondaryLabel = $statusSecondaryLabel ?? ($voucherDiscountDisplay !== '' ? 'Discount' : null);
+    $statusSecondaryDisplay = $statusSecondaryDisplay ?? $voucherDiscountDisplay;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -315,16 +324,16 @@
                     <div class="status-wrap">
                         <table class="status-table">
                             <tbody>
-                                @if($originalFee > 0)
+                                @if(filled($statusPrimaryLabel))
                                     <tr>
-                                        <td>Original Fee</td>
-                                        <td>{{ $formatAmount($originalFee) }}</td>
+                                        <td>{{ $statusPrimaryLabel }}</td>
+                                        <td>{{ filled($statusPrimaryDisplay) ? $statusPrimaryDisplay : '-' }}</td>
                                     </tr>
                                 @endif
-                                @if($voucherDiscountDisplay !== '')
+                                @if(filled($statusSecondaryLabel))
                                     <tr>
-                                        <td>Discount</td>
-                                        <td>{{ $voucherDiscountDisplay }}</td>
+                                        <td>{{ $statusSecondaryLabel }}</td>
+                                        <td>{{ filled($statusSecondaryDisplay) ? $statusSecondaryDisplay : '-' }}</td>
                                     </tr>
                                 @endif
                                 <tr>
@@ -361,14 +370,18 @@
                         This receipt can be produce when demanded<br>
                         Fee once paid is not Refundable.
                     </div>
-                    <div>For Career Institute - {{ $campusName }}</div>
+                    <div>For {{ $campusFooterLabel }}</div>
                 </div>
 
                 <div class="voucher-footer">
                     <strong>
-                        Career Institute, P-49, Chenab Market, Susan Road, Block Z, Madina Town, Faisalabad, Punjab, Pakistan - 38000<br>
-                        Ph:0314-4444010 / 0341-4444010<br>
-                        www.career.edu.pk
+                        {{ $campusAddress !== '' ? $campusAddress : 'Career Institute, P-49, Chenab Market, Susan Road, Block Z, Madina Town, Faisalabad, Punjab, Pakistan - 38000' }}<br>
+                        @if($campusPhone !== '')
+                            Ph:{{ $campusPhone }}<br>
+                        @else
+                            Ph:0314-4444010 / 0341-4444010<br>
+                        @endif
+                        {{ $campusWebsite !== '' ? $campusWebsite : 'www.career.edu.pk' }}
                     </strong>
                 </div>
             </section>
