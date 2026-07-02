@@ -145,6 +145,33 @@
         <script>
             function promptCertificateRemark(form, message) {
                 if (!form) return false;
+
+                if (window.swal) {
+                    swal({
+                        title: message || 'Add remarks',
+                        text: 'Remarks (optional)',
+                        type: 'input',
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        animation: 'slide-from-top',
+                        inputPlaceholder: 'Enter remarks'
+                    }, function (inputValue) {
+                        if (inputValue === false) {
+                            return false;
+                        }
+
+                        var remarksInput = form.querySelector('input[name=remarks]');
+                        if (remarksInput) {
+                            remarksInput.value = inputValue || '';
+                        }
+
+                        swal.close();
+                        form.submit();
+                    });
+
+                    return false;
+                }
+
                 var remarks = window.prompt((message || 'Add remarks') + '\n\nRemarks (optional):', '');
                 if (remarks === null) return false;
                 var remarksInput = form.querySelector('input[name=remarks]');
