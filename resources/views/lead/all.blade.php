@@ -88,7 +88,7 @@
 							@if($showCampusFilter)
 								<div class="lead-filter-field">
 									<label class="form-label">Campus</label>
-									<select class="form-control form-control-sm lead-auto-submit" name="campus_id">
+									<select class="form-control form-control-sm lead-auto-submit" name="campus_id" onchange="this.form.submit()">
 										<option value="">All Campuses</option>
 										@foreach($campuses as $campus)
 											<option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
@@ -101,7 +101,7 @@
 
 							<div class="lead-filter-field">
 								<label class="form-label">Programme</label>
-								<select class="form-control form-control-sm lead-auto-submit" name="program_id">
+								<select class="form-control form-control-sm lead-auto-submit" name="program_id" onchange="this.form.submit()">
 									<option value="">All Programmes</option>
 									@foreach($programs as $program)
 										<option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
@@ -114,9 +114,9 @@
 							<div class="lead-filter-field lead-date-range-field">
 								<label class="form-label">Created Date Range</label>
 								<div class="lead-date-range-inputs">
-									<input type="date" name="created_from" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_from'] ?? '' }}">
+									<input type="date" name="created_from" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_from'] ?? '' }}" onchange="this.form.submit()">
 									<span class="lead-date-range-separator">to</span>
-									<input type="date" name="created_to" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_to'] ?? '' }}">
+									<input type="date" name="created_to" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_to'] ?? '' }}" onchange="this.form.submit()">
 								</div>
 							</div>
 
