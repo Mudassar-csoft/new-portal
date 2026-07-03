@@ -17,11 +17,10 @@
     <div class="pending-recovery-shell">
         <div class="pending-recovery-heading">
             Showing Pending Recovery {{ $monthLabel }} {{ $selectedYear }}
+         @if($campusLabel) <span class="pending-recovery-campus mr-4">{{ $campusLabel }}</span> @endif
         </div>
 
-        @if($campusLabel)
-            <div class="pending-recovery-campus">{{ $campusLabel }}</div>
-        @endif
+       
 
         <div class="pending-recovery-divider"></div>
 
