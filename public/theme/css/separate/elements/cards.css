@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-css-separate-elements-cards-font-size-1: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -33,7 +37,7 @@
   border-top: none;
 }
 .card-typical .card-typical-content {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-elements-cards-font-size-1);
 }
 .card-typical .card-typical-content .photo {
   margin: -10px -10px 15px;
@@ -57,7 +61,7 @@
 .card-typical .card-typical-likes {
   color: #919fa9;
   line-height: 1rem;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-elements-cards-font-size-1);
 }
 .card-typical .card-typical-linked {
   float: left;
@@ -68,7 +72,7 @@
 .card-typical .card-typical-likes .font-icon {
   margin: 0 2px 0 0;
   vertical-align: middle;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-elements-cards-font-size-1);
 }
 .card-typical .card-typical-likes:hover {
   color: #00a8ff;

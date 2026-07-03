@@ -16,12 +16,18 @@
     <link rel="stylesheet" href="{{ asset('theme/lib/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('theme/main.css') }}">
     <style>
+        :root {
+            --typo-student-portal-font-size-1: 12px;
+            --typo-student-portal-font-size-2: 20px;
+            --typo-student-portal-font-weight-3: 600;
+        }
+
          * {
     font-family: 'Proxima Nova', sans-serif;
-    font-size: 12px;
+    font-size: var(--typo-student-portal-font-size-1);
     margin: 0;
     padding: 0;
-    
+
 }
         body {
             background: #f2f5f9;
@@ -54,13 +60,13 @@
         }
 
         .portal-title {
-            font-size: 20px;
+            font-size: var(--typo-student-portal-font-size-2);
             font-weight: 700;
             color: #1f2d3d;
         }
 
         .portal-subtitle {
-            font-size: 12px;
+            font-size: var(--typo-student-portal-font-size-1);
             color: #6b7a90;
         }
 
@@ -117,8 +123,8 @@
         }
 
         .student-name {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: var(--typo-student-portal-font-size-2);
+            font-weight: var(--typo-student-portal-font-weight-3);
             margin-bottom: 4px;
         }
 
@@ -159,7 +165,7 @@
             padding: 10px 16px;
             color: #1f2d3d;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: var(--typo-student-portal-font-weight-3);
         }
 
         .action-item:hover {
@@ -185,14 +191,14 @@
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: var(--typo-student-portal-font-size-1);
             color: #6b7a90;
             margin-bottom: 4px;
         }
 
         .stat-value {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: var(--typo-student-portal-font-weight-3);
             color: #1f2d3d;
         }
 
@@ -214,7 +220,7 @@
             text-align: center;
             padding: 6px 12px;
             border-radius: 8px;
-            font-weight: 600;
+            font-weight: var(--typo-student-portal-font-weight-3);
             color: #41546a;
             background: #f2f5f9;
             cursor: pointer;
@@ -224,7 +230,7 @@
     border-bottom: none;
     padding-top: 6px;
     padding-bottom: 6px;
-    
+
 }
 .table td {
     padding-bottom: 5px;
@@ -247,7 +253,7 @@
             background: #00a8ff;
             color: #fff;
             border: 0;
-            font-weight: 600;
+            font-weight: var(--typo-student-portal-font-weight-3);
             font-size: 13px;
             text-transform: uppercase;
         }
@@ -271,8 +277,8 @@
             color: #fff;
             padding: 4px 8px;
             border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--typo-student-portal-font-size-1);
+            font-weight: var(--typo-student-portal-font-weight-3);
         }
 
         .info-list {
@@ -295,7 +301,7 @@
         }
 
         .info-label {
-            font-weight: 600;
+            font-weight: var(--typo-student-portal-font-weight-3);
             color: #1f2d3d;
         }
 

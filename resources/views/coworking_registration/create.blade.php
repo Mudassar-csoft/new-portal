@@ -258,8 +258,8 @@
                         </div>
 
                         <div class="form-actions registration-actions mb-2 mt-3 text-right">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">{{ $submitLabel }}</button>
-                            <a href="{{ $cancelUrl }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04">{{ $submitLabel }}</button>
+                            <a href="{{ $cancelUrl }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 {{ request()->boolean('embed') ? 'embed-cancel' : '' }}">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -270,6 +270,14 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-coworking-registration-create-font-weight-1: 600;
+        }
+
+        .ci-inline-pad-04 {
+            padding: 0.4rem !important;
+        }
+
         .registration-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
@@ -349,7 +357,7 @@
             display: block;
             min-height: 22px;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-create-font-weight-1);
             color: #223a57;
         }
 
@@ -427,7 +435,7 @@
 
         .registration-gender-title {
             font-size: 15px;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-create-font-weight-1);
             margin-bottom: 10px;
         }
 
@@ -487,7 +495,7 @@
             font-size: 15px !important;
             margin: 0 !important;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-create-font-weight-1);
             color: #223a57;
             line-height: 1.2;
             display: inline-flex;

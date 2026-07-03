@@ -214,6 +214,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-lead-followup-schedule-line-height-1: 1;
+        }
+
         body.lead-modal-open {
             overflow: hidden;
         }
@@ -265,7 +269,7 @@
             border: 0;
             background: transparent;
             font-size: 28px;
-            line-height: 1;
+            line-height: var(--typo-lead-followup-schedule-line-height-1);
             color: #5b6b80;
             cursor: pointer;
         }
@@ -278,7 +282,7 @@
         }
 
         .follow-stage-meta {
-            line-height: 1;
+            line-height: var(--typo-lead-followup-schedule-line-height-1);
         }
 
         .follow-tab {

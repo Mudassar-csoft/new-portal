@@ -109,6 +109,16 @@
 
 @push('styles')
     <style>
+        :root {
+            --pending-recovery-font-md: 16px;
+            --pending-recovery-font-lg: 18px;
+            --pending-recovery-font-xl: 20px;
+            --pending-recovery-font-xxl: 22px;
+            --pending-recovery-weight-medium: 500;
+            --pending-recovery-weight-semibold: 600;
+            --pending-recovery-weight-bold: 700;
+        }
+
         .pending-border{
             border-bottom:1px solid gray;
         }
@@ -118,8 +128,8 @@
             border-radius:5px;
         }
         .pending-recovery-heading {
-            font-size: 22px;
-            font-weight: 500;
+            font-size: var(--pending-recovery-font-xxl);
+            font-weight: var(--pending-recovery-weight-medium);
             color: #2d2d2d;
             margin-bottom: 6px;
             padding:14px;
@@ -139,8 +149,8 @@
         }
         .pending-recovery-label {
             color: #2d3748;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: var(--pending-recovery-font-md);
+            font-weight: var(--pending-recovery-weight-medium);
             margin-bottom: 8px;
         }
         .pending-recovery-filter .form-control {
@@ -158,7 +168,7 @@
             border-radius: 6px;
             background: #17a8f5;
             border-color: #17a8f5;
-            font-weight: 600;
+            font-weight: var(--pending-recovery-weight-semibold);
         }
         .pending-recovery-button:hover,
         .pending-recovery-button:focus {
@@ -181,8 +191,8 @@
             /* background: #1ea7ef !important; */
             color: #fff;
             text-align: center;
-            font-size: 16px;
-            font-weight: 700 !important;
+            font-size: var(--pending-recovery-font-md);
+            font-weight: var(--pending-recovery-weight-bold) !important;
             vertical-align: middle;
             border-color: white !important;
             padding: 16px 12px;
@@ -191,10 +201,8 @@
             overflow-wrap: normal;
         }
          .pending-recovery-table thead th h4{
-           
-            font-size: 16px;
-            font-weight: 700 !important;
-          
+            font-size: var(--pending-recovery-font-md);
+            font-weight: var(--pending-recovery-weight-bold) !important;
         }
         .pending-recovery-table tbody td{
             text-align: center;
@@ -212,7 +220,7 @@
         }
         .pending-recovery-campus-code {
             color: #0078c9 !important;
-            font-weight: 700;
+            font-weight: var(--pending-recovery-weight-bold);
         }
         .pending-recovery-campus-link {
             color: inherit;
@@ -225,8 +233,8 @@
         }
         .pending-recovery-total-row td {
             background: #ffffff !important;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: var(--pending-recovery-font-xl);
+            font-weight: var(--pending-recovery-weight-bold);
             color: #12314c;
         }
         .pending-recovery-total-label {
@@ -242,7 +250,7 @@
         }
         @media (max-width: 767px) {
             .pending-recovery-heading {
-                font-size: 18px;
+                font-size: var(--pending-recovery-font-lg);
             }
             .pending-recovery-action-cell {
                 /* align-items: stretch !important; */

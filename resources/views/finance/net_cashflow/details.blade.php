@@ -140,6 +140,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-net-cashflow-details-font-weight-1: 700;
+        }
+
         .finance-shell { padding: 8px 0 16px; }
         .finance-header {
             display: flex;
@@ -169,7 +173,7 @@
         .cash-value {
             margin-top: 30px;
             font-size: 18px;
-            font-weight: 700;
+            font-weight: var(--typo-finance-net-cashflow-details-font-weight-1);
         }
         .tone-income { background:  #f35f62}
         .tone-expense { background: #16b3fb; }
@@ -178,7 +182,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-net-cashflow-details-font-weight-1);
         }
         @media (max-width: 760px)  {
             .cash-label {

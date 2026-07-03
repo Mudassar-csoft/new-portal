@@ -25,7 +25,7 @@
         <!-- <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
                 <h3 class="panel-title mb-0">Student Detail
-                    <small class="text-muted" style="font-size:14px;font-weight:400;">
+                    <small class="text-muted ci-muted-meta">
                         — {{ $registration->student_name ?? '' }}
                     </small>
                 </h3>
@@ -238,7 +238,7 @@
                                         <td>{{ $fee->fee_type === 'registration' ? 'Registration Fee' : ($admission?->program?->title ?? $registration->program?->title ?? '—') }}</td>
                                         <td>{{ number_format((float) ($fee->net_amount ?? $fee->amount ?? 0), 0) }}</td>
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
-                                        
+
                                     <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
                                     <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>
                                    <td class="fee-status-cell">
@@ -258,7 +258,7 @@
                                              @else
                                              <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                              @endif
-                                       
+
                                         </td>
                                     <td> @if($voucherUrl)
                                         <a class="btn btn-xs btn-warning fee-action-btn fee-status-control fee-status-control--icon p-2"
@@ -397,7 +397,7 @@
                     <div class="fee-edit-field">
                         <label for="fee_collect_remaining">Remaining Amount</label>
                         <input type="text" id="fee_collect_remaining" readonly>
-                        <small class="text-muted" id="fee_collect_remaining_hint" style="font-size:11px;display:block;margin-top:4px;"></small>
+                        <small class="text-muted" id="fee_collect_remaining_hint" style="font-size: var(--typo-student-show-font-size-1);display:block;margin-top:4px;"></small>
                     </div>
                     <div class="fee-edit-field">
                         <label for="fee_collect_receipt">Receipt Number <span style="color:#dc3545;">*</span></label>
@@ -415,6 +415,23 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-student-show-font-size-1: 11px;
+            --typo-student-show-font-size-2: 18px;
+            --typo-student-show-font-weight-3: 600;
+            --typo-student-show-font-size-4: 14px;
+            --typo-student-show-font-weight-5: 500;
+            --typo-student-show-line-height-6: 1;
+            --typo-student-show-font-size-7: 13px;
+            --typo-student-show-font-size-8: 16px;
+            --typo-student-show-font-size-9: 12px;
+        }
+
+        .ci-muted-meta {
+            font-size: 14px !important;
+            font-weight: 400 !important;
+        }
+
         .student-detail-shell {
             padding: 0;
         }
@@ -485,13 +502,13 @@
         .profile-body { padding: 12px 20px 20px; text-align: center; }
         .profile-name {
             margin: 8px 0 4px;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: var(--typo-student-show-font-size-2);
+            font-weight: var(--typo-student-show-font-weight-3);
             color: #1f2d3d;
         }
         .profile-phone {
             color: #4c5a6a;
-            font-size: 14px;
+            font-size: var(--typo-student-show-font-size-4);
             margin-bottom: 16px;
         }
         .profile-action { margin-bottom: 20px; }
@@ -502,7 +519,7 @@
             border: 1px solid #00a8ff !important;
             padding: 6px 18px !important;
             border-radius: 4px;
-            font-weight: 500;
+            font-weight: var(--typo-student-show-font-weight-5);
         }
         .student-action-btn:hover {
             background: #00a8ff !important;
@@ -511,7 +528,7 @@
         }
         .student-action-wrap .dropdown-menu {
             display: none;
-            
+
             width:237px;
             min-width: 150px !important;
             background: #fff;
@@ -535,7 +552,7 @@
             padding: 8px 22px;
             color: #303740;
             font-size: 17px;
-            font-weight: 500;
+            font-weight: var(--typo-student-show-font-weight-5);
             line-height: 1.4;
             text-decoration: none;
         }
@@ -555,7 +572,7 @@
             width: 26px;
             min-width: 26px;
             height: 26px;
-            line-height: 1;
+            line-height: var(--typo-student-show-line-height-6);
             flex-shrink: 0;
         }
         .student-action-wrap .lead-action-icon svg {
@@ -587,8 +604,8 @@
             padding: 10px 6px;
             text-align: center;
         }
-        .stat-label { font-size: 13px; color: #1f2d3d; font-weight: 600; }
-        .stat-value { font-size: 16px; font-weight: 600; margin-top: 4px; color: #1f2d3d; }
+        .stat-label { font-size: var(--typo-student-show-font-size-7); color: #1f2d3d; font-weight: var(--typo-student-show-font-weight-3); }
+        .stat-value { font-size: var(--typo-student-show-font-size-8); font-weight: var(--typo-student-show-font-weight-3); margin-top: 4px; color: #1f2d3d; }
         .stat-value--blue { color: #0a96cc; }
         .stat-value--orange { color: #f5a623; }
 
@@ -610,15 +627,15 @@
             text-align: center;
             cursor: pointer;
             color: #4c5a6a;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: var(--typo-student-show-font-size-8);
+            font-weight: var(--typo-student-show-font-weight-5);
             border-bottom: 3px solid transparent;
             transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
         }
         .student-tab:hover { background: #f8fbff; }
         .student-tab.active {
             color: #0a96cc;
-            font-weight: 600;
+            font-weight: var(--typo-student-show-font-weight-3);
             border-bottom-color: #0a96cc;
         }
 
@@ -640,7 +657,7 @@
         }
 
         .fee-status-cell { white-space: nowrap; }
-        .fee-status-cell .label { padding: 4px 10px; font-size: 11px; font-weight: 600; }
+        .fee-status-cell .label { padding: 4px 10px; font-size: var(--typo-student-show-font-size-1); font-weight: var(--typo-student-show-font-weight-3); }
         .fee-status-control {
             display: inline-flex !important;
             align-items: center;
@@ -652,14 +669,14 @@
         .fee-status-control--text { min-width: 45px; }
         .fee-status-control--icon { width: 30px; }
         .fee-action-btn { margin-left: 4px; padding: 3px 8px; }
-        .fee-action-btn .fa { font-size: 12px; }
+        .fee-action-btn .fa { font-size: var(--typo-student-show-font-size-9); }
         .fee-action-btn.disabled { opacity: 0.5; cursor: not-allowed; }
         .js-fee-collect:hover { background: #d99020 !important; }
 
         .pane-section-title {
             margin: 0 0 14px;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: var(--typo-student-show-font-size-2);
+            font-weight: var(--typo-student-show-font-weight-3);
             color: #1f2d3d;
             padding-bottom: 12px;
             border-bottom: 1px solid #e2e8f0;
@@ -672,7 +689,7 @@
         .info-table td {
             padding: 5px 0;
             border-bottom: 1px solid #eef2f7;
-            font-size: 14px;
+            font-size: var(--typo-student-show-font-size-4);
             vertical-align: middle;
         }
         .info-table th {
@@ -681,7 +698,7 @@
             color: #1f2d3d;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: var(--typo-student-show-font-size-9);
             letter-spacing: 0.5px;
         }
         .info-table td { color: #334155; }
@@ -695,7 +712,7 @@
             padding: 10px 14px;
             border-radius: 6px;
             margin-bottom: 12px;
-            font-size: 13px;
+            font-size: var(--typo-student-show-font-size-7);
         }
         .student-flash--error {
             background: #fef2f2;
@@ -745,13 +762,13 @@
             background: #1fb2ff;
             color: #fff;
         }
-        .fee-edit-header h4 { margin: 0; font-size: 16px; font-weight: 600; }
+        .fee-edit-header h4 { margin: 0; font-size: var(--typo-student-show-font-size-8); font-weight: var(--typo-student-show-font-weight-3); }
         .fee-edit-close {
             background: transparent;
             border: 0;
             color: #fff;
             font-size: 24px;
-            line-height: 1;
+            line-height: var(--typo-student-show-line-height-6);
             cursor: pointer;
             padding: 0;
         }
@@ -759,18 +776,18 @@
         .fee-edit-label-row {
             display: flex;
             gap: 6px;
-            font-size: 13px;
+            font-size: var(--typo-student-show-font-size-7);
             margin-bottom: 14px;
             padding-bottom: 12px;
             border-bottom: 1px solid #e2e8f0;
         }
         .fee-edit-sublabel { color: #64748b; }
-        .fee-edit-name { font-weight: 600; color: #1f2d3d; }
+        .fee-edit-name { font-weight: var(--typo-student-show-font-weight-3); color: #1f2d3d; }
         .fee-edit-field { margin-bottom: 14px; }
         .fee-edit-field label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-student-show-font-size-7);
+            font-weight: var(--typo-student-show-font-weight-3);
             color: #1f2d3d;
             margin-bottom: 6px;
         }
@@ -779,7 +796,7 @@
             padding: 8px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: var(--typo-student-show-font-size-4);
             color: #1f2d3d;
         }
         .fee-edit-field input:focus {
@@ -799,8 +816,8 @@
         .btn-fee-save {
             padding: 7px 16px;
             border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-student-show-font-size-7);
+            font-weight: var(--typo-student-show-font-weight-3);
             cursor: pointer;
             border: 0;
         }

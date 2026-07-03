@@ -18,6 +18,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice {{ $invoiceNumber }}</title>
     <style>
+        :root {
+            --typo-finance-receivables-print-font-size-1: 14px;
+            --typo-finance-receivables-print-font-size-2: 20px;
+            --typo-finance-receivables-print-font-weight-3: 600;
+            --typo-finance-receivables-print-font-size-4: 7.4mm;
+            --typo-finance-receivables-print-line-height-5: 1.1;
+            --typo-finance-receivables-print-font-weight-6: 700;
+            --typo-finance-receivables-print-font-weight-7: 500;
+            --typo-finance-receivables-print-line-height-8: 1;
+            --typo-finance-receivables-print-font-size-9: 3.7mm;
+            --typo-finance-receivables-print-line-height-10: 1.35;
+            --typo-finance-receivables-print-font-size-11: 3.5mm;
+            --typo-finance-receivables-print-font-size-12: 3.8mm;
+            --typo-finance-receivables-print-line-height-13: 1.2;
+            --typo-finance-receivables-print-font-size-14: 16px;
+        }
+
         @page {
             size: A4 portrait;
             margin: 0;
@@ -53,7 +70,7 @@
             color: #1188cc;
             padding: 8px 16px;
             border-radius: 999px;
-            font-size: 14px;
+            font-size: var(--typo-finance-receivables-print-font-size-1);
             text-decoration: none;
             cursor: pointer;
         }
@@ -89,17 +106,17 @@
         .brand-services {
             padding-top: 5px;
             color: #0a0a0a;
-            font-size: 20px;
+            font-size: var(--typo-finance-receivables-print-font-size-2);
             /* line-height: 1.25; */
-            font-weight: 600;
+            font-weight: var(--typo-finance-receivables-print-font-weight-3);
         }
 
         .company-name {
             margin-top: 6mm;
             color: #20262d;
-            font-size: 7.4mm;
-            line-height: 1.1;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-4);
+            line-height: var(--typo-finance-receivables-print-line-height-5);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
         }
 
         .invoice-hero {
@@ -112,10 +129,10 @@
         }
 
         .invoice-to-title {
-            font-size: 7.4mm;
-            font-weight: 500;
-            line-height: 1;
-            
+            font-size: var(--typo-finance-receivables-print-font-size-4);
+            font-weight: var(--typo-finance-receivables-print-font-weight-7);
+            line-height: var(--typo-finance-receivables-print-line-height-8);
+
 
         }
 
@@ -127,8 +144,8 @@
             align-items: center;
             justify-content: center;
             color: #0c0c0c;
-            font-size: 20px;
-            line-height: 1;
+            font-size: var(--typo-finance-receivables-print-font-size-2);
+            line-height: var(--typo-finance-receivables-print-line-height-8);
             font-weight: 800;
             text-transform: uppercase;
             padding:20px;
@@ -143,13 +160,13 @@
         .bill-to-name {
             font-size: 6.2mm;
             line-height: 1.08;
-            font-weight: 700;
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             margin-bottom: 2.4mm;
         }
 
         .bill-to-line {
-            font-size: 3.7mm;
-            line-height: 1.35;
+            font-size: var(--typo-finance-receivables-print-font-size-9);
+            line-height: var(--typo-finance-receivables-print-line-height-10);
             margin-bottom: 1mm;
             word-break: break-word;
         }
@@ -168,8 +185,8 @@
         .summary-label {
             color: #2e2e32;
             font-size: 3.9mm;
-            font-weight: 700;
-            line-height: 1.1;
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
+            line-height: var(--typo-finance-receivables-print-line-height-5);
             letter-spacing: 0;
             white-space: nowrap;
         }
@@ -177,8 +194,8 @@
         .summary-value {
             margin-top: 2.2mm;
             color: #2e2e32;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-1);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             line-height: 1.12;
             letter-spacing: 0;
             word-break: break-word;
@@ -199,8 +216,8 @@
             color: #fff;
             border: 1px solid #0f8ef2;
             padding: 3.2mm 3mm;
-            font-size: 3.7mm;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-9);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             text-align: left;
         }
 
@@ -218,7 +235,7 @@
             background: #fff;
             border: 1px solid #d8e2e7;
             padding: 3.2mm 3mm;
-            font-size: 3.5mm;
+            font-size: var(--typo-finance-receivables-print-font-size-11);
             vertical-align: top;
         }
 
@@ -228,15 +245,15 @@
 
         .description-title {
             display: block;
-            font-size: 3.8mm;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-12);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             margin-bottom: 1.4mm;
         }
 
         .description-subtitle {
             display: block;
             color: #4b4b4b;
-            line-height: 1.35;
+            line-height: var(--typo-finance-receivables-print-line-height-10);
             /* white-space: pre-line; */
             word-break: break-word;
         }
@@ -259,9 +276,9 @@
         }
 
         .tracking-title {
-            font-size: 3.7mm;
-            font-weight: 700;
-            line-height: 1.2;
+            font-size: var(--typo-finance-receivables-print-font-size-9);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
+            line-height: var(--typo-finance-receivables-print-line-height-13);
         }
 
         .tracking-title span {
@@ -275,8 +292,8 @@
         }
 
         .tracking-stat-value {
-            font-size: 3.5mm;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-11);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             line-height: 1.15;
         }
 
@@ -297,8 +314,8 @@
 
         .notes-title {
             color: #0f8ef2;
-            font-size: 3.8mm;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-12);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             margin-bottom: 2mm;
         }
 
@@ -310,8 +327,8 @@
 
         .notes-trust {
             margin-top: 3mm;
-            font-size: 3.5mm;
-            font-weight: 700;
+            font-size: var(--typo-finance-receivables-print-font-size-11);
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             color: #b8b8b8;
         }
 
@@ -320,7 +337,7 @@
             justify-content: space-between;
             align-items: baseline;
             gap: 8px;
-            font-size: 3.5mm;
+            font-size: var(--typo-finance-receivables-print-font-size-11);
             margin-bottom: 2.4mm;
         }
 
@@ -329,7 +346,7 @@
         }
 
         .totals-line strong {
-            font-weight: 700;
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
             white-space: nowrap;
         }
 
@@ -353,7 +370,7 @@
         }
 
         .approved-label {
-            font-size: 16px;
+            font-size: var(--typo-finance-receivables-print-font-size-14);
             font-weight: 400;
             margin-bottom: 35px;
             text-align: center;
@@ -366,14 +383,14 @@
         }
 
         .signature-name {
-            font-size: 20px;
-            line-height: 1.1;
-            font-weight: 600;
+            font-size: var(--typo-finance-receivables-print-font-size-2);
+            line-height: var(--typo-finance-receivables-print-line-height-5);
+            font-weight: var(--typo-finance-receivables-print-font-weight-3);
         }
 
         .signature-title {
             margin-top: 14px;
-            font-size: 14px;
+            font-size: var(--typo-finance-receivables-print-font-size-1);
         }
 
         .contact-footer {
@@ -404,19 +421,19 @@
             align-items: center;
             justify-content: center;
             font-size: 5mm;
-            font-weight: 700;
+            font-weight: var(--typo-finance-receivables-print-font-weight-6);
         }
 
         .contact-text {
-            font-size: 16px;
-            line-height: 1.2;
-            font-weight: 500;
+            font-size: var(--typo-finance-receivables-print-font-size-14);
+            line-height: var(--typo-finance-receivables-print-line-height-13);
+            font-weight: var(--typo-finance-receivables-print-font-weight-7);
         }
 
         .contact-text small {
             display: block;
-            font-size: 16px;
-            line-height: 1.2;
+            font-size: var(--typo-finance-receivables-print-font-size-14);
+            line-height: var(--typo-finance-receivables-print-line-height-13);
         }
 
         .footer-shapes {
@@ -523,7 +540,7 @@
 
         <!-- <div class="company-name">Career Institute Pvt Ltd</div> -->
 
-        
+
 
         <section class="bill-to">
             <div class="bill-to-name">{{ $charge->student_name ?: 'N/A' }}</div>

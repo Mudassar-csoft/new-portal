@@ -90,6 +90,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-lead-transfer-font-weight-1: 600;
+        }
+
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
@@ -142,7 +146,7 @@
         .lead-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfer-font-weight-1);
         }
         .form-label {
                 margin-bottom: 6px;
@@ -150,7 +154,7 @@
                 font-size: 13.8px !important;
                 color: #343a40 !important;
                 text-transform: uppercase;
-                font-weight: 600;
+                font-weight: var(--typo-lead-transfer-font-weight-1);
         }
         .lead-content {
             opacity: 0;
@@ -210,7 +214,7 @@
 
         .lead-title small {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfer-font-weight-1);
             color: #70839a !important;
         }
 
@@ -243,7 +247,7 @@
         .lead-transfer-form label {
             display: inline-block;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfer-font-weight-1);
             /* color: #223a57; */
         }
 

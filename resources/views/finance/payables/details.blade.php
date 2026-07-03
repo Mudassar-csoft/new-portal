@@ -111,6 +111,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-payables-details-font-weight-1: 700;
+        }
+
          .leave-button{
                 margin: auto;
     padding-top: 33px;
@@ -146,7 +150,7 @@
             margin-top: 30px;
             font-size: 18px;
             text-align: center;
-            font-weight: 700;
+            font-weight: var(--typo-finance-payables-details-font-weight-1);
         }
         .tone-pending { background: #f35f62; }
         .tone-approved { background: #fdc518; }
@@ -154,7 +158,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-payables-details-font-weight-1);
         }
         @media (max-width: 760px)  {
             .payable-label {

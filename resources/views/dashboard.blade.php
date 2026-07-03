@@ -85,25 +85,25 @@
 						<div class="chart-container row ">
 							<div class="chart-txt col-md-5 p-0 m-0 ">
 								<div class="chart-txt-top pt-3">
-									<p ><span class="unit"style="font-size:18px !important;">RS.</span><span id="income-headline-value" class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-									<p class="caption"style="font-size:18px !important;">Income</p>  
+									<p ><span class="unit"style="font-size: var(--typo-dashboard-font-size-1) !important;">RS.</span><span id="income-headline-value" class="number"style="font-size: var(--typo-dashboard-font-size-1) !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+									<p class="caption"style="font-size: var(--typo-dashboard-font-size-1) !important;">Income</p>
 								</div>
 								<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-today" value="today" checked>
 										<label for="range-today">Today</label>
 									</div>
-									
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-week" value="week">
 										<label for="range-week">Weekly</label>
 									</div>
-									
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-month" value="month">
 										<label for="range-month">Monthly</label>
 									</div>
-								
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-year" value="year">
 										<label for="range-year">Yearly</label>
@@ -111,16 +111,16 @@
 								</div>
 								<table class="tbl-data">
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today</td>
-										<td class="price  collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Today</td>
+										<td class="price  collection-amount dashboard-income-summary-cell" data-income-summary="today">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly</td>
-										<td class="price collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Weekly</td>
+										<td class="price collection-amount dashboard-income-summary-cell" data-income-summary="week">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly</td>
-										<td class="price  collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Monthly</td>
+										<td class="price  collection-amount dashboard-income-summary-cell" data-income-summary="month">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 									</tr>
 								</table>
 							</div>
@@ -128,7 +128,7 @@
 								<div class="pr-md-2">
 									<div class="income-chart-stage">
 										<div id="chart_div" ></div>
-										<div id="chart_fallback" style="display:none; height:314px; font-size:11px;">
+										<div id="chart_fallback" style="display:none; height:314px; font-size: var(--typo-dashboard-font-size-2);">
 											<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
 												<defs>
 													<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -262,8 +262,8 @@
 					@endif
 				</div><!--.row-->
 			</div><!--.col-->
-		
-		
+
+
 	    </div>
 	@if($showComparisonChart)
 <!--Current Month Charts-->
@@ -488,7 +488,30 @@
 
 @push('styles')
 	<style>
-		
+        :root {
+            --typo-dashboard-font-size-1: 18px;
+            --typo-dashboard-font-size-2: 11px;
+            --typo-dashboard-font-size-3: 14px;
+            --typo-dashboard-font-size-4: 15px;
+            --typo-dashboard-font-size-5: 17px;
+            --typo-dashboard-line-height-6: 1;
+            --typo-dashboard-font-family-7: 'Proxima Nova', sans-serif;
+            --typo-dashboard-font-size-8: 10px;
+            --typo-dashboard-font-weight-9: 700;
+            --typo-dashboard-font-size-10: 13px;
+            --typo-dashboard-font-weight-11: 600;
+            --typo-dashboard-font-weight-12: 800;
+            --typo-dashboard-font-size-13: 15px;
+            --typo-dashboard-font-size-14: 12px;
+            --typo-dashboard-font-size-15: 12.8px;
+            --typo-dashboard-font-weight-16: 500;
+            --typo-dashboard-line-height-17: 1.45;
+            --typo-dashboard-font-size-18: 13px;
+        }
+
+		.dashboard-income-summary-cell {
+			font-size: var(--typo-dashboard-font-size-3) !important;
+		}
 	</style>
 @endpush
 
@@ -501,7 +524,7 @@
 	<style>
 		*{
 
-			font-size: 15px;	
+			font-size: var(--typo-dashboard-font-size-4);
 		}
 		body.with-side-menu.control-panel .page-content {
 			padding-right: 67px !important;
@@ -511,7 +534,7 @@
 			height: 414px;
 		}
 		.chart-txt-top.pt-2 {
-    font-size: 17px !important;
+    font-size: var(--typo-dashboard-font-size-5) !important;
 }
 		.chart-range {
 			display: flex;
@@ -545,17 +568,17 @@
 			align-items: baseline;
 			justify-content: center;
 			gap: 6px;
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-txt .chart-txt-top .unit {
 			margin: 0;
 			padding: 0;
 			position: static;
 			top: auto;
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-txt .chart-txt-top .number {
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-container-in {
 			border-radius: 0 12px 12px 0;
@@ -565,7 +588,7 @@
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
 			height: 314px;
-			
+
 		}
 
 		.chart-statistic-box #chart_div,
@@ -579,24 +602,24 @@
 			pointer-events: none;
 			z-index: 3;
 			color: #fff;
-			font-family: 'Proxima Nova', sans-serif;
-			font-size: 10px !important;
-			font-weight: 700;
+			font-family: var(--typo-dashboard-font-family-7);
+			font-size: var(--typo-dashboard-font-size-8) !important;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			display: none;
 		}
 
 		.chart-statistic-box .income-axis-label {
 			position: absolute;
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 			white-space: nowrap;
 			/* margin-right:15px; */
-			font-size: 10px !important;
-			
+			font-size: var(--typo-dashboard-font-size-8) !important;
+
 		}
 
 		.chart-statistic-box .income-axis-top .income-axis-label {
 			transform: translateX(-50%);
-			font-size: 10px !important;
+			font-size: var(--typo-dashboard-font-size-8) !important;
 		}
 
 		.chart-statistic-box .income-axis-right .income-axis-label {
@@ -730,7 +753,7 @@
 
 		.admission-insight-title {
 			font-size: 20px !important;
-			font-weight: 700;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			color: #243746;
 			text-align: left;
 			margin-bottom: 18px;
@@ -769,8 +792,8 @@
 		}
 
 		.admission-insight-bar-label {
-			font-size: 13px !important;
-			font-weight: 600;
+			font-size: var(--typo-dashboard-font-size-10) !important;
+			font-weight: var(--typo-dashboard-font-weight-11);
 			color: #31465a;
 		}
 
@@ -782,8 +805,8 @@
 
 		.admission-insight-total-value {
 			font-size: 54px !important;
-			font-weight: 800;
-			line-height: 1;
+			font-weight: var(--typo-dashboard-font-weight-12);
+			line-height: var(--typo-dashboard-line-height-6);
 			color: #00a8ff;
 		}
 
@@ -810,16 +833,16 @@
 		}
 
 		.admission-insight-footer-label {
-			font-size: 15px !important;
-			font-weight: 700;
+			font-size: var(--typo-dashboard-font-size-13) !important;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			color: #2c3f50;
 			margin-bottom: 10px;
 		}
 
 		.admission-insight-footer-value {
 			font-size: 34px !important;
-			font-weight: 800;
-			line-height: 1;
+			font-weight: var(--typo-dashboard-font-weight-12);
+			line-height: var(--typo-dashboard-line-height-6);
 			color: #00a8ff;
 		}
 
@@ -851,9 +874,9 @@
         .chart-range .radio input {
             margin-top: 2px;
         }
-		
+
 		.box-typical .form-label-dashboard{
-			font-size:15px !important;
+			font-size: var(--typo-dashboard-font-size-13) !important;
 			font-weight:500 !important;
 		}
         /* Hide static axes; Google Chart handles axes dynamically */
@@ -863,18 +886,18 @@
         }
 
 		.chart-caption , .caption-text{
-			font-size: 17px !important;
+			font-size: var(--typo-dashboard-font-size-5) !important;
             text-align: center;
-            font-weight: 700;
+            font-weight: var(--typo-dashboard-font-weight-9);
             color: #fff;
             margin-top: 8px;
             padding-bottom: 6px;
         }
 
 		#lead-chart .c3-legend-item text {
-			font-size: 12px;
+			font-size: var(--typo-dashboard-font-size-14);
 			fill: #334155;
-			font-weight: 600;
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
 
 		#lead-chart .c3-legend-item:last-child {
@@ -887,13 +910,13 @@
 		}
 
 		#lead-chart .c3 svg {
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-dashboard-font-family-7);
 		}
 
 		#lead-chart .c3-axis-x text,
 		#lead-chart .c3-axis-y text {
 			fill: #526273;
-			font-size: 12px;
+			font-size: var(--typo-dashboard-font-size-14);
 		}
 
 		#lead-chart .c3-axis path,
@@ -911,8 +934,8 @@
 
 		#lead-chart .c3-texts text {
 			fill: #1e293b;
-			font-size: 11px;
-			font-weight: 600;
+			font-size: var(--typo-dashboard-font-size-2);
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
 
 		.comparison-empty-state {
@@ -924,8 +947,8 @@
 			border-radius: 14px;
 			background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
 			color: #64748b;
-			font-size: 15px;
-			font-weight: 600;
+			font-size: var(--typo-dashboard-font-size-4);
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
  .statistic-box {
        -webkit-border-radius: 4px;
@@ -936,7 +959,7 @@
     background-size: cover;
     margin: 0 0 30px;
 
-    
+
 }
         .statistic-box .stat-inner {
             position: relative;
@@ -955,7 +978,7 @@
             text-decoration: none;
         }
 
-.statistic-box .number, 
+.statistic-box .number,
 .statistic-box .caption{
     font-size:26px !important;
 
@@ -1034,7 +1057,7 @@
         }
         .month-chart-header-title {
             margin: 0;
-            font-size: 15px !important;
+            font-size: var(--typo-dashboard-font-size-13) !important;
             font-weight: 600 !important;
             color: #25364a;
             min-width: 0;
@@ -1047,7 +1070,7 @@
             min-width: 0;
             max-width: 100%;
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: var(--typo-dashboard-font-weight-11);
             line-height: 1.25;
             margin-top: 0;
             white-space: nowrap;
@@ -1077,8 +1100,8 @@
             background: transparent;
             border: 0;
             color: #b2bcc7;
-            font-size: 12.8px !important;
-            line-height: 1;
+            font-size: var(--typo-dashboard-font-size-15) !important;
+            line-height: var(--typo-dashboard-line-height-6);
             min-width: 16px;
             transition: color 0.15s ease;
         }
@@ -1095,11 +1118,11 @@
         }
         .month-chart-header-actions .action-btn .font-icon,
         .month-chart-header-actions .action-btn .glyphicon {
-            line-height: 1;
-            font-size: 12.8px !important;
+            line-height: var(--typo-dashboard-line-height-6);
+            font-size: var(--typo-dashboard-font-size-15) !important;
         }
         .month-chart-header-actions .dashboard-panel-action[data-action="fullscreen"] .font-icon {
-            font-size: 14px !important;
+            font-size: var(--typo-dashboard-font-size-3) !important;
         }
         .month-chart-header-actions .action-btn .glyphicon {
             font-family: 'Glyphicons Halflings' !important;
@@ -1111,7 +1134,7 @@
         .dashboard-panel-action.is-spinning .font-icon {
             animation: dashboardSpin 0.75s linear infinite;
         }
-		
+
         .dashboard-panel-offset {
             transform: translate(24px, -14px);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -1122,7 +1145,7 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 	.month-chart-card .panel-body > .tbl-typical td {
-   
+
 			padding:5px !important;
 		}
 
@@ -1133,7 +1156,7 @@
             overflow: hidden !important;
             padding: 0px;
         }
-		
+
         .panel-body-admssion  {
             max-height: none !important;
             height: auto;
@@ -1235,7 +1258,7 @@
             min-height: 100vh;
             width: 100%;
             overflow: hidden;
-			
+
 			font-size:10px;
 			margin: 1%;
         }
@@ -1270,7 +1293,7 @@
         }
 		text{
 			font-size:8px !important;
-			
+
 		}
         .dashboard-spinner .dot:nth-child(2) {
             animation-delay: 0.15s;
@@ -1285,7 +1308,7 @@
         .dashboard-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-dashboard-font-weight-11);
         }
 
         .dashboard-content {
@@ -1311,7 +1334,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-weight: 600;
+            font-weight: var(--typo-dashboard-font-weight-11);
             color: #1c7c54;
         }
 
@@ -1325,8 +1348,8 @@
         }
 
         .dashboard-live-meta {
-            font-size: 13px !important;
-            font-weight: 500;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            font-weight: var(--typo-dashboard-font-weight-16);
         }
 
         .dashboard-live-refresh {
@@ -1338,8 +1361,8 @@
             border-radius: 999px;
             background: #eef5ff;
             color: #0a6fd1;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-14);
+            font-weight: var(--typo-dashboard-font-weight-11);
             cursor: pointer;
             transition: background 0.18s ease, transform 0.18s ease;
         }
@@ -1414,10 +1437,10 @@
             border-collapse: separate;
             border-spacing: 0;
         }
-        
+
         .daily-activity-card .tbl-typical td {
-            font-size: 13px !important;
-            line-height: 1.45;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            line-height: var(--typo-dashboard-line-height-17);
             vertical-align: middle;
             color: #304b58;
             width: auto !important;
@@ -1426,8 +1449,8 @@
         }
 		 .daily-activity-card .tbl-typical th
          {
-            font-size: 13px !important;
-            line-height: 1.45;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            line-height: var(--typo-dashboard-line-height-17);
             vertical-align: middle;
             color: #304b58;
             width: auto !important;
@@ -1435,7 +1458,7 @@
             border-bottom: 1px solid #e6edf3;
         }
         .daily-activity-card .tbl-typical th {
-            font-weight: 700;
+            font-weight: var(--typo-dashboard-font-weight-9);
             text-align: left;
             white-space: normal;
             color: #5d7386;
@@ -1465,8 +1488,8 @@
             padding: 6px 7px;
             border-radius: 999px;
             color: #fff;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: var(--typo-dashboard-font-size-18);
+            font-weight: var(--typo-dashboard-font-weight-9);
             line-height: 1.1;
             text-align: center;
         }
@@ -1493,8 +1516,8 @@
         }
         .daily-student-name {
             color: #304b58;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-18);
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: left;
         }
         .daily-student-name-link {
@@ -1510,20 +1533,20 @@
         .daily-student-campus {
             margin-top: 4px;
             color: #8a9aaa;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-14);
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: left;
         }
         .daily-phone,
         .daily-date {
-            font-size: 13px !important;
-            font-weight: 500;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            font-weight: var(--typo-dashboard-font-weight-16);
         }
         .daily-empty-state {
             padding: 26px 14px !important;
             color: #7b8b99 !important;
-            font-size: 14px !important;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-3) !important;
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: center !important;
             border-bottom: 0 !important;
         }
@@ -2203,7 +2226,7 @@
 
 
 
-			
+
 			function renderActivityTables(payload) {
 				var dailyActivity = (payload || {}).dailyActivity || {};
 				var admissionsActivity = (payload || {}).admissionsActivity || {};
@@ -2244,7 +2267,7 @@ var admissionData = admissionAllowed
 				var hasRealCategory = false;
 
 				leadData.forEach(function (item) {
-					
+
 					var category = item.label || 'No Data';
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
@@ -2254,7 +2277,7 @@ var admissionData = admissionAllowed
 				});
 
 				admissionData.forEach(function (item) {
-					
+
 					var category = item.label || 'No Data';
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
@@ -2289,7 +2312,7 @@ var admissionData = admissionAllowed
 					admissionAllowed: admissionAllowed,
 					isEmpty: isEmpty || (!leadAllowed && !admissionAllowed)
 				};
-			} 
+			}
 
 			function renderMonthlyComparisonChart() {
 				if (!(window.c3 && document.getElementById('lead-chart'))) { return; }

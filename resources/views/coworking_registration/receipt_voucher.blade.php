@@ -27,6 +27,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $receiptTitle }}</title>
     <style>
+        :root {
+            --typo-coworking-registration-receipt-voucher-font-size-1: 14px;
+            --typo-coworking-registration-receipt-voucher-font-size-2: 15px;
+            --typo-coworking-registration-receipt-voucher-font-weight-3: 400;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,7 +48,7 @@
         body {
             background: #fff;
             color: #111;
-            font-size: 14px;
+            font-size: var(--typo-coworking-registration-receipt-voucher-font-size-1);
             line-height: 1.2;
             padding: 10px;
         }
@@ -61,7 +67,7 @@
 
         .copy-label {
             text-align: center;
-            font-size: 14px;
+            font-size: var(--typo-coworking-registration-receipt-voucher-font-size-1);
             margin-bottom: 8px;
         }
 
@@ -90,7 +96,7 @@
         }
 
         .voucher-title {
-            font-size: 15px;
+            font-size: var(--typo-coworking-registration-receipt-voucher-font-size-2);
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -115,7 +121,7 @@
         }
 
         .info-table th {
-            font-weight: 400;
+            font-weight: var(--typo-coworking-registration-receipt-voucher-font-weight-3);
             text-align: left;
             background: #fff;
         }
@@ -150,7 +156,7 @@
         }
 
         .amount-table td {
-            font-size: 15px;
+            font-size: var(--typo-coworking-registration-receipt-voucher-font-size-2);
             padding: 5px 6px;
         }
 
@@ -170,7 +176,7 @@
         }
 
         .voucher-footer strong {
-            font-weight: 400;
+            font-weight: var(--typo-coworking-registration-receipt-voucher-font-weight-3);
         }
 
         @media print {

@@ -1,3 +1,9 @@
+:root {
+    --typo-theme-css-separate-pages-calendar-font-weight-1: 600;
+    --typo-theme-css-separate-pages-calendar-font-size-2: 1rem;
+    --typo-theme-css-separate-pages-calendar-font-size-3: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -24,7 +30,7 @@
   border-color: #d8e2e7;
 }
 .fc-unthemed th {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
   font-size: 0.75rem /*12/16*/;
   text-transform: uppercase;
   padding: 10px 15px;
@@ -42,8 +48,8 @@
 .fc-toolbar h4,
 .fc-toolbar h5,
 .fc-toolbar h6 {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
   padding: .375rem .5rem;
   position: relative;
   top: 3px;
@@ -54,8 +60,8 @@
   -webkit-box-shadow: none;
           box-shadow: none;
   color: #6c7a86;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
   padding: .375rem 1rem;
   -webkit-border-radius: 25rem !important;
           border-radius: 25rem !important;
@@ -105,10 +111,10 @@
   margin: 0;
 }
 .fc-time-grid-event .fc-time {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
 }
 .fc-day-grid-event .fc-time {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
 }
 .fc-event {
   background-color: #b0e4fe;
@@ -116,7 +122,7 @@
   color: #343434;
   -webkit-border-radius: 0;
           border-radius: 0;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
   padding: 7px;
   -webkit-transition: none;
   transition: none;
@@ -164,7 +170,7 @@ a.fc-event:hover {
   color: #343434;
 }
 a.fc-more {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
   text-decoration: none;
   color: #0082c6;
   border-bottom: solid 1px rgba(0, 130, 198, 0.3);
@@ -188,8 +194,8 @@ a.fc-more:hover {
   background: #00a8ff;
   padding: 6px 10px 6px 12px;
   text-transform: uppercase;
-  font-weight: 600;
-  font-size: .875rem;
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-3);
 }
 .fc-unthemed .fc-popover .fc-header .fc-title,
 .fc-popover .fc-header .fc-title {
@@ -198,7 +204,7 @@ a.fc-more:hover {
 .fc-unthemed .fc-popover .fc-header .fc-close,
 .fc-popover .fc-header .fc-close {
   color: #fff;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-3);
 }
 .fc-unthemed .fc-popover .fc-body,
 .fc-popover .fc-body {
@@ -286,7 +292,7 @@ a.fc-more:hover {
   margin: 0 10px 0 0;
 }
 .fc-popover.click .fc-body .form-control {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-3);
 }
 .fc-popover.click .fc-body.remove-confirm,
 .fc-popover.click .fc-body.edit-event {
@@ -319,8 +325,8 @@ a.fc-more:hover {
   position: absolute;
   left: 0;
   top: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
   z-index: 2;
   padding: .375rem 15px;
 }
@@ -338,8 +344,8 @@ a.fc-more:hover {
   max-width: 270px;
 }
 .calendar-page .calendar-page-side .bootstrap-datetimepicker-widget table th.picker-switch {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-pages-calendar-font-size-2);
+  font-weight: var(--typo-theme-css-separate-pages-calendar-font-weight-1);
 }
 .calendar-page .calendar-page-side .exp-timeline-iten {
   margin-bottom: 10px;

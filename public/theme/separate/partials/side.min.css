@@ -1,5 +1,16 @@
 @charset "UTF-8";
 
+:root{
+--typo-theme-separate-partials-side-min-font-size-1: 100%;
+--typo-theme-separate-partials-side-min-font-family-2: 'Glyphicons Halflings';
+--typo-theme-separate-partials-side-min-font-weight-3: 400;
+--typo-theme-separate-partials-side-min-line-height-4: 1;
+--typo-theme-separate-partials-side-min-font-family-5: startui;
+--typo-theme-separate-partials-side-min-line-height-6: inherit;
+--typo-theme-separate-partials-side-min-font-weight-7: 600;
+--typo-theme-separate-partials-side-min-font-size-8: 1rem;
+--typo-theme-separate-partials-side-min-font-size-9: .875rem;
+}
 article,
 aside,
 details,
@@ -31,7 +42,7 @@ audio:not([controls]) {
 }
 
 html {
-    font-size: 100%;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-1);
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%
 }
@@ -190,7 +201,7 @@ button,
 input,
 select,
 textarea {
-    font-size: 100%;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-1);
     margin: 0;
     vertical-align: baseline
 }
@@ -314,7 +325,7 @@ video {
 }
 
 @font-face {
-    font-family: 'Glyphicons Halflings';
+    font-family:'Glyphicons Halflings';
     src: url(../fonts/glyphicons-halflings-regular.eot);
     src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'), url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'), url(../fonts/glyphicons-halflings-regular.woff) format('woff'), url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'), url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
 }
@@ -323,10 +334,10 @@ video {
     position: relative;
     top: 1px;
     display: inline-block;
-    font-family: 'Glyphicons Halflings';
+    font-family:var(--typo-theme-separate-partials-side-min-font-family-2);
     font-style: normal;
-    font-weight: 400;
-    line-height: 1;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-3);
+    line-height:var(--typo-theme-separate-partials-side-min-line-height-4);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale
 }
@@ -1381,22 +1392,22 @@ video {
 }
 
 @font-face {
-    font-family: startui;
+    font-family:startui;
     src: url(../fonts/startui.eot);
     src: url(../fonts/startui.eot?#iefix) format("embedded-opentype"), url(../fonts/startui.woff) format("woff"), url(../fonts/startui.ttf) format("truetype"), url(../fonts/startui.svg#startui) format("svg");
-    font-weight: 400;
+    font-weight:400;
     font-style: normal
 }
 
 [data-icon]:before {
     content: attr(data-icon);
-    font-family: startui !important;
+    font-family:var(--typo-theme-separate-partials-side-min-font-family-5) !important;
     font-style: normal !important;
-    font-weight: 400 !important;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-3) !important;
     font-variant: normal !important;
     text-transform: none !important;
     speak: none;
-    line-height: inherit;
+    line-height:var(--typo-theme-separate-partials-side-min-line-height-6);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     vertical-align: middle;
@@ -1406,13 +1417,13 @@ video {
 
 [class*=" font-icon-"]:before,
 [class^=font-icon-]:before {
-    font-family: startui !important;
+    font-family:var(--typo-theme-separate-partials-side-min-font-family-5) !important;
     font-style: normal !important;
-    font-weight: 400 !important;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-3) !important;
     font-variant: normal !important;
     text-transform: none !important;
     speak: none;
-    line-height: inherit;
+    line-height:var(--typo-theme-separate-partials-side-min-line-height-6);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     vertical-align: middle;
@@ -2297,9 +2308,9 @@ video {
 }
 
 .side-menu-list .lbl {
-    font-weight: 600;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-7);
     color: #818181;
-    font-size: 1rem;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-8);
     -webkit-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out
 }
@@ -2314,7 +2325,7 @@ video {
 
 .side-menu-list .label {
     margin: 0 0 0 .5em;
-    font-weight: 400;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-3);
     font-size: .75rem;
     padding: .2em .45em .04em;
     position: relative;
@@ -2543,13 +2554,13 @@ video {
 
 .side-menu-big-icon .side-menu-list>li.with-sub>span:after {
     content: '\52';
-    font-family: startui !important;
+    font-family:var(--typo-theme-separate-partials-side-min-font-family-5) !important;
     font-style: normal !important;
-    font-weight: 400 !important;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-3) !important;
     font-variant: normal !important;
     text-transform: none !important;
     speak: none;
-    line-height: inherit;
+    line-height:var(--typo-theme-separate-partials-side-min-line-height-6);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     vertical-align: middle;
@@ -2603,7 +2614,7 @@ video {
     left: 0;
     display: inline-block;
     color: #919fa9;
-    line-height: 1;
+    line-height:var(--typo-theme-separate-partials-side-min-line-height-4);
     font-size: 2rem;
     margin: 0 0 5px
 }
@@ -2837,7 +2848,7 @@ video {
 }
 
 .side-menu .side-menu-title {
-    font-weight: 600;
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-7);
     text-transform: uppercase;
     color: #6c7a86;
     padding: 0 22px 8px;
@@ -2952,8 +2963,8 @@ video {
 }
 
 .side-menu-addl .side-menu-addl-title .caption {
-    font-size: .875rem;
-    font-weight: 600;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-9);
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-7);
     color: #818181
 }
 
@@ -2964,7 +2975,7 @@ video {
     position: absolute;
     top: 8px;
     right: 20px;
-    font-size: 1rem;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-8);
     line-height: 18px
 }
 
@@ -2977,8 +2988,8 @@ video {
 .side-menu-addl .side-menu-addl-list a {
     display: table;
     width: 100%;
-    font-size: .875rem;
-    font-weight: 600;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-9);
+    font-weight:var(--typo-theme-separate-partials-side-min-font-weight-7);
     color: #818181
 }
 
@@ -3075,7 +3086,7 @@ video {
 
 .side-table-of-contents {
     padding: .5rem 22px 15px;
-    font-size: 1rem;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-8);
     font-weight: 600
 }
 
@@ -3097,7 +3108,7 @@ video {
 }
 
 .side-table-of-contents ul {
-    font-size: .875rem;
+    font-size:var(--typo-theme-separate-partials-side-min-font-size-9);
     padding-left: 1rem;
     padding-top: .7rem
 }

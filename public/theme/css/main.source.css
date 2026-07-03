@@ -1,10 +1,72 @@
 @charset "UTF-8";
+:root {
+    --typo-theme-css-main-source-font-size-1: 75%;
+    --typo-theme-css-main-source-font-weight-2: bold;
+    --typo-theme-css-main-source-line-height-3: 1;
+    --typo-theme-css-main-source-line-height-4: 1.5;
+    --typo-theme-css-main-source-font-size-5: 1.25rem;
+    --typo-theme-css-main-source-font-size-6: .875rem;
+    --typo-theme-css-main-source-font-size-7: 100%;
+    --typo-theme-css-main-source-font-size-8: 1em;
+    --typo-theme-css-main-source-font-size-9: 80%;
+    --typo-theme-css-main-source-line-height-10: normal;
+    --typo-theme-css-main-source-line-height-11: 1.4;
+    --typo-theme-css-main-source-font-family-12: 'Glyphicons Halflings';
+    --typo-theme-css-main-source-font-weight-13: normal;
+    --typo-theme-css-main-source-font-family-14: "startui";
+    --typo-theme-css-main-source-line-height-15: inherit;
+    --typo-theme-css-main-source-font-family-16: 'Proxima Nova';
+    --typo-theme-css-main-source-font-weight-17: 400;
+    --typo-theme-css-main-source-font-weight-18: 700;
+    --typo-theme-css-main-source-font-weight-19: 600;
+    --typo-theme-css-main-source-font-weight-20: 300;
+    --typo-theme-css-main-source-font-size-21: 1rem;
+    --typo-theme-css-main-source-font-size-22: .6875rem;
+    --typo-theme-css-main-source-font-size-23: 2rem /*32/16*/;
+    --typo-theme-css-main-source-font-size-24: 1.5rem /*24/16*/;
+    --typo-theme-css-main-source-font-size-25: 1rem /*16*/;
+    --typo-theme-css-main-source-font-size-26: 0.8125rem /*13/16*/;
+    --typo-theme-css-main-source-font-size-27: 0.875rem /*14*/;
+    --typo-theme-css-main-source-line-height-28: 40px;
+    --typo-theme-css-main-source-line-height-29: 48px;
+    --typo-theme-css-main-source-font-size-30: 1rem /*18/16*/;
+    --typo-theme-css-main-source-font-size-31: .8125rem;
+    --typo-theme-css-main-source-line-height-32: 28px;
+    --typo-theme-css-main-source-line-height-33: 18px;
+    --typo-theme-css-main-source-font-size-34: 11px;
+    --typo-theme-css-main-source-line-height-35: 16px;
+    --typo-theme-css-main-source-line-height-36: 20px;
+    --typo-theme-css-main-source-font-size-37: 1.125rem /*18/16*/;
+    --typo-theme-css-main-source-font-size-38: 16px;
+    --typo-theme-css-main-source-font-size-39: 0.6875rem /*11/16*/;
+    --typo-theme-css-main-source-font-size-40: 2rem;
+    --typo-theme-css-main-source-line-height-41: 1rem;
+    --typo-theme-css-main-source-font-size-42: .75rem;
+    --typo-theme-css-main-source-font-size-43: .9375rem;
+    --typo-theme-css-main-source-line-height-44: 44px;
+    --typo-theme-css-main-source-font-size-45: 0.9rem;
+    --typo-theme-css-main-source-font-size-46: 0.875rem /*14/16*/;
+    --typo-theme-css-main-source-font-size-47: 0.9375rem /*15/16*/;
+    --typo-theme-css-main-source-font-size-48: 15px;
+    --typo-theme-css-main-source-line-height-49: 30px;
+    --typo-theme-css-main-source-line-height-50: 32px;
+    --typo-theme-css-main-source-font-size-51: 12px;
+    --typo-theme-css-main-source-line-height-52: 22px;
+    --typo-theme-css-main-source-font-size-53: 1.25rem /*20/16*/;
+    --typo-theme-css-main-source-font-size-54: 1.125rem;
+    --typo-theme-css-main-source-font-size-55: 1.0625rem /*17/16*/;
+    --typo-theme-css-main-source-font-size-56: 0.75rem /*12/16*/;
+    --typo-theme-css-main-source-font-size-57: 2.125rem /*34/16*/;
+    --typo-theme-css-main-source-font-size-58: 0;
+    --typo-theme-css-main-source-line-height-59: 50px;
+}
+
 .label {
   display: inline-block;
   padding: .25em .4em;
-  font-size: 75%;
-  font-weight: bold;
-  line-height: 1;
+  font-size: var(--typo-theme-css-main-source-font-size-1);
+  font-weight: var(--typo-theme-css-main-source-font-weight-2);
+  line-height: var(--typo-theme-css-main-source-line-height-3);
   color: #fff;
   text-align: center;
   white-space: nowrap;
@@ -143,7 +205,7 @@ a.label:hover {
   float: left;
   padding: .5rem .75rem;
   margin-left: -1px;
-  line-height: 1.5;
+  line-height: var(--typo-theme-css-main-source-line-height-4);
   color: #0275d8;
   text-decoration: none;
   background-color: #fff;
@@ -157,7 +219,7 @@ a.label:hover {
 }
 .pagination-lg .page-link {
   padding: .75rem 1.5rem;
-  font-size: 1.25rem;
+  font-size: var(--typo-theme-css-main-source-font-size-5);
   line-height: 1.333333;
 }
 .pagination-lg .page-item:first-child .page-link {
@@ -174,8 +236,8 @@ a.label:hover {
 }
 .pagination-sm .page-link {
   padding: .275rem .75rem;
-  font-size: .875rem;
-  line-height: 1.5;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
+  line-height: var(--typo-theme-css-main-source-line-height-4);
 }
 .pagination-sm .page-item:first-child .page-link {
   -webkit-border-top-left-radius: .2rem;
@@ -1901,7 +1963,7 @@ audio:not([controls]) {
  *    user zoom.
  */
 html {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-main-source-font-size-7);
   /* 1 */
   -ms-text-size-adjust: 100%;
   /* 2 */
@@ -1942,7 +2004,7 @@ abbr[title] {
 }
 b,
 strong {
-  font-weight: bold;
+  font-weight: var(--typo-theme-css-main-source-font-weight-2);
 }
 blockquote {
   margin: 1em 40px;
@@ -1971,7 +2033,7 @@ pre,
 samp {
   font-family: monospace, serif;
   _font-family: 'courier new', monospace;
-  font-size: 1em;
+  font-size: var(--typo-theme-css-main-source-font-size-8);
 }
 /**
  * Improve readability of pre-formatted text in all browsers.
@@ -1999,14 +2061,14 @@ q:after {
  * Address inconsistent and variable font size in all browsers.
  */
 small {
-  font-size: 80%;
+  font-size: var(--typo-theme-css-main-source-font-size-9);
 }
 /**
  * Prevent `sub` and `sup` affecting `line-height` in all browsers.
  */
 sub,
 sup {
-  font-size: 75%;
+  font-size: var(--typo-theme-css-main-source-font-size-1);
   line-height: 0;
   position: relative;
   vertical-align: baseline;
@@ -2109,7 +2171,7 @@ button,
 input,
 select,
 textarea {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-main-source-font-size-7);
   /* 1 */
   margin: 0;
   /* 2 */
@@ -2124,7 +2186,7 @@ textarea {
  */
 button,
 input {
-  line-height: normal;
+  line-height: var(--typo-theme-css-main-source-line-height-10);
 }
 /**
  * Address inconsistent `text-transform` inheritance for `button` and `select`.
@@ -2233,8 +2295,8 @@ table {
    Opinionated defaults
    ========================================================================== */
 html {
-  font-size: 1em;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-main-source-font-size-8);
+  line-height: var(--typo-theme-css-main-source-line-height-11);
 }
 * {
   padding: 0px;
@@ -2762,10 +2824,10 @@ video {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: var(--typo-theme-css-main-source-font-family-12);
   font-style: normal;
-  font-weight: normal;
-  line-height: 1;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13);
+  line-height: var(--typo-theme-css-main-source-line-height-3);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -3565,13 +3627,13 @@ video {
 }
 [data-icon]:before {
   content: attr(data-icon);
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -3580,13 +3642,13 @@ video {
 }
 [class^="font-icon-"]:before,
 [class*=" font-icon-"]:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -4316,7 +4378,7 @@ select,
 textarea {
   color: #343434;
   font-family: 'Proxima Nova', sans-serif;
-  line-height: 1.4;
+  line-height: var(--typo-theme-css-main-source-line-height-11);
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -4372,19 +4434,19 @@ a:focus:hover {
   color: #fdad2a !important;
 }
 .semibold {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .uppercase {
   text-transform: uppercase;
 }
 .font-16 {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .font-14 {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
 }
 .font-11 {
-  font-size: .6875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-22);
 }
 h1,
 h2,
@@ -4392,7 +4454,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   margin-bottom: 1.2rem;
 }
 h1 .text-muted,
@@ -4402,7 +4464,7 @@ h4 .text-muted,
 h5 .text-muted,
 h6 .text-muted {
   display: inline;
-  font-size: 80%;
+  font-size: var(--typo-theme-css-main-source-font-size-9);
 }
 h1 .text-muted.smaller,
 h2 .text-muted.smaller,
@@ -4418,7 +4480,7 @@ h3 .label,
 h4 .label,
 h5 .label,
 h6 .label {
-  font-size: 75% !important;
+  font-size: var(--typo-theme-css-main-source-font-size-1) !important;
 }
 h1.with-border,
 h2.with-border,
@@ -4434,26 +4496,26 @@ h1 {
   margin-top: 0;
 }
 h2 {
-  font-size: 2rem /*32/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-23);
 }
 h3 {
   font-size: 1.75rem /*28/16*/;
 }
 h4 {
-  font-size: 1.5rem /*24/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-24);
 }
 h5 {
-  font-size: 1.25rem;
+  font-size: var(--typo-theme-css-main-source-font-size-5);
 }
 h6 {
-  font-size: 1rem /*16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-25);
 }
 /* Текстовый блок произвольного форматирования */
 .text-block {
   zoom: 1;
   *zoom: 1;
-  font-size: 0.8125rem /*13/16*/;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
+  line-height: var(--typo-theme-css-main-source-line-height-11);
 }
 .text-block:before,
 .text-block:after {
@@ -4464,7 +4526,7 @@ h6 {
   clear: both;
 }
 .text-block.text-block-typical {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .text-block p {
   margin: .8em 0;
@@ -4511,7 +4573,7 @@ h6 {
   border: solid 1px #29313d;
 }
 .text-block.bs {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 mark {
   background: #e4f6fe;
@@ -4521,13 +4583,13 @@ mark {
   padding: 0.75rem /*12/16*/ 0 0.75rem /*12/16*/ 1.375rem /*22/16*/;
   border-left: solid 4px #00a8ff;
   background: #f6f8fa;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .blockquote p {
   margin-top: 0;
 }
 .blockquote-footer {
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
 }
 code {
   color: #6c7a86;
@@ -4585,7 +4647,7 @@ label.error {
   border: solid 1px rgba(197, 214, 222, 0.7);
   -webkit-box-shadow: none;
           box-shadow: none;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   color: #343434 !important;
 }
 .form-control:focus {
@@ -4648,19 +4710,19 @@ textarea.form-control {
 .input-group-addon {
   background-color: #f6f8fa;
   border-color: rgba(197, 214, 222, 0.7);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #6c7a86;
 }
 .error-list,
 .text-muted {
-  font-size: 0.875rem /*14*/;
+  font-size: var(--typo-theme-css-main-source-font-size-27);
   color: #6c7a86;
   padding: 4px 0 0;
   display: block;
 }
 .input-group-text {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   color: #6c7a86 !important;
 }
 .input-group-text .font-icon {
@@ -4701,7 +4763,7 @@ textarea.form-control {
 .form-control-wrapper.form-control-icon-right .fa {
   width: 38px;
   height: 38px;
-  line-height: 40px;
+  line-height: var(--typo-theme-css-main-source-line-height-28);
   text-align: center;
   position: absolute;
   top: 0;
@@ -4714,7 +4776,7 @@ textarea.form-control {
 .form-control-wrapper.form-control-icon-left .form-control-lg + .fa,
 .form-control-wrapper.form-control-icon-right .form-control-lg + .fa {
   height: 48px;
-  line-height: 48px;
+  line-height: var(--typo-theme-css-main-source-line-height-29);
 }
 .form-control-wrapper.form-control-icon-left .form-control-sm + .font-icon,
 .form-control-wrapper.form-control-icon-right .form-control-sm + .font-icon,
@@ -4752,7 +4814,7 @@ textarea.form-control {
   bottom: 100%;
   margin-bottom: 8px;
   max-width: 230px;
-  font-size: 0.875rem /*14*/;
+  font-size: var(--typo-theme-css-main-source-font-size-27);
 }
 .form-tooltip-error:before {
   content: '';
@@ -4805,7 +4867,7 @@ textarea.form-control {
   padding: 12px 14px 3px;
   color: #fa424a;
   margin: 0 0 1rem;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .form-error-text-block li {
   margin: 0 0 10px;
@@ -4848,7 +4910,7 @@ textarea.form-control {
 }
 .input-group.date .input-group-addon .font-icon {
   vertical-align: middle;
-  font-size: 1rem /*18/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-30);
   position: relative;
   top: .08rem;
 }
@@ -4861,12 +4923,12 @@ textarea.form-control {
 }
 .input-group.clockpicker .input-group-addon .font-icon {
   vertical-align: middle;
-  font-size: 1rem /*18/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-30);
   position: relative;
   top: 0;
 }
 .bootstrap-datetimepicker-widget {
-  font-size: .8125rem;
+  font-size: var(--typo-theme-css-main-source-font-size-31);
 }
 .bootstrap-datetimepicker-widget table thead tr:first-child th:hover {
   background: none;
@@ -4880,10 +4942,10 @@ textarea.form-control {
 .bootstrap-datetimepicker-widget table td.day {
   width: 32px;
   height: 28px;
-  line-height: 28px;
+  line-height: var(--typo-theme-css-main-source-line-height-32);
 }
 .bootstrap-datetimepicker-widget table th.dow {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .bootstrap-datetimepicker-widget table th.picker-switch {
   width: 165px;
@@ -4932,7 +4994,7 @@ textarea.form-control {
 }
 .bootstrap-datetimepicker-widget .glyphicon-calendar,
 .bootstrap-datetimepicker-widget .glyphicon-time {
-  font-family: "startui";
+  font-family: var(--typo-theme-css-main-source-font-family-14);
   vertical-align: middle;
 }
 .bootstrap-datetimepicker-widget .glyphicon-calendar:before,
@@ -4981,9 +5043,9 @@ textarea.form-control {
 .checkbox-detailed input + label {
   position: relative;
   display: inline-block;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   min-height: 18px;
-  line-height: 18px;
+  line-height: var(--typo-theme-css-main-source-line-height-33);
   cursor: pointer;
 }
 .checkbox input:disabled + label,
@@ -5031,13 +5093,13 @@ textarea.form-control {
   display: inline-block;
   width: 16px;
   height: 16px;
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -5046,8 +5108,8 @@ textarea.form-control {
   position: absolute;
   text-align: center;
   top: 0;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: var(--typo-theme-css-main-source-font-size-34);
+  line-height: var(--typo-theme-css-main-source-line-height-35);
 }
 .checkbox input[type="checkbox"] + label:before,
 .radio input[type="checkbox"] + label:before {
@@ -5268,18 +5330,18 @@ textarea.form-control {
   display: block;
   min-width: 20px;
   height: 20px;
-  line-height: 20px;
+  line-height: var(--typo-theme-css-main-source-line-height-36);
   padding: 0 0 0 28px;
   position: relative;
 }
 .checkbox-bird input + label:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -5287,7 +5349,7 @@ textarea.form-control {
   top: -0.15em;
   content: "\55";
   color: rgba(173, 183, 190, 0.7);
-  font-size: 1.125rem /*18/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-37);
   position: absolute;
   left: 0;
   top: 0;
@@ -5325,7 +5387,7 @@ textarea.form-control {
   -webkit-border-radius: 5px;
           border-radius: 5px;
   padding: 0 10px 0 50px;
-  line-height: 1.4;
+  line-height: var(--typo-theme-css-main-source-line-height-11);
 }
 .checkbox-detailed input + label:before {
   content: '';
@@ -5359,7 +5421,7 @@ textarea.form-control {
   padding: 5px 0;
 }
 .checkbox-detailed .checkbox-detailed-title {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   display: block;
 }
 /* ==========================================================================
@@ -5369,7 +5431,7 @@ textarea.form-control {
   display: inline-block;
   color: #929faa;
   margin: -2px 8px -2px 0;
-  font-size: 16px;
+  font-size: var(--typo-theme-css-main-source-font-size-38);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   vertical-align: middle;
@@ -5398,12 +5460,12 @@ textarea.form-control {
   -webkit-box-shadow: none !important;
           box-shadow: none !important;
   background: #fff !important;
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   color: #343434 !important;
   border-color: #d8e2e7 !important;
   padding-left: 0;
   vertical-align: middle;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   text-align: left;
   padding-top: 0;
   padding-bottom: 0;
@@ -5468,7 +5530,7 @@ textarea.form-control {
   -webkit-border-top-left-radius: 0;
           border-top-left-radius: 0;
   margin-top: -1px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   padding: 0;
 }
 .btn-group.bootstrap-select .dropdown-menu a {
@@ -5477,8 +5539,8 @@ textarea.form-control {
   color: #343434;
   position: static;
   border: none;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
 }
 .btn-group.bootstrap-select .dropdown-menu a:hover {
   color: #00a8ff;
@@ -5487,10 +5549,10 @@ textarea.form-control {
   color: #00a8ff;
 }
 .btn-group.bootstrap-select .dropdown-menu .dropdown-header {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   text-transform: none;
   color: #343434;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -5541,13 +5603,13 @@ textarea.form-control {
   margin-left: 0;
   top: 50% !important;
   margin-top: -8px;
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -5555,7 +5617,7 @@ textarea.form-control {
   top: -0.15em;
   content: "\51";
   color: #6c7a86;
-  font-size: 0.6875rem /*11/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-39);
   text-align: left;
 }
 .select2,
@@ -5566,7 +5628,7 @@ textarea.form-control {
 }
 .select2-dropdown {
   border-color: #d8e2e7;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .select2-dropdown.select2-dropdown--above {
   border-bottom: none;
@@ -5606,8 +5668,8 @@ textarea.form-control {
   border: solid 1px #d8e2e7;
   -webkit-border-radius: .25rem;
           border-radius: .25rem;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-4);
   color: #343434;
   padding: .375rem 25px .375rem 1rem;
   min-height: 38px;
@@ -5670,7 +5732,7 @@ textarea.form-control {
 .select2-container--default .select2-results__group,
 .select2-container--arrow .select2-results__group,
 .select2-container--white .select2-results__group {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   padding: 5px 1rem;
 }
 .select2-container--default .select2-results__option--highlighted[aria-selected],
@@ -5687,7 +5749,7 @@ textarea.form-control {
 .select2-container--default .select2-search--inline .select2-search__field,
 .select2-container--arrow .select2-search--inline .select2-search__field,
 .select2-container--white .select2-search--inline .select2-search__field {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   padding-left: 11px;
 }
 .select2-container--default .font-icon,
@@ -5696,7 +5758,7 @@ textarea.form-control {
   display: inline-block;
   color: #929faa;
   margin: -2px 8px -2px 0;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   vertical-align: middle;
@@ -5780,8 +5842,8 @@ textarea.form-control {
   color: #fff;
   background: #919fa9;
   border: none;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   padding: 0 2rem 0 .5rem;
   height: 26px;
   line-height: 26px;
@@ -5796,7 +5858,7 @@ textarea.form-control {
   color: #fff !important;
   width: 1.5rem;
   text-align: center;
-  font-size: 2rem;
+  font-size: var(--typo-theme-css-main-source-font-size-40);
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover,
 .select2-container--arrow .select2-selection--multiple .select2-selection__choice__remove:hover,
@@ -5822,13 +5884,13 @@ textarea.form-control {
   margin-left: 0;
   top: 50% !important;
   margin-top: -8px;
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -5836,7 +5898,7 @@ textarea.form-control {
   top: -0.15em;
   content: "\51";
   color: #6c7a86;
-  font-size: 0.6875rem /*11/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-39);
   text-align: left;
 }
 .select2-container--white .select2-selection--single .select2-selection__arrow {
@@ -5846,8 +5908,8 @@ textarea.form-control {
    Upload
    ========================================================================== */
 .uploading-list-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   margin: 0;
 }
 .uploading-list .uploading-list-item {
@@ -5877,7 +5939,7 @@ textarea.form-control {
   display: inline-block;
   vertical-align: top;
   white-space: nowrap;
-  line-height: 1rem;
+  line-height: var(--typo-theme-css-main-source-line-height-41);
 }
 .uploading-list .uploading-list-item-name {
   padding-right: 15px;
@@ -5889,7 +5951,7 @@ textarea.form-control {
   color: #adb7be;
   margin: 0 5px 0 0;
   vertical-align: middle;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .uploading-list .uploading-list-item-size {
   color: #919fa9;
@@ -5898,7 +5960,7 @@ textarea.form-control {
   border: none;
   background: none;
   color: #dbe4ea;
-  font-size: .75rem;
+  font-size: var(--typo-theme-css-main-source-font-size-42);
   position: absolute;
   right: 0;
   top: 2px;
@@ -5908,7 +5970,7 @@ textarea.form-control {
 }
 .uploading-list .uploading-list-item-progress,
 .uploading-list .uploading-list-item-speed {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
 }
 .uploading-list .uploading-list-item-progress {
   float: left;
@@ -5956,8 +6018,8 @@ textarea.form-control {
   font-size: 2.75rem;
 }
 .drop-zone .drop-zone-caption {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #919fa9;
   margin: 0 0 1rem;
 }
@@ -6048,15 +6110,15 @@ textarea.form-control {
   margin-right: 5px;
 }
 .typeahead-item small {
-  font-size: .8125rem;
+  font-size: var(--typo-theme-css-main-source-font-size-31);
 }
 .typeahead-dropdown > li > a,
 .typeahead-list > li > a {
   padding: 3px .75rem;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
 }
 var.result-container {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
 }
 .btn:focus {
   -webkit-box-shadow: none;
@@ -6148,7 +6210,7 @@ pre + .form-group {
   background: #DCE5EC;
   vertical-align: middle;
   height: 44px;
-  line-height: 44px;
+  line-height: var(--typo-theme-css-main-source-line-height-44);
 }
 .control-panel .control-panel-container .icon-toggle .caret-down {
   display: none;
@@ -6163,13 +6225,13 @@ pre + .form-group {
   cursor: pointer;
 }
 .control-panel .control-panel-container .tasks .icon-toggle {
-  line-height: 48px;
+  line-height: var(--typo-theme-css-main-source-line-height-29);
 }
 .control-panel .control-panel-container .emails .icon-toggle {
   line-height: 47px;
 }
 .control-panel .control-panel-container .add .icon-toggle {
-  line-height: 48px;
+  line-height: var(--typo-theme-css-main-source-line-height-29);
 }
 .control-panel-container ul {
   display: table;
@@ -6239,7 +6301,7 @@ pre + .form-group {
 }
 .control-panel.open .control-panel-container .icon-toggle .caret-down {
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
   position: relative;
   margin-right: 3px;
 }
@@ -6250,7 +6312,7 @@ pre + .form-group {
 .control-panel.open .control-panel-container .text {
   float: left;
   display: block;
-  line-height: 44px;
+  line-height: var(--typo-theme-css-main-source-line-height-44);
 }
 .control-panel.open .control-panel-container .actions {
   float: right;
@@ -6259,8 +6321,8 @@ pre + .form-group {
 .control-panel.open .control-panel-container .actions a {
   display: inline-block;
   margin-left: 4px;
-  font-size: 1rem;
-  line-height: 44px;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-44);
 }
 .control-panel.open .control-panel-container .actions a:hover {
   color: #0082c6;
@@ -6279,7 +6341,7 @@ pre + .form-group {
   -webkit-border-radius: 3px;
           border-radius: 3px;
   background: #fff;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
 }
 .control-panel.open .control-panel-container .control-item-lists li {
   border-bottom: 1px solid #e0e0e0;
@@ -6291,7 +6353,7 @@ pre + .form-group {
   position: absolute;
   top: 8px;
   right: 11px;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
   color: #C8D5DB;
 }
 .control-panel.open .control-panel-container .control-item-lists li:last-child {
@@ -6301,15 +6363,15 @@ pre + .form-group {
 .control-panel.open .control-panel-container .control-item-content-text {
   padding: 8px 11px;
   display: block;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
 }
 .control-panel.open .control-panel-container .control-item-lists li h6 {
   margin-bottom: 0 !important;
   color: #343434;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .control-panel.open .control-panel-container .control-item-lists li p {
-  font-size: 0.9rem !important;
+  font-size: var(--typo-theme-css-main-source-font-size-45) !important;
   margin-bottom: 0 !important;
   color: #343434;
 }
@@ -6319,12 +6381,12 @@ pre + .form-group {
   margin-bottom: 10px;
 }
 .control-panel.open .control-panel-container .control-item-actions .link {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
   float: left;
   color: #2A9DE0;
 }
 .control-panel.open .control-panel-container .control-item-actions .mark {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
   float: right;
   background: #D5DCE2;
   -webkit-border-radius: 3px;
@@ -6337,14 +6399,14 @@ pre + .form-group {
   color: #fff;
 }
 .control-panel.open .control-panel-container .message {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
 }
 .control-panel.open .control-panel-container .message span {
   float: left;
 }
 .control-panel.open .control-panel-container .message a {
   float: right;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-css-main-source-font-size-45);
 }
 .control-panel.open .control-panel-container a.reply-all {
   position: absolute;
@@ -6479,7 +6541,7 @@ hr.margin-4 {
 .dropdown-menu {
   border-color: #d8e2e7;
   margin-top: 6px;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
 }
 .dropup .dropdown-menu {
   margin-bottom: 6px;
@@ -6494,21 +6556,21 @@ hr.margin-4 {
 }
 .dropdown-header {
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #6c7a86;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
 }
 .dropdown-item {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .dropdown-item .font-icon {
   margin: 0 8px 0 0;
   color: #adb7be;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
-  font-size: 16px;
+  font-size: var(--typo-theme-css-main-source-font-size-38);
   vertical-align: middle;
-  line-height: 16px;
+  line-height: var(--typo-theme-css-main-source-line-height-35);
   position: relative;
   top: -1px;
 }
@@ -6530,7 +6592,7 @@ hr.margin-4 {
 }
 .dropdown.dropdown-typical a.dropdown-toggle {
   color: #343434;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   padding-right: 15px;
   padding-left: 15px;
 }
@@ -6551,15 +6613,15 @@ hr.margin-4 {
   vertical-align: middle;
   margin: 0 6px 0 0;
   color: #adb7be;
-  font-size: 16px;
-  line-height: 16px;
+  font-size: var(--typo-theme-css-main-source-font-size-38);
+  line-height: var(--typo-theme-css-main-source-line-height-35);
   position: relative;
   top: -1px;
 }
 .dropdown.dropdown-typical a.dropdown-toggle.dropdown-toggle-txt {
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   color: #00a8ff;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .dropdown.dropdown-typical a.dropdown-toggle.dropdown-toggle-txt:after {
   display: none;
@@ -6579,7 +6641,7 @@ hr.margin-4 {
   padding: 3px 14px;
 }
 .dropdown.dropdown-typical .dropdown-item {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .dropdown.dropdown-typical .dropdown-menu {
   margin-top: 2px;
@@ -6594,7 +6656,7 @@ hr.margin-4 {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
   position: relative;
-  font-size: 15px;
+  font-size: var(--typo-theme-css-main-source-font-size-48);
 }
 .dropdown.dropdown-typical .dropdown-more .dropdown-more-caption:before {
   content: '';
@@ -6645,7 +6707,7 @@ hr.margin-4 {
 }
 .dropdown.dropdown-status .btn.dropdown-toggle {
   height: 22px;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
   padding: 0 7px;
 }
 .dropdown.dropdown-status .btn.dropdown-toggle.btn-danger {
@@ -6668,7 +6730,7 @@ hr.margin-4 {
   margin-left: -5px;
 }
 .dropdown.dropdown-status .dropdown-menu a.dropdown-item {
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   border: none;
 }
 .dropdown-toggle .caret {
@@ -6683,7 +6745,7 @@ hr.margin-4 {
   border: solid 1px #00a8ff;
   background: #00a8ff;
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .btn:hover {
   background-color: #16b4fc;
@@ -6933,7 +6995,7 @@ hr.margin-4 {
   background: #fff;
   border-color: #d8e2e7;
   color: #343434;
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
 }
 .btn.btn-select:hover {
   background-color: #f6f8fa;
@@ -6990,9 +7052,9 @@ a.btn-square-icon {
    Labels
    ========================================================================== */
 .label {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
   /*vertical-align: middle; position: relative; top: -.1em;*/
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   background-color: #adb7be;
 }
 h1 .label,
@@ -7034,7 +7096,7 @@ a.label-light-grey:hover {
 }
 .label.label-pill.label-custom {
   padding: 3px 6px 2px;
-  font-size: .8125rem;
+  font-size: var(--typo-theme-css-main-source-font-size-31);
 }
 /* ==========================================================================
    Tables
@@ -7055,9 +7117,9 @@ a.label-light-grey:hover {
   background: #f6f8fa;
   border-bottom: solid 1px #d8e2e7;
   padding: 0;
-  font-weight: 700;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18);
   color: #6c7a86;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .tbl-typical th > div {
   position: relative;
@@ -7080,7 +7142,7 @@ a.label-light-grey:hover {
   display: none;
 }
 .tbl-typical td {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
 }
 .tbl-typical tr:nth-child(even) td {
   background: #fbfcfd;
@@ -7109,7 +7171,7 @@ a.label-light-grey:hover {
 .table th,
 .bootstrap-table .table th,
 .fixed-table-body .table th {
-  font-weight: 700;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18);
 }
 .table td,
 .bootstrap-table .table td,
@@ -7158,7 +7220,7 @@ a.label-light-grey:hover {
   margin: 0 0 0 3px;
   position: relative;
   top: 1px;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
 }
 .table .table-photo,
 .bootstrap-table .table .table-photo,
@@ -7223,7 +7285,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table-header {
   display: inline-block;
-  font-weight: bold;
+  font-weight: var(--typo-theme-css-main-source-font-weight-2);
   margin-right: 10px !important;
   position: relative;
   top: 1px;
@@ -7232,7 +7294,7 @@ a.label-light-grey:hover {
   padding-bottom: 8px;
 }
 .table.font-16 {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .table-hover tbody tr:hover {
   background: #fbfcfd;
@@ -7304,10 +7366,10 @@ a.label-light-grey:hover {
 }
 .bar-chart-wrapper .val {
   position: absolute;
-  font-size: .6875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-22);
   color: #919fa9;
   top: 0;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
 }
 .bar-chart-wrapper .val.left {
   left: 0;
@@ -7338,19 +7400,19 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-toolbar h4,
 .bootstrap-table .fixed-table-toolbar h5,
 .bootstrap-table .fixed-table-toolbar h6 {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
   margin: 0;
-  line-height: 1.4;
+  line-height: var(--typo-theme-css-main-source-line-height-11);
 }
 .bootstrap-table .fixed-table-toolbar .btn.remove {
   height: 32px;
   padding: 0 8px;
-  font-size: 1rem;
-  line-height: 30px;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-49);
 }
 .bootstrap-table .fixed-table-toolbar .btn.remove .font-icon {
-  line-height: 32px;
-  font-size: 12px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
+  font-size: var(--typo-theme-css-main-source-font-size-51);
   vertical-align: top;
   margin: 0 3px 0 0;
   position: relative;
@@ -7361,12 +7423,12 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-toolbar .search {
   margin: 0;
   padding: 0;
-  line-height: normal;
+  line-height: var(--typo-theme-css-main-source-line-height-10);
 }
 .bootstrap-table .fixed-table-toolbar .bars {
   float: left;
   padding-bottom: 15px;
-  line-height: 32px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
 }
 .bootstrap-table .fixed-table-toolbar .columns,
 .bootstrap-table .fixed-table-toolbar .search {
@@ -7378,7 +7440,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table .fixed-table-toolbar .search .form-control {
   height: 32px;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
   -webkit-border-radius: 25rem;
           border-radius: 25rem;
   padding: 8px 10px;
@@ -7398,14 +7460,14 @@ a.label-light-grey:hover {
   border: none !important;
   color: #adb7be !important;
   padding: 0 7px;
-  line-height: 32px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
 }
 .bootstrap-table .fixed-table-toolbar .columns .btn:hover {
   color: #00a8ff !important;
 }
 .bootstrap-table .fixed-table-toolbar .columns .btn .font-icon {
   vertical-align: middle;
-  line-height: 32px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
 }
 .bootstrap-table .fixed-table-toolbar .columns .btn .font-icon-arrow-square-down.up:before {
   content: "\2d";
@@ -7421,7 +7483,7 @@ a.label-light-grey:hover {
   color: #00a8ff !important;
 }
 .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
   min-width: 0;
   white-space: nowrap;
   padding: 15px;
@@ -7434,7 +7496,7 @@ a.label-light-grey:hover {
   padding: 0;
 }
 .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu .checkbox label {
-  line-height: 16px;
+  line-height: var(--typo-theme-css-main-source-line-height-35);
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -7467,7 +7529,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table .card-view {
   padding: 3px 0 3px 7px;
-  line-height: 22px;
+  line-height: var(--typo-theme-css-main-source-line-height-52);
 }
 .bootstrap-table .card-view .title,
 .bootstrap-table .card-view .value {
@@ -7491,7 +7553,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table .card-view a.remove,
 .bootstrap-table .card-view a.like {
-  line-height: 22px !important;
+  line-height: var(--typo-theme-css-main-source-line-height-52) !important;
   height: 22px !important;
   float: left;
   padding-top: 2px !important;
@@ -7506,7 +7568,7 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-container thead th .th-inner {
   padding-top: 10px;
   padding-bottom: 10px;
-  line-height: 1.5;
+  line-height: var(--typo-theme-css-main-source-line-height-4);
   color: #6c7a86;
 }
 .bootstrap-table .fixed-table-container thead th .both {
@@ -7527,8 +7589,8 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-container a.detail-icon {
   border: none;
   color: #adb7be;
-  font-size: 1rem;
-  line-height: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-41);
   text-align: center;
   position: static;
   top: 0;
@@ -7536,7 +7598,7 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-container a.like .font-icon,
 .bootstrap-table .fixed-table-container a.remove .font-icon,
 .bootstrap-table .fixed-table-container a.detail-icon .font-icon {
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   vertical-align: middle;
 }
 .bootstrap-table .fixed-table-container a.like:hover,
@@ -7556,7 +7618,7 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-container a.remove,
 .bootstrap-table .fixed-table-container a.like {
   margin: 0 5px;
-  line-height: 20px;
+  line-height: var(--typo-theme-css-main-source-line-height-36);
   display: inline-block;
   padding-top: 4px;
 }
@@ -7566,7 +7628,7 @@ a.label-light-grey:hover {
 .bootstrap-table .fixed-table-pagination {
   zoom: 1;
   *zoom: 1;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
   padding: 5px 15px;
 }
 .bootstrap-table .fixed-table-pagination:before,
@@ -7579,7 +7641,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table .fixed-table-pagination .pagination-detail {
   float: left;
-  line-height: 32px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
 }
 .bootstrap-table .fixed-table-pagination .pagination-info {
   margin-right: 10px;
@@ -7597,8 +7659,8 @@ a.label-light-grey:hover {
   background: #fff !important;
   color: #343434 !important;
   border-color: #d8e2e7 !important;
-  font-weight: 400;
-  font-size: 0.8125rem /*13/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
+  font-size: var(--typo-theme-css-main-source-font-size-26);
   height: 32px;
   padding: 0 10px;
 }
@@ -7609,7 +7671,7 @@ a.label-light-grey:hover {
   min-width: 100%;
   text-align: center;
   margin-bottom: 2px;
-  line-height: normal;
+  line-height: var(--typo-theme-css-main-source-line-height-10);
 }
 .bootstrap-table .fixed-table-pagination .dropdown-menu a {
   display: block;
@@ -7643,7 +7705,7 @@ a.label-light-grey:hover {
   border: solid 1px transparent;
   -webkit-border-radius: .25rem;
           border-radius: .25rem;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
   color: #6c7a86;
 }
 .bootstrap-table .fixed-table-pagination ul.pagination a:hover {
@@ -7655,7 +7717,7 @@ a.label-light-grey:hover {
 }
 .bootstrap-table .fixed-table-pagination ul.pagination li.page-pre .font-icon,
 .bootstrap-table .fixed-table-pagination ul.pagination li.page-next .font-icon {
-  line-height: 32px;
+  line-height: var(--typo-theme-css-main-source-line-height-50);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   color: rgba(173, 183, 190, 0.7);
@@ -7686,7 +7748,7 @@ a.label-light-grey:hover {
   display: table;
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
 }
 .user-card-row p {
   margin: 0;
@@ -7720,12 +7782,12 @@ a.label-light-grey:hover {
   color: #6c7a86;
 }
 .user-card-row .tbl-cell.tbl-cell-status {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   text-align: right;
 }
 .user-card-row .tbl-cell.tbl-cell-status .font-icon {
   color: #919fa9;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .user-card-row .tbl-cell.tbl-cell-status .font-icon.active {
   color: #f18482;
@@ -7737,7 +7799,7 @@ a.label-light-grey:hover {
   vertical-align: middle;
 }
 .user-card-row .user-card-row-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #343434;
 }
 .user-card-row .user-card-row-name a {
@@ -7767,7 +7829,7 @@ a.label-light-grey:hover {
   border-bottom-color: transparent;
 }
 .box-typical-full-screen .user-card-row {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .box-typical {
   background: #fff;
@@ -7825,13 +7887,13 @@ a.label-light-grey:hover {
 }
 .circle-progress-bar-typical .pie_progress__number {
   font-size: 3rem /*48/16*/;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .circle-progress-bar-typical.size-56 {
   width: 56px;
 }
 .circle-progress-bar-typical.size-56 .pie_progress__number {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .progress {
   background-color: #ecf2f5;
@@ -7846,7 +7908,7 @@ a.label-light-grey:hover {
           border-radius: 0;
   background-color: #00a8ff;
   height: 12px;
-  font-size: 11px;
+  font-size: var(--typo-theme-css-main-source-font-size-34);
   line-height: 13px;
 }
 .progress-success {
@@ -7897,7 +7959,7 @@ a.label-light-grey:hover {
   position: absolute;
   right: 0;
   top: 0;
-  line-height: 16px;
+  line-height: var(--typo-theme-css-main-source-line-height-35);
   color: #919fa9;
 }
 .progress-steps {
@@ -7939,10 +8001,10 @@ a.label-light-grey:hover {
 .progress-steps-caption {
   display: inline-block;
   vertical-align: middle;
-  line-height: 20px;
+  line-height: var(--typo-theme-css-main-source-line-height-36);
   color: #6c7a86;
   margin: 0 0 0 10px;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .progress-compact-style .progress {
   background-color: #f6f8fa;
@@ -7956,13 +8018,13 @@ a.label-light-grey:hover {
           border-radius: 0;
 }
 .progress-compact-style .progress-compact-style-label {
-  font-size: .6875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-22);
 }
 .progress-compact-style.progress-with-amount {
   padding-right: 30px;
 }
 .progress-compact-style .progress-with-amount-number {
-  font-size: 0.6875rem /*11/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-39);
   top: -5px;
 }
 .progress-compact-style .progress-header {
@@ -7991,7 +8053,7 @@ a.label-light-grey:hover {
 .alert {
   padding: 8px 10px;
   color: #343434;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   -webkit-box-shadow: none;
           box-shadow: none;
   position: relative;
@@ -8003,7 +8065,7 @@ a.label-light-grey:hover {
 .alert h4,
 .alert h5,
 .alert h6 {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .alert h1,
 .alert h2,
@@ -8011,7 +8073,7 @@ a.label-light-grey:hover {
 .alert h4,
 .alert h5,
 .alert h6 {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   margin: 0;
   padding: 0;
 }
@@ -8031,7 +8093,7 @@ a.label-light-grey:hover {
 }
 .alert [data-notify="title"] {
   display: block;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .alert [data-notify="icon"] {
   color: #00a8ff;
@@ -8569,7 +8631,7 @@ a.label-light-grey:hover {
   padding-right: 2rem;
 }
 .sweet-alert h2 {
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   position: relative;
   margin: 2rem 0 1rem;
 }
@@ -8577,8 +8639,8 @@ a.label-light-grey:hover {
   margin: 0 0 10px;
 }
 .sweet-alert .lead {
-  font-weight: 400;
-  font-size: 1.25rem /*20/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
+  font-size: var(--typo-theme-css-main-source-font-size-53);
   color: #343434;
   margin-bottom: 20px;
 }
@@ -8646,9 +8708,9 @@ a.label-light-grey:hover {
   margin: 0 25px 0 0;
 }
 .nav.nav-pills .nav-link {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   color: #818181;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   -webkit-border-radius: 25rem;
           border-radius: 25rem;
   padding: 5px 10px;
@@ -8661,7 +8723,7 @@ a.label-light-grey:hover {
   background-color: #00a8ff;
 }
 .breadcrumb {
-  font-size: 1rem /*16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-25);
   color: #6c7a86;
   background-color: #ecf2f5;
 }
@@ -8698,7 +8760,7 @@ a.label-light-grey:hover {
   margin-bottom: 0;
 }
 .pagination {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .page-link {
   border-color: #d8e2e7;
@@ -8714,7 +8776,7 @@ a.label-light-grey:hover {
   background-color: #00a8ff !important;
 }
 .pager {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .pager li > a {
   border-color: #d8e2e7;
@@ -8732,9 +8794,9 @@ a.label-light-grey:hover {
    Tooltips
    ========================================================================== */
 .tooltip {
-  font-size: 0.8125rem /*13/16*/;
-  font-weight: 600;
-  line-height: normal;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  line-height: var(--typo-theme-css-main-source-line-height-10);
 }
 .tooltip.in {
   opacity: .95;
@@ -8760,7 +8822,7 @@ a.label-light-grey:hover {
   color: #6c7a86;
   -webkit-border-radius: 50%;
           border-radius: 50%;
-  font-size: .75rem;
+  font-size: var(--typo-theme-css-main-source-font-size-42);
   text-align: center;
   line-height: 15px;
   margin: 0 0 0 5px;
@@ -8875,8 +8937,8 @@ body.modal-open {
   border-bottom-color: #d8e2e7;
 }
 .modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-54);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .modal-footer {
   border-top-color: #d8e2e7;
@@ -8893,7 +8955,7 @@ body.modal-open {
   color: #00a8ff;
 }
 .close {
-  font-size: 2rem;
+  font-size: var(--typo-theme-css-main-source-font-size-40);
   color: #6c7a86;
 }
 /* ==========================================================================
@@ -8972,7 +9034,7 @@ body.modal-open {
 }
 .modal-upload.menu-bottom .modal-upload-side .upload-list .font-icon.font-icon-yandex-disk,
 .modal-upload.menu-bottom .modal-upload-side .upload-list .font-icon.font-icon-one-drive {
-  font-size: 2rem /*32/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-23);
 }
 .modal-upload.menu-bottom .modal-upload-side .upload-list .font-icon.font-icon-box {
   font-size: 2.25rem /*36/16*/;
@@ -8997,7 +9059,7 @@ body.modal-open {
 .modal-upload.menu-big-icons .modal-upload-side .upload-list .font-icon {
   font-size: 1.875rem;
   margin: 0;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
   position: relative;
   top: 1px;
 }
@@ -9045,8 +9107,8 @@ body.modal-open {
 }
 .upload-list .font-icon {
   vertical-align: middle;
-  line-height: 20px;
-  font-size: 1.125rem /*18/16*/;
+  line-height: var(--typo-theme-css-main-source-line-height-36);
+  font-size: var(--typo-theme-css-main-source-font-size-37);
   color: #adb7be;
   margin: 0 5px 0 0;
   -webkit-transition: all 0.2s ease-in-out;
@@ -9068,19 +9130,19 @@ body.modal-open {
   text-align: center;
 }
 .upload-dropbox h3 {
-  font-weight: 600;
-  font-size: 1.0625rem /*17/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  font-size: var(--typo-theme-css-main-source-font-size-55);
 }
 .upload-dropbox p {
   color: #6c7a86;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
   margin: 0 0 1rem;
 }
 .upload-dropbox .btn {
   margin: 0 0 1rem;
 }
 .upload-dropbox .text-muted {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .upload-gd-header {
   display: table;
@@ -9095,7 +9157,7 @@ body.modal-open {
   white-space: nowrap;
   width: 30px;
   padding-left: 0;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .upload-gd-header .tbl-cell-btns button {
   border: none;
@@ -9121,7 +9183,7 @@ body.modal-open {
 }
 .gd-doc {
   text-align: center;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
   line-height: 1.6;
   margin: 0 0 1rem;
 }
@@ -9151,7 +9213,7 @@ body.modal-open {
   right: 2px;
   color: #fff;
   text-align: center;
-  line-height: 22px;
+  line-height: var(--typo-theme-css-main-source-line-height-52);
 }
 .gd-doc .gd-doc-preview .icon .font-icon {
   vertical-align: middle;
@@ -9172,7 +9234,7 @@ body.modal-open {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .gd-doc .gd-doc-date {
   color: #6c7a86;
@@ -9287,7 +9349,7 @@ body.modal-open {
   margin: 0;
 }
 .section-header .subtitle {
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
   padding: 5px 0 0;
 }
 .section-header .breadcrumb {
@@ -9328,7 +9390,7 @@ body.modal-open {
   overflow: auto;
   width: 100%;
   text-align: center;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   border-top: solid 1px #d8e2e7;
 }
 .tabs-section-nav .nav-item {
@@ -9347,7 +9409,7 @@ body.modal-open {
   padding: 0;
   display: block;
   color: #6c7a86;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   border: solid 1px #d8e2e7;
   border-left-color: transparent;
   border-right-color: transparent;
@@ -9369,7 +9431,7 @@ body.modal-open {
 .tabs-section-nav .nav-link-in {
   display: block;
   padding: 10px;
-  line-height: 28px;
+  line-height: var(--typo-theme-css-main-source-line-height-32);
   border-top: solid 4px transparent;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -9377,7 +9439,7 @@ body.modal-open {
 .tabs-section-nav .label {
   padding-left: .5em;
   padding-right: .5em;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
 }
 .tabs-section-nav .tbl .nav {
   display: table-row;
@@ -9431,7 +9493,7 @@ body.modal-open {
   transition: all 0.2s ease-in-out;
 }
 .tabs-section-nav.tabs-section-nav-icons .nav-link-in {
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
 }
 .tabs-section-nav.tabs-section-nav-icons .nav-link.active {
   color: #00a8ff;
@@ -9479,14 +9541,14 @@ body.modal-open {
 .tabs-section-nav.tabs-section-nav-data .title,
 .tabs-section-nav.tabs-section-nav-data .percent {
   display: block;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
 }
 .tabs-section-nav.tabs-section-nav-data .number {
   color: #343434;
 }
 .tabs-section-nav.tabs-section-nav-data .title,
 .tabs-section-nav.tabs-section-nav-data .percent {
-  font-size: 0.75rem /*12/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-56);
 }
 .tabs-section-nav.tabs-section-nav-data .percent,
 .tabs-section-nav.tabs-section-nav-data .number {
@@ -9515,8 +9577,8 @@ body.modal-open {
 .tabs-section-simple .nav-item {
   float: left;
   margin: 0 30px 10px 0;
-  font-size: 0.8125rem /*13/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .tabs-section-simple .nav-link {
   text-decoration: none;
@@ -9549,19 +9611,19 @@ body.modal-open {
 }
 .card-header {
   border-bottom-color: #d8e2e7;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .card-header.card-header-lg {
-  font-size: 1.125rem;
+  font-size: var(--typo-theme-css-main-source-font-size-54);
 }
 .card-header.card-header-xl {
-  font-size: 1.25rem;
+  font-size: var(--typo-theme-css-main-source-font-size-5);
 }
 .card-header.card-header-xxl {
   font-size: 1.375rem;
 }
 .card-header .modal-close {
-  font-size: .75rem;
+  font-size: var(--typo-theme-css-main-source-font-size-42);
 }
 .card-block {
   padding: 16px;
@@ -9673,7 +9735,7 @@ body.modal-open {
 .bootstrap-touchspin .dropdown-menu > li > a {
   padding: 4px 12px;
   display: block;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
   color: #343434;
 }
 .bootstrap-touchspin .dropdown-menu > li > a:hover {
@@ -9781,7 +9843,7 @@ body.modal-open {
   margin: 5px 0;
   padding: 5px 10px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   border: 1px solid #d8e2e7;
   background: #fff;
   -webkit-border-radius: .25rem;
@@ -9807,9 +9869,9 @@ body.modal-open {
   overflow: hidden;
   border: 0;
   background: transparent;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   -webkit-transition: none;
   transition: none;
 }
@@ -9859,7 +9921,7 @@ body.modal-open {
   display: none;
 }
 .dd-dragel .dd-handle {
-  line-height: 20px;
+  line-height: var(--typo-theme-css-main-source-line-height-36);
   min-height: 30px;
   padding: 5px 10px;
 }
@@ -9924,7 +9986,7 @@ body.modal-open {
   margin: 5px 0;
   padding: 5px 10px 5px 40px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   border: 1px solid #d8e2e7;
   background: #fff;
   -webkit-border-radius: .25rem;
@@ -9958,13 +10020,13 @@ body.modal-open {
   color: #6c7a86;
 }
 .dd3-handle:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -9978,8 +10040,8 @@ body.modal-open {
   width: 100%;
   text-align: center;
   text-indent: 0;
-  font-size: 1rem;
-  line-height: 30px;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-49);
 }
 .dd3-handle:hover {
   background: #00a8ff;
@@ -10040,9 +10102,9 @@ body.modal-open {
 }
 .horizontal-navigation .main-nav .nav-link {
   position: relative;
-  line-height: 40px;
+  line-height: var(--typo-theme-css-main-source-line-height-28);
   color: #999;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .horizontal-navigation .main-nav .nav-link:hover,
 .horizontal-navigation .main-nav .nav-link.active,
@@ -10135,11 +10197,11 @@ body.modal-open {
           transform: translateY(-50%);
 }
 .pie_progress__number {
-  font-size: 15px;
+  font-size: var(--typo-theme-css-main-source-font-size-48);
 }
 .pie_progress__label {
   margin-top: 32px;
-  font-size: 12px;
+  font-size: var(--typo-theme-css-main-source-font-size-51);
 }
 .pie_progress__svg {
   display: inline-block;
@@ -10193,15 +10255,15 @@ body.modal-open {
 }
 .statistic-box .number {
   font-size: 3.125rem /*50/16*/;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
   padding: 32px 0 0;
 }
 .statistic-box .caption {
-  font-size: 1.0625rem /*17/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-55);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   position: relative;
   min-height: 35px;
-  line-height: 1;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
 }
 .statistic-box .caption > div {
   position: absolute;
@@ -10215,9 +10277,9 @@ body.modal-open {
   right: 10px;
   bottom: 8px;
   text-align: center;
-  font-size: 0.8125rem /*13/16*/;
-  font-weight: 600;
-  line-height: 1;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  line-height: var(--typo-theme-css-main-source-line-height-3);
 }
 .statistic-box .arrow {
   display: inline-block;
@@ -10278,18 +10340,18 @@ body.modal-open {
   vertical-align: middle;
 }
 .chart-statistic-box .chart-txt .chart-txt-top .unit {
-  font-weight: 300;
-  font-size: 1.25rem /*20/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-20);
+  font-size: var(--typo-theme-css-main-source-font-size-53);
   color: #929faa;
   margin: 0 .3em 0 0;
   position: relative;
   top: -0.2em;
 }
 .chart-statistic-box .chart-txt .chart-txt-top .number {
-  font-size: 2.125rem /*34/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-57);
 }
 .chart-statistic-box .chart-txt .chart-txt-top .caption {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .chart-statistic-box .chart-txt .color-purple {
   color: #b982ef !important;
@@ -10307,7 +10369,7 @@ body.modal-open {
   white-space: nowrap;
   width: 20px;
   padding-right: 10px;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .chart-statistic-box .chart-container {
   float: right;
@@ -10331,16 +10393,16 @@ body.modal-open {
   left: 0;
   width: 100%;
   text-align: center;
-  font-weight: 600;
-  font-size: 1.0625rem /*17/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  font-size: var(--typo-theme-css-main-source-font-size-55);
   z-index: 20;
   color: #fff;
 }
 .chart-statistic-box .chart-container .chart-container-y,
 .chart-statistic-box .chart-container .chart-container-x {
-  font-size: 0.6875rem /*11/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-39);
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18);
   position: absolute;
   z-index: 1;
 }
@@ -10373,7 +10435,7 @@ body.modal-open {
   right: 22px;
   bottom: 0;
   text-align: right;
-  line-height: 22px;
+  line-height: var(--typo-theme-css-main-source-line-height-52);
 }
 .chart-statistic-box .chart-container .chart-container-y .item {
   height: 22.4px;
@@ -10384,7 +10446,7 @@ body.modal-open {
   background: none !important;
   color: #fff !important;
   border: none !important;
-  font-weight: 700 !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18) !important;
   margin-left: -35px;
 }
 @media (max-width: 1367px) {
@@ -10452,9 +10514,9 @@ body.modal-open {
 .box-typical .box-typical-header .tbl-cell.tbl-cell-title h5,
 .box-typical .box-typical-header .tbl-cell.tbl-cell-title h6 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  line-height: var(--typo-theme-css-main-source-line-height-11);
   padding: 1px 0;
 }
 .box-typical .box-typical-header .tbl-cell.tbl-cell-actions {
@@ -10478,9 +10540,9 @@ body.modal-open {
   color: #adb7be;
   border: none;
   background: none;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   margin: 0 0 0 10px;
-  line-height: 18px;
+  line-height: var(--typo-theme-css-main-source-line-height-33);
 }
 .box-typical .box-typical-header .action-btn .font-icon {
   vertical-align: middle;
@@ -10494,7 +10556,7 @@ body.modal-open {
 }
 .box-typical .box-typical-header-sm {
   padding: 12px 15px;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   position: relative;
 }
 .box-typical .box-typical-header-sm.bordered {
@@ -10518,7 +10580,7 @@ body.modal-open {
 }
 .box-typical .box-typical-header-sm .slider-arrs button {
   float: left;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   margin: 0 0 0 15px;
   border: none;
   background: none;
@@ -10532,7 +10594,7 @@ body.modal-open {
 }
 .box-typical .box-typical-header-sm .slider-arrs button .font-icon {
   vertical-align: middle;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
 }
 .box-typical .box-typical-footer {
   background: #fbfcfd;
@@ -10619,14 +10681,14 @@ body.modal-open {
 .box-typical.box-typical-full-screen .box-typical-header .tbl-cell.tbl-cell-title h4,
 .box-typical.box-typical-full-screen .box-typical-header .tbl-cell.tbl-cell-title h5,
 .box-typical.box-typical-full-screen .box-typical-header .tbl-cell.tbl-cell-title h6 {
-  font-size: 1.5rem /*24/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-24);
 }
 .box-typical.box-typical-full-screen .box-typical-header .action-btn .font-icon-expand:before {
   content: "\73";
 }
 .box-typical.box-typical-full-screen .tbl-typical th,
 .box-typical.box-typical-full-screen .tbl-typical td {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .box-typical.box-typical-collapsed {
   height: auto;
@@ -10648,9 +10710,9 @@ body.modal-open {
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
+  line-height: var(--typo-theme-css-main-source-line-height-11);
   padding: 0;
 }
 .box-panel .box-typical-header {
@@ -10696,21 +10758,21 @@ body.modal-open {
   top: 12px;
 }
 .comment-row-item .comment-row-item-header {
-  line-height: 18px;
+  line-height: var(--typo-theme-css-main-source-line-height-33);
   margin: 0 0 6px;
 }
 .comment-row-item .comment-row-item-header .tbl-cell {
   vertical-align: top;
 }
 .comment-row-item .comment-row-item-header .tbl-cell-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .comment-row-item .comment-row-item-header .tbl-cell-date {
   text-align: right;
   width: 30px;
   padding-left: 10px;
   white-space: nowrap;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
   color: #919fa9;
 }
 .comment-row-item .comment-row-item-content {
@@ -10740,7 +10802,7 @@ body.modal-open {
   display: inline-block;
   vertical-align: top;
   margin: 0 20px 0 0;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   text-decoration: none;
   color: #919fa9;
   border: none;
@@ -10752,12 +10814,12 @@ body.modal-open {
   display: inline-block;
   vertical-align: top;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
   position: relative;
   top: 2px;
 }
 .comment-row-item .comment-row-item-rating .number {
-  font-weight: 700;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18);
   margin: 0 6px;
 }
 .comment-row-item .comment-row-item-rating .font-icon,
@@ -10837,7 +10899,7 @@ body.modal-open {
   border: none;
   background: none;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
 }
 .leave-comment-block .viewable-access .choose > button:after {
   position: relative;
@@ -10893,8 +10955,8 @@ body {
   padding: 4px 0 0 14px;
   border: none;
   background: none;
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #343434;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -10906,12 +10968,12 @@ body {
   top: 0;
   width: 35px;
   height: 100%;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
   text-align: center;
   color: #adb7be;
   border: none;
   background: none;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-47);
 }
 .site-header-search button:hover {
   color: #00a8ff;
@@ -10984,7 +11046,7 @@ body {
   float: left;
   height: 40px;
   zoom: 1;
-  
+
   color: #343434;
   line-height: 37px;
 }
@@ -11006,11 +11068,11 @@ body {
 }
 .site-header .site-logo .site-logo-txt {
   float: left;
-  font-size: 1.5rem /*24/16*/;
-  font-weight: 300;
+  font-size: var(--typo-theme-css-main-source-font-size-24);
+  font-weight: var(--typo-theme-css-main-source-font-weight-20);
 }
 .site-header .site-logo .site-logo-txt strong {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .site-header .site-header-content {
   float: right;
@@ -11043,7 +11105,7 @@ body {
 .site-header .site-header-shown {
   float: right;
   zoom: 1;
-  
+
 }
 .site-header .site-header-shown:before,
 .site-header .site-header-shown:after {
@@ -11056,12 +11118,12 @@ body {
 .site-header .header-alarm {
   width: 30px;
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
   text-align: center;
   position: relative;
   display: block;
   color: #adb7be;
-  font-size: 1.125rem /*18/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-37);
 }
 .site-header .header-alarm:hover {
   color: #00a8ff;
@@ -11099,7 +11161,7 @@ body {
   border-top: solid 1px #d8e2e7;
   text-align: center;
   padding: 10px 15px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
 }
 .site-header .dropdown.dropdown-notification .dropdown-menu-notif-more a {
   text-decoration: none;
@@ -11114,8 +11176,8 @@ body {
   width: fit-content;
   max-width: calc(100vw - 30px);
   padding: 0;
-  line-height: normal;
-  font-size: 0.9375rem /*15/16*/;
+  line-height: var(--typo-theme-css-main-source-line-height-10);
+  font-size: var(--typo-theme-css-main-source-font-size-47);
   overflow-x: auto;
 }
 .site-header .dropdown-menu-notif a {
@@ -11130,11 +11192,11 @@ body {
 .site-header .dropdown-menu-notif .dropdown-menu-notif-header {
   padding: 12px 15px;
   border-bottom: solid 1px #d8e2e7;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .site-header .dropdown-menu-notif .dropdown-menu-notif-header .label {
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 400;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
   padding-left: .5em;
   padding-right: .5em;
 }
@@ -11211,9 +11273,9 @@ body {
   margin: 0 15px 0 0;
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .nav-link {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   padding: 0;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #919fa9;
   -webkit-transition: none;
   transition: none;
@@ -11222,15 +11284,15 @@ body {
   color: #343434;
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .nav-link .label {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
   padding-left: .5em;
   padding-right: .5em;
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .create {
   float: right;
   height: 18px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   border: none;
   background: none;
   color: #919fa9;
@@ -11245,7 +11307,7 @@ body {
   color: #343434;
   padding: 14px 15px 14px 57px;
   position: relative;
-  line-height: 18px;
+  line-height: var(--typo-theme-css-main-source-line-height-33);
 }
 .site-header .dropdown-menu-messages .mess-item:nth-child(odd) {
   background-color: #fbfcfd;
@@ -11267,10 +11329,10 @@ body {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-main-source-font-size-43);
 }
 .site-header .dropdown-menu-messages .mess-item .mess-item-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .site-header .dropdown-menu-messages .mess-item .mess-item-txt {
   color: #919fa9;
@@ -11287,7 +11349,7 @@ body {
 }
 .site-header .help-dropdown > button {
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
   border: none;
   background: none;
   color: #adb7be;
@@ -11353,7 +11415,7 @@ body {
   border-right: solid 1px #d8e2e7;
   position: relative;
   z-index: 2;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .site-header .help-dropdown .help-dropdown-popup-side a {
   color: #343434;
@@ -11393,7 +11455,7 @@ body {
 .site-header .help-dropdown .help-dropdown-popup-item .describe {
   display: block;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-main-source-font-size-6);
 }
 .site-header .help-dropdown .jscroll {
   max-height: 265px;
@@ -11407,7 +11469,7 @@ body {
   float: left;
   margin: 0 0 0 15px;
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
 }
 .site-header .user-menu.dropdown .dropdown-item {
   padding-top: 0;
@@ -11419,7 +11481,7 @@ body {
   height: 30px;
   border: none;
   background: none;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
 }
 .site-header .user-menu.dropdown .dropdown-toggle:after {
   border-top: 5px solid;
@@ -11480,7 +11542,7 @@ body {
   float: right;
   height: 30px;
   margin: 0 0 0 10px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
   cursor: pointer;
   color: #adb7be;
   border: none;
@@ -11503,12 +11565,12 @@ body {
   margin-right: -10px;
 }
 .site-header .dropdown.dropdown-typical .lbl {
-  font-size: 15px;
-  line-height: 16px;
+  font-size: var(--typo-theme-css-main-source-font-size-48);
+  line-height: var(--typo-theme-css-main-source-line-height-35);
 }
 .site-header .dropdown a.dropdown-toggle {
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-main-source-line-height-49);
 }
 .site-header .dropdown a.dropdown-toggle.no-arr:after {
   display: none;
@@ -11516,18 +11578,18 @@ body {
 .site-header .dropdown a.dropdown-toggle .label {
   padding: 3px 6px 2px;
   margin-left: 3px;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
   position: relative;
   top: -2px;
 }
 .site-header .dropdown .dropdown-item {
-  font-size: 15px;
+  font-size: var(--typo-theme-css-main-source-font-size-48);
 }
 .site-header .dropdown .btn.dropdown-toggle {
  height: 30px !important;
   padding: 0 12px;
-  font-size: 0.8125rem /*13/16*/;
-  line-height: 28px;
+  font-size: var(--typo-theme-css-main-source-font-size-26);
+  line-height: var(--typo-theme-css-main-source-line-height-32);
   background-color: #00a8ff;
   border-color: #00a8ff;
   color: #fff;
@@ -11805,7 +11867,7 @@ body {
   padding: 0;
   width: 30px;
   height: 30px;
-  font-size: 0;
+  font-size: var(--typo-theme-css-main-source-font-size-58);
   text-indent: -9999px;
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -12015,10 +12077,10 @@ body {
   float: left;
   width: 240px;
   height: 50px;
-  line-height: 50px;
+  line-height: var(--typo-theme-css-main-source-line-height-59);
   color: #fff;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-5);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   background: #272727;
   margin: 0 -1px 0 -0.9375rem;
   position: relative;
@@ -12098,7 +12160,7 @@ body {
   .dark-theme .site-header .dropdown.dropdown-typical a.dropdown-toggle {
     color: #fff;
     height: 50px;
-    line-height: 50px;
+    line-height: var(--typo-theme-css-main-source-line-height-59);
     display: block;
   }
   .dark-theme .site-header .dropdown.dropdown-typical a.dropdown-toggle .font-icon,
@@ -12417,9 +12479,9 @@ html {
   margin: 0 0 25px;
 }
 .side-menu-list .lbl {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #818181;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
@@ -12431,14 +12493,14 @@ html {
 }
 .side-menu-list .label {
   margin: 0 0 0 .5em;
-  font-weight: 400;
-  font-size: 0.75rem /*12/16*/;
+  font-weight: var(--typo-theme-css-main-source-font-weight-17);
+  font-size: var(--typo-theme-css-main-source-font-size-56);
   padding: .2em .45em .04em;
   position: relative;
   top: -1px;
 }
 .side-menu-list > li {
-  line-height: 16px;
+  line-height: var(--typo-theme-css-main-source-line-height-35);
 }
 .side-menu-list > li.divider {
   border-top: solid 1px #c5d6de;
@@ -12542,8 +12604,8 @@ html {
   position: absolute;
   left: 18px;
   top: 13px;
-  line-height: 16px;
-  font-size: 1.0625rem /*17/16*/;
+  line-height: var(--typo-theme-css-main-source-line-height-35);
+  font-size: var(--typo-theme-css-main-source-font-size-55);
 }
 .side-menu-list .font-icon.active:after,
 .side-menu-list .glyphicon.active:after,
@@ -12624,13 +12686,13 @@ html {
 }
 .side-menu-big-icon .side-menu-list > li.with-sub > span:after {
   content: '\52';
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-main-source-font-family-14) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-main-source-font-weight-13) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-main-source-line-height-15);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -12678,8 +12740,8 @@ html {
   left: 0;
   display: inline-block;
   color: #919fa9;
-  line-height: 1;
-  font-size: 2rem;
+  line-height: var(--typo-theme-css-main-source-line-height-3);
+  font-size: var(--typo-theme-css-main-source-font-size-40);
   margin: 0 0 5px;
 }
 .side-menu-big-icon .side-menu-list .font-icon.active:after,
@@ -12880,11 +12942,11 @@ html {
   padding-top: 60px !important;
 }
 .side-menu .side-menu-title {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   text-transform: uppercase;
   color: #6c7a86;
   padding: 0 22px 8px;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
 }
 .side-menu .side-menu-avatar {
   padding: 28px 0;
@@ -12924,8 +12986,8 @@ html {
   top: 0;
   margin: 0;
   display: inline-block;
-  font-size: 2.125rem /*34/16*/;
-  line-height: normal;
+  font-size: var(--typo-theme-css-main-source-font-size-57);
+  line-height: var(--typo-theme-css-main-source-line-height-10);
   min-height: 40px;
 }
 .side-menu.side-menu-compact .side-menu-list .font-icon.active:after,
@@ -12939,7 +13001,7 @@ html {
 }
 .side-menu.side-menu-compact .side-menu-list .lbl {
   display: block;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
 }
 @media (max-width: 1056px) {
   .side-menu {
@@ -12980,8 +13042,8 @@ html {
   position: relative;
 }
 .side-menu-addl .side-menu-addl-title .caption {
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #818181;
 }
 .side-menu-addl .side-menu-addl-title .font-icon,
@@ -12991,8 +13053,8 @@ html {
   position: absolute;
   top: 8px;
   right: 20px;
-  font-size: 1rem;
-  line-height: 18px;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  line-height: var(--typo-theme-css-main-source-line-height-33);
 }
 .side-menu-addl .side-menu-addl-top {
   padding: 0 18px 15px;
@@ -13002,8 +13064,8 @@ html {
 .side-menu-addl .side-menu-addl-list a {
   display: table;
   width: 100%;
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
   color: #818181;
 }
 .side-menu-addl .side-menu-addl-list a .tbl-cell {
@@ -13088,8 +13150,8 @@ html {
    ========================================================================== */
 .side-table-of-contents {
   padding: .5rem 22px 15px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-main-source-font-size-21);
+  font-weight: var(--typo-theme-css-main-source-font-weight-19);
 }
 .side-table-of-contents a {
   color: #343434;
@@ -13098,14 +13160,14 @@ html {
   color: #00a8ff;
 }
 .side-table-of-contents a.active {
-  font-weight: 700;
+  font-weight: var(--typo-theme-css-main-source-font-weight-18);
   color: #343434 !important;
 }
 .side-table-of-contents li {
   padding: 0 0 .8em;
 }
 .side-table-of-contents ul {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-main-source-font-size-46);
   padding-left: 1rem;
   padding-top: .7rem;
 }
@@ -14029,7 +14091,7 @@ html {
   padding: 0;
   width: 30px;
   height: 30px;
-  font-size: 0;
+  font-size: var(--typo-theme-css-main-source-font-size-58);
   text-indent: -9999px;
   -webkit-appearance: none;
      -moz-appearance: none;

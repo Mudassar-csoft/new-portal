@@ -152,6 +152,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-receivables-details-font-weight-1: 700;
+        }
+
         .finance-shell { padding: 8px 0 16px; }
         .finance-header {
             display: flex;
@@ -182,7 +186,7 @@
             margin-top: 30px;
             font-size: 18px;
             text-align: center;
-            font-weight: 700;
+            font-weight: var(--typo-finance-receivables-details-font-weight-1);
         }
         .tone-other {background: #f35f62;  }
         .tone-royalty { background: #fdc518; }
@@ -190,7 +194,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-receivables-details-font-weight-1);
         }
          .leave-button{
                 margin: auto;

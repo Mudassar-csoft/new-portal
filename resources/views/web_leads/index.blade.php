@@ -132,8 +132,13 @@
 
 @push('styles')
 	<style>
+        :root {
+            --typo-web-leads-index-font-family-1: 'Proxima Nova', sans-serif;
+            --typo-web-leads-index-font-weight-2: 600;
+        }
+
 		* {
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-web-leads-index-font-family-1);
 			font-size: 12px;
 			margin: 0;
 			padding: 0;
@@ -141,7 +146,7 @@
 
 		.form-label {
 			font-size: 11px;
-			font-weight: 600;
+			font-weight: var(--typo-web-leads-index-font-weight-2);
 			color: #343434;
 			text-transform: uppercase;
 			margin-bottom: 3px;
@@ -150,7 +155,7 @@
 		body, button, html, input, select, textarea {
 			color: #343434;
 			height: 32px;
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-web-leads-index-font-family-1);
 			line-height: 1.4;
 			text-rendering: optimizeLegibility;
 			-moz-osx-font-smoothing: grayscale;
@@ -208,7 +213,7 @@
 		.follow-loader p {
 			margin: 0;
 			color: #54667a;
-			font-weight: 600;
+			font-weight: var(--typo-web-leads-index-font-weight-2);
 		}
 
 		.follow-content {

@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1: 1rem;
+}
+
 /* ==========================================================================
    Variables
    ========================================================================== */
@@ -175,7 +179,7 @@
 }
 .daterangepicker select.monthselect,
 .daterangepicker select.yearselect {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
   padding: 1px;
   height: auto;
   margin: 0;
@@ -204,7 +208,7 @@
   margin: 0 0 5px 0;
   padding: .395rem 15px .355rem 30px;
   width: 100%;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
   line-height: 1.5;
 }
 .daterangepicker .input-mini.active {
@@ -232,7 +236,7 @@
   cursor: not-allowed;
 }
 .ranges {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
   float: none;
   margin: 4px;
   text-align: left;
@@ -244,7 +248,7 @@
   width: 100%;
 }
 .ranges li {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
   background: #DBE4EB;
   -webkit-border-radius: 4px;
           border-radius: 4px;
@@ -324,10 +328,10 @@
   color: #909CA8;
 }
 .daterangepicker .daterangepicker_input .fa {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
 }
 .daterangepicker .daterangepicker_input .fa.fa-calendar {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1);
   position: absolute;
   top: 12px;
   left: 10px;
@@ -343,7 +347,7 @@
 }
 .daterangepicker .applyBtn,
 .cancelBtn {
-  font-size: 1rem !important;
+  font-size: var(--typo-theme-css-separate-vendor-bootstrap-daterangepicker-font-size-1) !important;
 }
 .daterangepicker .calendar-time {
   margin-top: 10px;

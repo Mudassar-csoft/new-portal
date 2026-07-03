@@ -45,6 +45,11 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --typo-student-partials-action-font-size-1: 16px;
+            --typo-student-partials-action-font-weight-2: 500;
+        }
+
             .follow-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 300px;
                 padding: 8px 0;
@@ -64,8 +69,8 @@
                 width: 100%;
                 padding: 8px 14px !important;
                 color: #303740 !important;
-                font-size: 16px !important;
-                font-weight: 500;
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
+                font-weight: var(--typo-student-partials-action-font-weight-2);
                 line-height: 1.35;
                 background: transparent !important;
                 border: 0;
@@ -100,18 +105,18 @@
                 width: 24px;
                 min-width: 24px;
                 height: 24px;
-                font-size: 16px !important;
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
                 line-height: 1;
                 margin-right: 0 !important;
                 padding: 0 !important;
             }
             .span{
-                font-size:16px !important;
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
             }
             .follow-action-dropdown .lead-action-label {
                 display: inline-block;
                 font-size: 18px !important;
-                font-weight: 500;
+                font-weight: var(--typo-student-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }
 
@@ -138,7 +143,7 @@
                     <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
                         <i class="fa {{ $item['icon'] }}"></i>
                     </span>
-                    <span class="lead-action-label" style = "font-size: 16px !important;">{{ $item['label'] }}</span>
+                    <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
                 </button>
             </form>
         @endforeach

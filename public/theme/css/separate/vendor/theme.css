@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-css-separate-vendor-theme-line-height-1: 1.5;
+}
+
 .label {
   display: inline-block;
   padding: .25em .4em;
@@ -143,7 +147,7 @@ a.label:hover {
   float: left;
   padding: .5rem .75rem;
   margin-left: -1px;
-  line-height: 1.5;
+  line-height: var(--typo-theme-css-separate-vendor-theme-line-height-1);
   color: #0275d8;
   text-decoration: none;
   background-color: #fff;
@@ -175,7 +179,7 @@ a.label:hover {
 .pagination-sm .page-link {
   padding: .275rem .75rem;
   font-size: .875rem;
-  line-height: 1.5;
+  line-height: var(--typo-theme-css-separate-vendor-theme-line-height-1);
 }
 .pagination-sm .page-item:first-child .page-link {
   -webkit-border-top-left-radius: .2rem;

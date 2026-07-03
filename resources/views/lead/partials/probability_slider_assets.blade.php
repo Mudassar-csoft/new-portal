@@ -1,4 +1,8 @@
 <style>
+        :root {
+            --typo-lead-partials-probability-slider-assets-font-weight-1: 600;
+        }
+
     .probability-field {
         --probability-accent: #00a8ff;
         --probability-accent-dark: #0082c6;
@@ -132,7 +136,7 @@
         margin-top: 5px;
         color: #566a7f;
         font-size: 10px;
-        font-weight: 600;
+        font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1;
     }
 
@@ -162,7 +166,7 @@
         background: rgba(0, 168, 255, 0.08);
         color: #566a7f;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1.1;
     }
 

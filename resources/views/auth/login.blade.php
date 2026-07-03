@@ -10,6 +10,10 @@
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 	<style>
+        :root {
+            --typo-auth-login-font-size-1: 12px;
+        }
+
 		* {
 			margin: 0;
 			padding: 0;
@@ -96,7 +100,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 		.field-error {
 			margin-top: 6px;
-			font-size: 12px;
+			font-size: var(--typo-auth-login-font-size-1);
 			color: red;
 		}
 
@@ -106,7 +110,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			align-items: center;
 			gap: 12px;
 			margin-bottom: 20px;
-			font-size: 12px;
+			font-size: var(--typo-auth-login-font-size-1);
 		}
 
 		.remember-me {
@@ -226,7 +230,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 		.general-error {
 			margin-top: 16px;
-			font-size: 12px;
+			font-size: var(--typo-auth-login-font-size-1);
 			text-align: center;
 			color: #fff6f6;
 		}

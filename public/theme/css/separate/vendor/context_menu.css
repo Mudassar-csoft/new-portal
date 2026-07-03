@@ -1,4 +1,8 @@
 @charset "UTF-8";
+:root {
+    --typo-theme-css-separate-vendor-context-menu-font-size-1: 20px;
+}
+
 .context-menu-icon:before {
   position: absolute;
   top: 50%;
@@ -28,7 +32,7 @@
 }
 .context-menu-icon-delete:before {
   content: "\f1f8";
-  font-size: 20px;
+  font-size: var(--typo-theme-css-separate-vendor-context-menu-font-size-1);
   left: 5px;
 }
 .context-menu-icon-edit:before {
@@ -39,7 +43,7 @@
 }
 .context-menu-icon-quit:before {
   content: "\f08b";
-  font-size: 20px;
+  font-size: var(--typo-theme-css-separate-vendor-context-menu-font-size-1);
 }
 .context-menu-icon.context-menu-hover:before {
   color: #fff;

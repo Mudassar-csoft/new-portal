@@ -83,8 +83,8 @@
 						@include('lead.' . $selectedLeadType)
 
 						<div class="form-actions lead-actions mb-2 mt-3 text-right">
-							<button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem;">{{ $formSubmitLabel }}</button>
-							<a href="{{ $cancelUrl }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem;">Cancel</a>
+							<button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04">{{ $formSubmitLabel }}</button>
+							<a href="{{ $cancelUrl }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04">Cancel</a>
 						</div>
 					</form>
 				</div>
@@ -96,6 +96,10 @@
 @push('styles')
 	@include('lead.partials.probability_slider_assets')
 	<style>
+        :root {
+            --typo-lead-create-font-weight-1: 600;
+        }
+
 		.lead-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
@@ -254,7 +258,7 @@
 			display: block;
 			min-height: 22px;
 			margin-bottom: 8px;
-			font-weight: 600;
+			font-weight: var(--typo-lead-create-font-weight-1);
 			color: #223a57 !important;
 		}
 
@@ -391,7 +395,7 @@
 		}
 
 		.training-course-option-label {
-			font-weight: 600;
+			font-weight: var(--typo-lead-create-font-weight-1);
 			color: #183b68;
 		}
 
@@ -401,7 +405,7 @@
 
 		.lead-form-shell .probability-display {
 			margin-top: 6px;
-			font-weight: 600;
+			font-weight: var(--typo-lead-create-font-weight-1);
 			color: #54667a;
 		}
 

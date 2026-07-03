@@ -33,8 +33,8 @@
                         @include('batch.partials.form')
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Batch</button>
-                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10 ci-inline-ml-5">Create Batch</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -45,6 +45,11 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-batch-create-font-weight-1: 600;
+            --typo-batch-create-font-size-2: 12px;
+        }
+
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
@@ -90,7 +95,7 @@
         .lead-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-batch-create-font-weight-1);
         }
 
         .lead-content {
@@ -140,14 +145,14 @@
         .lead-create-card label,
         .lead-create-card .form-label {
             color: #343434;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--typo-batch-create-font-size-2);
+            font-weight: var(--typo-batch-create-font-weight-1);
             line-height: 1.2;
             margin-bottom: 6px;
         }
 
         .lead-create-card .form-control {
-            font-size: 12px;
+            font-size: var(--typo-batch-create-font-size-2);
             height: 37px !important;
             min-height: 37px !important;
             padding: 0.375rem 0.625rem !important;

@@ -1,3 +1,8 @@
+:root {
+    --typo-theme-css-separate-vendor-jquery-steps-font-size-1: 20px;
+    --typo-theme-css-separate-vendor-jquery-steps-font-weight-2: 600;
+}
+
 .wizard .form-group.has-error .form-control {
   background-color: #fff6f6;
   border-color: #f84646;
@@ -15,8 +20,8 @@
   margin-right: 20px;
 }
 .wizard .steps li a {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-vendor-jquery-steps-font-size-1);
+  font-weight: var(--typo-theme-css-separate-vendor-jquery-steps-font-weight-2);
   padding: 8px 20px;
   display: block;
   color: #818181;
@@ -75,8 +80,8 @@
   display: block;
   color: #fff;
   background-color: #00a8ff;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-vendor-jquery-steps-font-size-1);
+  font-weight: var(--typo-theme-css-separate-vendor-jquery-steps-font-weight-2);
   padding: 8px 20px;
   -webkit-border-radius: 25rem;
           border-radius: 25rem;

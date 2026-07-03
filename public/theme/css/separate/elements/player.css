@@ -1,3 +1,9 @@
+:root {
+    --typo-theme-css-separate-elements-player-font-size-1: 2.5rem /*40/16*/;
+    --typo-theme-css-separate-elements-player-line-height-2: 1;
+    --typo-theme-css-separate-elements-player-font-size-3: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -49,8 +55,8 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  font-size: 2.5rem /*40/16*/;
-  line-height: 1;
+  font-size: var(--typo-theme-css-separate-elements-player-font-size-1);
+  line-height: var(--typo-theme-css-separate-elements-player-line-height-2);
   margin: -20px 0 0 -13px;
 }
 .cstm-player .cstm-player-progress {
@@ -108,7 +114,7 @@
 }
 .cstm-player .cstm-player-controls {
   text-align: center;
-  line-height: 1;
+  line-height: var(--typo-theme-css-separate-elements-player-line-height-2);
 }
 .cstm-player .cstm-player-controls .font-icon {
   cursor: pointer;
@@ -126,7 +132,7 @@
   text-align: center;
 }
 .cstm-player.cstm-player-big .cstm-player-inner .time {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-elements-player-font-size-3);
   color: #6c7a86;
   position: absolute;
   top: 8px;
@@ -146,7 +152,7 @@
   margin: 0 0 8px;
 }
 .cstm-player.cstm-player-big .cstm-player-controls {
-  font-size: 2.5rem /*40/16*/;
+  font-size: var(--typo-theme-css-separate-elements-player-font-size-1);
   padding: 20px 0;
 }
 .cstm-player.cstm-player-big .cstm-player-controls .font-icon.font-icon-play-circle {
@@ -237,7 +243,7 @@
 }
 .cstm-player.cstm-player-small .cstm-player-song,
 .cstm-player.cstm-player-small .cstm-player-album {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-elements-player-font-size-3);
 }
 /* ==========================================================================
    Video Player
@@ -333,7 +339,7 @@
 }
 .cstm-video-player .cstm-video-player-hover .font-icon {
   font-size: 2.625rem;
-  line-height: 1;
+  line-height: var(--typo-theme-css-separate-elements-player-line-height-2);
   position: absolute;
   left: 50%;
   top: 50%;

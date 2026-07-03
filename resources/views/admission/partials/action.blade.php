@@ -16,6 +16,11 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --typo-admission-partials-action-font-size-1: 17px;
+            --typo-admission-partials-action-font-weight-2: 500;
+        }
+
                .admission-action-dropdown {
             position: relative;
         }
@@ -55,8 +60,8 @@ div.dataTables_scrollBody{
                 gap: 14px;
                 padding: 5px 18px !important;
                 color: #303740 !important;
-                font-size: 17px !important;
-                font-weight: 500;
+                font-size: var(--typo-admission-partials-action-font-size-1) !important;
+                font-weight: var(--typo-admission-partials-action-font-weight-2);
                 line-height: 1.35;
                 background: transparent !important;
                 border: 0;
@@ -85,8 +90,8 @@ div.dataTables_scrollBody{
 
             .admission-action-dropdown .lead-action-label {
                 display: inline-block;
-                font-size: 17px !important;
-                font-weight: 500;
+                font-size: var(--typo-admission-partials-action-font-size-1) !important;
+                font-weight: var(--typo-admission-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }
 

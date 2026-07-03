@@ -196,6 +196,13 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-user-edit-font-weight-1: 600;
+            --typo-user-edit-font-weight-2: 700;
+            --typo-user-edit-font-size-3: 20px;
+            --typo-user-edit-font-size-4: 13px;
+        }
+
         .form-label-role{
             font-size: 14px !important;
             margin-bottom: 6px;
@@ -203,7 +210,7 @@
             
             color: #343a40 !important;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: var(--typo-user-edit-font-weight-1);
 
         }
         .user-edit-page {
@@ -243,7 +250,7 @@
             letter-spacing: 0.18em;
             text-transform: uppercase;
             color: #7f93ac;
-            font-weight: 700;
+            font-weight: var(--typo-user-edit-font-weight-2);
         }
         .user-edit-page .user-card .panel-title {
             font-size: 32px !important;
@@ -292,7 +299,7 @@
             border: 1px solid #d2dee9 !important;
             border-radius: 5px;
             background: #fff;
-            font-size: 20px;
+            font-size: var(--typo-user-edit-font-size-3);
             color: #071526;
             box-shadow: none;
             transition: border-color 0.2s ease, background 0.2s ease;
@@ -338,7 +345,7 @@
             background: #eef4fb;
             color: #4e6278;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-user-edit-font-weight-1);
             white-space: nowrap;
         }
         .user-edit-page .email-shell:focus-within .email-domain {
@@ -373,7 +380,7 @@
             outline: 0;
             background: #0ea5f4;
             color: #fff;
-            font-size: 20px;
+            font-size: var(--typo-user-edit-font-size-3);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -397,8 +404,8 @@
         }
         .user-edit-page .field-error {
             margin-top: 8px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-user-edit-font-size-4);
+            font-weight: var(--typo-user-edit-font-weight-1);
             color: #d93048;
         }
         .user-edit-page .select2-container {
@@ -424,7 +431,7 @@
             line-height: 1.2 !important;
             padding: 9px 0px 0px !important;
             margin: 0 !important;
-            font-size: 20px;
+            font-size: var(--typo-user-edit-font-size-3);
             border: none !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__arrow,
@@ -466,8 +473,8 @@
             border: 1px solid #cfe0ff;
             background: #edf4ff;
             color: #1b4880;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-user-edit-font-size-4);
+            font-weight: var(--typo-user-edit-font-weight-1);
             position: relative;
         }
         .form-label{
@@ -481,7 +488,7 @@
             border: 0;
             background: transparent;
             color: #7990ac;
-            font-size: 13px;
+            font-size: var(--typo-user-edit-font-size-4);
             line-height: 1;
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove:hover {
@@ -501,7 +508,7 @@
             height: 48px;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: var(--typo-user-edit-font-weight-2);
             display: inline-flex;
             align-items: center;
             justify-content: center;

@@ -1,4 +1,12 @@
 @charset "UTF-8";
+:root {
+    --typo-theme-css-separate-pages-editor-font-family-1: 'Glyphicons Halflings';
+    --typo-theme-css-separate-pages-editor-font-weight-2: normal;
+    --typo-theme-css-separate-pages-editor-font-family-3: "startui";
+    --typo-theme-css-separate-pages-editor-line-height-4: inherit;
+    --typo-theme-css-separate-pages-editor-font-size-5: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -14,9 +22,9 @@
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: var(--typo-theme-css-separate-pages-editor-font-family-1);
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--typo-theme-css-separate-pages-editor-font-weight-2);
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -817,13 +825,13 @@
 }
 [data-icon]:before {
   content: attr(data-icon);
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-separate-pages-editor-font-family-3) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-separate-pages-editor-font-weight-2) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-separate-pages-editor-line-height-4);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -832,13 +840,13 @@
 }
 [class^="font-icon-"]:before,
 [class*=" font-icon-"]:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-separate-pages-editor-font-family-3) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-separate-pages-editor-font-weight-2) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-separate-pages-editor-line-height-4);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -1545,14 +1553,14 @@
 }
 .note-editor .note-toolbar .note-color .note-palette-title {
   border-bottom: none !important;
-  font-size: .875rem !important;
+  font-size: var(--typo-theme-css-separate-pages-editor-font-size-5) !important;
 }
 .note-editor .note-toolbar .note-color .note-color-reset.btn {
   margin: 3px 0 5px !important;
   background-color: #fff;
   border-color: #d8e2e7;
   color: #343434 !important;
-  font-size: .875rem !important;
+  font-size: var(--typo-theme-css-separate-pages-editor-font-size-5) !important;
   font-weight: 400;
 }
 .note-editor .note-toolbar .note-color .note-color-reset.btn:hover {
@@ -1693,13 +1701,13 @@
 .note-editor .note-btn.btn i.note-icon-arrows-alt:before,
 .note-editor .note-btn.btn i.note-icon-code:before,
 .note-editor .note-btn.btn i.note-icon-question:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-separate-pages-editor-font-family-3) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-separate-pages-editor-font-weight-2) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-separate-pages-editor-line-height-4);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;

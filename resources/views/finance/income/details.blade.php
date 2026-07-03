@@ -283,6 +283,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-income-details-font-weight-1: 700;
+        }
+
         .finance-shell { padding: 8px 0 16px; background-color: white; }
         .finance-header {
             display: flex;
@@ -314,7 +318,7 @@
             margin-top: 30px;
     font-size: 18px;
     text-align: center;
-    font-weight: 700;
+    font-weight: var(--typo-finance-income-details-font-weight-1);
         }
         .tone-admission { background: #f35f62;}
         .tone-registration { background: #4285f4; }
@@ -325,7 +329,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-income-details-font-weight-1);
         }
 
 

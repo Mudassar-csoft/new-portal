@@ -179,7 +179,7 @@
 						</div>
 					</div>
 
-					
+
 
 					<div class="form-row">
 						<div class="form-group col-12">
@@ -222,8 +222,8 @@
 						</div>
 					</div>
 					<div class="form-actions registration-actions mb-2 mt-3 text-right">
-						<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;">Register Now</button>
-						<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem;">Cancel</a>
+						<button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04">Register Now</button>
+						<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 {{ request()->boolean('embed') ? 'embed-cancel' : '' }}">Cancel</a>
 					</div>
 				</form>
 				</div>
@@ -234,6 +234,14 @@
 
 	@push('styles')
 	<style>
+        :root {
+            --typo-registration-create-font-weight-1: 600;
+        }
+
+		.ci-inline-pad-04 {
+			padding: 0.4rem !important;
+		}
+
 		.registration-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
@@ -313,7 +321,7 @@
 			display: block;
 			min-height: 22px;
 			margin-bottom: 8px;
-			font-weight: 600;
+			font-weight: var(--typo-registration-create-font-weight-1);
 			color: #223a57;
 		}
 
@@ -396,7 +404,7 @@
 		}
 
 		.training-course-option-label {
-			font-weight: 600;
+			font-weight: var(--typo-registration-create-font-weight-1);
 			color: #183b68;
 		}
 
@@ -424,7 +432,7 @@
 
 		.registration-gender-title {
 			font-size: 15px;
-			font-weight: 600;
+			font-weight: var(--typo-registration-create-font-weight-1);
 			margin-bottom: 10px;
 		}
 
@@ -479,7 +487,7 @@
 			font-size: 15px !important;
 			margin-bottom: 0;
 			cursor: pointer;
-			font-weight: 600;
+			font-weight: var(--typo-registration-create-font-weight-1);
 			color: #223a57;
 			line-height: 1.2;
 		}
@@ -501,7 +509,7 @@
 			/* border-top: 1px solid #e8eef5; */
 			background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
 		}
-/* 
+/*
 		.embed-actions .btn {
 			min-width: 160px;
 			height: 44px;
@@ -545,7 +553,7 @@
 			.embed-actions {
 				flex-direction: column-reverse;
 			}
-/* 
+/*
 			.embed-actions .btn {
 				width: 100%;
 			} */

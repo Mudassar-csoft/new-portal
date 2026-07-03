@@ -1,4 +1,4 @@
-﻿@extends('layouts.theme')
+@extends('layouts.theme')
 
 @section('title', 'Coworking Member - ' . ($registration->full_name ?? 'Detail'))
 
@@ -123,7 +123,7 @@
         <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
                 <h3 class="panel-title mb-0">Coworking Space Member Detail
-                    <small class="text-muted" style="font-size:14px;font-weight:400;">
+                    <small class="text-muted ci-muted-meta">
                         - {{ $member->full_name ?? '' }}
                     </small>
                 </h3>
@@ -188,7 +188,7 @@
                                             data-inactive-reason-label="Reason for Drop">
                                         <i class="fa fa-stop action-icon action-icon--danger"></i>Drop
                                     </button>
-                                    
+
                                 @endif
                                 @if($canAdminEdit)
                                     <a class="dropdown-item" href="{{ route('coworking-registrations.edit', $member) }}">
@@ -363,8 +363,8 @@
                                             <th>Gender:</th>
                                             <td>{{ ucfirst($member->gender ?? 'N/A') }}</td>
                                         </tr>
-                                       
-                                       
+
+
                                         <!-- <tr>
                                             <th>Email Address:</th>
                                             <td>{{ $member->email ?? 'N/A' }}</td>
@@ -377,7 +377,7 @@
                                             <th>Guardian Contact:</th>
                                             <td>{{ $member->guardian_phone ?? 'N/A' }}</td>
                                         </tr>
-                                       
+
                                         <!-- <tr>
                                             <th>Nature of Work:</th>
                                             <td>{{ $member->nature_of_work ?? 'N/A' }}</td>
@@ -386,7 +386,7 @@
                                             <th>Timing:</th>
                                             <td>{{ $member->timing ?? 'N/A' }}</td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <th>Remarks:</th>
                                             <td>{{ $member->remarks ?: 'N/A' }}</td>
@@ -434,7 +434,7 @@
                                             <th>Marketing Source:</th>
                                             <td>{{ $lead?->marketing_source ?: 'N/A' }}</td>
                                         </tr>
-                                       
+
                                         <tr>
                                             <th>Main Receipt No:</th>
                                             <td>{{ $member->receipt_number ?? 'N/A' }}</td>
@@ -634,6 +634,21 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-coworking-registration-show-font-size-1: 18px;
+            --typo-coworking-registration-show-font-weight-2: 600;
+            --typo-coworking-registration-show-font-size-3: 16px;
+            --typo-coworking-registration-show-font-size-4: 12px;
+            --typo-coworking-registration-show-font-weight-5: 500;
+            --typo-coworking-registration-show-font-size-6: 14px;
+            --typo-coworking-registration-show-font-size-7: 13px;
+        }
+
+        .ci-muted-meta {
+            font-size: 14px !important;
+            font-weight: 400 !important;
+        }
+
         .student-detail-shell {
             padding: 0;
         }
@@ -727,21 +742,21 @@
 
         .profile-name {
             margin: 8px 0 4px;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-1);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             color: #1f2d3d;
         }
 
         .profile-phone {
             color: #4c5a6a;
-            font-size: 16px;
+            font-size: var(--typo-coworking-registration-show-font-size-3);
             margin-bottom: 8px;
         }
 
         .profile-campus {
             color: #0f766e;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             margin-bottom: 16px;
         }
 
@@ -760,7 +775,7 @@
             border-radius: 3px;
             background: #f0ad4e;
             color: #fff;
-            font-size: 12px;
+            font-size: var(--typo-coworking-registration-show-font-size-4);
             text-transform: uppercase;
             cursor: pointer;
         }
@@ -780,7 +795,7 @@
             /* border: 1px solid #cfd7df !important; */
             /* padding: 6px 18px !important; */
             /* border-radius: 4px; */
-            /* font-weight: 500; */
+            /* font-weight: var(--typo-coworking-registration-show-font-weight-5); */
         }
 
         .student-action-btn:hover {
@@ -813,7 +828,7 @@
             gap: 12px;
             padding: 12px 18px;
             color: #303740;
-            font-size: 14px;
+            font-size: var(--typo-coworking-registration-show-font-size-6);
             line-height: 1.2;
             text-decoration: none;
         }
@@ -833,7 +848,7 @@
             width: 18px;
             flex: 0 0 18px;
             text-align: center;
-            font-size: 18px;
+            font-size: var(--typo-coworking-registration-show-font-size-1);
         }
 
         .action-icon--danger {
@@ -858,14 +873,14 @@
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: var(--typo-coworking-registration-show-font-size-7);
             color: #1f2d3d;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
         .stat-value {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-3);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             margin-top: 4px;
             color: #1f2d3d;
         }
@@ -898,8 +913,8 @@
             text-align: center;
             cursor: pointer;
             color: #4c5a6a;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: var(--typo-coworking-registration-show-font-size-3);
+            font-weight: var(--typo-coworking-registration-show-font-weight-5);
             border-bottom: 3px solid transparent;
             transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
         }
@@ -910,7 +925,7 @@
 
         .student-tab.active {
             color: #0a96cc;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             border-bottom-color: #0a96cc;
         }
 
@@ -966,7 +981,7 @@
         .fee-status-cell .label {
             padding: 4px 10px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
         .fee-action-btn {
@@ -975,13 +990,13 @@
         }
 
         .fee-action-btn .fa {
-            font-size: 12px;
+            font-size: var(--typo-coworking-registration-show-font-size-4);
         }
 
         .pane-section-title {
             margin: 0 0 14px;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-1);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             color: #1f2d3d;
             padding-bottom: 12px;
             border-bottom: 1px solid #e2e8f0;
@@ -996,7 +1011,7 @@
         .info-table td {
             padding: 8px 0px 9px 0;
             border-bottom: 1px solid #eef2f7;
-            font-size: 14px;
+            font-size: var(--typo-coworking-registration-show-font-size-6);
             vertical-align: middle;
         }
 
@@ -1006,7 +1021,7 @@
             color: #1f2d3d;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: var(--typo-coworking-registration-show-font-size-4);
             letter-spacing: 0.5px;
         }
 
@@ -1026,11 +1041,11 @@
             padding: 10px 14px;
             border-radius: 6px;
             margin-bottom: 12px;
-            font-size: 13px;
+            font-size: var(--typo-coworking-registration-show-font-size-7);
         }
 
         .inactive-receipt-note {
-            font-size: 13px;
+            font-size: var(--typo-coworking-registration-show-font-size-7);
             color: #475569;
             margin-bottom: 7px;
             padding-bottom: 6px;
@@ -1090,8 +1105,8 @@
 
         .fee-edit-header h4 {
             margin: 0;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-3);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
         .fee-edit-close {
@@ -1114,8 +1129,8 @@
 
         .fee-edit-field label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-7);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             color: #1f2d3d;
             margin-bottom: 6px;
         }
@@ -1126,7 +1141,7 @@
             padding: 8px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: var(--typo-coworking-registration-show-font-size-6);
             color: #1f2d3d;
         }
 
@@ -1154,8 +1169,8 @@
         .btn-fee-cancel{
             padding: 7px 16px;
             border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-coworking-registration-show-font-size-7);
+            font-weight: var(--typo-coworking-registration-show-font-weight-2);
             cursor: pointer;
             border: 0;
         }

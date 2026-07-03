@@ -1,3 +1,8 @@
+:root {
+    --typo-theme-css-lib-lobipanel-lobipanel-line-height-1: 30px;
+    --typo-theme-css-lib-lobipanel-lobipanel-font-size-2: 14px;
+}
+
 .spinner-wrapper {
   position: absolute;
   top: 0;
@@ -332,7 +337,7 @@ body.lobipanel-minimized {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 16px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
   padding-left: 15px;
 }
 .lobipanel > .panel-heading > .panel-title h1,
@@ -342,11 +347,11 @@ body.lobipanel-minimized {
 .lobipanel > .panel-heading > .panel-title h5,
 .lobipanel > .panel-heading > .panel-title h6 {
   margin: 0;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
 }
 .lobipanel > .panel-heading > .panel-title input {
   color: inherit;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
   border-radius: 2px;
   padding: 0 5px;
   width: 100%;
@@ -380,14 +385,14 @@ body.lobipanel-minimized {
   text-align: center;
   padding: 0;
   width: 30px;
-  font-size: 14px;
+  font-size: var(--typo-theme-css-lib-lobipanel-lobipanel-font-size-2);
   -webkit-transition: all 0.2s;
   -o-transition: all 0.2s;
   transition: all 0.2s;
 }
 .lobipanel > .panel-heading .dropdown .dropdown-toggle .panel-control-icon {
   top: 0;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
 }
 .lobipanel > .panel-heading .dropdown .dropdown-toggle:hover,
 .lobipanel > .panel-heading .dropdown .dropdown-toggle:hover:focus {
@@ -432,14 +437,14 @@ body.lobipanel-minimized {
     outline: 0;
     text-align: center;
     width: 30px;
-    font-size: 14px;
+    font-size: var(--typo-theme-css-lib-lobipanel-lobipanel-font-size-2);
     -webkit-transition: all 0.2s;
     -o-transition: all 0.2s;
     transition: all 0.2s;
   }
   .lobipanel .panel-heading .dropdown .dropdown-menu > li > a .panel-control-icon {
     top: 0;
-    line-height: 30px;
+    line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
   }
   .lobipanel .panel-heading .dropdown .dropdown-menu > li > a .control-title {
     display: none;
@@ -541,14 +546,14 @@ body.lobipanel-minimized {
   outline: 0;
   text-align: center;
   width: 30px;
-  font-size: 14px;
+  font-size: var(--typo-theme-css-lib-lobipanel-lobipanel-font-size-2);
   -webkit-transition: all 0.2s;
   -o-transition: all 0.2s;
   transition: all 0.2s;
 }
 .lobipanel.panel-unpin.panel-minimized > .panel-heading .dropdown .dropdown-menu > li > a .panel-control-icon {
   top: 0;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-lib-lobipanel-lobipanel-line-height-1);
 }
 .lobipanel.panel-unpin.panel-minimized > .panel-heading .dropdown .dropdown-menu > li > a .control-title {
   display: none;

@@ -51,6 +51,10 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        :root {
+            --typo-lead-transfers-font-weight-1: 600;
+        }
+
         .follow-shell {
             position: relative;
             min-height: 100vh;
@@ -100,7 +104,7 @@
         .follow-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfers-font-weight-1);
         }
 
         .follow-content {
@@ -135,7 +139,7 @@
             background: #1fb2ff;
             color: #fff;
             border-color: #1aa4ea;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfers-font-weight-1);
             vertical-align: middle;
         }
 

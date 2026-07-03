@@ -99,6 +99,10 @@
     <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        :root {
+            --typo-student-records-index-font-size-1: 12px;
+        }
+
         .lead-status-shell {
             position: relative;
             min-height: 100vh;
@@ -251,7 +255,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: #9aa8b6;
-            font-size: 12px;
+            font-size: var(--typo-student-records-index-font-size-1);
             pointer-events: none;
         }
 
@@ -282,7 +286,7 @@
         .student-records-note {
             margin-top: 6px;
             color: #7b8794;
-            font-size: 12px;
+            font-size: var(--typo-student-records-index-font-size-1);
         }
     </style>
 @endpush

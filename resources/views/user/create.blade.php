@@ -192,6 +192,13 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-user-create-font-weight-1: 600;
+            --typo-user-create-font-size-2: 18px;
+            --typo-user-create-font-weight-3: 700;
+            --typo-user-create-font-size-4: 20px;
+        }
+
         .user-create-page,
         .user-create-page .page-content {
             overflow-x: hidden;
@@ -204,7 +211,7 @@
             
             color: #343a40 !important;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: var(--typo-user-create-font-weight-1);
 
         }
         .user-create-page .page-content > .container-fluid {
@@ -260,8 +267,8 @@
         }
         /* .user-create-page .form-label {
             margin: 0;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: var(--typo-user-create-font-size-2);
+            font-weight: var(--typo-user-create-font-weight-3);
             color: #15283a;
             letter-spacing: 0;
             text-transform: uppercase;
@@ -283,7 +290,7 @@
             border: 1px solid #d2dee9 !important;
             border-radius: 5px;
             background: #fff;
-            font-size: 20px;
+            font-size: var(--typo-user-create-font-size-4);
             color: #071526;
             box-shadow: none;
             transition: border-color 0.2s ease, background 0.2s ease;
@@ -328,7 +335,7 @@
             background: #eef4fb;
             color: #4e6278;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-user-create-font-weight-1);
             white-space: nowrap;
         }
         .user-create-page .email-shell:focus-within .email-domain {
@@ -363,7 +370,7 @@
             outline: 0;
             background: #0ea5f4;
             color: #fff;
-            font-size: 20px;
+            font-size: var(--typo-user-create-font-size-4);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -388,7 +395,7 @@
         .user-create-page .field-error {
             margin-top: 8px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: var(--typo-user-create-font-weight-1);
             color: #d93048;
         }
         .user-create-page .select2-container {
@@ -415,7 +422,7 @@
             line-height: 1.2 !important;
             padding: 9px 0px 0px !important;
             margin: 0 !important;
-            font-size: 20px;
+            font-size: var(--typo-user-create-font-size-4);
 			border: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__arrow,
@@ -441,7 +448,7 @@
             margin: 0 0 11px;
             color: #15283a;
             font-size: 19px;
-            font-weight: 700;
+            font-weight: var(--typo-user-create-font-weight-3);
             text-transform: uppercase;
         }
         .user-create-page .account-activation-note {
@@ -454,7 +461,7 @@
             border-radius: 8px;
             background: #eaf3ff;
             color: #0067d8;
-            font-size: 18px;
+            font-size: var(--typo-user-create-font-size-2);
             line-height: 1.35;
         }
         .user-create-page .account-activation-note i {
@@ -475,8 +482,8 @@
             min-width: 112px;
             height: 51px;
             border-radius: 5px;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: var(--typo-user-create-font-size-4);
+            font-weight: var(--typo-user-create-font-weight-3);
             display: inline-flex;
             align-items: center;
             justify-content: center;

@@ -67,6 +67,10 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --typo-user-partials-direct-permissions-font-weight-1: 700;
+        }
+
             .permission-helper {
                 margin-bottom: 10px;
                 font-size: 13px;
@@ -97,7 +101,7 @@
             }
             .perm-heading {
                 margin-bottom: 8px;
-                font-weight: 700;
+                font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.5px;
             }
             .perm-section + .perm-section {
@@ -108,7 +112,7 @@
             .perm-subheading {
                 margin-bottom: 6px;
                 font-size: 12px;
-                font-weight: 700;
+                font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.08em;
                 /* text-transform: uppercase; */
                 color: #7f93ac;
@@ -142,7 +146,7 @@
                 background: #e6eef9;
                 color: #47627f;
                 font-size: 11px;
-                font-weight: 700;
+                font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.04em;
                 text-transform: uppercase;
             }

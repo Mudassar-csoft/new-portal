@@ -1,3 +1,10 @@
+:root {
+    --typo-theme-css-separate-pages-chat-line-height-1: 20px;
+    --typo-theme-css-separate-pages-chat-font-weight-2: 600;
+    --typo-theme-css-separate-pages-chat-font-size-3: .875rem;
+    --typo-theme-css-separate-pages-chat-font-size-4: 1rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -78,7 +85,7 @@
   padding: 11px 15px 11px 56px;
   position: relative;
   font-size: 0.9375rem /*15/16*/;
-  line-height: 20px;
+  line-height: var(--typo-theme-css-separate-pages-chat-line-height-1);
   cursor: default;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -106,7 +113,7 @@
 .chat-list-item .chat-list-item-name {
   display: inline-block;
   vertical-align: top;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-chat-font-weight-2);
   padding: 0 12px 0 0;
   position: relative;
   max-width: 100%;
@@ -120,7 +127,7 @@
   max-width: 100%;
 }
 .chat-list-item .chat-list-item-date {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-chat-font-size-3);
   position: absolute;
   right: 0;
   top: 0;
@@ -172,7 +179,7 @@
   -webkit-border-radius: 9px;
           border-radius: 9px;
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-chat-font-weight-2);
   margin-top: -9px;
   background: #fa424a;
   font-size: .8125rem;
@@ -228,8 +235,8 @@
 .chat-area-header .clean {
   text-align: center;
   line-height: 60px;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-separate-pages-chat-font-weight-2);
+  font-size: var(--typo-theme-css-separate-pages-chat-font-size-4);
   margin-right: -105px;
 }
 .chat-area-bottom {
@@ -252,7 +259,7 @@
 .chat-area-bottom .caption {
   display: inline-block;
   padding: .375rem 0 .375rem 42px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-chat-font-size-4);
   line-height: 1.5;
   text-align: center;
   vertical-align: middle;
@@ -301,7 +308,7 @@
   padding: 11px 65px 11px 100px;
   font-size: 0.9375rem /*13/16*/;
   min-height: 52px;
-  line-height: 20px;
+  line-height: var(--typo-theme-css-separate-pages-chat-line-height-1);
 }
 .chat-message .chat-message-photo {
   position: absolute;
@@ -325,7 +332,7 @@
   vertical-align: middle;
 }
 .chat-message .chat-message-header .tbl-cell-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-chat-font-weight-2);
 }
 .chat-message .chat-message-header .tbl-cell-date {
   color: #919fa9;
@@ -333,7 +340,7 @@
   white-space: nowrap;
   width: 10px;
   padding-left: 10px;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-chat-font-size-3);
 }
 .chat-message .checkbox-bird {
   display: none;
@@ -381,7 +388,7 @@
 }
 .chat-dialog-clean .caption {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-chat-font-weight-2);
   margin: 0 0 .5rem 0;
 }
 .chat-dialog-clean .txt {

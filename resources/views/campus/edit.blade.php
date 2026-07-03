@@ -24,8 +24,8 @@
                                 </h2>
                             </div>
                             <!-- <div class="tbl-cell text-right" style="width: 280px;">
-                                <a href="{{ route('campus.index') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Campuses</a>
-                                <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">View Inventory</a>
+                                <a href="{{ route('campus.index') }}" class="btn btn-inline btn-default ci-inline-pad-04 ci-inline-pl-10">Back to Campuses</a>
+                                <a href="{{ route('inventory.index', ['campus_id' => $campus->id]) }}" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10">View Inventory</a>
                             </div> -->
                         </div>
                     </div>
@@ -38,8 +38,8 @@
                         @include('campus.partials.form')
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Update Campus</button>
-                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10 ci-inline-ml-5">Update Campus</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>

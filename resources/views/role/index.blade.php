@@ -64,13 +64,17 @@
     <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        :root {
+            --typo-role-index-font-weight-1: 600;
+        }
+
         .lead-status-shell { position: relative; min-height: 100vh; width: 100%; overflow: visible; }
         .follow-loader { position: absolute; top: 0; left: 0; right: 0; height: 100vh; background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: 12px; }
         .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
         .follow-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-role-index-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
         .follow-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
         body.roles-ready .follow-content { opacity: 1; visibility: visible; }
@@ -102,10 +106,10 @@
         #roles-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
         #roles-table .table-name-link {
             color: ##0082C6;
-            font-weight: 600;
+            font-weight: var(--typo-role-index-font-weight-1);
             text-decoration: none;
         }
-      
+
         #roles-table td.actions-cell { text-align: right; white-space: nowrap; }
         #roles-table .follow-action-dropdown .dropdown-menu { z-index: 1070 !important; }
 

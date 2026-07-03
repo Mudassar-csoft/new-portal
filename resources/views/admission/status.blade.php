@@ -65,10 +65,29 @@
                 @endforeach
             </div>
 
-            
+
 
             <div class="box-typical-body panel-body follow-body">
-                <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+<form method="GET" action="{{ route('registration.status') }}" class="follow-controls">
+					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
+					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
+						<label class="mr-2 mb-0">Show</label>
+						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
+							@foreach ([10, 25, 50, 100] as $option)
+								<option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
+							@endforeach
+						</select>
+						<label class="ml-2 mb-0">Entries</label>
+					</div>
+					<div class="follow-search">
+						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+						<!-- <button type="submit" class="reg-search-submit" aria-label="Search">
+							<i class="fa fa-search"></i>
+						</button> -->
+					</div>
+				</form>
+
+                <!-- <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
                     <input type="hidden" name="scope" value="{{ $activeScope }}">
                     @if($activeScope === 'all')
                         <input type="hidden" name="period" value="{{ $activePeriod }}">
@@ -84,7 +103,7 @@
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
-                </form>
+                </form> -->
 
                 <div class="table-responsive">
                     <table class="table table-bordered follow-table" id="adm-table">
@@ -159,7 +178,7 @@
 <div class="form-group">
     <label>CNIC Front Side <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-front">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -177,10 +196,9 @@
 
         <input type="file"
                name="document_cnic_front"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-cnic-front"
-               style="width:350px;"
                required>
     </div>
 
@@ -193,7 +211,7 @@
 <div class="form-group">
     <label>CNIC Back Side <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-back">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -211,10 +229,9 @@
 
         <input type="file"
                name="document_cnic_back"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-cnic-back"
-               style="width:350px;"
                required>
     </div>
 
@@ -227,7 +244,7 @@
 <div class="form-group">
     <label>Admission Form <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-admission-form">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -245,10 +262,9 @@
 
         <input type="file"
                name="document_admission_form"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-admission-form"
-               style="width:350px;"
                required>
     </div>
 
@@ -261,7 +277,7 @@
 <div class="form-group mb-0">
     <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
 
-        <div style="display:flex; align-items:center; gap:15px;">
+        <div class="admission-doc-upload-row">
             <div class="admission-preview-card is-empty" id="preview-paid-slip">
                 <div class="admission-upload-tools">
                     <button type="button"
@@ -279,10 +295,9 @@
 
                     <input type="file"
                         name="document_paid_slip"
-                        class="form-control js-admission-doc-input"
+                        class="form-control js-admission-doc-input admission-doc-file-input"
                         accept=".jpg,.jpeg,.png,.pdf"
                         data-preview-target="preview-paid-slip"
-                        style="width:350px;"
                         required>
                     </div>
 
@@ -374,6 +389,12 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-admission-status-font-weight-1: 600;
+            --typo-admission-status-line-height-2: 1;
+            --typo-admission-status-font-size-3: 12px;
+        }
+
         .action-cell {
             min-width: 180px;
             white-space: nowrap;
@@ -382,7 +403,7 @@
 
         .adm-name-link {
             color: #0a6fd1;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             text-decoration: none;
             border-bottom: 1px dashed transparent;
             transition: color 0.15s ease, border-color 0.15s ease;
@@ -393,6 +414,17 @@
             border-bottom-color: #0a6fd1;
             text-decoration: none;
         }
+
+        .admission-doc-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admission-doc-file-input {
+            width: 350px;
+        }
+
         .eye-span{
                 height: 35px;
                 text-align: right !important;
@@ -402,7 +434,7 @@
                 border-radius: 20px;
         }
          .eye-span-4{
-             height: 35px;      
+             height: 35px;
          text-align: right !important;
                 /* margin-left: 241px; */
                 padding: 9px;
@@ -443,7 +475,7 @@
 
         .follow-status-copy {
             font-size: 15px;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             color: #334155;
         }
 
@@ -462,7 +494,7 @@
             border: 0;
             background: transparent;
             color: #8a97a8;
-            line-height: 1;
+            line-height: var(--typo-admission-status-line-height-2);
             padding: 0;
         }
 
@@ -529,7 +561,7 @@
         .admission-modal__title {
             margin: 0;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
         }
 
         .admission-modal__close {
@@ -537,7 +569,7 @@
             background: transparent;
             color: #fff;
             font-size: 30px !important;
-            line-height: 1;
+            line-height: var(--typo-admission-status-line-height-2);
             cursor: pointer;
             padding: 0;
         }
@@ -551,7 +583,7 @@
         .admission-modal__student {
             margin: 0 0 16px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             color: #1f2937;
         }
 
@@ -571,7 +603,7 @@
 
         .admission-upload-tools__hint {
             color: #64748b;
-            font-size: 12px;
+            font-size: var(--typo-admission-status-font-size-3);
             line-height: 1.4;
         }
 
@@ -585,7 +617,7 @@
 
         .admission-preview-card__empty {
             color: #64748b;
-            font-size: 12px;
+            font-size: var(--typo-admission-status-font-size-3);
         }
 
         .admission-preview-card__image,
@@ -611,7 +643,7 @@
         .admission-preview-card__meta {
             display: none;
             margin-top: 8px;
-            font-size: 12px;
+            font-size: var(--typo-admission-status-font-size-3);
             color: #334155;
             word-break: break-word;
         }
@@ -647,7 +679,7 @@
             border: 1px solid #dbe3ec;
             border-radius: 6px;
             color: #0f5fa8;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             text-decoration: none;
             background: #f8fbff;
              justify-content: space-between;

@@ -1,4 +1,11 @@
 @charset "UTF-8";
+:root {
+    --typo-theme-css-separate-partials-icons-font-family-1: 'Glyphicons Halflings';
+    --typo-theme-css-separate-partials-icons-font-weight-2: normal;
+    --typo-theme-css-separate-partials-icons-font-family-3: "startui";
+    --typo-theme-css-separate-partials-icons-line-height-4: inherit;
+}
+
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url('../fonts/glyphicons-halflings-regular.eot');
@@ -8,9 +15,9 @@
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: var(--typo-theme-css-separate-partials-icons-font-family-1);
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--typo-theme-css-separate-partials-icons-font-weight-2);
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -811,13 +818,13 @@
 }
 [data-icon]:before {
   content: attr(data-icon);
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-separate-partials-icons-font-family-3) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-separate-partials-icons-font-weight-2) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-separate-partials-icons-line-height-4);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -826,13 +833,13 @@
 }
 [class^="font-icon-"]:before,
 [class*=" font-icon-"]:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-css-separate-partials-icons-font-family-3) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-css-separate-partials-icons-font-weight-2) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-css-separate-partials-icons-line-height-4);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;

@@ -137,6 +137,11 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-accounting-journal-font-weight-1: 700;
+            --typo-finance-accounting-journal-font-size-2: 13px;
+        }
+
         .finance-shell { padding: 8px 0 16px; background: #fff; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .finance-summary-row { margin: 2px 0 10px; padding: 7px; }
@@ -149,8 +154,8 @@
             margin-bottom: 12px;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .journal-summary-card .summary-value { font-size: 22px; font-weight: 700; text-align:center}
-        .journal-summary-card .summary-label { margin-top: 8px; font-size: 13px;text-align:center; text-transform: uppercase; opacity: 0.92; }
+        .journal-summary-card .summary-value { font-size: 22px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); text-align:center}
+        .journal-summary-card .summary-label { margin-top: 8px; font-size: var(--typo-finance-accounting-journal-font-size-2);text-align:center; text-transform: uppercase; opacity: 0.92; }
         .tone-blue { background: #2563eb; }
         .tone-green { background: #16a34a; }
         .tone-red { background: #dc2626; }
@@ -162,11 +167,11 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        .journal-entry-title { font-size: 16px; font-weight: 700; color: #1e293b; }
+        .journal-entry-title { font-size: 16px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); color: #1e293b; }
         .journal-entry-meta { margin-top: 4px; color: #64748b; font-size: 12px; }
-        .journal-entry-ref { color: #334155; font-size: 13px; }
+        .journal-entry-ref { color: #334155; font-size: var(--typo-finance-accounting-journal-font-size-2); }
         .journal-entry-description { margin-bottom: 12px; color: #334155; }
         .meta-dot { margin: 0 6px; }
-        .finance-table thead th { background: #eef2f7; color: #334155; font-weight: 700; }
+        .finance-table thead th { background: #eef2f7; color: #334155; font-weight: var(--typo-finance-accounting-journal-font-weight-1); }
     </style>
 @endpush

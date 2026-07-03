@@ -7,6 +7,11 @@
 @once
 	@push('styles')
 		<style>
+        :root {
+            --typo-registration-partials-action-font-size-1: 17px;
+            --typo-registration-partials-action-font-weight-2: 500;
+        }
+
 			.registration-action-dropdown .dropdown-menu.lead-action-menu {
 				min-width: 252px;
 				padding: 8px 0;
@@ -24,8 +29,8 @@
 				gap: 14px;
 				padding: 1px 18px !important;
 				color: #303740 !important;
-				font-size: 17px !important;
-				font-weight: 500;
+				font-size: var(--typo-registration-partials-action-font-size-1) !important;
+				font-weight: var(--typo-registration-partials-action-font-weight-2);
 				line-height: 1.35;
 				background: transparent !important;
 				border: 0;
@@ -54,8 +59,8 @@
 
 			.registration-action-dropdown .lead-action-label {
 				display: inline-block;
-				font-size: 17px !important;
-				font-weight: 500;
+				font-size: var(--typo-registration-partials-action-font-size-1) !important;
+				font-weight: var(--typo-registration-partials-action-font-weight-2);
 				letter-spacing: 0.01em;
 			}
 

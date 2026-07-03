@@ -74,9 +74,9 @@
                 </div>
 
                 @if($charge->status === 'overdue')
-                    <div class="alert alert-danger mt-3">
+                    <!-- <div class="alert alert-danger mt-3">
                         This invoice is overdue. Outstanding balance: <strong>Rs. {{ number_format((float) $charge->balance_amount, 0) }}</strong>
-                    </div>
+                    </div> -->
                 @endif
 
                 <div class="row invoice-address-row">

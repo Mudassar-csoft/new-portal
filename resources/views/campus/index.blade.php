@@ -62,7 +62,7 @@
                         <input type="hidden" name="scope" value="{{ $activeScope }}">
 
                         <div class="follow-controls">
-                            <div class="d-flex" style="gap:0.5rem;align-items: center;">
+                            <div class="d-flex ci-inline-gap-05-center">
                                 <label class="">Show</label>
                                 <select class="form-select form-select-sm">
                                     <option>10</option>
@@ -181,6 +181,15 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-campus-index-font-weight-1: 600;
+        }
+
+        .ci-inline-gap-05-center {
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         .bootstrap-table .table a, .fixed-table-body .table a, .table a {
             border-bottom: none;
             position: relative;
@@ -222,7 +231,7 @@
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-campus-index-font-weight-1); }
 
         .follow-content {
             opacity: 0;
@@ -283,7 +292,7 @@
 
         .program-filter-field .form-label {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: var(--typo-campus-index-font-weight-1);
             color: #54667a;
             margin-bottom: 4px;
         }
@@ -297,7 +306,7 @@
 
         .campus-footer #campus-status-count {
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-campus-index-font-weight-1);
         }
 
         @media (max-width: 767px) {

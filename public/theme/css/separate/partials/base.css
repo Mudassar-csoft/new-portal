@@ -1,3 +1,19 @@
+:root {
+    --typo-theme-css-separate-partials-base-font-size-1: 100%;
+    --typo-theme-css-separate-partials-base-font-size-2: 1em;
+    --typo-theme-css-separate-partials-base-line-height-3: normal;
+    --typo-theme-css-separate-partials-base-font-size-4: 0.875rem /*14/16*/;
+    --typo-theme-css-separate-partials-base-font-weight-5: 600;
+    --typo-theme-css-separate-partials-base-line-height-6: 30px;
+    --typo-theme-css-separate-partials-base-font-size-7: 0.9375rem /*15/16*/;
+    --typo-theme-css-separate-partials-base-font-size-8: 1rem;
+    --typo-theme-css-separate-partials-base-font-weight-9: 400;
+    --typo-theme-css-separate-partials-base-font-size-10: .875rem;
+    --typo-theme-css-separate-partials-base-font-size-11: 15px;
+    --typo-theme-css-separate-partials-base-font-size-12: 0.8125rem /*13/16*/;
+    --typo-theme-css-separate-partials-base-line-height-13: 50px;
+}
+
 /* ==========================================================================
    HTML5 display definitions
    ========================================================================== */
@@ -39,7 +55,7 @@ audio:not([controls]) {
  *    user zoom.
  */
 html {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-1);
   /* 1 */
   -ms-text-size-adjust: 100%;
   /* 2 */
@@ -109,7 +125,7 @@ pre,
 samp {
   font-family: monospace, serif;
   _font-family: 'courier new', monospace;
-  font-size: 1em;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-2);
 }
 /**
  * Improve readability of pre-formatted text in all browsers.
@@ -247,7 +263,7 @@ button,
 input,
 select,
 textarea {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-1);
   /* 1 */
   margin: 0;
   /* 2 */
@@ -262,7 +278,7 @@ textarea {
  */
 button,
 input {
-  line-height: normal;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-3);
 }
 /**
  * Address inconsistent `text-transform` inheritance for `button` and `select`.
@@ -371,7 +387,7 @@ table {
    Opinionated defaults
    ========================================================================== */
 html {
-  font-size: 1em;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-2);
   line-height: 1.4;
 }
 * {
@@ -459,8 +475,8 @@ body {
   border: none;
   background: none;
   line-height: 34px;
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-4);
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
   color: #343434;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -474,7 +490,7 @@ body {
   top: 0;
   width: 35px;
   height: 100%;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -485,7 +501,7 @@ body {
   color: #adb7be;
   border: none;
   background: none;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-7);
 }
 .site-header-search button .font-icon-search {
   display: -webkit-box;
@@ -607,7 +623,7 @@ body {
   font-weight: 300;
 }
 .site-header .site-logo .site-logo-txt strong {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
 }
 .site-header .site-header-content {
   float: right;
@@ -653,7 +669,7 @@ body {
 .site-header .header-alarm {
   width: 30px;
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
   text-align: center;
   position: relative;
   display: block;
@@ -702,7 +718,7 @@ a, a:focus, a:hover {
   border-top: solid 1px #d8e2e7;
   text-align: center;
   padding: 10px 15px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-8);
 }
 .site-header .dropdown.dropdown-notification .dropdown-menu-notif-more a {
   text-decoration: none;
@@ -713,12 +729,12 @@ a, a:focus, a:hover {
   border-bottom-color: rgba(0, 130, 198, 0.5);
 }
 .site-header .dropdown-menu-notif {
- 
+
   width: 320px !important;
   max-width: calc(100vw - 30px);
   padding: 0;
-  line-height: normal;
-  font-size: 0.9375rem /*15/16*/;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-3);
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-7);
   overflow-x: auto;
 }
 .site-header .dropdown-menu-notif a {
@@ -733,11 +749,11 @@ a, a:focus, a:hover {
 .site-header .dropdown-menu-notif .dropdown-menu-notif-header {
   padding: 12px 15px;
   border-bottom: solid 1px #d8e2e7;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
 }
 .site-header .dropdown-menu-notif .dropdown-menu-notif-header .label {
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 400;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-4);
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-9);
   padding-left: .5em;
   padding-right: .5em;
 }
@@ -812,9 +828,9 @@ a, a:focus, a:hover {
   margin: 0 15px 0 0;
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .nav-link {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-8);
   padding: 0;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
   color: #919fa9;
   -webkit-transition: none;
   transition: none;
@@ -823,15 +839,15 @@ a, a:focus, a:hover {
   color: #343434;
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .nav-link .label {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-10);
   padding-left: .5em;
   padding-right: .5em;
-  font-weight: 400;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-9);
 }
 .site-header .dropdown-menu-messages .dropdown-menu-messages-header .create {
   float: right;
   height: 18px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-8);
   border: none;
   background: none;
   color: #919fa9;
@@ -871,7 +887,7 @@ a, a:focus, a:hover {
   font-size: .9375rem;
 }
 .site-header .dropdown-menu-messages .mess-item .mess-item-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
 }
 .site-header .dropdown-menu-messages .mess-item .mess-item-txt {
   color: #919fa9;
@@ -888,7 +904,7 @@ a, a:focus, a:hover {
 }
 .site-header .help-dropdown > button {
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
   border: none;
   background: none;
   color: #adb7be;
@@ -953,7 +969,7 @@ a, a:focus, a:hover {
   border-right: solid 1px #d8e2e7;
   position: relative;
   z-index: 2;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
 }
 .site-header .help-dropdown .help-dropdown-popup-side a {
   color: #343434;
@@ -993,7 +1009,7 @@ a, a:focus, a:hover {
 .site-header .help-dropdown .help-dropdown-popup-item .describe {
   display: block;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-10);
 }
 .site-header .help-dropdown .jscroll {
   max-height: 265px;
@@ -1007,7 +1023,7 @@ a, a:focus, a:hover {
   float: left;
   margin: 0 0 0 15px;
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
 }
 .site-header .user-menu.dropdown .dropdown-item {
   padding-top: 0;
@@ -1019,7 +1035,7 @@ a, a:focus, a:hover {
   height: 30px !important;
   border: none;
   background: none;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
 }
 .site-header .user-menu.dropdown .dropdown-toggle:after {
   border-top: 5px solid;
@@ -1080,7 +1096,7 @@ a, a:focus, a:hover {
   float: right;
   height: 30px;
   margin: 0 0 0 10px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
   cursor: pointer;
   color: #adb7be;
   border: none;
@@ -1103,12 +1119,12 @@ a, a:focus, a:hover {
   margin-right: -10px;
 }
 .site-header .dropdown.dropdown-typical .lbl {
-  font-size: 15px;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-11);
   line-height: 16px;
 }
 .site-header .dropdown a.dropdown-toggle {
   height: 30px;
-  line-height: 30px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-6);
 }
 .site-header .dropdown a.dropdown-toggle.no-arr:after {
   display: none;
@@ -1116,17 +1132,17 @@ a, a:focus, a:hover {
 .site-header .dropdown a.dropdown-toggle .label {
   padding: 3px 6px 2px;
   margin-left: 3px;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-12);
   position: relative;
   top: -2px;
 }
 .site-header .dropdown .dropdown-item {
-  font-size: 15px;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-11);
 }
 .site-header .dropdown .btn.dropdown-toggle {
   height: 30px;
   padding: 0 12px;
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-separate-partials-base-font-size-12);
   line-height: 28px;
   background-color: #00a8ff;
   border-color: #00a8ff;
@@ -1613,10 +1629,10 @@ a, a:focus, a:hover {
   float: left;
   width: 240px;
   height: 50px;
-  line-height: 50px;
+  line-height: var(--typo-theme-css-separate-partials-base-line-height-13);
   color: #fff;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-partials-base-font-weight-5);
   background: #272727;
   margin: 0 -1px 0 -0.9375rem;
   position: relative;
@@ -1696,7 +1712,7 @@ a, a:focus, a:hover {
   .dark-theme .site-header .dropdown.dropdown-typical a.dropdown-toggle {
     color: #fff;
     height: 50px;
-    line-height: 50px;
+    line-height: var(--typo-theme-css-separate-partials-base-line-height-13);
     display: block;
   }
   .dark-theme .site-header .dropdown.dropdown-typical a.dropdown-toggle .font-icon,

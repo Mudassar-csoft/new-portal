@@ -94,7 +94,7 @@
 
 		<div class="lead-pane" id="tab-followups" style="display: block;">
 			<div class="d-flex justify-content-end align-items-center p-1">
-				
+
 				@php $isClosed = $isFollowupClosed ?? in_array($lead->status, $closedStatuses, true); @endphp
 				@if($isClosed)
 					<div class="alert alert-warning mb-0 followup-closed-banner">
@@ -341,7 +341,7 @@
 									<td>{{ $interestValue }}</td>
 								</tr>
 								<tr>
-									
+
 									<th>Origin</th>
 									<td>{{ $lead->origin ?? '—' }}</td>
 									<th>Country</th>
@@ -358,8 +358,8 @@
 									<td>{{ !is_null($latestFollowup?->probability) ? $latestFollowup->probability . '%' : '—' }}</td>
 								</tr>
 								<tr>
-									
-									
+
+
 								<th>Status</th>
 								<td>{{ $statusLabel }}</td>
 								<th>Next Follow-Up</th>
@@ -376,7 +376,7 @@
 								<th>Remarks</th>
 								<td colspan="3" class="{{ $latestFollowup?->note ? 'latest-remarks-highlight' : '' }}">{{ $latestFollowup?->note ?? data_get($lead->details, 'remarks', '—') }}</td>
 							</tr>
-							
+
 						</tbody>
 					</table>
 					@if(isset($transfers) && $transfers->count())
@@ -432,9 +432,17 @@
 @push('styles')
 	@include('lead.partials.probability_slider_assets')
 	<style>
+        :root {
+            --typo-lead-show-font-family-1: 'Proxima Nova', sans-serif;
+            --typo-lead-show-font-size-2: 12px;
+            --typo-lead-show-line-height-3: 1.5;
+            --typo-lead-show-font-weight-4: 600;
+            --typo-lead-show-font-weight-5: 700;
+        }
+
 		*{
-			font-family: 'Proxima Nova', sans-serif;
-			font-size: 12px; 
+			font-family: var(--typo-lead-show-font-family-1);
+			font-size: var(--typo-lead-show-font-size-2);
 			margin: 0;
 			padding: 0;
         }
@@ -465,13 +473,13 @@
 		}
 		.box-typical.box-typical-dashboard{
    			 margin:0px 0px 5px !important;
-    
+
 		}
 		.box-typical.box-typical-dashboard .box-typical-header{
     		display:flex;
 
 		}
-    
+
 
 		.select2-container--arrow .select2-selection--single .select2-selection__rendered,
 		.select2-container--default .select2-selection--single .select2-selection__rendered,
@@ -480,7 +488,7 @@
 			-webkit-border-radius: .25rem;
 			border-radius: .25rem;
 			font-size: 1rem;
-			line-height: 1.5;
+			line-height: var(--typo-lead-show-line-height-3);
 			color: #343434;
 			padding: .375rem 25px .375rem 1rem;
 			min-height: 32px;
@@ -532,17 +540,17 @@
 		}
 		/* .form-label{
 			font-size: 11px;
-			font-weight: 600 ;
+			font-weight: var(--typo-lead-show-font-weight-4);
 			color: #343434;
 			text-transform: uppercase;
 			margin-bottom: 3px;
-			
+
 		} */
 
 		body, button, html, input, select, textarea {
 			color: #343434;
 			height: 32px;
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-lead-show-font-family-1);
 			line-height: 1.4;
 			text-rendering: optimizeLegibility;
 			-moz-osx-font-smoothing: grayscale;
@@ -560,7 +568,7 @@
 		}
 		.lead-show-shell {
 			/* max-width: 1400px; */
-			margin: 0 auto;	
+			margin: 0 auto;
 			padding: 2%;
 			background: #fff;
 			border: 1px solid #dbe4ed;
@@ -576,14 +584,14 @@
 
 		.lead-name {
 			font-size: 32px;
-			font-weight: 700;
+			font-weight: var(--typo-lead-show-font-weight-5);
 			margin: 0;
 			color: #2f3b52;
 		}
 
 		.lead-sub {
 			color: #5f6f7f;
-			font-weight: 600;
+			font-weight: var(--typo-lead-show-font-weight-4);
 			display: flex;
 			align-items: center;
 			gap: 6px;
@@ -661,21 +669,21 @@
 	}
 
 	.stage .label {
-			font-size: 12px;
+			font-size: var(--typo-lead-show-font-size-2);
 			text-align: center;
 			color: white !important;
-			font-weight: 700;
+			font-weight: var(--typo-lead-show-font-weight-5);
 			min-height: 30px;
 			padding: 6px 10px;
 			border-radius: 999px;
    			background: #00a8ff !important;
-    		line-height: 1.5;
+			line-height: var(--typo-lead-show-line-height-3);
 			border: 1px solid #d6e6f7;
 			white-space: nowrap;
 			grid-template-columns: repeat(8, 1fr);
 			gap: 10px;
 			margin-top:3px;
-		
+
 		}
 
 		.stage.active .bullet {
@@ -698,7 +706,7 @@
 			background: #00a8ff;
 			color:white;
 			margin-top: 3px;
-			line-height: 1.5;
+			line-height: var(--typo-lead-show-line-height-3);
 		}
 
 		.lead-tabs {
@@ -711,7 +719,7 @@
 		.lead-tabs .tab {
 			padding: 10px 16px;
 			cursor: pointer;
-			font-weight: 700;
+			font-weight: var(--typo-lead-show-font-weight-5);
 			color: #5f6f7f;
 			border-bottom: 3px solid transparent;
 			display: inline-flex;
@@ -751,7 +759,7 @@
 		}
 
 		.followup-extra-title {
-			font-weight: 700;
+			font-weight: var(--typo-lead-show-font-weight-5);
 			color: #0f3c6e;
 			margin-bottom: 4px;
 		}
@@ -759,14 +767,14 @@
 		.followup-extra-copy {
 			margin: 0 0 10px;
 			color: #5f6f7f;
-			line-height: 1.5;
+			line-height: var(--typo-lead-show-line-height-3);
 		}
 
 		.field-error {
 			display: none;
 			margin-top: 4px;
 			color: #e53935;
-			font-weight: 600;
+			font-weight: var(--typo-lead-show-font-weight-4);
 			font-size: 11px !important;
 		}
 
@@ -793,7 +801,7 @@
 			display: none !important;
 		}
 
-		
+
 
 		.followup-table-wrapper {
 			border: 1px solid #dbe4ed;
@@ -804,7 +812,7 @@
 		.followup-table thead th {
 			background: #0099f8;
 			color: #fff;
-			font-weight: 700;
+			font-weight: var(--typo-lead-show-font-weight-5);
 			border-color: #0086d8;
 			vertical-align: middle;
 		}
@@ -834,13 +842,13 @@
 		.followup-table .latest-followup-highlight td {
 			background: #ffdfe2;
 			color: #b00020;
-			font-weight: 600;
+			font-weight: var(--typo-lead-show-font-weight-4);
 		}
 
 		.info-table .latest-remarks-highlight {
 			background: #ffdfe2;
 			color: #b00020;
-			font-weight: 600;
+			font-weight: var(--typo-lead-show-font-weight-4);
 		}
 		.table td{
 			height:20px !important;
@@ -972,7 +980,7 @@
 		#probability-wrap .probability-scale {
 			margin-top: 4px;
 			font-size: 8px;
-			font-weight: 600;
+			font-weight: var(--typo-lead-show-font-weight-4);
 			letter-spacing: -0.15px;
 		}
 

@@ -125,6 +125,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-finance-expense-details-font-weight-1: 700;
+        }
+
         
         .finance-header {
             display: flex;
@@ -155,7 +159,7 @@
             margin-top: 30px;
             font-size: 18px;
             text-align: center;
-            font-weight: 700;
+            font-weight: var(--typo-finance-expense-details-font-weight-1);
         }
         .tone-total { background: #f35f62; }
         .tone-item { background: #00a8ff; }
@@ -169,7 +173,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-expense-details-font-weight-1);
         }
         @media (max-width: 760px)  {
             .expense-label {

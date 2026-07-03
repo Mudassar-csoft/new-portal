@@ -1,3 +1,9 @@
+:root {
+    --typo-theme-css-separate-pages-mail-font-weight-1: 600;
+    --typo-theme-css-separate-pages-mail-font-size-2: .9375rem;
+    --typo-theme-css-separate-pages-mail-font-size-3: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -108,7 +114,7 @@
   float: left;
   line-height: 38px;
   zoom: 1;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-mail-font-weight-1);
 }
 .mail-box-header .mail-box-header-nav:before,
 .mail-box-header .mail-box-header-nav:after {
@@ -148,7 +154,7 @@
   position: relative;
   border-top: solid 1px #d8e2e7;
   cursor: default;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-2);
 }
 .mail-box-item:first-child {
   border-top: none;
@@ -191,7 +197,7 @@
   width: auto;
 }
 .mail-box-item .mail-box-item-user-tbl .tbl-cell-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-mail-font-weight-1);
 }
 .mail-box-item .mail-box-item-user-tbl .tbl-cell-new {
   white-space: nowrap;
@@ -235,7 +241,7 @@
   left: 0;
   top: 1px;
   text-align: center;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-3);
 }
 .mail-box-item .mail-box-item-content .txt {
   width: 100%;
@@ -311,7 +317,7 @@
   top: 1px;
 }
 .mail-box-work-area-header .user-card-row {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-2);
 }
 .mail-box-work-area-header .letters-num {
   color: #818181;
@@ -324,7 +330,7 @@
   background: #f6f8fa;
   padding: 13px;
   line-height: 18px;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-2);
 }
 .mail-box-letter-item .mail-box-letter-item-in {
   position: relative;
@@ -348,7 +354,7 @@
   vertical-align: middle;
 }
 .mail-box-letter-item .mail-box-letter-item-header .tbl-cell-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-mail-font-weight-1);
 }
 .mail-box-letter-item .mail-box-letter-item-header .tbl-cell-date {
   width: 10px;
@@ -356,7 +362,7 @@
   white-space: nowrap;
   text-align: right;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-3);
 }
 .mail-box-letter-item .mail-box-letter-item-txt {
   width: 100%;
@@ -372,14 +378,14 @@
   vertical-align: top;
 }
 .mail-box-letter-opened .mail-box-letter-opened-header .tbl-cell-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-mail-font-weight-1);
 }
 .mail-box-letter-opened .mail-box-letter-opened-header .tbl-cell-date {
   white-space: nowrap;
   padding-left: 10px;
   width: 20px;
   color: #919fa9;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-3);
 }
 .mail-box-letter-opened .mail-box-letter-opened-header .tbl-cell-action {
   white-space: nowrap;
@@ -413,7 +419,7 @@
   background-size: auto 43px;
   margin: 0 0 20px 0;
   color: #818181;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-mail-font-size-2);
 }
 .mail-file p {
   width: 100%;

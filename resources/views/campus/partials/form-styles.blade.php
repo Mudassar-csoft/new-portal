@@ -1,4 +1,10 @@
 <style>
+        :root {
+            --typo-campus-partials-form-styles-font-weight-1: 600;
+            --typo-campus-partials-form-styles-font-size-2: 14px;
+            --typo-campus-partials-form-styles-font-size-3: 12px;
+        }
+
     .lead-shell {
         font-family: 'Proxima Nova', sans-serif;
         position: relative;
@@ -37,7 +43,7 @@
     .lead-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
     .lead-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-    .lead-loader p { margin: 0; color: #54667a; font-weight: 600; }
+    .lead-loader p { margin: 0; color: #54667a; font-weight: var(--typo-campus-partials-form-styles-font-weight-1); }
 
     .lead-content {
         opacity: 0;
@@ -68,7 +74,7 @@
     }
 
     .lead-title span {
-        font-size: 14px;
+        font-size: var(--typo-campus-partials-form-styles-font-size-2);
         font-weight: 400;
         color: #1f2937;
     }
@@ -79,14 +85,14 @@
     .lead-create-card label,
     .lead-create-card .form-label {
         color: #343434;
-        font-size: 12px;
-        font-weight: 600;
+        font-size: var(--typo-campus-partials-form-styles-font-size-3);
+        font-weight: var(--typo-campus-partials-form-styles-font-weight-1);
         line-height: 1.2;
         margin-bottom: 6px;
     }
 
     .lead-create-card .form-control {
-        font-size: 12px;
+        font-size: var(--typo-campus-partials-form-styles-font-size-3);
         height: 37px !important;
         min-height: 37px !important;
         padding: 0.375rem 0.625rem !important;
@@ -153,7 +159,7 @@
     }
 
     .campus-type-option .form-check-label {
-        font-size: 14px;
+        font-size: var(--typo-campus-partials-form-styles-font-size-2);
         margin-bottom: 0;
         cursor: pointer;
         color: #343434;

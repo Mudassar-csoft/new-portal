@@ -307,7 +307,7 @@
                   @endif
                 </div>
 						</div>
-            
+
             @php($dashboardCampusTitle = $activeDashboardCampus ? ($activeDashboardCampus->code . ' - ' . $activeDashboardCampus->name) : (($dashboardAllowsAllCampuses ?? false) ? 'All Branches' : 'Assigned Campus'))
             @if(($dashboardAllowsAllCampuses ?? false) || ($dashboardCampuses ?? collect())->isNotEmpty())
             <div class="dropdown dropdown-campus">
@@ -335,7 +335,7 @@
                         </div>
                         @endif
                         <div class=" dropdown user-menu">
-                         
+
                         <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	                            <img src="{{ auth()->user()?->avatar_path ? asset('storage/' . auth()->user()->avatar_path) : asset('theme/img/avatar-2-64.png') }}" alt="Profile" style="object-fit: cover;">
 	                        </button>
@@ -348,12 +348,12 @@
                                             @if(auth()->check())
                                         {{ auth()->user()->name }}
                                       @else
-                                        Guest 
+                                        Guest
                                       @endif
                                   </h3>
                                   @if($isImpersonating)
                                       <div style="margin-top: 6px;">
-                                          <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; background: #fff1f2; color: #b91c1c; font-size: 12px; font-weight: 700; letter-spacing: 0.02em;">
+                                          <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; background: #fff1f2; color: #b91c1c; font-size: var(--typo-layouts-header-font-size-1); font-weight: var(--typo-layouts-header-font-weight-2); letter-spacing: 0.02em;">
                                               Impersonating User
                                           </span>
                                       </div>
@@ -480,12 +480,12 @@
                           </div>
                         </div> -->
 
-                        
-
-                        
 
 
-                        
+
+
+
+
                         <!-- <div class="dropdown user-menu">
                           <button class="dropdown-toggle" id="dd-user-menu" type="button" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
@@ -493,7 +493,7 @@
                           </button>
                           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd-user-menu">
                             <span class=" dropdown-item user-greeting">
-                          
+
                         </span>
                             <a class="dropdown-item" href="#"><span
                                 class="font-icon glyphicon glyphicon-user"></span>Profile</a>
@@ -513,7 +513,7 @@
 
                         <button type="button" class="burger-right">
                           <i class="font-icon-menu-addl"></i>
-                        </button> 
+                        </button>
                       </div><!--.site-header-shown-->
 
                       <div class="mobile-menu-right-overlay"></div>
@@ -538,7 +538,7 @@
                                               <span class="font-icon font-icon-cogwheel"></span>
                                               <span class="lbl">Marketing automation</span>
                                           </a>
-              
+
                                           <div class="dropdown-menu" aria-labelledby="dd-header-marketing">
                                               <a class="dropdown-item" href="#">Current Search</a>
                                               <a class="dropdown-item" href="#">Search for Issues</a>
@@ -579,7 +579,7 @@
                                               <span class="font-icon font-icon-share"></span>
                                               <span class="lbl">Social media</span>
                                           </a>
-              
+
                                           <div class="dropdown-menu" aria-labelledby="dd-header-social">
                                               <a class="dropdown-item" href="#"><span class="font-icon font-icon-home"></span>Quant and Verbal</a>
                                               <a class="dropdown-item" href="#"><span class="font-icon font-icon-cart"></span>Real Gmat Test</a>
@@ -601,7 +601,7 @@
                                               <span class="font-icon font-icon-pencil"></span>
                                               <span class="lbl">Form builder</span>
                                           </a>
-              
+
                                           <div class="dropdown-menu" aria-labelledby="dd-header-form-builder">
                                               <a class="dropdown-item" href="#"><span class="font-icon font-icon-home"></span>Quant and Verbal</a>
                                               <a class="dropdown-item" href="#"><span class="font-icon font-icon-cart"></span>Real Gmat Test</a>
@@ -645,9 +645,23 @@
 
 
 	<style>
+        :root {
+            --typo-layouts-header-font-size-1: 12px;
+            --typo-layouts-header-font-weight-2: 700;
+            --typo-layouts-header-line-height-3: 36px;
+            --typo-layouts-header-font-size-4: 16px;
+            --typo-layouts-header-line-height-5: 1;
+            --typo-layouts-header-line-height-6: 36px;
+            --typo-layouts-header-line-height-7: 32px;
+            --typo-layouts-header-line-height-8: 16px;
+            --typo-layouts-header-font-size-9: 11px;
+            --typo-layouts-header-font-weight-10: 600;
+            --typo-layouts-header-font-weight-11: 500;
+        }
+
 .site-header .dropdown.dropdown-campus .dropdown-toggle{
     height: 36px;
-    line-height: 36px;
+    line-height: var(--typo-layouts-header-line-height-3);
     width: 36px;
     padding: 0;
 }
@@ -700,18 +714,36 @@
 	    line-height: 22px !important;
 } */
 .font-icon-alarm{
-	font-size:16px !important;
-	line-height:1 !important;
+	font-size: var(--typo-layouts-header-font-size-4) !important;
+	line-height: var(--typo-layouts-header-line-height-5) !important;
 }
+
+.site-header .header-alarm .font-icon-alarm,
+.site-header .header-alarm .font-icon-alarm::before{
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-family: startui !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    color: #adb7be !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.site-header .header-alarm .font-icon-alarm::before{
+    content: "\62";
+}
+
 .site-header .dropdown a.dropdown-toggle {
-    line-height: 36px !important;
+    line-height: var(--typo-layouts-header-line-height-6) !important;
 }
 /* .site-header .header-alarm.active:after{
 	display: none !important;
 } */
 .site-header .dropdown-campus .dropdown-toggle i{
-	font-size: 16px !important;
-    line-height: 1 !important;
+	font-size: var(--typo-layouts-header-font-size-4) !important;
+    line-height: var(--typo-layouts-header-line-height-5) !important;
 }
 .site-header .dropdown-campus .dropdown-toggle .camppus-branch{
 	display:block;
@@ -722,7 +754,7 @@
 }
 /* .font-icon-search{
 	    font-size: 18px !important;
-		line-height:1 !important;
+		line-height: var(--typo-layouts-header-line-height-5) !important;
 
 } */
 .site-header-search{
@@ -740,10 +772,10 @@
     margin:0 !important;
     border:none !important;
     background:transparent !important;
-    line-height:32px !important;
+    line-height: var(--typo-layouts-header-line-height-7) !important;
 }
 .site-header-search-input::placeholder{
-    line-height:32px !important;
+    line-height: var(--typo-layouts-header-line-height-7) !important;
 }
 .site-header-search-btn{
     position:absolute !important;
@@ -757,7 +789,7 @@
     height:32px !important;
     padding:0 !important;
     margin:0 !important;
-    line-height:32px !important;
+    line-height: var(--typo-layouts-header-line-height-7) !important;
 }
 .site-header-search-btn .font-icon-search{
     display:flex !important;
@@ -765,13 +797,13 @@
     justify-content:center !important;
     width:16px !important;
     height:16px !important;
-    line-height:16px !important;
+    line-height: var(--typo-layouts-header-line-height-8) !important;
 }
 .site-header-search-btn .font-icon-search:before{
     display:block !important;
     position:static !important;
     top:auto !important;
-    line-height:16px !important;
+    line-height: var(--typo-layouts-header-line-height-8) !important;
     vertical-align:middle !important;
 }
 .fa-classic,
@@ -781,7 +813,6 @@
 .fas {
     font-family: "Font Awesome 6 Free" !important;
 }
-.fa-solid,
 .dropdown-campus{
   font-weight:500 !important;
   color: #adb7be;
@@ -816,11 +847,11 @@ display: flex;
     padding: 0;
     border: none;
     background: 0 0;
-    line-height: 36px;
+    line-height: var(--typo-layouts-header-line-height-3);
 }
 .site-header .dropdown.dropdown-notification {
     float: left;
-   
+
 }
 
 @media (min-width: 1057px) {
@@ -948,8 +979,8 @@ display: flex;
     border: solid 1px #fff;
     background: #fa424a;
     color: #fff;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: var(--typo-layouts-header-font-size-9);
+    font-weight: var(--typo-layouts-header-font-weight-2);
     line-height: 1;
     border-radius: 999px;
     position: absolute;
@@ -971,7 +1002,7 @@ display: flex;
 .dropdown-menu-notif{
 	width: 720px;
 	max-width: calc(100vw - 32px);
-	font-size: 12px;
+	font-size: var(--typo-layouts-header-font-size-1);
 	overflow: hidden;
 }
 .notif-accordion{
@@ -1020,7 +1051,7 @@ display: flex;
 	background: transparent;
 	border: 0;
 	color: #2d3a48;
-	font-weight: 600;
+	font-weight: var(--typo-layouts-header-font-weight-10);
 	cursor: pointer;
 }
 .notif-accordion-item.active .notif-accordion-toggle{
@@ -1034,8 +1065,8 @@ display: flex;
 	border-radius: 999px;
 	background: #dc3545;
 	color: #fff;
-	font-size: 11px;
-	font-weight: 700;
+	font-size: var(--typo-layouts-header-font-size-9);
+	font-weight: var(--typo-layouts-header-font-weight-2);
 	line-height: 22px;
 	text-align: center;
 }
@@ -1101,7 +1132,7 @@ display: flex;
   border-radius: 0;
   background: #f8f9fa;
   color: #333;
-  font-weight: 500;
+  font-weight: var(--typo-layouts-header-font-weight-11);
   white-space: nowrap;
 }
 
@@ -1113,7 +1144,7 @@ display: flex;
 .lead-tabs .count {
   background: #dc3545;
   color: #fff;
-  font-size: 12px;
+  font-size: var(--typo-layouts-header-font-size-1);
   min-width: 18px;
   height: 18px;
   line-height: 18px;
@@ -1122,7 +1153,7 @@ display: flex;
 }
 .dropdown-menu.show {
   /* display: block !important; */
-   
+
     inset: auto !important;
     top: auto !important;
     right: 80px !important;
@@ -1135,7 +1166,7 @@ display: flex;
 }
 .notification-name-link {
 	color: #0082c6;
-	font-weight: 500;
+	font-weight: var(--typo-layouts-header-font-weight-11);
 	text-decoration: none;
 }
 
@@ -1158,7 +1189,7 @@ img.icon {
     height:32px !important;
     border-radius:50%;
 } */
-	
+
     .col-sm-6 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 50%;
@@ -1193,7 +1224,7 @@ border:2px solid #ddd;
 .login-drop{
 
     /* left: -104px !important; */
-    
+
     width: 274px !important;
 }
 .site-header .user-menu.dropdown .profile-dropdown {
@@ -1299,7 +1330,7 @@ border:2px solid #ddd;
 	border-color: #bfd8fb;
 }
 .dropdown-menu{
-    
+
     /* max-width: 18rem; */
     right:0px;
     left: auto;
@@ -1344,7 +1375,7 @@ border:2px solid #ddd;
     display: flex !important;
     align-items: center;
     justify-content: center;
-    line-height: 36px !important;
+    line-height: var(--typo-layouts-header-line-height-6) !important;
     text-align: center;
 }
 .site-header .header-alarm::after,
@@ -1396,7 +1427,7 @@ img.img {
     padding: 15px;
 }
 .media-body h5{
-    font-weight: 600;
+    font-weight: var(--typo-layouts-header-font-weight-10);
 }
 img.icon{
     width: 35px;

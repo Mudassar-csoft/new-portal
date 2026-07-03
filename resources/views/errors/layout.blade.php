@@ -26,6 +26,10 @@
             --surface: rgba(255, 255, 255, 0.88);
             --line: rgba(10, 127, 232, 0.12);
             --shadow: 0 24px 70px rgba(16, 38, 84, 0.18);
+            --error-font-xs: 12px;
+            --error-line-tight: 1.15;
+            --error-weight-bold: 700;
+            --error-weight-heavy: 800;
         }
 
         * {
@@ -124,8 +128,8 @@
 
         .brand-label {
             font-size: 18px;
-            font-weight: 700;
-            line-height: 1.15;
+            font-weight: var(--error-weight-bold);
+            line-height: var(--error-line-tight);
         }
 
         .status-pill {
@@ -135,8 +139,8 @@
             padding: 8px 14px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.16);
-            font-size: 12px;
-            font-weight: 700;
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
@@ -145,7 +149,7 @@
             margin: 24px 0 10px;
             font-size: 96px;
             line-height: 0.95;
-            font-weight: 800;
+            font-weight: var(--error-weight-heavy);
             letter-spacing: -0.04em;
         }
 
@@ -167,8 +171,8 @@
             border-radius: 999px;
             background: rgba(10, 127, 232, 0.08);
             color: var(--brand-blue);
-            font-size: 12px;
-            font-weight: 700;
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
             letter-spacing: 0.08em;
             text-transform: uppercase;
             margin-bottom: 18px;
@@ -177,8 +181,8 @@
         .error-title {
             margin: 0;
             font-size: 36px;
-            line-height: 1.15;
-            font-weight: 800;
+            line-height: var(--error-line-tight);
+            font-weight: var(--error-weight-heavy);
             color: var(--ink);
         }
 
@@ -199,8 +203,8 @@
         }
 
         .error-meta-label {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--brand-blue);
@@ -225,7 +229,7 @@
             min-width: 150px;
             height: 44px;
             border-radius: 12px;
-            font-weight: 700;
+            font-weight: var(--error-weight-bold);
             padding: 10px 18px;
         }
 

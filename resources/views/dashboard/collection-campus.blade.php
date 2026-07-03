@@ -211,6 +211,18 @@
 
 @push('styles')
     <style>
+        :root {
+            --campus-report-font-xxs: 11px;
+            --campus-report-font-xs: 12px;
+            --campus-report-font-sm: 13px;
+            --campus-report-font-lg: 18px;
+            --campus-report-font-xl: 20px;
+            --campus-report-line-tight: 1.2;
+            --campus-report-line-base: 1.3;
+            --campus-report-weight-bold: 700;
+            --campus-report-weight-heavy: 800;
+        }
+
         @page {
             size: A4 portrait;
             margin: 2mm;
@@ -260,8 +272,8 @@
             border: 0;
             border-radius: 999px;
             padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: var(--campus-report-font-sm);
+            font-weight: var(--campus-report-weight-bold);
             text-decoration: none;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -318,8 +330,8 @@
         }
 
         .collection-brand-eyebrow {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: var(--campus-report-font-xs);
+            font-weight: var(--campus-report-weight-bold);
             letter-spacing: 0.22em;
             text-transform: uppercase;
             color: gray;
@@ -329,14 +341,14 @@
         .collection-campus-name {
             font-size: 32px;
             line-height: 1.15;
-            font-weight: 700;
+            font-weight: var(--campus-report-weight-bold);
             color: #12263f;
             margin-bottom: 8px;
         }
 
         .collection-report-title {
-            font-size: 20px;
-            line-height: 1.3;
+            font-size: var(--campus-report-font-xl);
+            line-height: var(--campus-report-line-base);
             font-weight: 600;
             color: gray;
         }
@@ -354,8 +366,8 @@
         .collection-section-total span,
         .collection-summary-card span {
             display: block;
-            font-size: 11px;
-            font-weight: 700;
+            font-size: var(--campus-report-font-xxs);
+            font-weight: var(--campus-report-weight-bold);
             letter-spacing: 0.12em;
             text-transform: uppercase;
             color: gray;
@@ -367,8 +379,8 @@
         .collection-section-total strong,
         .collection-summary-card strong {
             display: block;
-            font-size: 18px;
-            line-height: 1.2;
+            font-size: var(--campus-report-font-lg);
+            line-height: var(--campus-report-line-tight);
             color: #12263f;
         }
 
@@ -425,8 +437,8 @@
 
         .collection-section-title {
             font-size: 24px;
-            line-height: 1.2;
-            font-weight: 700;
+            line-height: var(--campus-report-line-tight);
+            font-weight: var(--campus-report-weight-bold);
             color: #17324d;
         }
 
@@ -452,8 +464,8 @@
         .collection-detail-table thead th {
             background: #fff3e8;
             color: #6f3f2d;
-            font-size: 11px;
-            font-weight: 800;
+            font-size: var(--campus-report-font-xxs);
+            font-weight: var(--campus-report-weight-heavy);
             letter-spacing: 0.05em;
             text-transform: uppercase;
             vertical-align: middle;
@@ -465,7 +477,7 @@
             padding: 9px 8px;
             color: #17324d;
             vertical-align: top;
-            font-size: 12px;
+            font-size: var(--campus-report-font-xs);
             line-height: 1.35;
             white-space: nowrap;
             word-break: normal;
@@ -484,19 +496,19 @@
 
         .collection-total-row td {
             background: #;
-            font-size: 13px;
-            line-height: 1.3;
+            font-size: var(--campus-report-font-sm);
+            line-height: var(--campus-report-line-base);
             border-top: 2px solid #00a8ff !important;
         }
 
         .collection-total-label {
-            font-weight: 800;
+            font-weight: var(--campus-report-weight-heavy);
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         .collection-total-value {
-            font-weight: 800;
+            font-weight: var(--campus-report-weight-heavy);
             color: #8a2d1d;
         }
 
@@ -519,8 +531,8 @@
 
         .collection-summary-title {
             font-size: 22px;
-            line-height: 1.2;
-            font-weight: 700;
+            line-height: var(--campus-report-line-tight);
+            font-weight: var(--campus-report-weight-bold);
             color: #17324d;
             margin-bottom: 12px;
         }
@@ -532,7 +544,7 @@
         }
 
         .collection-summary-card strong {
-            font-size: 18px;
+            font-size: var(--campus-report-font-lg);
         }
 
         .no-print {
@@ -588,7 +600,7 @@
             }
 
             .collection-campus-name {
-                font-size: 20px;
+                font-size: var(--campus-report-font-xl);
             }
 
             .collection-report-title {
@@ -596,7 +608,7 @@
             }
 
             .collection-section-title {
-                font-size: 18px;
+                font-size: var(--campus-report-font-lg);
             }
 
             .collection-detail-table th,
@@ -608,7 +620,7 @@
             .collection-total-row td,
             .collection-summary-card strong,
             .collection-section-total strong {
-                font-size: 12px;
+                font-size: var(--campus-report-font-xs);
             }
         }
 
@@ -630,11 +642,11 @@
             }
 
             .collection-campus-name {
-                font-size: 20px;
+                font-size: var(--campus-report-font-xl);
             }
 
             .collection-report-title {
-                font-size: 18px;
+                font-size: var(--campus-report-font-lg);
             }
 
             .collection-section-total,

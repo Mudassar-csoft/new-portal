@@ -56,7 +56,7 @@
                         <input type="hidden" name="scope" value="{{ $activeScope }}">
 
                         <div class="follow-controls">
-                            <div class="d-flex" style="gap:0.5rem;align-items: center;">
+                            <div class="d-flex ci-inline-gap-05-center">
                                 <label class="">Show</label>
                                 <select class="form-select form-select-sm">
                                     <option>10</option>
@@ -185,6 +185,15 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-batch-index-font-weight-1: 600;
+        }
+
+        .ci-inline-gap-05-center {
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         .bootstrap-table .table a, .fixed-table-body .table a, .table a {
             border-bottom: none;
             position: relative;
@@ -233,7 +242,7 @@
         .follow-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-batch-index-font-weight-1);
         }
 
         .follow-content {
@@ -293,7 +302,7 @@
 
         .program-filter-field .form-label {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: var(--typo-batch-index-font-weight-1);
             color: #54667a;
             margin-bottom: 4px;
         }

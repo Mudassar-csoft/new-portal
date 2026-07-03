@@ -66,7 +66,7 @@
 						@if($selectedStatus !== 'all')
 							<input type="hidden" name="status" value="{{ $selectedStatus }}">
 						@endif
-						<div class="d-flex control-flow-show-bar" style="gap:0.5rem;align-items: center;">
+						<div class="d-flex control-flow-show-bar ci-inline-gap-05-center">
 							<label class="">Show</label>
 							<select class="form-select form-select-sm" name="per_page" id="lead-per-page">
 								@foreach([10, 25, 50, 100] as $option)
@@ -167,7 +167,16 @@
 
 @push('styles')
 	<style>
-		
+        :root {
+            --typo-lead-all-font-weight-1: 600;
+        }
+
+		.ci-inline-gap-05-center {
+			gap: 0.5rem;
+			align-items: center;
+		}
+
+
 .bootstrap-table .table a, .fixed-table-body .table a, .table a {
     border-bottom: none;
     position: relative;
@@ -224,7 +233,7 @@
 		.follow-loader p {
 			margin: 0;
 			color: #54667a;
-			font-weight: 600;
+			font-weight: var(--typo-lead-all-font-weight-1);
 		}
 
 		.follow-content {
@@ -295,7 +304,7 @@
 			border-radius: 14px;
 			background: #f5f9ff;
 			color: #1f3558;
-			font-weight: 600;
+			font-weight: var(--typo-lead-all-font-weight-1);
 		}
 
 		.lead-filter-banner-link {
@@ -310,11 +319,11 @@
 			text-decoration: none;
 		}
 .table-responsive {
-    overflow: visible !important;  
+    overflow: visible !important;
 }
 .follow-action-dropdown {
     position: relative;
-		
+
 
 }
 
@@ -413,8 +422,8 @@
     min-height: 21px !important;
     background: #fff
 }
-		
-		
+
+
 	</style>
 @endpush
 

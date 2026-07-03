@@ -57,13 +57,13 @@
                     <div class="field-error">{{ $message }}</div>
                 @enderror
             </div>
-        
+
         <div class="col-md-6 col-lg-3 ">
             <label class="form-label text-dark fw-semibold small ">
                Teaching Method <!--  <span class="required-feild_symbol">*</span> -->
             </label>
             <div class="row mt-2 choice-group @error('details.teaching_method') is-invalid @enderror">
-                
+
                 <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
@@ -128,7 +128,7 @@
             @error('email')
                 <div class="field-error">{{ $message }}</div>
             @enderror
-        
+
         </div>
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required"> Country </label>
@@ -202,7 +202,7 @@
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
                 <option value="">-Select-</option>
-               
+
 
                 @foreach($campuses as $campus)
                      <option value="{{ $campus->id }}"
@@ -217,7 +217,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-lg-1">
             <label class="form-label text-dark fw-semibold small ">
-                Gender 
+                Gender
                 <!-- <span class="required-feild_symbol">*</span> -->
             </label>
              <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
@@ -298,6 +298,10 @@
 </div>
 
 <style>
+        :root {
+        --typo-views-lead-training-font-size-1: 12px;
+        }
+
 .custom-range {
     width: 100%;
 }
@@ -379,10 +383,14 @@
     </div>
 </div>
 <style>
+        :root {
+        --typo-views-lead-training-font-size-1: 12px;
+        }
+
 .form-radio{
     display: flex !important;
     flex-direction: row;
-    
+
 }
 .lead-form {
   line-height: 1.2;
@@ -517,7 +525,7 @@ textarea.form-control-sm {
 .custom-range {
     -webkit-appearance: none;
     width: 100%;
-    
+
    height:0.375rem;
     border-radius: 4px;
     background: #ddd;
@@ -562,7 +570,7 @@ textarea.form-control-sm {
     font-size:0.625rem;
     margin: 0.5rem 2px 0;
     color: #666;
-    
+
 }
 
 
@@ -575,18 +583,18 @@ textarea.form-control-sm {
 
 .col-3.d-flex.justify-content-center,
 .col-6.d-flex.justify-content-center {
-    justify-content: start; 
+    justify-content: start;
 }
 
 /* Small tweak for slider label */
 input[name="details[probability]"] + .small {
     margin-top: 0px;
-    font-size: 12px;
+    font-size: var(--typo-views-lead-training-font-size-1);
 }
 .range-numbers span{
     flex: 1 1 0;
     text-align: center;
-    font-size: 12px !important;
+    font-size: var(--typo-views-lead-training-font-size-1) !important;
     font-weight:bold;
     color: #99a4ac;
     margin-bottom: 3px ;
@@ -620,7 +628,7 @@ textarea[name="details[remarks]"].form-control-sm {
         min-height: 100px ;
         height: 100px ;
     }
-    
+
     .radio-group{
         flex-direction:row;
         flex-wrap:wrap;

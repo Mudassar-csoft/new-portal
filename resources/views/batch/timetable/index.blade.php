@@ -183,9 +183,9 @@
                                     </div>
 
                                     <div class="form-actions text-right" style="gap:8px; display:flex; justify-content:flex-end;">
-                                        <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">{{ $editingEntry ? 'Update Slot' : 'Add Slot' }}</button>
+                                        <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10">{{ $editingEntry ? 'Update Slot' : 'Add Slot' }}</button>
                                         @if($editingEntry)
-                                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel Edit</a>
+                                            <a href="{{ route('batch.timetable.index') }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel Edit</a>
                                         @endif
                                     </div>
                                 </form>
@@ -281,6 +281,12 @@
 
 @push('styles')
     <style>
+        :root {
+            --typo-batch-timetable-index-font-weight-1: 600;
+            --typo-batch-timetable-index-font-weight-2: 500;
+            --typo-batch-timetable-index-font-size-3: 12px;
+        }
+
         .lead-status-shell {
             position: relative;
             min-height: 100vh;
@@ -316,7 +322,7 @@
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-batch-timetable-index-font-weight-1); }
 
         .follow-content {
             opacity: 0;
@@ -336,7 +342,7 @@
 
         .lead-title {
             font-size: 18px;
-            font-weight: 500;
+            font-weight: var(--typo-batch-timetable-index-font-weight-2);
             color: #1f2937;
             line-height: 1.4;
         }
@@ -365,7 +371,7 @@
 
         .program-filter-field .form-label {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: var(--typo-batch-timetable-index-font-weight-1);
             color: #54667a;
             margin-bottom: 4px;
         }
@@ -420,7 +426,7 @@
             padding: 10px 12px;
             background: #eff7ff;
             border-bottom: 1px solid #dbe5f1;
-            font-size: 12px;
+            font-size: var(--typo-batch-timetable-index-font-size-3);
             color: #64748b;
         }
 
@@ -438,9 +444,9 @@
             background: #f8fbff;
         }
 
-        .slot-time { font-weight: 500; color: #0f172a; margin-bottom: 4px; }
+        .slot-time { font-weight: var(--typo-batch-timetable-index-font-weight-2); color: #0f172a; margin-bottom: 4px; }
         .slot-title { color: #1e293b; margin-bottom: 2px; }
-        .slot-meta { font-size: 12px; color: #64748b; }
+        .slot-meta { font-size: var(--typo-batch-timetable-index-font-size-3); color: #64748b; }
 
         @media (max-width: 992px) {
             .batch-timetable-layout { grid-template-columns: 1fr; }

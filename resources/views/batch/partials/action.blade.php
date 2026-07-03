@@ -7,6 +7,11 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --typo-batch-partials-action-font-size-1: 17px;
+            --typo-batch-partials-action-font-weight-2: 500;
+        }
+
             .follow-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 220px;
                 padding: 1px 0;
@@ -27,8 +32,8 @@
                 text-align: left !important;
                 padding: 5px 18px !important;
                 color: #303740 !important;
-                font-size: 17px !important;
-                font-weight: 500;
+                font-size: var(--typo-batch-partials-action-font-size-1) !important;
+                font-weight: var(--typo-batch-partials-action-font-weight-2);
                 line-height: 1.35;
                 background: transparent !important;
                 border: 0;
@@ -60,8 +65,8 @@
 
             .follow-action-dropdown .lead-action-label {
                 display: inline-block;
-                font-size: 17px !important;
-                font-weight: 500;
+                font-size: var(--typo-batch-partials-action-font-size-1) !important;
+                font-weight: var(--typo-batch-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }
 

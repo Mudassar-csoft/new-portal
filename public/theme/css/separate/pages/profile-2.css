@@ -1,3 +1,10 @@
+:root {
+    --typo-theme-css-separate-pages-profile-2-font-size-1: .875rem;
+    --typo-theme-css-separate-pages-profile-2-font-size-2: 100rem;
+    --typo-theme-css-separate-pages-profile-2-font-size-3: 1rem;
+    --typo-theme-css-separate-pages-profile-2-font-weight-4: 600;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -32,7 +39,7 @@
   color: #fff;
   border: none;
   background: rgba(0, 0, 0, 0.4);
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-1);
   padding: 6px 8px;
   -webkit-border-radius: 3px;
           border-radius: 3px;
@@ -47,12 +54,12 @@
   top: 0;
   bottom: 0;
   right: 0;
-  font-size: 100rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-2);
   opacity: 0;
   cursor: pointer;
 }
 .profile-header-photo .change-cover .font-icon {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
   margin: 0 4px 0 0;
   position: relative;
   top: 1px;
@@ -73,7 +80,7 @@
 }
 .profile-header-photo .info-tbl .title {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-profile-2-font-weight-4);
 }
 .profile-header-photo .info-tbl .inline-block {
   display: inline-block;
@@ -134,7 +141,7 @@
   top: 0;
   bottom: 0;
   right: 0;
-  font-size: 100rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-2);
   opacity: 0;
   cursor: pointer;
 }
@@ -149,14 +156,14 @@
   -webkit-border-radius: 50%;
           border-radius: 50%;
   background: rgba(0, 0, 0, 0.4);
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-1);
   padding: 35% 0 0;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
 .profile-side-user .avatar-preview .font-icon {
   display: block;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
 }
 .profile-side-user .avatar-preview:hover .update {
   opacity: 1;
@@ -191,8 +198,8 @@
 }
 .profile-side-stat .number {
   display: block;
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-separate-pages-profile-2-font-weight-4);
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
 }
 .line-with-icon,
 p.line-with-icon {
@@ -206,7 +213,7 @@ p.line-with-icon .font-icon {
   position: absolute;
   left: 0;
   top: 0;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
 }
 .line-with-icon a,
 p.line-with-icon a {
@@ -253,7 +260,7 @@ p.line-with-icon a:hover {
   position: relative;
 }
 .profile-post .profile-post-header .user-card-row {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
   line-height: 20px;
 }
 .profile-post .profile-post-header .shared {
@@ -406,7 +413,7 @@ p.line-with-icon a:hover {
   width: 100%;
 }
 .profile-post .profile-post-card .title {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-2-font-size-3);
   margin: 0 0 5px;
 }
 .profile-post .profile-post-card .title a {

@@ -160,7 +160,7 @@
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
-						
+
 						<div class="form-group col-md-3">
 							<label class="form-label required">Gender</label>
 							<div class="row mt-1">
@@ -423,9 +423,9 @@
 
 						<div  class="form-actions mb-2 mt-3 text-right">
 							<!-- <button type="submit" class="btn btn-primary">Create Lead</button> -->
-							<button type="submit" class="btn btn-inline btn-primary-outline " style="padding: 0.4rem;" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Save Admission</button>
+							<button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04" @disabled(!empty($isAnotherCourseEnrollment) && empty($hasAlternativePrograms))> Save Admission</button>
 
-							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline {{ request()->boolean('embed') ? 'embed-cancel' : '' }}" style="padding: 0.4rem; ">Cancel</a>
+							<a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 {{ request()->boolean('embed') ? 'embed-cancel' : '' }}">Cancel</a>
 						</div>
 				</form>
 			</div>
@@ -435,6 +435,16 @@
 
 @push('styles')
 	<style>
+        :root {
+            --typo-admission-create-font-size-1: 14px;
+            --typo-admission-create-font-weight-2: 600;
+            --typo-admission-create-font-size-3: 12px;
+        }
+
+		.ci-inline-pad-04 {
+			padding: 0.4rem !important;
+		}
+
 		.admission-shell {
 			/* padding: 18px 0 24px; */
 		}
@@ -477,8 +487,8 @@
 			border: 1px solid #cae5ff;
 			background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 100%);
 			color: #135898;
-			font-size: 14px;
-			font-weight: 600;
+			font-size: var(--typo-admission-create-font-size-1);
+			font-weight: var(--typo-admission-create-font-weight-2);
 		}
 
 		.admission-prefill-alert--warning {
@@ -489,7 +499,7 @@
 
 		.field-help {
 			margin-top: 6px;
-			font-size: 12px;
+			font-size: var(--typo-admission-create-font-size-3);
 			color: #54667a;
 		}
 
@@ -511,7 +521,7 @@
 		.admission-form .form-label {
 			display: inline-block;
 			margin-bottom: 8px;
-			font-weight: 600;
+			font-weight: var(--typo-admission-create-font-weight-2);
 			/* color: #223a57 ; */
 		}
 
@@ -557,7 +567,7 @@
 
 		.admission-form .field-error {
 			margin-top: 6px;
-			font-size: 12px;
+			font-size: var(--typo-admission-create-font-size-3);
 			color: #dc3545;
 		}
 
@@ -650,11 +660,11 @@
 		}
 
 		.admission-form .form-check-label {
-			font-size: 14px;
+			font-size: var(--typo-admission-create-font-size-1);
 			margin-bottom: 0;
 			cursor: pointer;
 			/* color: #42556d; */
-			font-weight: 600;
+			font-weight: var(--typo-admission-create-font-weight-2);
 		}
 
 		.embed-actions {
@@ -715,11 +725,11 @@
 		}
 
 		.installments-rows .installment-item label {
-			font-size: 12px;
+			font-size: var(--typo-admission-create-font-size-3);
 			color: #54667a;
 			margin-bottom: 4px;
 			display: block;
-			font-weight: 600;
+			font-weight: var(--typo-admission-create-font-weight-2);
 		}
 
 		.installments-rows .installment-item input {
@@ -749,8 +759,8 @@
 
 		.discount-limit-hint {
 			color: #dc3545;
-			font-weight: 600;
-			font-size: 12px;
+			font-weight: var(--typo-admission-create-font-weight-2);
+			font-size: var(--typo-admission-create-font-size-3);
 			margin-left: 6px;
 		}
 

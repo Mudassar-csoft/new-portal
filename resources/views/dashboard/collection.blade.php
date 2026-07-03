@@ -117,6 +117,16 @@
 
 @push('styles')
     <style>
+        :root {
+            --collection-font-sm: 13px;
+            --collection-font-md: 16px;
+            --collection-font-lg: 18px;
+            --collection-font-xl: 20px;
+            --collection-font-xxl: 22px;
+            --collection-weight-medium: 500;
+            --collection-weight-bold: 700;
+        }
+
         .collection-shell {
             padding: 8px 0 18px;
             background: #fff;
@@ -124,8 +134,8 @@
         }
 
         .collection-heading {
-            font-size: 22px;
-            font-weight: 500;
+            font-size: var(--collection-font-xxl);
+            font-weight: var(--collection-weight-medium);
             color: #2d2d2d;
             margin-bottom: 6px;
             padding: 14px;
@@ -151,8 +161,8 @@
 
         .collection-label {
             color: #2d3748;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: var(--collection-font-md);
+            font-weight: var(--collection-weight-medium);
             margin-bottom: 8px;
         }
 
@@ -175,7 +185,7 @@
             display: block;
             margin-top: 10px;
             color: #6b7280;
-            font-size: 13px;
+            font-size: var(--collection-font-sm);
         }
 
         /* .collection-button {
@@ -212,8 +222,8 @@
             background: #1ea7ef !important;
             color: #fff;
             text-align: center;
-            font-size: 16px;
-            font-weight: 700 !important;
+            font-size: var(--collection-font-md);
+            font-weight: var(--collection-weight-bold) !important;
             vertical-align: middle;
             border-color: #fff !important;
             padding: 16px 12px;
@@ -223,8 +233,8 @@
         }
 
         .collection-table thead th h4 {
-            font-size: 16px;
-            font-weight: 700 !important;
+            font-size: var(--collection-font-md);
+            font-weight: var(--collection-weight-bold) !important;
         }
 
         .collection-table tbody td {
@@ -245,7 +255,7 @@
 
         .collection-campus-code {
             color: #0078c9 !important;
-            font-weight: 700;
+            font-weight: var(--collection-weight-bold);
         }
 
         .collection-campus-link {
@@ -261,8 +271,8 @@
 
         .collection-total-row td {
             background: #ffffff !important;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: var(--collection-font-xl);
+            font-weight: var(--collection-weight-bold);
             color: #12314c;
         }
 
@@ -282,7 +292,7 @@
 
         @media (max-width: 767px) {
             .collection-heading {
-                font-size: 18px;
+                font-size: var(--collection-font-lg);
             }
 
             .collection-button {
