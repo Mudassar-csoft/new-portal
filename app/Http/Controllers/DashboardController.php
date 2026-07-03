@@ -1241,7 +1241,7 @@ $programLabels = Program::query()
         $rowsQuery = FeeCollection::query()
             ->with([
                 'program:id,code,title,name',
-                'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,admission_date,fee_package,discounted_fee,roll_number',
+                'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,phone,admission_date,fee_package,discounted_fee,roll_number',
             ])
             ->where('campus_id', $campusId)
             ->orderBy('program_id')
@@ -1297,7 +1297,7 @@ $programLabels = Program::query()
                         'roll_no' => (string) ($admission?->roll_number ?: 'N/A'),
                         'name' => (string) ($admission?->student_name ?: 'N/A'),
                         'father_name' => (string) ($admission?->guardian_name ?: 'N/A'),
-                        'admission_date' => $this->pendingRecoveryFormatDate($admission?->admission_date),
+                        'primary_contact' => (string) ($admission?->phone ?: 'N/A'),
                         'fee_package' => round((float) $feePackage, 2),
                         'total_received' => round((float) ($totals->received_total ?? 0), 2),
                         'total_pending' => round((float) ($totals->pending_total ?? 0), 2),
