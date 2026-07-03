@@ -10,6 +10,7 @@
     $canSendToPrinting = $user?->hasAnyPermission(['certificate.send-to-printing']) ?? false;
     $canMarkReady = $user?->hasAnyPermission(['certificate.mark-ready']) ?? false;
     $canMarkDelivered = $user?->hasAnyPermission(['certificate.mark-delivered']) ?? false;
+    $canPreview = $user?->hasAnyPermission(['certificate.view']) ?? false;
     $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
 
     $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && $canEditRemarks;
@@ -18,8 +19,9 @@
     $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
     $showMarkReady = ! $requestedScopeOnly && $status === 'printing' && $canMarkReady;
     $showMarkDelivered = ! $requestedScopeOnly && $status === 'ready' && $canMarkDelivered;
+    $showPreview = in_array($status, ['printing', 'ready', 'delivered'], true) && $canPreview;
     $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && $status !== 'delivered' && $canDelete;
-    $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showDelete;
+    $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showPreview || $showDelete;
 @endphp
 
 @once
@@ -113,6 +115,13 @@
                     <span class="lead-action-label">Mark Ready</span>
                 </button>
             </form>
+        @endif
+
+        @if($showPreview)
+            <a class="dropdown-item lead-action-item" href="{{ route('certificate.preview', $cert) }}" target="_blank" rel="noopener">
+                <span class="lead-action-icon lead-icon-blue"><i class="fa fa-eye"></i></span>
+                <span class="lead-action-label">Preview</span>
+            </a>
         @endif
 
         @if($showMarkDelivered)

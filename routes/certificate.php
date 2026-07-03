@@ -7,6 +7,7 @@ Route::prefix('certificate')->name('certificate.')->group(function () {
     Route::get('/', [CertificateController::class, 'index'])->middleware('permission:certificate.view')->name('index');
     Route::get('/new', [CertificateController::class, 'create'])->middleware('permission:certificate.create')->name('create');
     Route::post('/', [CertificateController::class, 'store'])->middleware('permission:certificate.create')->name('store');
+    Route::get('/{admission}/preview', [CertificateController::class, 'preview'])->middleware('permission:certificate.view')->name('preview');
     Route::get('/{admission}/edit', [CertificateController::class, 'edit'])->middleware(['permission:certificate.update', 'admin'])->name('edit');
     Route::put('/{admission}', [CertificateController::class, 'update'])->middleware(['permission:certificate.update', 'admin'])->name('update');
     Route::delete('/{admission}', [CertificateController::class, 'destroy'])->middleware('permission:certificate.delete')->name('destroy');

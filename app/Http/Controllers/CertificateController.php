@@ -77,6 +77,25 @@ class CertificateController extends Controller
         ]);
     }
 
+    public function preview(Admission $admission): View
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access certificate records from another campus.');
+        $this->ensurePrintableCertificateAdmission($admission);
+
+        $admission->loadMissing([
+            'registration:id,name',
+            'program:id,code,title,name',
+            'campus:id,code,name,title,city',
+        ]);
+
+        return view('certificate.preview', [
+            'admission' => $admission,
+            'studentName' => $this->resolveCertificateStudentName($admission),
+            'programTitle' => $admission->program?->title ?: $admission->program?->name ?: 'Training Programme',
+            'dateLine' => $this->resolveCertificateDateLine($admission),
+        ]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -352,6 +371,20 @@ class CertificateController extends Controller
         }
     }
 
+    private function ensurePrintableCertificateAdmission(Admission $admission): void
+    {
+        $this->ensureCertificateWorkflowAdmission($admission);
+
+        abort_unless(
+            in_array((string) ($admission->student_status ?? ''), [
+                Admission::CERTIFICATE_STATUS_PRINTING,
+                Admission::CERTIFICATE_STATUS_READY,
+                Admission::CERTIFICATE_STATUS_DELIVERED,
+            ], true),
+            404
+        );
+    }
+
     /**
      * @return array<string, string>
      */
@@ -388,5 +421,47 @@ class CertificateController extends Controller
         }
 
         return $current . PHP_EOL . $incoming;
+    }
+
+    private function resolveCertificateStudentName(Admission $admission): string
+    {
+        return trim((string) ($admission->student_name ?: $admission->registration?->name ?: 'Student'));
+    }
+
+    private function resolveCertificateDateLine(Admission $admission): string
+    {
+        $legacyOverrides = [
+            5006 => 'Given this day of 31-01-2020',
+            5004 => 'Given this day of 30-09-2019',
+            5005 => 'Given this day of 30-04-2019',
+            5200 => 'Given this day of 10-08-2024',
+            5201 => 'Given this day of 11-11-2025',
+            5202 => 'Given this day of 20-07-2025',
+            5203 => 'Given this day of 15-01-2025',
+            5227 => 'Given this day of March 10, 2022',
+            5248 => 'Given this day of Feb 14, 2025',
+            5296 => 'Course Duration 01-JUL-2024 TO 31-DEC-2024',
+            5375 => 'Course Duration 02-OCT-2024 TO 31-MAR-2025',
+            5490 => 'Course Duration 01-FEB-2015 TO 30-MAR-2015',
+            5491 => 'Course Duration 01-APR-2015 TO 30-MAY-2015',
+            5492 => 'Course Duration 01-JUN-2015 TO 30-AUG-2015',
+            5493 => 'Course Duration 01-SEP-2015 TO 30-NOV-2015',
+            5510 => 'Course Duration 01-DEC-2018 TO 30-MAY-2019',
+            5511 => 'Course Duration 01-JULY-2019 TO 31-DEC-2019',
+            5512 => 'Course Duration 02-FEB-2020 TO 31-JULY-2020',
+            5568 => 'Course Duration 02-FEB-2022 TO 30-May-2022',
+        ];
+
+        $admissionId = (int) $admission->id;
+        if (array_key_exists($admissionId, $legacyOverrides)) {
+            return $legacyOverrides[$admissionId];
+        }
+
+        $certificateDate = $admission->status_updated_at
+            ?? $admission->certificate_delivered_at
+            ?? $admission->admission_date
+            ?? now();
+
+        return 'Given this day of ' . $certificateDate->format('d-m-Y');
     }
 }
