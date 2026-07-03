@@ -9,8 +9,12 @@
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'search' => null];
         $currentUser = auth()->user();
         $campusOptionCount = $campuses->count();
-        $showActionColumn = $activeScope !== 'requested'
-            || ($currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false);
+        $showActionColumn = match ($activeScope) {
+            'requested' => $currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false,
+            'approved' => $currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false,
+            default => $activeScope !== 'requested'
+                || ($currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false),
+        };
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',

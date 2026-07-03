@@ -3,6 +3,7 @@
     $status = $cert->student_status ?? 'requested';
     $user = auth()->user();
     $requestedScopeOnly = ($activeScope ?? null) === 'requested';
+    $approvedScopeOnly = ($activeScope ?? null) === 'approved';
     $canEditRemarks = ($user?->isAdmin() ?? false) && ($user?->hasAnyPermission(['certificate.update']) ?? false);
     $canApprove = $user?->hasAnyPermission(['certificate.approve']) ?? false;
     $canReject = $user?->hasAnyPermission(['certificate.reject']) ?? false;
@@ -11,13 +12,13 @@
     $canMarkDelivered = $user?->hasAnyPermission(['certificate.mark-delivered']) ?? false;
     $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
 
-    $showEditRemarks = ! $requestedScopeOnly && $canEditRemarks;
+    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && $canEditRemarks;
     $showApprove = $status === 'requested' && $canApprove;
-    $showReject = in_array($status, ['requested', 'approved'], true) && $canReject;
+    $showReject = ! $approvedScopeOnly && in_array($status, ['requested', 'approved'], true) && $canReject;
     $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
     $showMarkReady = ! $requestedScopeOnly && $status === 'printing' && $canMarkReady;
     $showMarkDelivered = ! $requestedScopeOnly && $status === 'ready' && $canMarkDelivered;
-    $showDelete = ! $requestedScopeOnly && $status !== 'delivered' && $canDelete;
+    $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && $status !== 'delivered' && $canDelete;
     $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showDelete;
 @endphp
 
