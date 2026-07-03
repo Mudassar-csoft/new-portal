@@ -457,11 +457,27 @@ class CertificateController extends Controller
             return $legacyOverrides[$admissionId];
         }
 
-        $certificateDate = $admission->status_updated_at
-            ?? $admission->certificate_delivered_at
-            ?? $admission->admission_date
-            ?? now();
+        $certificateDate = $this->resolveFirstValidCertificateDate($admission) ?? now();
 
         return 'Given this day of ' . $certificateDate->format('d-m-Y');
+    }
+
+    private function resolveFirstValidCertificateDate(Admission $admission): ?\Illuminate\Support\Carbon
+    {
+        foreach (['status_updated_at', 'certificate_delivered_at', 'admission_date'] as $attribute) {
+            $rawValue = $admission->getRawOriginal($attribute);
+
+            if (!is_string($rawValue) || trim($rawValue) === '' || str_starts_with($rawValue, '0000-00-00')) {
+                continue;
+            }
+
+            try {
+                return Carbon::parse($rawValue);
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return null;
     }
 }
