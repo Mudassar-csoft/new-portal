@@ -57,6 +57,7 @@ class DashboardController extends Controller
         );
 
         $selectedCampusId = $this->resolveCampusId($request);
+        $this->ensureDashboardScopedUserHasCampus($selectedCampusId, $request->user());
         $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'title', 'campus_type'])
             : null;
@@ -1938,5 +1939,18 @@ $programLabels = Program::query()
         if ($userCampusId > 0 && $campusId && $campusId !== $userCampusId) {
             abort(403, 'You are not allowed to access records from another campus.');
         }
+    }
+
+    private function ensureDashboardScopedUserHasCampus(?int $campusId, ?User $user): void
+    {
+        if ($this->canSelectDashboardCampus($user)) {
+            return;
+        }
+
+        abort_unless(
+            (int) ($campusId ?? 0) > 0,
+            403,
+            'You are not allowed to view all campuses in this report.'
+        );
     }
 }
