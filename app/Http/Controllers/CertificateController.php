@@ -8,6 +8,7 @@ use App\Support\ResolvesCampusScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
@@ -83,7 +84,7 @@ class CertificateController extends Controller
         $this->ensurePrintableCertificateAdmission($admission);
 
         $admission->loadMissing([
-            'registration:id,name',
+            'registration:id,student_name',
             'program:id,code,title,name',
             'campus:id,code,name,title,city',
         ]);
@@ -425,7 +426,7 @@ class CertificateController extends Controller
 
     private function resolveCertificateStudentName(Admission $admission): string
     {
-        return trim((string) ($admission->student_name ?: $admission->registration?->name ?: 'Student'));
+        return trim((string) ($admission->student_name ?: $admission->registration?->student_name ?: 'Student'));
     }
 
     private function resolveCertificateDateLine(Admission $admission): string
