@@ -13,6 +13,7 @@
             'requested' => $currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false,
             'approved' => $currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false,
             'printing' => $currentUser?->hasAnyPermission(['certificate.mark-ready', 'certificate.view']) ?? false,
+            'ready' => $currentUser?->hasAnyPermission(['certificate.mark-delivered', 'certificate.view']) ?? false,
             default => $activeScope !== 'requested'
                 || ($currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false),
         };

@@ -5,6 +5,7 @@
     $requestedScopeOnly = ($activeScope ?? null) === 'requested';
     $approvedScopeOnly = ($activeScope ?? null) === 'approved';
     $printingScopeOnly = ($activeScope ?? null) === 'printing';
+    $readyScopeOnly = ($activeScope ?? null) === 'ready';
     $canEditRemarks = ($user?->isAdmin() ?? false) && ($user?->hasAnyPermission(['certificate.update']) ?? false);
     $canApprove = $user?->hasAnyPermission(['certificate.approve']) ?? false;
     $canReject = $user?->hasAnyPermission(['certificate.reject']) ?? false;
@@ -14,14 +15,14 @@
     $canPreview = $user?->hasAnyPermission(['certificate.view']) ?? false;
     $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
 
-    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && $canEditRemarks;
+    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && ! $readyScopeOnly && $canEditRemarks;
     $showApprove = $status === 'requested' && $canApprove;
     $showReject = ! $approvedScopeOnly && in_array($status, ['requested', 'approved'], true) && $canReject;
     $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
     $showMarkReady = ! $requestedScopeOnly && $status === 'printing' && $canMarkReady;
     $showMarkDelivered = ! $requestedScopeOnly && $status === 'ready' && $canMarkDelivered;
     $showPreview = in_array($status, ['printing', 'ready', 'delivered'], true) && $canPreview;
-    $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && $status !== 'delivered' && $canDelete;
+    $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && ! $readyScopeOnly && $status !== 'delivered' && $canDelete;
     $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showPreview || $showDelete;
 @endphp
 
@@ -55,6 +56,22 @@
             .follow-action-dropdown .lead-action-icon.lead-icon-yellow { color: #f5b400; }
             .follow-action-dropdown .lead-action-icon.lead-icon-red { color: #ef4e4e; }
             .follow-action-dropdown form { margin: 0; }
+            .swal-delivery-input,
+            .swal-delivery-textarea {
+                display: block;
+                width: 100%;
+                margin: 0 0 10px;
+                padding: 10px 12px;
+                border: 1px solid #d0d7de;
+                border-radius: 6px;
+                font-size: 14px;
+                color: #1f2937;
+                background: #fff;
+            }
+            .swal-delivery-textarea {
+                min-height: 90px;
+                resize: vertical;
+            }
         </style>
     @endpush
 @endonce
@@ -130,6 +147,10 @@
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="delivered_to" value="">
+                <input type="hidden" name="delivered_cnic" value="">
+                <input type="hidden" name="delivered_phone" value="">
+                <input type="hidden" name="delivered_at" value="">
+                <input type="hidden" name="remarks" value="">
                 <button type="submit" class="dropdown-item lead-action-item">
                     <span class="lead-action-icon lead-icon-green"><i class="fa fa-handshake-o"></i></span>
                     <span class="lead-action-label">Mark Delivered</span>
@@ -193,10 +214,92 @@
             }
 
             function promptDelivery(form, defaultName) {
-                var to = window.prompt('Delivered to (name)?', defaultName || '');
-                if (to === null) return false;
-                form.querySelector('input[name=delivered_to]').value = to;
+                if (!form) return false;
+
+                if (window.swal) {
+                    var today = new Date();
+                    var yyyy = today.getFullYear();
+                    var mm = String(today.getMonth() + 1).padStart(2, '0');
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var defaultDate = yyyy + '-' + mm + '-' + dd;
+
+                    swal({
+                        title: 'Mark Certificate Delivered',
+                        text:
+                            '<input id="swal-delivered-to" class="swal-delivery-input" placeholder="Deliver Name" value="' + escapeHtml(defaultName || '') + '">' +
+                            '<input id="swal-delivered-cnic" class="swal-delivery-input" placeholder="CNIC">' +
+                            '<input id="swal-delivered-phone" class="swal-delivery-input" placeholder="Phone">' +
+                            '<input id="swal-delivered-date" class="swal-delivery-input" type="date" value="' + defaultDate + '">' +
+                            '<textarea id="swal-delivery-remarks" class="swal-delivery-textarea" placeholder="Remarks"></textarea>',
+                        html: true,
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        confirmButtonText: 'Mark Delivered',
+                        cancelButtonText: 'Cancel'
+                    }, function () {
+                        var deliveredToInput = document.getElementById('swal-delivered-to');
+                        var deliveredCnicInput = document.getElementById('swal-delivered-cnic');
+                        var deliveredPhoneInput = document.getElementById('swal-delivered-phone');
+                        var deliveredDateInput = document.getElementById('swal-delivered-date');
+                        var deliveryRemarksInput = document.getElementById('swal-delivery-remarks');
+                        var deliveredTo = deliveredToInput ? deliveredToInput.value.trim() : '';
+                        var deliveredCnic = deliveredCnicInput ? deliveredCnicInput.value.trim() : '';
+                        var deliveredPhone = deliveredPhoneInput ? deliveredPhoneInput.value.trim() : '';
+                        var deliveredDate = deliveredDateInput ? deliveredDateInput.value.trim() : '';
+                        var remarks = deliveryRemarksInput ? deliveryRemarksInput.value.trim() : '';
+
+                        if (!deliveredTo || !deliveredDate) {
+                            if (typeof swal.showInputError === 'function') {
+                                swal.showInputError('Deliver name and date are required.');
+                            } else {
+                                window.alert('Deliver name and date are required.');
+                            }
+                            return false;
+                        }
+
+                        form.querySelector('input[name=delivered_to]').value = deliveredTo;
+                        form.querySelector('input[name=delivered_cnic]').value = deliveredCnic;
+                        form.querySelector('input[name=delivered_phone]').value = deliveredPhone;
+                        form.querySelector('input[name=delivered_at]').value = deliveredDate;
+                        form.querySelector('input[name=remarks]').value = remarks;
+
+                        swal.close();
+                        form.submit();
+                    });
+
+                    return false;
+                }
+
+                var to = window.prompt('Deliver name?', defaultName || '');
+                if (to === null || !to.trim()) return false;
+
+                var cnic = window.prompt('CNIC?', '') || '';
+                if (cnic === null) return false;
+
+                var phone = window.prompt('Phone?', '') || '';
+                if (phone === null) return false;
+
+                var date = window.prompt('Delivery date (YYYY-MM-DD)?', new Date().toISOString().slice(0, 10)) || '';
+                if (date === null || !date.trim()) return false;
+
+                var remarks = window.prompt('Remarks?', '') || '';
+                if (remarks === null) return false;
+
+                form.querySelector('input[name=delivered_to]').value = to.trim();
+                form.querySelector('input[name=delivered_cnic]').value = cnic.trim();
+                form.querySelector('input[name=delivered_phone]').value = phone.trim();
+                form.querySelector('input[name=delivered_at]').value = date.trim();
+                form.querySelector('input[name=remarks]').value = remarks.trim();
                 return true;
+            }
+
+            function escapeHtml(value) {
+                return String(value || '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
             }
         </script>
     @endpush

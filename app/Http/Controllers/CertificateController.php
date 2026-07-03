@@ -269,19 +269,32 @@ class CertificateController extends Controller
         }
 
         $validated = $request->validate([
-            'delivered_to' => ['nullable', 'string', 'max:255'],
+            'delivered_to' => ['required', 'string', 'max:255'],
+            'delivered_cnic' => ['nullable', 'string', 'max:100'],
+            'delivered_phone' => ['nullable', 'string', 'max:100'],
+            'delivered_at' => ['required', 'date'],
+            'remarks' => ['nullable', 'string'],
         ]);
 
         $deliveredTo = trim((string) ($validated['delivered_to'] ?? ''));
+        $deliveredCnic = trim((string) ($validated['delivered_cnic'] ?? ''));
+        $deliveredPhone = trim((string) ($validated['delivered_phone'] ?? ''));
+        $deliveryRemarks = trim((string) ($validated['remarks'] ?? ''));
+        $deliveredAt = Carbon::parse((string) $validated['delivered_at'])->startOfDay();
 
         $admission->update([
             'student_status' => Admission::CERTIFICATE_STATUS_DELIVERED,
             'status_updated_at' => now(),
-            'certificate_delivered_at' => now(),
+            'certificate_delivered_at' => $deliveredAt,
             'certificate_delivered_by' => optional($request->user())->id,
-            'certificate_delivery_notes' => $deliveredTo !== ''
-                ? 'Delivered to: ' . $deliveredTo
-                : 'Certificate delivered.',
+            'certificate_delivery_notes' => $this->buildCertificateDeliveryNotes(
+                $admission->certificate_delivery_notes,
+                $deliveredTo,
+                $deliveredCnic,
+                $deliveredPhone,
+                $deliveredAt,
+                $deliveryRemarks
+            ),
         ]);
 
         return redirect()->route('certificate.index')
@@ -422,6 +435,35 @@ class CertificateController extends Controller
         }
 
         return $current . PHP_EOL . $incoming;
+    }
+
+    private function buildCertificateDeliveryNotes(
+        ?string $existingNotes,
+        string $deliveredTo,
+        string $deliveredCnic,
+        string $deliveredPhone,
+        Carbon $deliveredAt,
+        string $remarks
+    ): string {
+        $lines = [
+            'Delivered to: ' . $deliveredTo,
+            'CNIC: ' . ($deliveredCnic !== '' ? $deliveredCnic : 'N/A'),
+            'Phone: ' . ($deliveredPhone !== '' ? $deliveredPhone : 'N/A'),
+            'Delivery Date: ' . $deliveredAt->format('d-m-Y'),
+        ];
+
+        if ($remarks !== '') {
+            $lines[] = 'Remarks: ' . $remarks;
+        }
+
+        $details = implode(PHP_EOL, $lines);
+        $current = trim((string) $existingNotes);
+
+        if ($current === '') {
+            return $details;
+        }
+
+        return $current . PHP_EOL . PHP_EOL . $details;
     }
 
     private function resolveCertificateStudentName(Admission $admission): string
