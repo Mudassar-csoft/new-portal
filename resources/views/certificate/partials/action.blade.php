@@ -4,6 +4,7 @@
     $user = auth()->user();
     $requestedScopeOnly = ($activeScope ?? null) === 'requested';
     $approvedScopeOnly = ($activeScope ?? null) === 'approved';
+    $printingScopeOnly = ($activeScope ?? null) === 'printing';
     $canEditRemarks = ($user?->isAdmin() ?? false) && ($user?->hasAnyPermission(['certificate.update']) ?? false);
     $canApprove = $user?->hasAnyPermission(['certificate.approve']) ?? false;
     $canReject = $user?->hasAnyPermission(['certificate.reject']) ?? false;
@@ -13,14 +14,14 @@
     $canPreview = $user?->hasAnyPermission(['certificate.view']) ?? false;
     $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
 
-    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && $canEditRemarks;
+    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && $canEditRemarks;
     $showApprove = $status === 'requested' && $canApprove;
     $showReject = ! $approvedScopeOnly && in_array($status, ['requested', 'approved'], true) && $canReject;
     $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
     $showMarkReady = ! $requestedScopeOnly && $status === 'printing' && $canMarkReady;
     $showMarkDelivered = ! $requestedScopeOnly && $status === 'ready' && $canMarkDelivered;
     $showPreview = in_array($status, ['printing', 'ready', 'delivered'], true) && $canPreview;
-    $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && $status !== 'delivered' && $canDelete;
+    $showDelete = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && $status !== 'delivered' && $canDelete;
     $hasActions = $showEditRemarks || $showApprove || $showReject || $showSendToPrinting || $showMarkReady || $showMarkDelivered || $showPreview || $showDelete;
 @endphp
 
