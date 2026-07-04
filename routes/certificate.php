@@ -8,6 +8,9 @@ Route::prefix('certificate')->name('certificate.')->group(function () {
     Route::get('/new', [CertificateController::class, 'create'])->middleware('permission:certificate.create')->name('create');
     Route::post('/', [CertificateController::class, 'store'])->middleware('permission:certificate.create')->name('store');
     Route::patch('/bulk-approve', [CertificateController::class, 'bulkApprove'])->middleware(['permission:certificate.approve', 'admin'])->name('bulk-approve');
+    Route::patch('/bulk-send-to-printing', [CertificateController::class, 'bulkSendToPrinting'])->middleware(['permission:certificate.send-to-printing', 'admin'])->name('bulk-send-to-printing');
+    Route::patch('/bulk-mark-ready', [CertificateController::class, 'bulkMarkReady'])->middleware(['permission:certificate.mark-ready', 'admin'])->name('bulk-mark-ready');
+    Route::post('/bulk-preview', [CertificateController::class, 'bulkPreview'])->middleware('permission:certificate.view')->name('bulk-preview');
     Route::get('/{admission}/preview', [CertificateController::class, 'preview'])->middleware('permission:certificate.view')->name('preview');
     Route::get('/{admission}/edit', [CertificateController::class, 'edit'])->middleware(['permission:certificate.update', 'admin'])->name('edit');
     Route::put('/{admission}', [CertificateController::class, 'update'])->middleware(['permission:certificate.update', 'admin'])->name('update');

@@ -139,7 +139,7 @@
         @endif
 
         @if($showPreview)
-            <a class="dropdown-item lead-action-item" href="{{ route('certificate.preview', $cert) }}" target="_blank" rel="noopener">
+            <a class="dropdown-item lead-action-item" href="{{ route('certificate.preview', ['admission' => $cert, 'scope' => $activeScope]) }}" target="_blank" rel="noopener">
                 <span class="lead-action-icon lead-icon-blue"><i class="fa fa-eye"></i></span>
                 <span class="lead-action-label">Preview</span>
             </a>

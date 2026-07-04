@@ -2,10 +2,6 @@
     $certificateBackground = file_exists(public_path('img/clogo.jpg'))
         ? asset('img/clogo.jpg')
         : asset('theme/img/logo-career.webp');
-
-    $certificateLogo = file_exists(public_path('img/clogo.png'))
-        ? asset('img/clogo.png')
-        : asset('theme/img/logo-career.webp');
 @endphp
 
 <!doctype html>
@@ -16,36 +12,36 @@
     <title>Certificate Preview</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-:root{
-    --primary:#0b75b7;
-    --text:#222;
-    --muted:#666;
-    --border:#333;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        html, body {
+            width: 100%;
+            min-height: 100%;
+        }
 
-html,
-body{
-    width:100%;
-    height:100%;
-    background:#edf2f7;
-    font-family:'Montserrat',sans-serif;
-    color:var(--text);
-}
+        body {
+            background: #edf2f7;
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+        }
 
-@page{
-    size:30cm 21cm;
-    margin:0;
-}
-
-@media print{
+        .preview-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 18px 24px;
+            background: rgba(237, 242, 247, 0.96);
+            backdrop-filter: blur(8px);
+        }
 
     body{
         background:#fff;
@@ -61,370 +57,259 @@ body{
         padding:0;
     }
 
-    .certificate-page{
-        margin:0;
-        box-shadow:none;
-    }
+        .page-stack {
+            padding: 12px 20px 32px;
+        }
 
-}
+        .page {
+            width: 297mm;
+            height: 210mm;
+            margin: 0 auto;
+            overflow: hidden;
+            background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+        }
 
-.preview-toolbar{
-    display:flex;
-    justify-content:flex-end;
-    gap:12px;
-    padding:18px 25px;
-    background:#edf2f7;
-}
+        .page + .page {
+            margin-top: 18px;
+        }
 
-.preview-toolbar a,
-.preview-toolbar button{
+        .header {
+            height: 1.5in;
+            width: 100%;
+        }
 
-    padding:10px 20px;
-    border-radius:30px;
-    border:none;
-    cursor:pointer;
-    text-decoration:none;
-    font-weight:600;
-}
+        .c_title {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 7mm;
+            margin-left: 5px;
+            font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
+            font-size: 60px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
 
-.preview-toolbar a{
-    background:#fff;
-    color:#222;
-    border:1px solid #ddd;
-}
+        .c_title h1 {
+            font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
+            font-size: 60px;
+            font-weight: 400;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            line-height: 1;
+        }
 
-.preview-toolbar button{
-    background:#0b75b7;
-    color:#fff;
-}
+        .pre {
+            display: flex;
+            justify-content: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+            transform: translateY(-4mm);
+        }
 
-.certificate-page-wrap{
-    display:flex;
-    justify-content:center;
-    padding:20px;
-}
+        .pre p {
+            margin-top: 0.5in;
+            font-size: 16px;
+        }
 
-.certificate-page{
+        .s_name {
+            display: flex;
+            justify-content: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            transform: translateY(-4mm);
+        }
 
-    width:30cm;
-    height:21cm;
-    background:#fff;
-    position:relative;
-    overflow:hidden;
+        .s_name h1 {
+            margin-top: 0.2in;
+            padding: 0 8px 8px;
+            border-bottom: 2px solid #000;
+            font-size: 25px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            text-align: center;
+        }
 
-    border:2px solid #222;
+        .t_line {
+            display: flex;
+            justify-content: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: sans-serif;
+            transform: translateY(-4mm);
+        }
 
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
+        .t_line p {
+            margin-top: 0.2in;
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+        }
 
-}
+        .c_name {
+            display: flex;
+            justify-content: center;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            transform: translateY(-4mm);
+        }
 
-.certificate-page::before{
+        .c_name h1 {
+            margin-top: 0.3in;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            padding: 0 8px 8px;
+            border-bottom: 2px solid #000;
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            text-align: center;
+            max-width: 70%;
+        }
 
-    content:"";
-    position:absolute;
-    top:12px;
-    left:12px;
-    right:12px;
-    bottom:12px;
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 2in;
+            margin-left: 20px;
+            margin-right: 50px;
+            font-family: sans-serif;
+            font-size: 12px;
+            gap: 28px;
+        }
 
-    border:1px solid #888;
+        .left {
+            line-height: 1.4;
+        }
 
-    pointer-events:none;
-
-}
+        .right {
+            min-width: 250px;
+            padding-top: 4px;
+            border-top: 2px solid #000;
+            line-height: 1.4;
+            text-align: center;
+        }
 
 .certificate-watermark{
 
-    position:absolute;
-    inset:0;
+            html, body {
+                width: 100% !important;
+                min-height: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            body {
+                background: #fff;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
 
     background:url('{{ $certificateBackground }}') center center no-repeat;
     background-size:45%;
 
-    opacity:.06;
-
-}
-
-.top-banner{
-
-    position:absolute;
-    top:0;
-    right:0;
-    width:260px;
-    z-index:2;
-
-}
-
-.top-banner img{
-
-    width:100%;
-    display:block;
-
-}
-
-.certificate-inner{
-
-    position:relative;
-    z-index:5;
-
-    height:100%;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    text-align:center;
-
-    padding:40px 60px;
-
-}
-
-.logo-area{
-
-    margin-top:20px;
-
-}
-
-.brand-mark{
-
-    width:100px;
-
-}
-
-.certificate-title{
-
-    margin-top:20px;
-
-    font-family:'Cinzel',serif;
-    font-size:46px;
-    font-weight:700;
-
-}
-
-.presented-text{
-
-    margin-top:25px;
-
-    font-size:18px;
-
-    color:var(--muted);
-
-}
-
-.student-name{
-
-    margin-top:12px;
-
-    padding-bottom:8px;
-
-    min-width:420px;
-
-    border-bottom:2px solid #222;
-
-    font-size:30px;
-    font-weight:700;
-    text-transform:uppercase;
-
-}
-
-.completion-line{
-
-    margin-top:25px;
-
-    font-size:18px;
-
-    color:var(--muted);
-
-}
-
-.program-title{
-
-    margin-top:12px;
-
-    padding-bottom:8px;
-
-    min-width:500px;
-
-    border-bottom:2px solid #222;
-
-    font-size:26px;
-    font-weight:700;
-
-}
-
-.certificate-date-line{
-
-    margin-top:25px;
-
-    font-size:18px;
-
-}
-
-.partner-logos{
-
-    margin-top:auto;
-    margin-bottom:25px;
-
-}
-
-.partner-logos img{
-
-    width:80%;
-
-}
-
-.certificate-footer{
-
-    width:100%;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-
-}
-
-.verification-block{
-
-    text-align:left;
-    font-size:13px;
-    line-height:1.7;
-
-}
-
-.signature-block{
-
-    text-align:center;
-
-}
-
-.signature{
-
-    width:130px;
-    margin-bottom:5px;
-
-}
-
-.founder-name{
-
-    font-weight:700;
-    font-size:15px;
-
-}
-
-.founder-title{
-
-    font-size:13px;
-
-}
-</style>
+            .page-stack {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                min-width: 0;
+                max-width: none;
+            }
+
+            .page {
+                width: 297mm;
+                min-width: 297mm;
+                max-width: 297mm;
+                height: 210mm;
+                min-height: 210mm;
+                max-height: 210mm;
+                margin: 0 auto;
+                box-shadow: none;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .page + .page {
+                margin-top: 0 !important;
+                page-break-before: always;
+                break-before: page;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .page-stack {
+                overflow-x: auto;
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <div class="preview-toolbar">
-        <a href="{{ route('certificate.index', ['scope' => 'printing']) }}">Back</a>
+        <a href="{{ $backUrl ?? route('certificate.index', ['scope' => 'printing']) }}">Back</a>
         <button type="button" onclick="window.print()">Print</button>
     </div>
 
-    <div class="certificate-page-wrap">
+    <div class="page-stack">
+        @foreach(($previewItems ?? collect()) as $preview)
+            @php
+                $admission = $preview['admission'];
+                $studentName = $preview['studentName'];
+                $programTitle = $preview['programTitle'];
+                $dateLine = $preview['dateLine'];
+            @endphp
+            <section class="page">
+                <div class="header"></div>
 
-        <div class="certificate-page">
-
-            <!-- Top Right Banner -->
-            <div class="top-banner">
-                <img src="{{ asset('img/header.png') }}" alt="Header">
-            </div>
-
-            <!-- Background Watermark -->
-            <div class="certificate-watermark"></div>
-
-            <div class="certificate-inner">
-
-                <!-- Logo -->
-                <div class="logo-area">
-                    <img src="{{ $certificateLogo }}" class="brand-mark" alt="Career Institute">
+                <div class="c_title">
+                    <h1>Certificate of Achievement</h1>
                 </div>
 
-                <!-- Certificate Title -->
-                <h1 class="certificate-title">
-                    Certificate of Achievement
-                </h1>
-
-                <!-- Presented To -->
-                <div class="presented-text">
-                    Presented to:
+                <div class="pre">
+                    <p><strong>Presented to:</strong></p>
                 </div>
 
-                <div class="student-name">
-                    {{ strtoupper($studentName) }}
+                <div class="s_name">
+                    <h1>{{ $studentName }}</h1>
                 </div>
 
-                <!-- Completion Text -->
-                <div class="completion-line">
-                    for successfully completing the training course
+                <div class="t_line">
+                    <p>for successfully completing the training course</p>
                 </div>
 
-                <!-- Course Name -->
-                <div class="program-title">
-                    {{ $programTitle }}
+                <div class="c_name">
+                    <h1>{{ $programTitle }}</h1>
                 </div>
 
-                <!-- Date -->
-                <div class="certificate-date-line">
-                    {{ $dateLine }}
+                <div class="t_line">
+                    <p>{{ $dateLine }}</p>
                 </div>
 
-                <!-- Partner Logos -->
-                <div class="partner-logos">
-                    <img src="{{ asset('img/partners.png') }}" alt="Partners">
-                </div>
-
-                <!-- Footer -->
-                <div class="certificate-footer">
-
-                    <div class="verification-block">
-
-                        <strong>
-                            For Verification Please Visit:
-                        </strong>
-
-                        <div>
-                            www.career.edu.pk
-                        </div>
-
-                        <div>
-                            Verification ID :
-                            {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}
-                        </div>
-
-                        @if($admission->campus?->code)
-                            <div>
-                                Campus :
-                                {{ $admission->campus->code }}
-                            </div>
-                        @endif
-
+                <div class="footer">
+                    <div class="left">
+                        <p><strong>For Verification, please visit: www.career.edu.pk</strong></p>
+                        <p>Verification ID: {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}</p>
                     </div>
-
-                    <div class="signature-block">
-
-                        <img src="{{ asset('img/signature.png') }}" class="signature" alt="Signature">
-
-                        <div class="founder-name">
-                            Muhammad Adeel Javaid
-                        </div>
-
-                        <div class="founder-title">
-                            Founder And Chairman
-                        </div>
-
+                    <div class="right">
+                        <p><strong>Muhammad Adeel Javaid</strong></p>
+                        <p>Founder and Chairman</p>
                     </div>
 
                 </div>
-
-            </div>
-
-        </div>
-
+            </section>
+        @endforeach
     </div>
 
 </body>

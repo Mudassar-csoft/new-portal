@@ -134,7 +134,7 @@ class StudentRecordController extends Controller
 
         $this->backfillRegistrationFee($registration);
 
-        $admissionQuery = Admission::query()
+        $admissions = Admission::query()
             ->with([
                 'batch',
                 'campus',
@@ -142,13 +142,20 @@ class StudentRecordController extends Controller
                 'certificateDeliveredBy',
             ])
             ->where('registration_id', $registration->id)
-            ->latest('id');
+            ->latest('id')
+            ->get();
+        $latestAdmission = $admissions->first();
 
-        $admission = $admissionQuery->first();
         $feeCollectionsQuery = FeeCollection::query()
+            ->with([
+                'admission.batch',
+                'admission.campus',
+                'admission.program',
+                'program',
+            ])
             ->where('registration_id', $registration->id);
 
-        if (! $admission) {
+        if ($admissions->isEmpty()) {
             $feeCollectionsQuery->where(function ($query) {
                 $query
                     ->whereNull('admission_id')
@@ -166,7 +173,8 @@ class StudentRecordController extends Controller
 
         return view('student.show', [
             'registration' => $registration,
-            'admission' => $admission,
+            'admissions' => $admissions,
+            'latestAdmission' => $latestAdmission,
             'feeCollections' => $feeCollections,
             'totalFee' => $totalFee,
             'pendingFee' => $pendingFee,
