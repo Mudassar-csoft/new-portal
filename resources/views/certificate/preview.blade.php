@@ -196,6 +196,12 @@
                 margin: 0;
             }
 
+            html, body {
+                width: 280mm !important;
+                height: 209mm !important;
+                overflow: hidden !important;
+            }
+
             body {
                 background: #fff;
                 -webkit-print-color-adjust: exact;
@@ -207,19 +213,32 @@
             }
 
             .certificate-stack {
+                width: 280mm;
+                min-width: 280mm;
+                max-width: 280mm;
                 padding: 0;
+                margin: 0;
+                overflow: hidden;
             }
 
             .certificate-sheet {
+                width: 280mm;
+                min-width: 280mm;
+                max-width: 280mm;
+                height: 209mm;
+                min-height: 209mm;
+                max-height: 209mm;
+                padding: 0;
                 margin: 0;
                 box-shadow: none;
-                page-break-after: always;
-                break-after: page;
+                overflow: hidden;
+                page-break-inside: avoid;
+                break-inside: avoid;
             }
 
-            .certificate-sheet:last-child {
-                page-break-after: auto;
-                break-after: auto;
+            .certificate-sheet:not(:last-child) {
+                page-break-after: always;
+                break-after: page;
             }
         }
 
