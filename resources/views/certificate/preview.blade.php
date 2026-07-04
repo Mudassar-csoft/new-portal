@@ -76,7 +76,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding-bottom: 16mm;
+            padding-bottom: 7mm;
             background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
         }
@@ -194,8 +194,8 @@
             margin-top: auto;
             margin-left: 20px;
             margin-right: 50px;
-            margin-bottom: 4mm;
-            padding-top: 8mm;
+            margin-bottom: 0;
+            padding-top: 4mm;
             font-family: sans-serif;
             font-size: 12px;
             gap: 28px;
