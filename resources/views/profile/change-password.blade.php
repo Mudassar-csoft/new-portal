@@ -22,26 +22,16 @@
                                 <h2 class="panel-title lead-title">Change Password</h2>
                             </div>
                             <div class="tbl-cell text-right" style="width: 200px;">
-                                <a href="{{ route('profile.show') }}" class="btn btn-inline btn-default" style="padding: 0.4rem; padding-left:10px;">Back to Profile</a>
+                                <a href="{{ route('profile.show') }}" class="btn btn-inline btn-default ci-inline-pad-04 ci-inline-pl-10">Back to Profile</a>
                             </div>
                         </div>
                     </div>
                 </header>
 
                 <div class="box-typical-body panel-body lead-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
-                    @endif
+        @include('partials.session-status-alert')
 
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+        @include('partials.validation-errors-alert')
 
                     <form method="POST" action="{{ route('profile.update-password') }}">
                         @csrf
@@ -65,8 +55,8 @@
                         </div>
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Update Password</button>
-                            <a href="{{ route('profile.show') }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10">Update Password</button>
+                            <a href="{{ route('profile.show') }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -77,13 +67,23 @@
 
 @push('styles')
     <style>
-        .lead-shell { font-family: 'Proxima Nova', sans-serif; position: relative; min-height: 100vh; width: 100%; overflow: visible; padding: 0; margin: 0; }
-        .lead-loader { position: absolute; top: 0; left: 0; right: 0; height: 100vh; background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: 12px; }
-        .lead-spinner { display: inline-flex; align-items: center; gap: 8px; }
-        .lead-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
+        :root {
+            --dimension-profile-change-password-1: 100vh;
+            --dimension-profile-change-password-2: 12px;
+            --dimension-profile-change-password-3: 37px;
+            --space-profile-change-password-1: 12px;
+            --space-profile-change-password-2: 8px;
+            --color-profile-change-password-1: #343434;
+            --typo-profile-change-password-font-weight-1: 600;
+        }
+
+        .lead-shell { font-family: 'Proxima Nova', sans-serif; position: relative; min-height: var(--dimension-profile-change-password-1); width: 100%; overflow: visible; padding: 0; margin: 0; }
+        .lead-loader { position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-profile-change-password-1); background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: var(--space-profile-change-password-1); }
+        .lead-spinner { display: inline-flex; align-items: center; gap: var(--space-profile-change-password-2); }
+        .lead-spinner .dot { width: var(--dimension-profile-change-password-2); height: var(--dimension-profile-change-password-2); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .lead-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .lead-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .lead-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .lead-loader p { margin: 0; color: #54667a; font-weight: var(--typo-profile-change-password-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
         .lead-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
         body.cp-ready .lead-content { opacity: 1; visibility: visible; }
@@ -94,12 +94,12 @@
         .lead-body { padding: 14px 18px; overflow: visible !important; }
         .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
         .lead-create-card .form-row { padding: 3px 10px; }
-        .lead-create-card .form-group { margin-bottom: 8px; }
-        .lead-create-card label, .lead-create-card .form-label { color: #343434; font-size: 12px; font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
-        .lead-create-card .form-control { font-size: 13px; height: 37px !important; min-height: 37px !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: #343434; }
+        .lead-create-card .form-group { margin-bottom: var(--space-profile-change-password-2); }
+        .lead-create-card label, .lead-create-card .form-label { color: var(--color-profile-change-password-1); font-size: 12px; font-weight: var(--typo-profile-change-password-font-weight-1); line-height: 1.2; margin-bottom: 6px; }
+        .lead-create-card .form-control { font-size: 13px; height: var(--dimension-profile-change-password-3) !important; min-height: var(--dimension-profile-change-password-3) !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: var(--color-profile-change-password-1); }
         .required::after { content: '*'; color: #e53935; margin-left: 4px; }
 
-        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-profile-change-password-1); }
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }
     </style>
 @endpush

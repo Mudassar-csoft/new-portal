@@ -70,3 +70,15 @@
 .side-menu li ul li:nth-child(9n+4) .stage-count { background-color: #6f7d8c; border-color: #6f7d8c; }
 .side-menu li ul li:nth-child(9n+8) .stage-count { background-color: #ffae2b; border-color: #ffae2b; }
 .side-menu li ul li:nth-child(9n) .stage-count { background-color: #ff4f87; border-color: #ff4f87; }
+
+.ci-inline-pad-04 {
+  padding: 0.4rem !important;
+}
+
+.ci-inline-pl-10 {
+  padding-left: 10px !important;
+}
+
+.ci-inline-ml-5 {
+  margin-left: 5px !important;
+}

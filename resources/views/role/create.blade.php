@@ -73,10 +73,14 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-role-create-1: 6px;
+        }
+
         .form-label-role{
             font-size: 14px !important;
-            margin-bottom: 6px;
-            margin-top: 6px;
+            margin-bottom: var(--space-role-create-1);
+            margin-top: var(--space-role-create-1);
             
             color: #343a40 !important;
             text-transform: uppercase;

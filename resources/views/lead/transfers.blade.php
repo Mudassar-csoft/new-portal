@@ -51,9 +51,17 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        :root {
+            --dimension-lead-transfers-1: 100vh;
+            --dimension-lead-transfers-2: 12px;
+            --color-lead-transfers-1: #d9e2ef;
+            --color-lead-transfers-2: #fff;
+            --typo-lead-transfers-font-weight-1: 600;
+        }
+
         .follow-shell {
             position: relative;
-            min-height: 100vh;
+            min-height: var(--dimension-lead-transfers-1);
             width: 100%;
             overflow: hidden;
         }
@@ -63,7 +71,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-lead-transfers-1);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
@@ -80,8 +88,8 @@
         }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-lead-transfers-2);
+            height: var(--dimension-lead-transfers-2);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -100,7 +108,7 @@
         .follow-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfers-font-weight-1);
         }
 
         .follow-content {
@@ -133,22 +141,22 @@
 
         #transfer-grid thead th {
             background: #1fb2ff;
-            color: #fff;
+            color: var(--color-lead-transfers-2);
             border-color: #1aa4ea;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfers-font-weight-1);
             vertical-align: middle;
         }
 
         #transfer-grid {
-            border: 1px solid #d9e2ef;
+            border: 1px solid var(--color-lead-transfers-1);
             border-radius: 6px;
             overflow: hidden;
-            background: #fff;
+            background: var(--color-lead-transfers-2);
         }
 
         #transfer-grid th,
         #transfer-grid td {
-            border-color: #d9e2ef;
+            border-color: var(--color-lead-transfers-1);
             padding: 4px 8px;
             line-height: 1.2;
             height: 28px;

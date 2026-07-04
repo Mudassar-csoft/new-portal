@@ -40,6 +40,11 @@
 @push('styles')
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
 	<style>
+        :root {
+            --color-login-logs-index-1: #d9e2ef;
+            --color-login-logs-index-2: #fff;
+        }
+
 		
 		.login-logs .box-typical-body {
 			/* padding: 16px; */
@@ -89,7 +94,7 @@
 		}
 		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
 			margin-left: 0 !important;
-			border: 1px solid #d9e2ef;
+			border: 1px solid var(--color-login-logs-index-1);
 			border-radius: .25rem;
 			padding: .375rem 32px .375rem .75rem;
 			height: 32px;
@@ -108,30 +113,30 @@
 		}
 		#login-logs-table thead th {
 			background: #1fb2ff;
-			color: #fff;
+			color: var(--color-login-logs-index-2);
 			border-color: #1aa4ea;
 			font-weight: 600;
 			vertical-align: middle;
 		}
 		#login-logs-table {
-			border: 1px solid #d9e2ef;
+			border: 1px solid var(--color-login-logs-index-1);
 			border-radius: 6px;
 			overflow: hidden;
-			background: #fff;
+			background: var(--color-login-logs-index-2);
 		}
 		#login-logs-table th,
 		#login-logs-table td {
-			border-color: #d9e2ef;
+			border-color: var(--color-login-logs-index-1);
 			padding: 3px 8px;
 			line-height: 1.2;
 			height: 26px;
 			vertical-align: middle;
-			border-right: 1px solid #d9e2ef;
-			border-bottom: 1px solid #d9e2ef;
+			border-right: 1px solid var(--color-login-logs-index-1);
+			border-bottom: 1px solid var(--color-login-logs-index-1);
 		}
 		#login-logs-table th:first-child,
 		#login-logs-table td:first-child {
-			border-left: 1px solid #d9e2ef;
+			border-left: 1px solid var(--color-login-logs-index-1);
 		}
 		#login-logs-table tbody tr:nth-of-type(odd) {
 			background-color: #f5f6ff;

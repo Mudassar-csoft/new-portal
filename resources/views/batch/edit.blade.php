@@ -24,8 +24,8 @@
                                 </h2>
                             </div>
                             <div class="tbl-cell text-right d-flex" style="width: 280px;">
-                                <a href="{{ route('batch.index') }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Back to Batches</a>
-                                <a href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px;">Time Table</a>
+                                <a href="{{ route('batch.index') }}" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10">Back to Batches</a>
+                                <a href="{{ route('batch.timetable.index', ['batch_id' => $batch->id]) }}" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10">Time Table</a>
                             </div>
                         </div>
                     </div>
@@ -38,8 +38,8 @@
                         @include('batch.partials.form')
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Update Batch</button>
-                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10 ci-inline-ml-5">Update Batch</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -50,10 +50,25 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-batch-edit-1: 100vh;
+            --dimension-batch-edit-2: 12px;
+            --dimension-batch-edit-3: 37px;
+            --dimension-batch-edit-4: 7px;
+            --dimension-batch-edit-5: 82px;
+            --space-batch-edit-1: 12px;
+            --space-batch-edit-2: 8px;
+            --color-batch-edit-1: #00a8ff;
+            --color-batch-edit-2: #1f2937;
+            --color-batch-edit-3: #343434;
+            --typo-batch-edit-font-weight-1: 600;
+            --typo-batch-edit-font-size-2: 12px;
+        }
+
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
-            min-height: 100vh;
+            min-height: var(--dimension-batch-edit-1);
             width: 100%;
             overflow: visible;
             padding: 0;
@@ -65,21 +80,21 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-batch-edit-1);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-batch-edit-1);
         }
 
-        .lead-spinner { display: inline-flex; align-items: center; gap: 8px; }
+        .lead-spinner { display: inline-flex; align-items: center; gap: var(--space-batch-edit-2); }
 
         .lead-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-batch-edit-2);
+            height: var(--dimension-batch-edit-2);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -88,7 +103,7 @@
         .lead-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .lead-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .lead-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .lead-loader p { margin: 0; color: #54667a; font-weight: var(--typo-batch-edit-font-weight-1); }
 
         .lead-content {
             opacity: 0;
@@ -113,41 +128,41 @@
         .lead-title {
             font-size: 18px;
             font-weight: 500;
-            color: #1f2937;
+            color: var(--color-batch-edit-2);
             line-height: 1.4;
         }
 
         .lead-title span {
             font-size: 14px;
             font-weight: 400;
-            color: #1f2937;
+            color: var(--color-batch-edit-2);
         }
 
         .lead-create-card .form-row { padding: 3px 10px; }
-        .lead-create-card .form-group { margin-bottom: 8px; }
+        .lead-create-card .form-group { margin-bottom: var(--space-batch-edit-2); }
 
         .lead-create-card label,
         .lead-create-card .form-label {
-            color: #343434;
-            font-size: 12px;
-            font-weight: 600;
+            color: var(--color-batch-edit-3);
+            font-size: var(--typo-batch-edit-font-size-2);
+            font-weight: var(--typo-batch-edit-font-weight-1);
             line-height: 1.2;
             margin-bottom: 6px;
         }
 
         .lead-create-card .form-control {
-            font-size: 12px;
-            height: 37px !important;
-            min-height: 37px !important;
+            font-size: var(--typo-batch-edit-font-size-2);
+            height: var(--dimension-batch-edit-3) !important;
+            min-height: var(--dimension-batch-edit-3) !important;
             padding: 0.375rem 0.625rem !important;
             border: 1px solid #ccc;
             border-radius: 0.25rem;
-            color: #343434;
+            color: var(--color-batch-edit-3);
         }
 
         .lead-create-card textarea.form-control {
-            height: 82px !important;
-            min-height: 82px !important;
+            height: var(--dimension-batch-edit-5) !important;
+            min-height: var(--dimension-batch-edit-5) !important;
             resize: vertical;
         }
 
@@ -173,17 +188,17 @@
             transition: background 0.2s, box-shadow 0.2s;
         }
 
-        .lead-create-card input[name="session"][type="radio"]:checked { border-color: #00a8ff; }
+        .lead-create-card input[name="session"][type="radio"]:checked { border-color: var(--color-batch-edit-1); }
 
         .lead-create-card input[name="session"][type="radio"]:checked::before {
             content: '';
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 7px;
-            height: 7px;
+            width: var(--dimension-batch-edit-4);
+            height: var(--dimension-batch-edit-4);
             border-radius: 50%;
-            background-color: #00a8ff;
+            background-color: var(--color-batch-edit-1);
         }
 
         .tbl-row {
@@ -191,7 +206,7 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-batch-edit-1);
         }
 
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }

@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-separate-pages-login-font-size-1: 0.875rem /*14/16*/;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -81,10 +85,10 @@
   margin: 0;
 }
 .sign-box .checkbox label {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-separate-pages-login-font-size-1);
 }
 .sign-box .reset {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-separate-pages-login-font-size-1);
 }
 .sign-box .close {
   position: absolute;

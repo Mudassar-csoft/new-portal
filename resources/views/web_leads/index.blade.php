@@ -9,14 +9,7 @@
 
 @section('content')
 	<div class="follow-shell">
-		<div id="web-lead-loader" class="follow-loader">
-			<div class="follow-spinner">
-				<div class="dot"></div>
-				<div class="dot"></div>
-				<div class="dot"></div>
-			</div>
-			<p>Loading web leads...</p>
-		</div>
+		@include('partials.status-loader', ['id' => 'web-lead-loader', 'message' => 'Loading web leads...'])
 
 		<div id="web-lead-content" class="follow-content p-0 m-0">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
@@ -132,8 +125,17 @@
 
 @push('styles')
 	<style>
+        :root {
+            --dimension-web-leads-index-1: 100vh;
+            --dimension-web-leads-index-2: 12px;
+            --space-web-leads-index-1: 8px;
+            --color-web-leads-index-1: #343434;
+            --typo-web-leads-index-font-family-1: 'Proxima Nova', sans-serif;
+            --typo-web-leads-index-font-weight-2: 600;
+        }
+
 		* {
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-web-leads-index-font-family-1);
 			font-size: 12px;
 			margin: 0;
 			padding: 0;
@@ -141,16 +143,16 @@
 
 		.form-label {
 			font-size: 11px;
-			font-weight: 600;
-			color: #343434;
+			font-weight: var(--typo-web-leads-index-font-weight-2);
+			color: var(--color-web-leads-index-1);
 			text-transform: uppercase;
 			margin-bottom: 3px;
 		}
 
 		body, button, html, input, select, textarea {
-			color: #343434;
+			color: var(--color-web-leads-index-1);
 			height: 32px;
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-web-leads-index-font-family-1);
 			line-height: 1.4;
 			text-rendering: optimizeLegibility;
 			-moz-osx-font-smoothing: grayscale;
@@ -161,7 +163,7 @@
 
 		.follow-shell {
 			position: relative;
-			min-height: 100vh;
+			min-height: var(--dimension-web-leads-index-1);
 			width: 100%;
 			overflow: hidden;
 		}
@@ -171,7 +173,7 @@
 			top: 0;
 			left: 0;
 			right: 0;
-			height: 100vh;
+			height: var(--dimension-web-leads-index-1);
 			background: rgba(245, 247, 251, 0.95);
 			display: flex;
 			align-items: center;
@@ -184,12 +186,12 @@
 		.follow-spinner {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-web-leads-index-1);
 		}
 
 		.follow-spinner .dot {
-			width: 12px;
-			height: 12px;
+			width: var(--dimension-web-leads-index-2);
+			height: var(--dimension-web-leads-index-2);
 			border-radius: 50%;
 			background: #12a0ff;
 			animation: bounce 0.9s ease-in-out infinite;
@@ -208,7 +210,7 @@
 		.follow-loader p {
 			margin: 0;
 			color: #54667a;
-			font-weight: 600;
+			font-weight: var(--typo-web-leads-index-font-weight-2);
 		}
 
 		.follow-content {
@@ -298,7 +300,7 @@
 		.follow-search {
 			display: flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-web-leads-index-1);
 		}
 	</style>
 @endpush

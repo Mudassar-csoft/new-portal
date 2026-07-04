@@ -72,6 +72,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Career | Fee Voucher</title>
     <style>
+        :root {
+            --space-shared-voucher-layout-1: 10px;
+            --space-shared-voucher-layout-2: 18px;
+            --space-shared-voucher-layout-3: 8px;
+            --color-shared-voucher-layout-1: #fff;
+            --typo-shared-voucher-layout-font-size-1: 14px;
+            --typo-shared-voucher-layout-line-height-2: 1.25;
+            --typo-shared-voucher-layout-font-size-3: 15px;
+            --typo-shared-voucher-layout-font-weight-4: 400;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -85,11 +96,11 @@
         }
 
         body {
-            background: #fff;
+            background: var(--color-shared-voucher-layout-1);
             color: #111;
-            font-size: 14px;
+            font-size: var(--typo-shared-voucher-layout-font-size-1);
             line-height: 1.2;
-            padding: 10px;
+            padding: var(--space-shared-voucher-layout-1);
         }
 
         .voucher-sheet {
@@ -100,28 +111,28 @@
         .voucher-copy {
             border: 1px solid #444;
             padding: 18px 18px 14px;
-            margin-bottom: 18px;
+            margin-bottom: var(--space-shared-voucher-layout-2);
             page-break-inside: avoid;
         }
 
         .copy-label {
             text-align: center;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: var(--typo-shared-voucher-layout-font-size-1);
+            margin-bottom: var(--space-shared-voucher-layout-3);
         }
 
         .voucher-header {
             display: flex;
             justify-content: space-between;
             /* align-items: flex-start; */
-            gap: 18px;
-            margin-bottom: 10px;
+            gap: var(--space-shared-voucher-layout-2);
+            margin-bottom: var(--space-shared-voucher-layout-1);
         }
 
         .brand-block {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-shared-voucher-layout-1);
             min-width: 0;
         }
 
@@ -132,8 +143,8 @@
         }
 
         .brand-lines div {
-            font-size: 14px;
-            line-height: 1.25;
+            font-size: var(--typo-shared-voucher-layout-font-size-1);
+            line-height: var(--typo-shared-voucher-layout-line-height-2);
         }
 
         .voucher-meta {
@@ -141,7 +152,7 @@
         }
 
         .voucher-title {
-            font-size: 15px;
+            font-size: var(--typo-shared-voucher-layout-font-size-3);
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -166,9 +177,9 @@
         }
 
         .info-table th {
-            font-weight: 400;
+            font-weight: var(--typo-shared-voucher-layout-font-weight-4);
             text-align: left;
-            background: #fff;
+            background: var(--color-shared-voucher-layout-1);
         }
 
         .tables-row {
@@ -198,31 +209,31 @@
         }
 
         .amount-table {
-            margin-top: 10px;
+            margin-top: var(--space-shared-voucher-layout-1);
         }
 
         .amount-table td {
-            font-size: 15px;
+            font-size: var(--typo-shared-voucher-layout-font-size-3);
             padding: 5px 6px;
         }
 
         .voucher-notes {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-top: 8px;
+            gap: var(--space-shared-voucher-layout-1);
+            margin-top: var(--space-shared-voucher-layout-3);
             font-size: 11px;
             color: #8a8a8a;
         }
 
         .voucher-footer {
-            margin-top: 18px;
+            margin-top: var(--space-shared-voucher-layout-2);
             font-size: 12px;
-            line-height: 1.25;
+            line-height: var(--typo-shared-voucher-layout-line-height-2);
         }
 
         .voucher-footer strong {
-            font-weight: 400;
+            font-weight: var(--typo-shared-voucher-layout-font-weight-4);
         }
 
         @media print {

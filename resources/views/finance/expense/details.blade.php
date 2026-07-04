@@ -125,12 +125,20 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-finance-expense-details-1: 10px;
+            --color-finance-expense-details-1: #00a8ff;
+            --color-finance-expense-details-2: #975ce7;
+            --color-finance-expense-details-3: #f35f62;
+            --typo-finance-expense-details-font-weight-1: 700;
+        }
+
         
         .finance-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-expense-details-1);
             flex-wrap: wrap;
         }
         .finance-summary-row { margin: 2px 0 10px; padding:7px;}
@@ -155,28 +163,28 @@
             margin-top: 30px;
             font-size: 18px;
             text-align: center;
-            font-weight: 700;
+            font-weight: var(--typo-finance-expense-details-font-weight-1);
         }
-        .tone-total { background: #f35f62; }
-        .tone-item { background: #00a8ff; }
+        .tone-total { background: var(--color-finance-expense-details-3); }
+        .tone-item { background: var(--color-finance-expense-details-1); }
         .tone-rent { background: #fdc518; }
-        .tone-utility { background: #975ce7; }
+        .tone-utility { background: var(--color-finance-expense-details-2); }
         .tone-marketing { background: #a2cf37; }
         .tone-asset { background: #4285f4; }
-        .tone-payroll { background: #00a8ff; }
-        .tone-general { background: #f35f62; }
-        .tone-reversed { background: #975ce7; }
+        .tone-payroll { background: var(--color-finance-expense-details-1); }
+        .tone-general { background: var(--color-finance-expense-details-3); }
+        .tone-reversed { background: var(--color-finance-expense-details-2); }
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-expense-details-font-weight-1);
         }
         @media (max-width: 760px)  {
             .expense-label {
                 margin-top: 5px;
             }
             .expense-value {
-                margin-top: 10px;
+                margin-top: var(--space-finance-expense-details-1);
             }
         }
     </style>

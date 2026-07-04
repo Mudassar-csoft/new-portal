@@ -14,19 +14,9 @@
     @endphp
 
     <div class="finance-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        @include('partials.session-status-alert')
 
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.validation-errors-alert')
 
         @unless($invoiceSchemaReady ?? true)
             <div class="alert alert-warning">
@@ -387,17 +377,23 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-finance-receivables-index-1: 10px;
+            --space-finance-receivables-index-2: 12px;
+            --color-finance-receivables-index-1: #fff;
+        }
+
         .finance-shell { padding: 8px 0 16px; }
-        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-finance-receivables-index-2); flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }
-        .finance-table thead th { background: #1ea7ff; color: #fff; }
+        .finance-table thead th { background: #1ea7ff; color: var(--color-finance-receivables-index-1); }
         .finance-summary-row { margin: 2px 0 10px; }
         .invoice-summary-card {
             min-height: 130px;
             border-radius: 10px;
             padding: 14px;
-            color: #fff;
-            margin-bottom: 12px;
+            color: var(--color-finance-receivables-index-1);
+            margin-bottom: var(--space-finance-receivables-index-2);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
         .invoice-summary-card .summary-value {
@@ -411,7 +407,7 @@
             font-weight: 600;
             text-transform: uppercase;
             text-align: center;
-            margin-top: 10px;
+            margin-top: var(--space-finance-receivables-index-1);
             opacity: .9;
         }
         .tone-open { background: #2684ff; }
@@ -442,7 +438,7 @@
         }
         @media (max-width: 760px) {
             .invoice-summary-card .summary-value { margin-top: 8px; font-size: 18px; }
-            .invoice-total-strip { width: 100%; margin-top: 10px; }
+            .invoice-total-strip { width: 100%; margin-top: var(--space-finance-receivables-index-1); }
             .receivables-list-table-wrap {
                 overflow-x: auto;
             }

@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-js-lib-bootstrap-datepicker-css-bootstrap-datepicker-standalone-line-height-1: 20px;
+}
+
 /*!
  * Datepicker for Bootstrap v1.7.1 (https://github.com/uxsolutions/bootstrap-datepicker)
  *
@@ -465,7 +469,7 @@
   height: 20px;
   padding: 4px 5px;
   font-weight: normal;
-  line-height: 20px;
+  line-height: var(--typo-theme-js-lib-bootstrap-datepicker-css-bootstrap-datepicker-standalone-line-height-1);
   text-align: center;
   text-shadow: 0 1px 0 #fff;
   vertical-align: middle;
@@ -499,7 +503,7 @@
   *border-bottom-width: 2px;
   color: #333333;
   font-size: 13px;
-  line-height: 20px;
+  line-height: var(--typo-theme-js-lib-bootstrap-datepicker-css-bootstrap-datepicker-standalone-line-height-1);
 }
 .datepicker.dropdown-menu th,
 .datepicker.datepicker-inline th,

@@ -6,15 +6,7 @@
     $selectedStatus = old('status', $batch->status ?: 'active');
 @endphp
 
-@if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+        @include('partials.validation-errors-alert')
 
 <div class="form-row">
     <div class="form-group col-lg-3 col-md-6">

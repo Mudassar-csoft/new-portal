@@ -125,6 +125,10 @@
 
 @push('styles')
 	<style>
+        :root {
+            --color-registration-status-1: #0a6fd1;
+        }
+
 		/* .reg-status-shell {
 			padding: 8px 0 16px;
 		} */
@@ -141,7 +145,7 @@
 		}
 
 		.student-name-link {
-			color: #0a6fd1;
+			color: var(--color-registration-status-1);
 			font-weight: 600;
 			text-decoration: none;
 			border-bottom: 1px dashed transparent;
@@ -149,14 +153,14 @@
 		}
 		.student-name-link:hover {
 			color: #0958a8;
-			border-bottom-color: #0a6fd1;
+			border-bottom-color: var(--color-registration-status-1);
 			text-decoration: none;
 		}
 		.student-name-link--pending {
-			color: #0a6fd1;
+			color: var(--color-registration-status-1);
 		}
 		.student-name-link--pending:hover {
-			color: #0a6fd1;
+			color: var(--color-registration-status-1);
 			border-bottom-color: #54667a;
 		}
 		.table-responsive {

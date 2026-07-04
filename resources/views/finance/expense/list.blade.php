@@ -13,21 +13,9 @@
         ];
     @endphp
     <div class="finance-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.session-error-alert')
+        @include('partials.validation-errors-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">
@@ -148,6 +136,11 @@
 
 @push('styles')
     <style>
+        :root {
+            --color-finance-expense-list-1: #343434;
+            --color-finance-expense-list-2: #fff;
+        }
+
        
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
@@ -172,15 +165,15 @@
     border-radius: .25rem;
     font-size: 1rem;
     line-height: 1.5;
-    color: #343434;
+    color: var(--color-finance-expense-list-1);
     padding: .375rem 25px .375rem 1rem;
     min-height: 32px;
-    background: #fff
+    background: var(--color-finance-expense-list-2)
 }
 .form-label{
     font-size: 11px;
     font-weight: 600 ;
-    color: #343434;
+    color: var(--color-finance-expense-list-1);
     text-transform: uppercase;
     margin-bottom: 3px;
     
@@ -190,7 +183,7 @@
 
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .finance-table thead th { background: #1ea7ff; color: #fff; }
+        .finance-table thead th { background: #1ea7ff; color: var(--color-finance-expense-list-2); }
         .dropdown-menu form { margin: 0; }
         .dropdown-menu form .dropdown-item { width: 100%; text-align: left; background: transparent; border: 0; }
     </style>

@@ -33,8 +33,8 @@
                         @include('batch.partials.form')
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Batch</button>
-                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10 ci-inline-ml-5">Create Batch</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -45,10 +45,24 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-batch-create-1: 100vh;
+            --dimension-batch-create-2: 12px;
+            --dimension-batch-create-3: 37px;
+            --dimension-batch-create-4: 7px;
+            --dimension-batch-create-5: 82px;
+            --space-batch-create-1: 8px;
+            --color-batch-create-1: #00a8ff;
+            --color-batch-create-2: #1f2937;
+            --color-batch-create-3: #343434;
+            --typo-batch-create-font-weight-1: 600;
+            --typo-batch-create-font-size-2: 12px;
+        }
+
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
-            min-height: 100vh;
+            min-height: var(--dimension-batch-create-1);
             width: 100%;
             overflow: visible;
             padding: 0;
@@ -60,7 +74,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-batch-create-1);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
@@ -73,12 +87,12 @@
         .lead-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-batch-create-1);
         }
 
         .lead-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-batch-create-2);
+            height: var(--dimension-batch-create-2);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -90,7 +104,7 @@
         .lead-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-batch-create-font-weight-1);
         }
 
         .lead-content {
@@ -124,41 +138,41 @@
         .lead-title {
             font-size: 18px;
             font-weight: 500;
-            color: #1f2937;
+            color: var(--color-batch-create-2);
             line-height: 1.4;
         }
 
         .lead-title span {
             font-size: 14px;
             font-weight: 400;
-            color: #1f2937;
+            color: var(--color-batch-create-2);
         }
 
         .lead-create-card .form-row { padding: 3px 10px; }
-        .lead-create-card .form-group { margin-bottom: 8px; }
+        .lead-create-card .form-group { margin-bottom: var(--space-batch-create-1); }
 
         .lead-create-card label,
         .lead-create-card .form-label {
-            color: #343434;
-            font-size: 12px;
-            font-weight: 600;
+            color: var(--color-batch-create-3);
+            font-size: var(--typo-batch-create-font-size-2);
+            font-weight: var(--typo-batch-create-font-weight-1);
             line-height: 1.2;
             margin-bottom: 6px;
         }
 
         .lead-create-card .form-control {
-            font-size: 12px;
-            height: 37px !important;
-            min-height: 37px !important;
+            font-size: var(--typo-batch-create-font-size-2);
+            height: var(--dimension-batch-create-3) !important;
+            min-height: var(--dimension-batch-create-3) !important;
             padding: 0.375rem 0.625rem !important;
             border: 1px solid #ccc;
             border-radius: 0.25rem;
-            color: #343434;
+            color: var(--color-batch-create-3);
         }
 
         .lead-create-card textarea.form-control {
-            height: 82px !important;
-            min-height: 82px !important;
+            height: var(--dimension-batch-create-5) !important;
+            min-height: var(--dimension-batch-create-5) !important;
             resize: vertical;
         }
 
@@ -184,17 +198,17 @@
             transition: background 0.2s, box-shadow 0.2s;
         }
 
-        .lead-create-card input[name="session"][type="radio"]:checked { border-color: #00a8ff; }
+        .lead-create-card input[name="session"][type="radio"]:checked { border-color: var(--color-batch-create-1); }
 
         .lead-create-card input[name="session"][type="radio"]:checked::before {
             content: '';
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 7px;
-            height: 7px;
+            width: var(--dimension-batch-create-4);
+            height: var(--dimension-batch-create-4);
             border-radius: 50%;
-            background-color: #00a8ff;
+            background-color: var(--color-batch-create-1);
         }
     </style>
 @endpush

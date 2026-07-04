@@ -1,3 +1,9 @@
+:root {
+    --typo-theme-css-separate-pages-messenger-font-size-1: 1rem;
+    --typo-theme-css-separate-pages-messenger-font-size-2: 1.1rem;
+    --typo-theme-css-separate-pages-messenger-font-size-3: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -8,11 +14,11 @@
   padding-top: 8px;
 }
 .messenger .chat-list-settings-header .action {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-1);
   padding-top: 8px;
 }
 .messenger .chat-list-settings-header .action a {
-  font-size: 1.1rem;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-2);
   color: #c3cbd2;
 }
 .messenger .chat-list-settings-header .action a:hover {
@@ -66,7 +72,7 @@
   top: 14px !important;
 }
 .messenger .write-message .attach span.font-icon {
-  font-size: 1rem !important;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-1) !important;
 }
 .messenger .chat-area-header .chat-list-item.online {
   text-align: center;
@@ -183,7 +189,7 @@
   display: inline-block;
 }
 .chat-settings .item a .font-icon {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-3);
   display: inline-block;
   margin-right: 5px;
   color: #c3cbd2;
@@ -246,7 +252,7 @@
 }
 .messenger-message-container .messages .time-ago {
   vertical-align: middle;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-3);
   color: #adb7be;
   padding-left: 10px;
 }
@@ -279,7 +285,7 @@
 }
 .chat-list-info .chat-list-settings-header a {
   color: #C3CAD0;
-  font-size: 1.1rem;
+  font-size: var(--typo-theme-css-separate-pages-messenger-font-size-2);
   display: inline-block;
   margin-left: 10px;
 }

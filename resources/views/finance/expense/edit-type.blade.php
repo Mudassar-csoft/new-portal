@@ -4,15 +4,7 @@
 
 @section('content')
     <div class="finance-shell">
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.validation-errors-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default finance-card">
             <header class="box-typical-header panel-heading finance-header">

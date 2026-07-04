@@ -99,9 +99,20 @@
     <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
+        :root {
+            --dimension-student-records-index-1: 100vh;
+            --dimension-student-records-index-2: 12px;
+            --space-student-records-index-1: 0 !important;
+            --space-student-records-index-2: 12px;
+            --space-student-records-index-3: 4px !important;
+            --space-student-records-index-4: 8px;
+            --color-student-records-index-1: #54667a;
+            --typo-student-records-index-font-size-1: 12px;
+        }
+
         .lead-status-shell {
             position: relative;
-            min-height: 100vh;
+            min-height: var(--dimension-student-records-index-1);
             width: 100%;
             overflow: visible;
         }
@@ -111,21 +122,21 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-student-records-index-1);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-student-records-index-2);
         }
 
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-student-records-index-4); }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-student-records-index-2);
+            height: var(--dimension-student-records-index-2);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -134,7 +145,7 @@
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: var(--color-student-records-index-1); font-weight: 600; }
 
         .follow-content {
             opacity: 0;
@@ -169,7 +180,7 @@
         }
 
         #student-records-table {
-            margin-top: 8px;
+            margin-top: var(--space-student-records-index-4);
         }
 
         #student-records-table th,
@@ -205,8 +216,8 @@
             right: 0 !important;
             left: auto !important;
             bottom: auto !important;
-            margin-top: 4px !important;
-            margin-right: 0 !important;
+            margin-top: var(--space-student-records-index-3);
+            margin-right: var(--space-student-records-index-1);
             transform: none !important;
             z-index: 1070 !important;
         }
@@ -225,8 +236,8 @@
             bottom: 100% !important;
             right: 0 !important;
             left: auto !important;
-            margin-top: 0 !important;
-            margin-bottom: 4px !important;
+            margin-top: var(--space-student-records-index-1);
+            margin-bottom: var(--space-student-records-index-3);
         }
 
         /* DataTables wrappers must not clip the dropdown */
@@ -251,7 +262,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: #9aa8b6;
-            font-size: 12px;
+            font-size: var(--typo-student-records-index-font-size-1);
             pointer-events: none;
         }
 
@@ -269,20 +280,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-student-records-index-2);
         }
 
         .student-directory .dataTables_wrapper .follow-footer {
             margin-top: 10px;
             margin-bottom: 0;
-            color: #54667a;
+            color: var(--color-student-records-index-1);
             font-size: 13px;
         }
 
         .student-records-note {
             margin-top: 6px;
             color: #7b8794;
-            font-size: 12px;
+            font-size: var(--typo-student-records-index-font-size-1);
         }
     </style>
 @endpush

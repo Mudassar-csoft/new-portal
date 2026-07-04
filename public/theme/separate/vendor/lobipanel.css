@@ -1,3 +1,11 @@
+:root {
+    --typo-theme-separate-vendor-lobipanel-line-height-1: 13px;
+    --typo-theme-separate-vendor-lobipanel-font-weight-2: 400;
+    --typo-theme-separate-vendor-lobipanel-font-size-3: 0.8rem;
+    --typo-theme-separate-vendor-lobipanel-line-height-4: 18px;
+    --typo-theme-separate-vendor-lobipanel-font-size-5: 15px;
+}
+
 .lobipanel .panel-heading {
   padding: 13px 20px !important;
 }
@@ -17,10 +25,10 @@
   -webkit-border-radius: 2px;
           border-radius: 2px;
   font-size: 13px;
-  line-height: 13px;
+  line-height: var(--typo-theme-separate-vendor-lobipanel-line-height-1);
   background: #fff;
   padding: 4px 10px;
-  font-weight: 400;
+  font-weight: var(--typo-theme-separate-vendor-lobipanel-font-weight-2);
 }
 .lobipanel .panel-heading .panel-title input:focus,
 .lobipanel .panel-heading .panel-title input.active {
@@ -36,8 +44,8 @@
 }
 .lobipanel .panel-heading a i {
   color: #adb7be;
-  font-size: 0.8rem;
-  line-height: 18px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-3);
+  line-height: var(--typo-theme-separate-vendor-lobipanel-line-height-4);
 }
 .lobipanel .panel-heading a:hover {
   -webkit-box-shadow: none !important;
@@ -69,8 +77,8 @@
 .lobipanel .panel-heading .dropdown .dropdown-toggle span,
 .lobipanel .panel-heading .dropdown .dropdown-toggle:hover span {
   color: #adb7be;
-  font-size: 0.8rem;
-  line-height: 18px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-3);
+  line-height: var(--typo-theme-separate-vendor-lobipanel-line-height-4);
 }
 .lobipanel .panel-heading .dropdown .dropdown-toggle .panel-control-icon,
 .lobipanel .panel-heading .dropdown .dropdown-toggle:hover .panel-control-icon {
@@ -78,9 +86,9 @@
   color: #adb7be;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
-  font-size: 15px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-5);
   vertical-align: middle;
-  line-height: 13px;
+  line-height: var(--typo-theme-separate-vendor-lobipanel-line-height-1);
   position: relative;
   top: -1px;
 }
@@ -90,7 +98,7 @@
 
 .lobipanel .panel-heading .dropdown.open .dropdown-menu {
   border-color: #d8e2e7;
-  font-size: 15px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-5);
   min-width: 160px;
   padding: 5px 0;
   margin: 6px 0 0;
@@ -107,13 +115,13 @@
   display: block;
   width: 100%;
   clear: both;
-  font-weight: 400;
+  font-weight: var(--typo-theme-separate-vendor-lobipanel-font-weight-2);
   line-height: 1.5;
   color: #373a3c;
   text-align: inherit;
   background: 0 0;
   border: 0;
-  font-size: 15px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-5);
   padding: 4px 12px;
 }
 .lobipanel .panel-heading .dropdown.open .dropdown-menu li a .control-title {
@@ -124,7 +132,7 @@
   color: #adb7be;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
-  font-size: 15px;
+  font-size: var(--typo-theme-separate-vendor-lobipanel-font-size-5);
   vertical-align: middle;
   line-height: 16px;
   position: relative;

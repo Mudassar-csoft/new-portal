@@ -29,6 +29,11 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --dimension-certificate-partials-action-1: 22px;
+            --color-certificate-partials-action-1: #303740;
+        }
+
             .follow-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 220px;
                 padding: 1px 0;
@@ -42,16 +47,16 @@
             .follow-action-dropdown form button.dropdown-item.lead-action-item {
                 display: flex !important; align-items: center; gap: 8px; width: 100%;
                 text-align: left !important; padding: 6px 18px !important;
-                color: #303740 !important; font-size: 15px !important; font-weight: 500;
+                color: var(--color-certificate-partials-action-1) !important; font-size: 15px !important; font-weight: 500;
                 background: transparent !important; border: 0; transition: background-color 0.18s ease;
             }
             .follow-action-dropdown .dropdown-item.lead-action-item:hover,
             .follow-action-dropdown form button.dropdown-item.lead-action-item:hover {
                 background: #f7fafc !important; text-decoration: none;
             }
-            .follow-action-dropdown .lead-action-icon { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; }
+            .follow-action-dropdown .lead-action-icon { width: var(--dimension-certificate-partials-action-1); min-width: var(--dimension-certificate-partials-action-1); height: var(--dimension-certificate-partials-action-1); display: inline-flex; align-items: center; justify-content: center; }
             .follow-action-dropdown .lead-action-icon.lead-icon-blue { color: #19b6e6; }
-            .follow-action-dropdown .lead-action-icon.lead-icon-black { color: #303740; }
+            .follow-action-dropdown .lead-action-icon.lead-icon-black { color: var(--color-certificate-partials-action-1); }
             .follow-action-dropdown .lead-action-icon.lead-icon-green { color: #2db853; }
             .follow-action-dropdown .lead-action-icon.lead-icon-yellow { color: #f5b400; }
             .follow-action-dropdown .lead-action-icon.lead-icon-red { color: #ef4e4e; }
@@ -78,9 +83,7 @@
 
 @if($hasActions)
 <div class="dropdown follow-action-dropdown">
-    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-display="static" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Actions
-    </button>
+    @include('partials.action-dropdown-toggle')
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
         @if($showEditRemarks)
             <a class="dropdown-item lead-action-item" href="{{ route('certificate.edit', $cert) }}">

@@ -15,9 +15,7 @@
     @endphp
 
     <div class="student-detail-shell">
-        @if(session('status'))
-            <div class="student-flash">{{ session('status') }}</div>
-        @endif
+        @include('partials.student-session-status-flash')
         @if(session('error'))
             <div class="student-flash student-flash--error">{{ session('error') }}</div>
         @endif
@@ -25,7 +23,7 @@
         <!-- <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
                 <h3 class="panel-title mb-0">Student Detail
-                    <small class="text-muted" style="font-size:14px;font-weight:400;">
+                    <small class="text-muted ci-muted-meta">
                         — {{ $registration->student_name ?? '' }}
                     </small>
                 </h3>
@@ -78,21 +76,10 @@
                                     <span class="lead-action-label">Send SMS</span>
                                 </a>
                                 <a class="dropdown-item lead-action-item {{ $studentEmailUrl ? '' : 'is-disabled' }}" href="{{ $studentEmailUrl ?: '#' }}" @if(!$studentEmailUrl) aria-disabled="true" tabindex="-1" @endif>
-                                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M3.75 6.25h16.5A1.25 1.25 0 0 1 21.5 7.5v9a1.25 1.25 0 0 1-1.25 1.25H3.75A1.25 1.25 0 0 1 2.5 16.5v-9a1.25 1.25 0 0 1 1.25-1.25Z"/>
-                                            <path d="m3 7 9 7 9-7"/>
-                                        </svg>
-                                    </span>
-                                    <span class="lead-action-label">Send Email</span>
+                                    @include('partials.action-send-email-content')
                                 </a>
                                 <a class="dropdown-item lead-action-item {{ $studentWhatsappUrl ? '' : 'is-disabled' }}" href="{{ $studentWhatsappUrl ?: '#' }}" @if($studentWhatsappUrl) target="_blank" rel="noopener" @else aria-disabled="true" tabindex="-1" @endif>
-                                    <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M20.52 3.48A11.8 11.8 0 0 0 12.12 0C5.58 0 .24 5.34.24 11.88c0 2.1.54 4.14 1.62 5.94L0 24l6.36-1.8a11.86 11.86 0 0 0 5.76 1.5H12.12c6.54 0 11.88-5.34 11.88-11.88 0-3.18-1.26-6.18-3.48-8.34zm-8.4 18.24h-.06a9.8 9.8 0 0 1-4.98-1.38l-.36-.24-3.78 1.08 1.02-3.66-.24-.36a9.88 9.88 0 0 1-1.56-5.28c0-5.46 4.44-9.9 9.9-9.9 2.64 0 5.1 1.02 6.96 2.88a9.8 9.8 0 0 1 2.88 7.02c0 5.46-4.44 9.9-9.84 9.9zm5.46-7.38c-.3-.18-1.8-.9-2.1-1.02-.24-.06-.48-.12-.72.18-.18.3-.72 1.02-.9 1.2-.18.18-.36.24-.66.06a8.1 8.1 0 0 1-2.4-1.5 8.98 8.98 0 0 1-1.68-2.1c-.18-.3 0-.42.12-.6.12-.12.3-.36.42-.54.12-.18.18-.3.3-.48.06-.18 0-.36 0-.54 0-.12-.72-1.74-.96-2.34-.24-.6-.54-.48-.72-.48h-.6c-.24 0-.54.06-.84.36-.3.3-1.08 1.08-1.08 2.64s1.14 3.06 1.26 3.24c.18.24 2.22 3.42 5.4 4.74.72.3 1.32.48 1.8.6.72.24 1.38.18 1.92.12.6-.06 1.8-.72 2.1-1.44.24-.66.24-1.32.18-1.44-.12-.12-.3-.18-.6-.36z"/>
-                                        </svg>
-                                    </span>
-                                    <span class="lead-action-label">Whatsapp</span>
+                                    @include('partials.action-whatsapp-content')
                                 </a>
                                 @if($canAdminEdit)
                                     <a class="dropdown-item lead-action-item {{ $studentLeadId ? '' : 'is-disabled' }}" href="{{ $studentLeadId ? route('leads.show', $studentLeadId) : '#' }}" @if(!$studentLeadId) aria-disabled="true" tabindex="-1" @endif>
@@ -252,7 +239,7 @@
                                         <td>{{ $fee->fee_type === 'registration' ? 'Registration Fee' : ($admission?->program?->title ?? $registration->program?->title ?? '—') }}</td>
                                         <td>{{ number_format((float) ($fee->net_amount ?? $fee->amount ?? 0), 0) }}</td>
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
-                                        
+
                                     <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
                                     <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>
                                    <td class="fee-status-cell">
@@ -272,7 +259,7 @@
                                              @else
                                              <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                              @endif
-                                       
+
                                         </td>
                                     <td> @if($voucherUrl)
                                         <a class="btn btn-xs btn-warning fee-action-btn fee-status-control fee-status-control--icon p-2"
@@ -411,7 +398,7 @@
                     <div class="fee-edit-field">
                         <label for="fee_collect_remaining">Remaining Amount</label>
                         <input type="text" id="fee_collect_remaining" readonly>
-                        <small class="text-muted" id="fee_collect_remaining_hint" style="font-size:11px;display:block;margin-top:4px;"></small>
+                        <small class="text-muted" id="fee_collect_remaining_hint" style="font-size: var(--typo-student-show-font-size-1);display:block;margin-top:4px;"></small>
                     </div>
                     <div class="fee-edit-field">
                         <label for="fee_collect_receipt">Receipt Number <span style="color:#dc3545;">*</span></label>
@@ -429,20 +416,74 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-student-show-1: 100%;
+            --dimension-student-show-2: 100px;
+            --dimension-student-show-3: 22px;
+            --dimension-student-show-4: 24px;
+            --dimension-student-show-5: 26px;
+            --space-student-show-1: 12px;
+            --space-student-show-2: 14px;
+            --space-student-show-3: 14px 18px;
+            --space-student-show-4: 16px;
+            --space-student-show-5: 4px;
+            --space-student-show-6: 6px;
+            --space-student-show-7: 8px;
+            --color-student-show-1: #00a8ff;
+            --color-student-show-2: #0a96cc;
+            --color-student-show-3: #1f2d3d;
+            --color-student-show-4: #303740;
+            --color-student-show-5: #4c5a6a;
+            --color-student-show-6: #cbd5e1;
+            --color-student-show-7: #e2e8f0;
+            --color-student-show-8: #fff;
+            --color-student-show-9: rgba(15,23,42,0.55);
+            --color-student-show-10: rgba(255,255,255,0.04);
+        }
+
+        :root {
+            --dimension-student-show-1: 100%;
+            --dimension-student-show-2: 100px;
+            --dimension-student-show-3: 22px;
+            --dimension-student-show-4: 24px;
+            --dimension-student-show-5: 26px;
+            --space-student-show-1: 12px;
+            --space-student-show-2: 14px;
+            --space-student-show-3: 14px 18px;
+            --space-student-show-4: 16px;
+            --space-student-show-5: 4px;
+            --space-student-show-6: 6px;
+            --space-student-show-7: 8px;
+            --typo-student-show-font-size-1: 11px;
+            --typo-student-show-font-size-2: 18px;
+            --typo-student-show-font-weight-3: 600;
+            --typo-student-show-font-size-4: 14px;
+            --typo-student-show-font-weight-5: 500;
+            --typo-student-show-line-height-6: 1;
+            --typo-student-show-font-size-7: 13px;
+            --typo-student-show-font-size-8: 16px;
+            --typo-student-show-font-size-9: 12px;
+        }0___
+
+        .ci-muted-meta {
+            font-size: 14px !important;
+            font-weight: 400 !important;
+        }
+
         .student-detail-shell {
             padding: 0;
         }
 
         .student-detail-header {
-            margin-bottom: 14px;
+            margin-bottom: var(--space-student-show-2);
         }
-        .student-detail-header .panel-body { padding: 14px 18px; }
+        .student-detail-header .panel-body { padding: var(--space-student-show-3); }
         .student-detail-header .panel-title { margin: 0; font-size: 18px !important; font-weight: 600 !important; }
 
         .student-detail-grid {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 16px;
+            gap: var(--space-student-show-4);
             align-items: start;
         }
         @media (max-width: 991px) {
@@ -461,7 +502,7 @@
         .profile-banner {
             height: 160px;
             background:
-                linear-gradient(135deg, rgba(15,23,42,0.55), rgba(15,23,42,0.55)),
+                linear-gradient(135deg, var(--color-student-show-9), var(--color-student-show-9)),
                 linear-gradient(135deg, #2c3e50 0%, #4a5568 60%, #1e293b 100%);
             position: relative;
             overflow: hidden;
@@ -471,8 +512,8 @@
             position: absolute;
             inset: 0;
             background:
-                repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 12px, transparent 12px 24px),
-                repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 12px, transparent 12px 24px);
+                repeating-linear-gradient(135deg, var(--color-student-show-10) 0 12px, transparent 12px 24px),
+                repeating-linear-gradient(45deg, var(--color-student-show-10) 0 12px, transparent 12px 24px);
             pointer-events: none;
         }
         .profile-avatar-wrap {
@@ -497,48 +538,48 @@
             color: #fff !important;
         }
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: var(--dimension-student-show-2);
+            height: var(--dimension-student-show-2);
             border-radius: 50%;
-            border: 4px solid #fff;
-            background: #fff;
+            border: 4px solid var(--color-student-show-8);
+            background: var(--color-student-show-8);
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             overflow: hidden;
         }
-        .profile-avatar svg { display: block; width: 100%; height: 100%; }
+        .profile-avatar svg { display: block; width: var(--dimension-student-show-1); height: var(--dimension-student-show-1); }
         .profile-body { padding: 12px 20px 20px; text-align: center; }
         .profile-name {
             margin: 8px 0 4px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2d3d;
+            font-size: var(--typo-student-show-font-size-2);
+            font-weight: var(--typo-student-show-font-weight-3);
+            color: var(--color-student-show-3);
         }
         .profile-phone {
-            color: #4c5a6a;
-            font-size: 14px;
-            margin-bottom: 16px;
+            color: var(--color-student-show-5);
+            font-size: var(--typo-student-show-font-size-4);
+            margin-bottom: var(--space-student-show-4);
         }
         .profile-action { margin-bottom: 20px; }
         .student-action-wrap { display: inline-block; position: relative; }
         .student-action-btn {
             background: transparent !important;
-            color: #00a8ff !important;
-            border: 1px solid #00a8ff !important;
+            color: var(--color-student-show-1) !important;
+            border: 1px solid var(--color-student-show-1) !important;
             padding: 6px 18px !important;
             border-radius: 4px;
-            font-weight: 500;
+            font-weight: var(--typo-student-show-font-weight-5);
         }
         .student-action-btn:hover {
-            background: #00a8ff !important;
-            color: #fff !important;
-            border-color: #00a8ff !important;
+            background: var(--color-student-show-1) !important;
+            color: var(--color-student-show-8) !important;
+            border-color: var(--color-student-show-1) !important;
         }
         .student-action-wrap .dropdown-menu {
             display: none;
-            
+
             width:237px;
             min-width: 150px !important;
-            background: #fff;
+            background: var(--color-student-show-8);
             border: 1px solid #dfe5eb;
             border-radius: 6px;
             box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
@@ -557,9 +598,9 @@
             align-items: center;
             gap: 10px;
             padding: 8px 22px;
-            color: #303740;
+            color: var(--color-student-show-4);
             font-size: 17px;
-            font-weight: 500;
+            font-weight: var(--typo-student-show-font-weight-5);
             line-height: 1.4;
             text-decoration: none;
         }
@@ -576,20 +617,20 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 26px;
-            min-width: 26px;
-            height: 26px;
-            line-height: 1;
+            width: var(--dimension-student-show-5);
+            min-width: var(--dimension-student-show-5);
+            height: var(--dimension-student-show-5);
+            line-height: var(--typo-student-show-line-height-6);
             flex-shrink: 0;
         }
         .student-action-wrap .lead-action-icon svg {
             display: block;
-            width: 24px;
-            height: 24px;
+            width: var(--dimension-student-show-4);
+            height: var(--dimension-student-show-4);
         }
         .student-action-wrap .lead-action-icon--whatsapp svg {
-            width: 22px;
-            height: 22px;
+            width: var(--dimension-student-show-3);
+            height: var(--dimension-student-show-3);
         }
         .student-action-wrap .lead-action-label {
             display: inline-block;
@@ -597,23 +638,23 @@
         }
         .student-action-wrap .lead-icon-blue { color: #1b95ff; }
         .student-action-wrap .lead-icon-yellow { color: #f5b400; }
-        .student-action-wrap .lead-icon-black { color: #303740; }
+        .student-action-wrap .lead-icon-black { color: var(--color-student-show-4); }
         .student-action-wrap .lead-icon-green { color: #2db853; }
 
         .profile-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: var(--space-student-show-7);
         }
         .stat-tile {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--color-student-show-7);
             border-radius: 4px;
             padding: 10px 6px;
             text-align: center;
         }
-        .stat-label { font-size: 13px; color: #1f2d3d; font-weight: 600; }
-        .stat-value { font-size: 16px; font-weight: 600; margin-top: 4px; color: #1f2d3d; }
-        .stat-value--blue { color: #0a96cc; }
+        .stat-label { font-size: var(--typo-student-show-font-size-7); color: var(--color-student-show-3); font-weight: var(--typo-student-show-font-weight-3); }
+        .stat-value { font-size: var(--typo-student-show-font-size-8); font-weight: var(--typo-student-show-font-weight-3); margin-top: var(--space-student-show-5); color: var(--color-student-show-3); }
+        .stat-value--blue { color: var(--color-student-show-2); }
         .stat-value--orange { color: #f5a623; }
 
         /* ==================== RIGHT CONTENT ==================== */
@@ -624,8 +665,8 @@
             margin: 0;
             padding: 0;
             list-style: none;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
+            background: var(--color-student-show-8);
+            border-bottom: 1px solid var(--color-student-show-7);
             overflow: hidden;
         }
         .student-tab {
@@ -633,24 +674,24 @@
             padding: 14px 12px;
             text-align: center;
             cursor: pointer;
-            color: #4c5a6a;
-            font-size: 16px;
-            font-weight: 500;
+            color: var(--color-student-show-5);
+            font-size: var(--typo-student-show-font-size-8);
+            font-weight: var(--typo-student-show-font-weight-5);
             border-bottom: 3px solid transparent;
             transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
         }
         .student-tab:hover { background: #f8fbff; }
         .student-tab.active {
-            color: #0a96cc;
-            font-weight: 600;
-            border-bottom-color: #0a96cc;
+            color: var(--color-student-show-2);
+            font-weight: var(--typo-student-show-font-weight-3);
+            border-bottom-color: var(--color-student-show-2);
         }
 
         .student-pane { display: none; }
         .student-pane.is-active { display: block; }
 
         .pane-card {
-            padding: 14px;
+            padding: var(--space-student-show-2);
         }
         .pane-card--info { padding: 18px 20px; }
 
@@ -664,7 +705,7 @@
         }
 
         .fee-status-cell { white-space: nowrap; }
-        .fee-status-cell .label { padding: 4px 10px; font-size: 11px; font-weight: 600; }
+        .fee-status-cell .label { padding: 4px 10px; font-size: var(--typo-student-show-font-size-1); font-weight: var(--typo-student-show-font-weight-3); }
         .fee-status-control {
             display: inline-flex !important;
             align-items: center;
@@ -675,37 +716,37 @@
         }
         .fee-status-control--text { min-width: 45px; }
         .fee-status-control--icon { width: 30px; }
-        .fee-action-btn { margin-left: 4px; padding: 3px 8px; }
-        .fee-action-btn .fa { font-size: 12px; }
+        .fee-action-btn { margin-left: var(--space-student-show-5); padding: 3px 8px; }
+        .fee-action-btn .fa { font-size: var(--typo-student-show-font-size-9); }
         .fee-action-btn.disabled { opacity: 0.5; cursor: not-allowed; }
         .js-fee-collect:hover { background: #d99020 !important; }
 
         .pane-section-title {
             margin: 0 0 14px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2d3d;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            font-size: var(--typo-student-show-font-size-2);
+            font-weight: var(--typo-student-show-font-weight-3);
+            color: var(--color-student-show-3);
+            padding-bottom: var(--space-student-show-1);
+            border-bottom: 1px solid var(--color-student-show-7);
         }
         .info-table {
-            width: 100%;
+            width: var(--dimension-student-show-1);
             border-collapse: collapse;
         }
         .info-table th,
         .info-table td {
             padding: 5px 0;
             border-bottom: 1px solid #eef2f7;
-            font-size: 14px;
+            font-size: var(--typo-student-show-font-size-4);
             vertical-align: middle;
         }
         .info-table th {
             width: 28%;
             text-align: left;
-            color: #1f2d3d;
+            color: var(--color-student-show-3);
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: var(--typo-student-show-font-size-9);
             letter-spacing: 0.5px;
         }
         .info-table td { color: #334155; }
@@ -718,8 +759,8 @@
             border: 1px solid #a7f3d0;
             padding: 10px 14px;
             border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 13px;
+            margin-bottom: var(--space-student-show-1);
+            font-size: var(--typo-student-show-font-size-7);
         }
         .student-flash--error {
             background: #fef2f2;
@@ -728,8 +769,8 @@
         }
 
         .badge-pill-icon { text-decoration: none; }
-        .badge-pill-icon:hover { background: #e0931a; color: #fff; }
-        .badge-pill-icon--muted { background: #cbd5e1; cursor: not-allowed; }
+        .badge-pill-icon:hover { background: #e0931a; color: var(--color-student-show-8); }
+        .badge-pill-icon--muted { background: var(--color-student-show-6); cursor: not-allowed; }
 
         /* ============ FEE EDIT MODAL ============ */
         .fee-edit-modal {
@@ -748,11 +789,11 @@
         }
         .fee-edit-dialog {
             position: relative;
-            background: #fff;
+            background: var(--color-student-show-8);
             border-radius: 8px;
-            width: 100%;
+            width: var(--dimension-student-show-1);
             max-width: 440px;
-            margin: 16px;
+            margin: var(--space-student-show-4);
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
             animation: feeEditIn 0.15s ease-out;
@@ -765,72 +806,72 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: var(--space-student-show-3);
             background: #1fb2ff;
-            color: #fff;
+            color: var(--color-student-show-8);
         }
-        .fee-edit-header h4 { margin: 0; font-size: 16px; font-weight: 600; }
+        .fee-edit-header h4 { margin: 0; font-size: var(--typo-student-show-font-size-8); font-weight: var(--typo-student-show-font-weight-3); }
         .fee-edit-close {
             background: transparent;
             border: 0;
-            color: #fff;
+            color: var(--color-student-show-8);
             font-size: 24px;
-            line-height: 1;
+            line-height: var(--typo-student-show-line-height-6);
             cursor: pointer;
             padding: 0;
         }
         .fee-edit-body { padding: 18px; }
         .fee-edit-label-row {
             display: flex;
-            gap: 6px;
-            font-size: 13px;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            gap: var(--space-student-show-6);
+            font-size: var(--typo-student-show-font-size-7);
+            margin-bottom: var(--space-student-show-2);
+            padding-bottom: var(--space-student-show-1);
+            border-bottom: 1px solid var(--color-student-show-7);
         }
         .fee-edit-sublabel { color: #64748b; }
-        .fee-edit-name { font-weight: 600; color: #1f2d3d; }
-        .fee-edit-field { margin-bottom: 14px; }
+        .fee-edit-name { font-weight: var(--typo-student-show-font-weight-3); color: var(--color-student-show-3); }
+        .fee-edit-field { margin-bottom: var(--space-student-show-2); }
         .fee-edit-field label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #1f2d3d;
-            margin-bottom: 6px;
+            font-size: var(--typo-student-show-font-size-7);
+            font-weight: var(--typo-student-show-font-weight-3);
+            color: var(--color-student-show-3);
+            margin-bottom: var(--space-student-show-6);
         }
         .fee-edit-field input {
-            width: 100%;
+            width: var(--dimension-student-show-1);
             padding: 8px 10px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--color-student-show-6);
             border-radius: 4px;
-            font-size: 14px;
-            color: #1f2d3d;
+            font-size: var(--typo-student-show-font-size-4);
+            color: var(--color-student-show-3);
         }
         .fee-edit-field input:focus {
             outline: 0;
-            border-color: #0a96cc;
+            border-color: var(--color-student-show-2);
             box-shadow: 0 0 0 2px rgba(10, 150, 204, 0.15);
         }
         .fee-edit-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
+            gap: var(--space-student-show-7);
             padding: 12px 18px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--color-student-show-7);
             background: #f8fafc;
         }
         .btn-fee-cancel,
         .btn-fee-save {
             padding: 7px 16px;
             border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-student-show-font-size-7);
+            font-weight: var(--typo-student-show-font-weight-3);
             cursor: pointer;
             border: 0;
         }
-        .btn-fee-cancel { background: #e2e8f0; color: #1f2d3d; }
-        .btn-fee-cancel:hover { background: #cbd5e1; }
-        .btn-fee-save { background: #20b2aa; color: #fff; }
+        .btn-fee-cancel { background: var(--color-student-show-7); color: var(--color-student-show-3); }
+        .btn-fee-cancel:hover { background: var(--color-student-show-6); }
+        .btn-fee-save { background: #20b2aa; color: var(--color-student-show-8); }
         .btn-fee-save:hover { background: #199994; }
     </style>
 @endpush

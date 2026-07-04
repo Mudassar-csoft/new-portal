@@ -1,3 +1,8 @@
+:root {
+    --typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-font-family-1: 'Courier New', Courier, monospace;
+    --typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-line-height-2: 14px;
+}
+
 table.dataTable.dtr-inline.collapsed > tbody > tr > td.child,
 table.dataTable.dtr-inline.collapsed > tbody > tr > th.child,
 table.dataTable.dtr-inline.collapsed > tbody > tr > td.dataTables_empty {
@@ -28,8 +33,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
   box-shadow: 0 0 3px #444;
   box-sizing: content-box;
   text-align: center;
-  font-family: 'Courier New', Courier, monospace;
-  line-height: 14px;
+  font-family: var(--typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-font-family-1);
+  line-height: var(--typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-line-height-2);
   content: '+';
   background-color: #31b131;
 }
@@ -52,7 +57,7 @@ table.dataTable.dtr-inline.collapsed.compact > tbody > tr > th:first-child:befor
   height: 14px;
   width: 14px;
   border-radius: 14px;
-  line-height: 14px;
+  line-height: var(--typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-line-height-2);
   text-indent: 3px;
 }
 table.dataTable.dtr-column > tbody > tr > td.control,
@@ -76,8 +81,8 @@ table.dataTable.dtr-column > tbody > tr > th.control:before {
   box-shadow: 0 0 3px #444;
   box-sizing: content-box;
   text-align: center;
-  font-family: 'Courier New', Courier, monospace;
-  line-height: 14px;
+  font-family: var(--typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-font-family-1);
+  line-height: var(--typo-theme-css-lib-datatables-net-responsive-2-1-0-css-responsive-datatables-line-height-2);
   content: '+';
   background-color: #31b131;
 }

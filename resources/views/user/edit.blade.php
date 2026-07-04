@@ -196,14 +196,53 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-user-edit-1: 100%;
+            --dimension-user-edit-2: 100%;
+            --dimension-user-edit-3: 30px;
+            --dimension-user-edit-4: 39px;
+            --dimension-user-edit-5: 50px;
+            --space-user-edit-1: 0 !important;
+            --space-user-edit-2: 0 auto;
+            --space-user-edit-3: 14px;
+            --space-user-edit-4: 16px;
+            --space-user-edit-5: 41px;
+            --space-user-edit-6: 6px;
+            --space-user-edit-7: 8px;
+            --color-user-edit-1: #bcd3e8;
+            --color-user-edit-2: #d2dee9;
+            --color-user-edit-3: #d93048;
+            --color-user-edit-4: #e8f1ff;
+            --color-user-edit-5: #fff;
+        }
+
+        :root {
+            --dimension-user-edit-1: 100%;
+            --dimension-user-edit-2: 100%;
+            --dimension-user-edit-3: 30px;
+            --dimension-user-edit-4: 39px;
+            --dimension-user-edit-5: 50px;
+            --space-user-edit-1: 0 !important;
+            --space-user-edit-2: 0 auto;
+            --space-user-edit-3: 14px;
+            --space-user-edit-4: 16px;
+            --space-user-edit-5: 41px;
+            --space-user-edit-6: 6px;
+            --space-user-edit-7: 8px;
+            --typo-user-edit-font-weight-1: 600;
+            --typo-user-edit-font-weight-2: 700;
+            --typo-user-edit-font-size-3: 20px;
+            --typo-user-edit-font-size-4: 13px;
+        }0___
+
         .form-label-role{
             font-size: 14px !important;
-            margin-bottom: 6px;
-            margin-top: 6px;
+            margin-bottom: var(--space-user-edit-6);
+            margin-top: var(--space-user-edit-6);
             
             color: #343a40 !important;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: var(--typo-user-edit-font-weight-1);
 
         }
         .user-edit-page {
@@ -213,9 +252,9 @@
             overflow-x: hidden;
         }
         .user-edit-page .page-content > .container-fluid {
-            max-width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            max-width: var(--dimension-user-edit-2) !important;
+            padding-left: var(--space-user-edit-1);
+            padding-right: var(--space-user-edit-1);
             overflow: visible !important;
         }
         .user-edit-page .user-shell {
@@ -226,12 +265,12 @@
         }
         .user-edit-page .user-card {
             
-            margin: 0 auto;
+            margin: var(--space-user-edit-2);
             border: 1px solid #d9e4f0;
             border-radius: 0px;
             overflow: hidden;
            
-            background: #fff;
+            background: var(--color-user-edit-5);
         }
         .user-edit-page .user-card-header {
             padding: 22px 34px 18px;
@@ -243,7 +282,7 @@
             letter-spacing: 0.18em;
             text-transform: uppercase;
             color: #7f93ac;
-            font-weight: 700;
+            font-weight: var(--typo-user-edit-font-weight-2);
         }
         .user-edit-page .user-card .panel-title {
             font-size: 32px !important;
@@ -258,21 +297,21 @@
         .user-edit-page .user-form {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            width: 100%;
+            gap: var(--space-user-edit-3);
+            width: var(--dimension-user-edit-1);
             max-width: 960px;
-            margin: 0 auto;
+            margin: var(--space-user-edit-2);
         }
         .user-edit-page .user-form-row {
             display: grid;
             grid-template-columns: 230px minmax(0, 1fr);
-            gap: 41px;
+            gap: var(--space-user-edit-5);
             align-items: start;
-            width: 100%;
+            width: var(--dimension-user-edit-1);
         }
         .user-edit-page .user-form-label {
             padding-top: 11px;
-            padding-left: 41px;
+            padding-left: var(--space-user-edit-5);
         }
         .user-edit-page .required::after {
             content: '*';
@@ -282,25 +321,25 @@
         .user-edit-page .user-form-field,
         .user-edit-page .input-shell {
             min-width: 0;
-            width: 100%;
-            max-width: 100%;
+            width: var(--dimension-user-edit-1);
+            max-width: var(--dimension-user-edit-1);
         }
         .user-edit-page .user-input,
         .user-edit-page .select2-container--white .select2-selection--single,
         .user-edit-page .select2-container--white .select2-selection--multiple {
-            min-height: 50px;
-            border: 1px solid #d2dee9 !important;
+            min-height: var(--dimension-user-edit-5);
+            border: 1px solid var(--color-user-edit-2) !important;
             border-radius: 5px;
-            background: #fff;
-            font-size: 20px;
+            background: var(--color-user-edit-5);
+            font-size: var(--typo-user-edit-font-size-3);
             color: #071526;
             box-shadow: none;
             transition: border-color 0.2s ease, background 0.2s ease;
-            max-width: 100%;
+            max-width: var(--dimension-user-edit-1);
             box-sizing: border-box;
         }
         .user-edit-page .user-input {
-            width: 100%;
+            width: var(--dimension-user-edit-1);
             padding: 0 14px;
         }
         .user-edit-page .user-input::placeholder {
@@ -310,8 +349,8 @@
         .user-edit-page .select2-container--white.select2-container--focus .select2-selection--single,
         .user-edit-page .select2-container--white.select2-container--open .select2-selection--single,
         .user-edit-page .select2-container--white.select2-container--focus .select2-selection--multiple {
-            border-color: #bcd3e8;
-            background: #e8f1ff;
+            border-color: var(--color-user-edit-1);
+            background: var(--color-user-edit-4);
             box-shadow: none;
         }
         .user-edit-page .input-shell {
@@ -320,7 +359,7 @@
         .user-edit-page .email-shell {
             display: flex;
             align-items: stretch;
-            width: 100%;
+            width: var(--dimension-user-edit-1);
         }
         .user-edit-page .email-local-input {
             border-right: 0 !important;
@@ -330,23 +369,23 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 50px;
+            min-height: var(--dimension-user-edit-5);
             padding: 0 16px;
-            border: 1px solid #d2dee9;
+            border: 1px solid var(--color-user-edit-2);
             border-left: 0;
             border-radius: 0 5px 5px 0;
             background: #eef4fb;
             color: #4e6278;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-user-edit-font-weight-1);
             white-space: nowrap;
         }
         .user-edit-page .email-shell:focus-within .email-domain {
-            border-color: #bcd3e8;
-            background: #e8f1ff;
+            border-color: var(--color-user-edit-1);
+            background: var(--color-user-edit-4);
         }
         .user-edit-page .email-shell.has-error .email-domain {
-            border-color: #d93048;
+            border-color: var(--color-user-edit-3);
         }
         .user-edit-page .input-shell-actions {
             position: absolute;
@@ -360,20 +399,20 @@
         }
         .user-edit-page .user-input-password {
             padding-right: 96px;
-            background: #e8f1ff;
+            background: var(--color-user-edit-4);
         }
         .user-edit-page .user-input-confirm {
             padding-right: 70px;
         }
         .user-edit-page .inline-icon {
             width: 40px;
-            height: 50px;
+            height: var(--dimension-user-edit-5);
             border: 0;
             border-radius: 0;
             outline: 0;
             background: #0ea5f4;
-            color: #fff;
-            font-size: 20px;
+            color: var(--color-user-edit-5);
+            font-size: var(--typo-user-edit-font-size-3);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -383,7 +422,7 @@
         .user-edit-page .inline-icon:hover,
         .user-edit-page .inline-icon:focus {
             background: #0086d8;
-            color: #fff;
+            color: var(--color-user-edit-5);
         }
         .user-edit-page .input-shell-actions .inline-icon + .inline-icon {
             border-left: 1px solid rgba(255, 255, 255, 0.18);
@@ -392,44 +431,44 @@
         .user-edit-page .inline-icon .fa-eye-slash,
         .user-edit-page .inline-icon .fa-refresh {
             background: transparent !important;
-            padding: 0 !important;
-            color: #fff !important;
+            padding: var(--space-user-edit-1);
+            color: var(--color-user-edit-5) !important;
         }
         .user-edit-page .field-error {
-            margin-top: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #d93048;
+            margin-top: var(--space-user-edit-7);
+            font-size: var(--typo-user-edit-font-size-4);
+            font-weight: var(--typo-user-edit-font-weight-1);
+            color: var(--color-user-edit-3);
         }
         .user-edit-page .select2-container {
-            width: 100% !important;
-            max-width: 100% !important;
+            width: var(--dimension-user-edit-2) !important;
+            max-width: var(--dimension-user-edit-2) !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single,
         .user-edit-page .select2-container--white .select2-selection--single {
             display: flex !important;
             align-items: center !important;
-            height: 39px !important;
-            min-height: 39px !important;
+            height: var(--dimension-user-edit-4) !important;
+            min-height: var(--dimension-user-edit-4) !important;
             padding: 0 58px 0 14px !important;
             border-radius: 5px !important;
-            background: #fff !important;
+            background: var(--color-user-edit-5) !important;
             box-shadow: none !important;
-            border: 1px solid #d2dee9 !important;
+            border: 1px solid var(--color-user-edit-2) !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__rendered {
-            width: 100% !important;
+            width: var(--dimension-user-edit-2) !important;
             color: #15283a;
             line-height: 1.2 !important;
             padding: 9px 0px 0px !important;
-            margin: 0 !important;
-            font-size: 20px;
+            margin: var(--space-user-edit-1);
+            font-size: var(--typo-user-edit-font-size-3);
             border: none !important;
         }
         .user-edit-page .select2-container--default .select2-selection--single .select2-selection__arrow,
         .user-edit-page .select2-container--white .select2-selection--single .select2-selection__arrow {
-            height: 100% !important;
+            height: var(--dimension-user-edit-2) !important;
             top: 0 !important;
             right: 0 !important;
             width: 31px !important;
@@ -447,7 +486,7 @@
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__rendered {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: var(--space-user-edit-7);
             margin: 0;
             padding: 0;
         }
@@ -455,9 +494,9 @@
             margin: 0;
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-search--inline .select2-search__field {
-            height: 30px;
+            height: var(--dimension-user-edit-3);
             margin: 0;
-            line-height: 30px;
+            line-height: var(--dimension-user-edit-3);
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice {
             margin: 0;
@@ -466,8 +505,8 @@
             border: 1px solid #cfe0ff;
             background: #edf4ff;
             color: #1b4880;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: var(--typo-user-edit-font-size-4);
+            font-weight: var(--typo-user-edit-font-weight-1);
             position: relative;
         }
         .form-label{
@@ -477,23 +516,23 @@
             position: static;
             width: auto;
             height: auto;
-            margin-right: 6px;
+            margin-right: var(--space-user-edit-6);
             border: 0;
             background: transparent;
             color: #7990ac;
-            font-size: 13px;
+            font-size: var(--typo-user-edit-font-size-4);
             line-height: 1;
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove:hover {
             background: transparent;
-            color: #d93048;
+            color: var(--color-user-edit-3);
         }
         .user-edit-page .user-actions {
             display: flex;
             justify-content: center;
-            gap: 14px;
+            gap: var(--space-user-edit-3);
             margin-top: 18px;
-            padding-top: 8px;
+            padding-top: var(--space-user-edit-7);
         }
         .user-edit-page .user-action-primary,
         .user-edit-page .user-action-secondary {
@@ -501,7 +540,7 @@
             height: 48px;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: var(--typo-user-edit-font-weight-2);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -512,7 +551,7 @@
             }
             .user-edit-page .user-form-row {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: var(--space-user-edit-7);
             }
             .user-edit-page .user-form-label {
                 padding-top: 0;
@@ -521,12 +560,12 @@
         }
         @media (max-width: 640px) {
             .user-edit-page .user-shell {
-                padding: 14px;
+                padding: var(--space-user-edit-3);
             }
             .user-edit-page .user-card-header,
             .user-edit-page .user-body {
-                padding-left: 16px;
-                padding-right: 16px;
+                padding-left: var(--space-user-edit-4);
+                padding-right: var(--space-user-edit-4);
             }
             .user-edit-page .user-card .panel-title {
                 font-size: 26px !important;
@@ -536,17 +575,17 @@
             }
             .user-edit-page .user-action-primary,
             .user-edit-page .user-action-secondary {
-                width: 100%;
+                width: var(--dimension-user-edit-1);
             }
             .user-edit-page .email-shell {
                 flex-direction: column;
             }
             .user-edit-page .email-local-input {
-                border-right: 1px solid #d2dee9 !important;
+                border-right: 1px solid var(--color-user-edit-2) !important;
                 border-radius: 5px 5px 0 0;
             }
             .user-edit-page .email-domain {
-                border-left: 1px solid #d2dee9;
+                border-left: 1px solid var(--color-user-edit-2);
                 border-top: 0;
                 border-radius: 0 0 5px 5px;
                 justify-content: flex-start;

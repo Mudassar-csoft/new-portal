@@ -192,6 +192,48 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-user-create-1: 100%;
+            --dimension-user-create-2: 100%;
+            --dimension-user-create-3: 39px;
+            --dimension-user-create-4: 50px;
+            --space-user-create-1: 0 !important;
+            --space-user-create-2: 0 auto;
+            --space-user-create-3: 14px;
+            --space-user-create-4: 16px;
+            --space-user-create-5: 41px;
+            --space-user-create-6: 6px;
+            --space-user-create-7: 8px;
+            --space-user-create-8: 96px;
+            --color-user-create-1: #0098ff;
+            --color-user-create-2: #15283a;
+            --color-user-create-3: #bcd3e8;
+            --color-user-create-4: #d2dee9;
+            --color-user-create-5: #d93048;
+            --color-user-create-6: #e8f1ff;
+            --color-user-create-7: #ff3347;
+            --color-user-create-8: #fff;
+        }
+
+        :root {
+            --dimension-user-create-1: 100%;
+            --dimension-user-create-2: 100%;
+            --dimension-user-create-3: 39px;
+            --dimension-user-create-4: 50px;
+            --space-user-create-1: 0 !important;
+            --space-user-create-2: 0 auto;
+            --space-user-create-3: 14px;
+            --space-user-create-4: 16px;
+            --space-user-create-5: 41px;
+            --space-user-create-6: 6px;
+            --space-user-create-7: 8px;
+            --space-user-create-8: 96px;
+            --typo-user-create-font-weight-1: 600;
+            --typo-user-create-font-size-2: 18px;
+            --typo-user-create-font-weight-3: 700;
+            --typo-user-create-font-size-4: 20px;
+        }0___
+
         .user-create-page,
         .user-create-page .page-content {
             overflow-x: hidden;
@@ -199,18 +241,18 @@
         }
         .form-label-role{
             font-size: 14px !important;
-            margin-bottom: 6px;
-            margin-top: 6px;
+            margin-bottom: var(--space-user-create-6);
+            margin-top: var(--space-user-create-6);
             
             color: #343a40 !important;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: var(--typo-user-create-font-weight-1);
 
         }
         .user-create-page .page-content > .container-fluid {
-            max-width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            max-width: var(--dimension-user-create-2) !important;
+            padding-left: var(--space-user-create-1);
+            padding-right: var(--space-user-create-1);
             overflow: visible !important;
         }
         .user-create-page .user-shell {
@@ -219,7 +261,7 @@
             overflow-x: hidden;
         }
         .user-create-page .user-card {
-            margin: 0 auto;
+            margin: var(--space-user-create-2);
     border: 1px solid #d9e4f0;
     border-radius: 0px;
     overflow: hidden;
@@ -242,27 +284,27 @@
         .user-create-page .user-form {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            width: 100%;
+            gap: var(--space-user-create-3);
+            width: var(--dimension-user-create-1);
             max-width: 960px;
-            margin: 0 auto;
+            margin: var(--space-user-create-2);
         }
         .user-create-page .user-form-row {
             display: grid;
             grid-template-columns: 230px minmax(0, 1fr);
-            gap: 41px;
+            gap: var(--space-user-create-5);
             align-items: start;
-            width: 100%;
+            width: var(--dimension-user-create-1);
         }
         .user-create-page .user-form-label {
             padding-top: 11px;
-            padding-left: 41px;
+            padding-left: var(--space-user-create-5);
         }
         /* .user-create-page .form-label {
             margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: #15283a;
+            font-size: var(--typo-user-create-font-size-2);
+            font-weight: var(--typo-user-create-font-weight-3);
+            color: var(--color-user-create-2);
             letter-spacing: 0;
             text-transform: uppercase;
         } */
@@ -274,24 +316,24 @@
         .user-create-page .user-form-field,
         .user-create-page .input-shell {
             min-width: 0;
-            width: 100%;
-            max-width: 100%;
+            width: var(--dimension-user-create-1);
+            max-width: var(--dimension-user-create-1);
         }
         .user-create-page .user-input,
         .user-create-page .select2-container--white .select2-selection--single {
-            min-height: 50px;
-            border: 1px solid #d2dee9 !important;
+            min-height: var(--dimension-user-create-4);
+            border: 1px solid var(--color-user-create-4) !important;
             border-radius: 5px;
-            background: #fff;
-            font-size: 20px;
+            background: var(--color-user-create-8);
+            font-size: var(--typo-user-create-font-size-4);
             color: #071526;
             box-shadow: none;
             transition: border-color 0.2s ease, background 0.2s ease;
-            max-width: 100%;
+            max-width: var(--dimension-user-create-1);
             box-sizing: border-box;
         }
         .user-create-page .user-input {
-            width: 100%;
+            width: var(--dimension-user-create-1);
             padding: 0 14px;
         }
         .user-create-page .user-input::placeholder {
@@ -300,8 +342,8 @@
         .user-create-page .user-input:focus,
         .user-create-page .select2-container--white.select2-container--focus .select2-selection--single,
         .user-create-page .select2-container--white.select2-container--open .select2-selection--single {
-            border-color: #bcd3e8;
-            background: #e8f1ff;
+            border-color: var(--color-user-create-3);
+            background: var(--color-user-create-6);
             box-shadow: none;
         }
         .user-create-page .input-shell {
@@ -310,7 +352,7 @@
         .user-create-page .email-shell {
             display: flex;
             align-items: stretch;
-            width: 100%;
+            width: var(--dimension-user-create-1);
         }
         .user-create-page .email-local-input {
             border-right: 0 !important;
@@ -320,23 +362,23 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 50px;
+            min-height: var(--dimension-user-create-4);
             padding: 0 16px;
-            border: 1px solid #d2dee9;
+            border: 1px solid var(--color-user-create-4);
             border-left: 0;
             border-radius: 0 5px 5px 0;
             background: #eef4fb;
             color: #4e6278;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-user-create-font-weight-1);
             white-space: nowrap;
         }
         .user-create-page .email-shell:focus-within .email-domain {
-            border-color: #bcd3e8;
-            background: #e8f1ff;
+            border-color: var(--color-user-create-3);
+            background: var(--color-user-create-6);
         }
         .user-create-page .email-shell.has-error .email-domain {
-            border-color: #d93048;
+            border-color: var(--color-user-create-5);
         }
         .user-create-page .input-shell-actions {
             position: absolute;
@@ -349,21 +391,21 @@
             z-index: 3;
         }
         .user-create-page .user-input-password {
-            padding-right: 96px;
-            background: #e8f1ff;
+            padding-right: var(--space-user-create-8);
+            background: var(--color-user-create-6);
         }
         .user-create-page .user-input-confirm {
             padding-right: 70px;
         }
         .user-create-page .inline-icon {
             width: 40px;
-            height: 50px;
+            height: var(--dimension-user-create-4);
             border: 0;
             border-radius: 0;
             outline: 0;
             background: #0ea5f4;
-            color: #fff;
-            font-size: 20px;
+            color: var(--color-user-create-8);
+            font-size: var(--typo-user-create-font-size-4);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -373,7 +415,7 @@
         .user-create-page .inline-icon:hover,
         .user-create-page .inline-icon:focus {
             background: #0086d8;
-            color: #fff;
+            color: var(--color-user-create-8);
         }
         .user-create-page .input-shell-actions .inline-icon + .inline-icon {
             border-left: 1px solid rgba(255, 255, 255, 0.18);
@@ -382,45 +424,45 @@
         .user-create-page .inline-icon .fa-eye-slash,
         .user-create-page .inline-icon .fa-refresh {
             background: transparent !important;
-            padding: 0 !important;
-            color: #fff !important;
+            padding: var(--space-user-create-1);
+            color: var(--color-user-create-8) !important;
         }
         .user-create-page .field-error {
-            margin-top: 8px;
+            margin-top: var(--space-user-create-7);
             font-size: 13px;
-            font-weight: 600;
-            color: #d93048;
+            font-weight: var(--typo-user-create-font-weight-1);
+            color: var(--color-user-create-5);
         }
         .user-create-page .select2-container {
-            width: 100% !important;
-            max-width: 100% !important;
-            /* border: 1px solid #d2dee9 !important; */
+            width: var(--dimension-user-create-2) !important;
+            max-width: var(--dimension-user-create-2) !important;
+            /* border: 1px solid var(--color-user-create-4) !important; */
         }
         .user-create-page .select2-container--default .select2-selection--single,
         .user-create-page .select2-container--white .select2-selection--single {
             display: flex !important;
             align-items: center !important;
-            height: 39px !important;
-            min-height: 39px !important;
+            height: var(--dimension-user-create-3) !important;
+            min-height: var(--dimension-user-create-3) !important;
             padding: 0 58px 0 14px !important;
-            border: 1px solid #d2dee9 !important;
+            border: 1px solid var(--color-user-create-4) !important;
             border-radius: 5px !important;
-            background: #fff !important;
+            background: var(--color-user-create-8) !important;
             box-shadow: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__rendered,
         .user-create-page .select2-container--white .select2-selection--single .select2-selection__rendered {
-            width: 100% !important;
-            color: #15283a;
+            width: var(--dimension-user-create-2) !important;
+            color: var(--color-user-create-2);
             line-height: 1.2 !important;
             padding: 9px 0px 0px !important;
-            margin: 0 !important;
-            font-size: 20px;
+            margin: var(--space-user-create-1);
+            font-size: var(--typo-user-create-font-size-4);
 			border: none !important;
         }
         .user-create-page .select2-container--default .select2-selection--single .select2-selection__arrow,
         .user-create-page .select2-container--white .select2-selection--single .select2-selection__arrow {
-            height: 100% !important;
+            height: var(--dimension-user-create-2) !important;
             top: 0 !important;
             right: 0 !important;
             width: 31px !important;
@@ -432,29 +474,29 @@
             border-color: #778796 transparent transparent transparent !important;
         }
         .user-create-page .select2-dropdown {
-            border-color: #d2dee9;
+            border-color: var(--color-user-create-4);
         }
         .user-create-page .account-activation {
             margin-top: 18px;
         }
         .user-create-page .account-activation-title {
             margin: 0 0 11px;
-            color: #15283a;
+            color: var(--color-user-create-2);
             font-size: 19px;
-            font-weight: 700;
+            font-weight: var(--typo-user-create-font-weight-3);
             text-transform: uppercase;
         }
         .user-create-page .account-activation-note {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-user-create-7);
             min-height: 48px;
             padding: 8px 16px;
             border: 1px solid #bfd8fb;
             border-radius: 8px;
             background: #eaf3ff;
             color: #0067d8;
-            font-size: 18px;
+            font-size: var(--typo-user-create-font-size-2);
             line-height: 1.35;
         }
         .user-create-page .account-activation-note i {
@@ -465,7 +507,7 @@
         .user-create-page .user-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 16px;
+            gap: var(--space-user-create-4);
             margin-top: 10px;
             padding-top: 0;
         }
@@ -475,32 +517,32 @@
             min-width: 112px;
             height: 51px;
             border-radius: 5px;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: var(--typo-user-create-font-size-4);
+            font-weight: var(--typo-user-create-font-weight-3);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 0 22px;
         }
         .user-create-page .user-action-primary {
-            border-color: #0098ff !important;
-            color: #0098ff !important;
-            background: #fff !important;
+            border-color: var(--color-user-create-1) !important;
+            color: var(--color-user-create-1) !important;
+            background: var(--color-user-create-8) !important;
         }
         .user-create-page .user-action-primary:hover,
         .user-create-page .user-action-primary:focus {
-            background: #0098ff !important;
-            color: #fff !important;
+            background: var(--color-user-create-1) !important;
+            color: var(--color-user-create-8) !important;
         }
         .user-create-page .user-action-secondary {
-            border-color: #ff3347 !important;
-            color: #ff3347 !important;
-            background: #fff !important;
+            border-color: var(--color-user-create-7) !important;
+            color: var(--color-user-create-7) !important;
+            background: var(--color-user-create-8) !important;
         }
         .user-create-page .user-action-secondary:hover,
         .user-create-page .user-action-secondary:focus {
-            background: #ff3347 !important;
-            color: #fff !important;
+            background: var(--color-user-create-7) !important;
+            color: var(--color-user-create-8) !important;
         }
         @media (max-width: 900px) {
             .user-create-page .user-body {
@@ -508,7 +550,7 @@
             }
             .user-create-page .user-form-row {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: var(--space-user-create-7);
             }
             .user-create-page .user-form-label {
                 padding-top: 0;
@@ -517,12 +559,12 @@
         }
         @media (max-width: 640px) {
             .user-create-page .user-shell {
-                padding: 14px;
+                padding: var(--space-user-create-3);
             }
             .user-create-page .user-card-header,
             .user-create-page .user-body {
-                padding-left: 16px;
-                padding-right: 16px;
+                padding-left: var(--space-user-create-4);
+                padding-right: var(--space-user-create-4);
             }
             .user-create-page .user-card .panel-title {
                 font-size: 26px !important;
@@ -536,24 +578,24 @@
             }
             .user-create-page .user-action-primary,
             .user-create-page .user-action-secondary {
-                width: 100%;
+                width: var(--dimension-user-create-1);
             }
             .user-create-page .email-shell {
                 flex-direction: column;
             }
             .user-create-page .email-local-input {
-                border-right: 1px solid #d2dee9 !important;
+                border-right: 1px solid var(--color-user-create-4) !important;
                 border-radius: 5px 5px 0 0;
             }
             .user-create-page .email-domain {
-                border-left: 1px solid #d2dee9;
+                border-left: 1px solid var(--color-user-create-4);
                 border-top: 0;
                 border-radius: 0 0 5px 5px;
                 justify-content: flex-start;
                 padding: 12px 14px;
             }
             .user-create-page .user-input-password {
-                padding-right: 96px;
+                padding-right: var(--space-user-create-8);
             }
         }
     </style>

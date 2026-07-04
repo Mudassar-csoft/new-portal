@@ -190,24 +190,30 @@
 
 @push('styles')
     <style>
-        .finance-shell { padding: 8px 0 16px; background: #fff; }
-        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        :root {
+            --space-finance-accounting-ledger-1: 12px;
+            --color-finance-accounting-ledger-1: #fff;
+            --typo-finance-accounting-ledger-font-weight-1: 700;
+        }
+
+        .finance-shell { padding: 8px 0 16px; background: var(--color-finance-accounting-ledger-1); }
+        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-finance-accounting-ledger-1); flex-wrap: wrap; }
         .finance-summary-row { margin: 2px 0 10px; padding: 7px; }
         .ledger-summary-card {
             border-radius: 10px;
             padding: 16px 18px;
-            color: #fff;
-            margin-bottom: 12px;
+            color: var(--color-finance-accounting-ledger-1);
+            margin-bottom: var(--space-finance-accounting-ledger-1);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .ledger-summary-card .summary-value { font-size: 20px; font-weight: 700; }
+        .ledger-summary-card .summary-value { font-size: 20px; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }
         .ledger-summary-card .summary-label { margin-top: 8px; font-size: 13px; text-transform: uppercase; opacity: 0.92; }
         .tone-slate { background: #475569; }
         .tone-green { background: #16a34a; }
         .tone-red { background: #dc2626; }
         .tone-blue { background: #2563eb; }
-        .finance-table thead th { background: #eef2f7; color: #334155; font-weight: 700; }
+        .finance-table thead th { background: #eef2f7; color: #334155; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }
         .selected-ledger-row td { background: #eff6ff !important; }
-        .ledger-opening-row td { background: #f8fafc; font-weight: 700; }
+        .ledger-opening-row td { background: #f8fafc; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }
     </style>
 @endpush

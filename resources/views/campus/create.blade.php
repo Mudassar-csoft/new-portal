@@ -33,8 +33,8 @@
                         @include('campus.partials.form')
 
                         <div class="form-actions mb-2 mt-3 text-right mr-0">
-                            <button type="submit" class="btn btn-inline btn-primary-outline" style="padding: 0.4rem; padding-left:10px; margin-left:5px">Create Campus</button>
-                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline" style="padding: 0.4rem; padding-left:10px;">Cancel</a>
+                            <button type="submit" class="btn btn-inline btn-primary-outline ci-inline-pad-04 ci-inline-pl-10 ci-inline-ml-5">Create Campus</button>
+                            <a href="{{ url()->previous() }}" class="btn btn-inline btn-danger-outline ci-inline-pad-04 ci-inline-pl-10">Cancel</a>
                         </div>
                     </form>
                 </div>

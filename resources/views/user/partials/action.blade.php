@@ -6,6 +6,19 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --dimension-user-partials-action-1: 24px;
+            --color-user-partials-action-1: #303740;
+        }
+
+        :root {
+            --dimension-user-partials-action-1: 24px;
+            --typo-user-partials-action-font-size-1: 16px;
+            --typo-user-partials-action-font-weight-2: 500;
+            --typo-user-partials-action-line-height-3: 1;
+            --typo-user-partials-action-font-size-4: 18px;
+        }0___
+
             .user-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 320px;
                 padding: 8px 0;
@@ -24,9 +37,9 @@
                 gap: 12px;
                 width: 100%;
                 padding: 8px 18px !important;
-                color: #303740 !important;
-                font-size: 16px !important;
-                font-weight: 500;
+                color: var(--color-user-partials-action-1) !important;
+                font-size: var(--typo-user-partials-action-font-size-1) !important;
+                font-weight: var(--typo-user-partials-action-font-weight-2);
                 line-height: 1.35;
                 text-align: left !important;
                 background: transparent !important;
@@ -52,18 +65,18 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                width: 24px;
-                min-width: 24px;
-                height: 24px;
-                line-height: 1;
-                color: #303740;
+                width: var(--dimension-user-partials-action-1);
+                min-width: var(--dimension-user-partials-action-1);
+                height: var(--dimension-user-partials-action-1);
+                line-height: var(--typo-user-partials-action-line-height-3);
+                color: var(--color-user-partials-action-1);
                 font-size: 21px;
             }
 
             .user-action-dropdown .lead-action-label {
                 display: inline-block;
-                font-size: 16px !important;
-                font-weight: 500;
+                font-size: var(--typo-user-partials-action-font-size-1) !important;
+                font-weight: var(--typo-user-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }
 
@@ -72,8 +85,8 @@
             }
 
             /* .user-action-dropdown .lead-action-label .bi-person {
-                font-size: 18px;
-                line-height: 1;
+                font-size: var(--typo-user-partials-action-font-size-4);
+                line-height: var(--typo-user-partials-action-line-height-3);
                 position: relative;
                 top: 1px;
                 margin-right: 6px;
@@ -84,8 +97,8 @@
                 font-weight: 700 !important;
             }
             .user-action-dropdown .lead-icon-blue { color: #1698ff; }
-            .user-action-dropdown .lead-icon-black { color: #303740; }
-            .user-action-dropdown .lead-icon-red { color: #303740; }
+            .user-action-dropdown .lead-icon-black { color: var(--color-user-partials-action-1); }
+            .user-action-dropdown .lead-icon-red { color: var(--color-user-partials-action-1); }
             .user-action-dropdown form { margin: 0; }
         </style>
     @endpush
@@ -118,7 +131,7 @@
                     @csrf
                     <button type="submit" class="dropdown-item lead-action-item">
                         <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                            <i class="bi bi-person" style="font-size: 18px; margin-left: -3px !important;"></i>
+                            <i class="bi bi-person" style="font-size: var(--typo-user-partials-action-font-size-4); margin-left: -3px !important;"></i>
                         </span>
                         <span class="lead-action-label"> Login as <strong>{{ $user->name }}</strong></span>
                     </button>
@@ -126,7 +139,7 @@
             @else
                 <a class="dropdown-item lead-action-item is-disabled" href="#" aria-disabled="true" tabindex="-1">
                     <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                        <i class="bi bi-person" style="font-size: 18px; margin-left: -3px !important;"></i>
+                        <i class="bi bi-person" style="font-size: var(--typo-user-partials-action-font-size-4); margin-left: -3px !important;"></i>
                     </span>
                     <span class="lead-action-label"> Current User</span>
                 </a>

@@ -1,3 +1,11 @@
+:root {
+    --typo-theme-separate-partials-grids-font-size-1: 100%;
+    --typo-theme-separate-partials-grids-font-size-2: 1em;
+    --typo-theme-separate-partials-grids-line-height-3: 44px;
+    --typo-theme-separate-partials-grids-line-height-4: 48px;
+    --typo-theme-separate-partials-grids-font-size-5: 0.9rem;
+}
+
 /* ==========================================================================
    HTML5 display definitions
    ========================================================================== */
@@ -39,7 +47,7 @@ audio:not([controls]) {
  *    user zoom.
  */
 html {
-  font-size: 100%;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-1);
   /* 1 */
   -ms-text-size-adjust: 100%;
   /* 2 */
@@ -109,7 +117,7 @@ pre,
 samp {
   font-family: monospace, serif;
   _font-family: 'courier new', monospace;
-  font-size: 1em;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-2);
 }
 /**
  * Improve readability of pre-formatted text in all browsers.
@@ -247,7 +255,7 @@ button,
 input,
 select,
 textarea {
-  font-size: 100%;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-1);
   /* 1 */
   margin: 0;
   /* 2 */
@@ -371,7 +379,7 @@ table {
    Opinionated defaults
    ========================================================================== */
 html {
-  font-size: 1em;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-2);
   line-height: 1.4;
 }
 * {
@@ -509,7 +517,7 @@ video {
   background: #DCE5EC;
   vertical-align: middle;
   height: 44px;
-  line-height: 44px;
+  line-height: var(--typo-theme-separate-partials-grids-line-height-3);
 }
 .control-panel .control-panel-container .icon-toggle .caret-down {
   display: none;
@@ -524,13 +532,13 @@ video {
   cursor: pointer;
 }
 .control-panel .control-panel-container .tasks .icon-toggle {
-  line-height: 48px;
+  line-height: var(--typo-theme-separate-partials-grids-line-height-4);
 }
 .control-panel .control-panel-container .emails .icon-toggle {
   line-height: 47px;
 }
 .control-panel .control-panel-container .add .icon-toggle {
-  line-height: 48px;
+  line-height: var(--typo-theme-separate-partials-grids-line-height-4);
 }
 .control-panel-container ul {
   display: table;
@@ -600,7 +608,7 @@ video {
 }
 .control-panel.open .control-panel-container .icon-toggle .caret-down {
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
   position: relative;
   margin-right: 3px;
 }
@@ -611,7 +619,7 @@ video {
 .control-panel.open .control-panel-container .text {
   float: left;
   display: block;
-  line-height: 44px;
+  line-height: var(--typo-theme-separate-partials-grids-line-height-3);
 }
 .control-panel.open .control-panel-container .actions {
   float: right;
@@ -621,7 +629,7 @@ video {
   display: inline-block;
   margin-left: 4px;
   font-size: 1rem;
-  line-height: 44px;
+  line-height: var(--typo-theme-separate-partials-grids-line-height-3);
 }
 .control-panel.open .control-panel-container .actions a:hover {
   color: #0082c6;
@@ -640,7 +648,7 @@ video {
   -webkit-border-radius: 3px;
           border-radius: 3px;
   background: #fff;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
 }
 .control-panel.open .control-panel-container .control-item-lists li {
   border-bottom: 1px solid #e0e0e0;
@@ -652,7 +660,7 @@ video {
   position: absolute;
   top: 8px;
   right: 11px;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
   color: #C8D5DB;
 }
 .control-panel.open .control-panel-container .control-item-lists li:last-child {
@@ -662,7 +670,7 @@ video {
 .control-panel.open .control-panel-container .control-item-content-text {
   padding: 8px 11px;
   display: block;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
 }
 .control-panel.open .control-panel-container .control-item-lists li h6 {
   margin-bottom: 0 !important;
@@ -670,7 +678,7 @@ video {
   font-weight: 600;
 }
 .control-panel.open .control-panel-container .control-item-lists li p {
-  font-size: 0.9rem !important;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5) !important;
   margin-bottom: 0 !important;
   color: #343434;
 }
@@ -680,12 +688,12 @@ video {
   margin-bottom: 10px;
 }
 .control-panel.open .control-panel-container .control-item-actions .link {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
   float: left;
   color: #2A9DE0;
 }
 .control-panel.open .control-panel-container .control-item-actions .mark {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
   float: right;
   background: #D5DCE2;
   -webkit-border-radius: 3px;
@@ -698,14 +706,14 @@ video {
   color: #fff;
 }
 .control-panel.open .control-panel-container .message {
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
 }
 .control-panel.open .control-panel-container .message span {
   float: left;
 }
 .control-panel.open .control-panel-container .message a {
   float: right;
-  font-size: 0.9rem;
+  font-size: var(--typo-theme-separate-partials-grids-font-size-5);
 }
 .control-panel.open .control-panel-container a.reply-all {
   position: absolute;

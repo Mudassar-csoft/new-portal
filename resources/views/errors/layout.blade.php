@@ -19,6 +19,28 @@
 
     <style>
         :root {
+            --dimension-errors-layout-1: 100%;
+            --dimension-errors-layout-2: 200px;
+            --dimension-errors-layout-3: 260px;
+            --dimension-errors-layout-4: 46px;
+            --space-errors-layout-1: 12px;
+            --space-errors-layout-2: 26px;
+            --space-errors-layout-3: 8px;
+            --color-errors-layout-1: #0a7fe8;
+            --color-errors-layout-2: #fff;
+            --color-errors-layout-3: rgba(10, 127, 232, 0.08);
+            --color-errors-layout-4: rgba(255, 255, 255, 0.16);
+            --color-errors-layout-5: rgba(255, 255, 255, 0.9);
+        }
+
+        :root {
+            --dimension-errors-layout-1: 100%;
+            --dimension-errors-layout-2: 200px;
+            --dimension-errors-layout-3: 260px;
+            --dimension-errors-layout-4: 46px;
+            --space-errors-layout-1: 12px;
+            --space-errors-layout-2: 26px;
+            --space-errors-layout-3: 8px;
             --brand-blue: #0a7fe8;
             --brand-cyan: #20b7ff;
             --ink: #1f2a44;
@@ -26,7 +48,11 @@
             --surface: rgba(255, 255, 255, 0.88);
             --line: rgba(10, 127, 232, 0.12);
             --shadow: 0 24px 70px rgba(16, 38, 84, 0.18);
-        }
+            --error-font-xs: 12px;
+            --error-line-tight: 1.15;
+            --error-weight-bold: 700;
+            --error-weight-heavy: 800;
+        }0___
 
         * {
             box-sizing: border-box;
@@ -34,7 +60,7 @@
 
         html,
         body {
-            min-height: 100%;
+            min-height: var(--dimension-errors-layout-1);
         }
 
         body {
@@ -57,10 +83,10 @@
         }
 
         .error-panel {
-            width: 100%;
+            width: var(--dimension-errors-layout-1);
             max-width: 1040px;
             background: var(--surface);
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--color-errors-layout-5);
             border-radius: 28px;
             box-shadow: var(--shadow);
             overflow: hidden;
@@ -77,8 +103,8 @@
             padding: 44px 36px;
             background:
                 linear-gradient(165deg, rgba(10, 127, 232, 0.96), rgba(32, 183, 255, 0.82)),
-                #0a7fe8;
-            color: #fff;
+                var(--color-errors-layout-1);
+            color: var(--color-errors-layout-2);
             isolation: isolate;
         }
 
@@ -91,16 +117,16 @@
         }
 
         .error-visual::before {
-            width: 260px;
-            height: 260px;
+            width: var(--dimension-errors-layout-3);
+            height: var(--dimension-errors-layout-3);
             right: -90px;
             top: -70px;
             background: rgba(255, 255, 255, 0.12);
         }
 
         .error-visual::after {
-            width: 200px;
-            height: 200px;
+            width: var(--dimension-errors-layout-2);
+            height: var(--dimension-errors-layout-2);
             left: -70px;
             bottom: -90px;
             background: rgba(255, 255, 255, 0.08);
@@ -109,35 +135,35 @@
         .brand-mark {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-errors-layout-1);
             margin-bottom: 36px;
         }
 
         .brand-mark img {
-            width: 46px;
-            height: 46px;
+            width: var(--dimension-errors-layout-4);
+            height: var(--dimension-errors-layout-4);
             object-fit: contain;
-            background: rgba(255, 255, 255, 0.16);
+            background: var(--color-errors-layout-4);
             border-radius: 14px;
             padding: 7px;
         }
 
         .brand-label {
             font-size: 18px;
-            font-weight: 700;
-            line-height: 1.15;
+            font-weight: var(--error-weight-bold);
+            line-height: var(--error-line-tight);
         }
 
         .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-errors-layout-3);
             padding: 8px 14px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.16);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
+            background: var(--color-errors-layout-4);
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
+            letter-spacing: var(--error-letter-wide);
             text-transform: uppercase;
         }
 
@@ -145,13 +171,13 @@
             margin: 24px 0 10px;
             font-size: 96px;
             line-height: 0.95;
-            font-weight: 800;
+            font-weight: var(--error-weight-heavy);
             letter-spacing: -0.04em;
         }
 
         .error-caption {
             max-width: 340px;
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--color-errors-layout-5);
             font-size: 15px;
             line-height: 1.7;
             margin: 0;
@@ -165,11 +191,11 @@
             display: inline-block;
             padding: 7px 12px;
             border-radius: 999px;
-            background: rgba(10, 127, 232, 0.08);
+            background: var(--color-errors-layout-3);
             color: var(--brand-blue);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
+            letter-spacing: var(--error-letter-wide);
             text-transform: uppercase;
             margin-bottom: 18px;
         }
@@ -177,8 +203,8 @@
         .error-title {
             margin: 0;
             font-size: 36px;
-            line-height: 1.15;
-            font-weight: 800;
+            line-height: var(--error-line-tight);
+            font-weight: var(--error-weight-heavy);
             color: var(--ink);
         }
 
@@ -191,20 +217,20 @@
         }
 
         .error-meta {
-            margin-top: 26px;
+            margin-top: var(--space-errors-layout-2);
             padding: 18px 20px;
             border-radius: 18px;
-            background: #fff;
+            background: var(--color-errors-layout-2);
             border: 1px solid var(--line);
         }
 
         .error-meta-label {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: var(--error-font-xs);
+            font-weight: var(--error-weight-bold);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: var(--error-letter-wide);
             color: var(--brand-blue);
-            margin-bottom: 8px;
+            margin-bottom: var(--space-errors-layout-3);
         }
 
         .error-meta-value {
@@ -217,7 +243,7 @@
         .error-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: var(--space-errors-layout-1);
             margin-top: 28px;
         }
 
@@ -225,20 +251,20 @@
             min-width: 150px;
             height: 44px;
             border-radius: 12px;
-            font-weight: 700;
+            font-weight: var(--error-weight-bold);
             padding: 10px 18px;
         }
 
         .btn-primary-solid {
-            color: #fff;
-            background: linear-gradient(120deg, #0a7fe8, #20b7ff);
+            color: var(--color-errors-layout-2);
+            background: linear-gradient(120deg, var(--color-errors-layout-1), #20b7ff);
             border: 0;
             box-shadow: 0 16px 30px rgba(10, 127, 232, 0.22);
         }
 
         .btn-primary-solid:hover,
         .btn-primary-solid:focus {
-            color: #fff;
+            color: var(--color-errors-layout-2);
             opacity: 0.96;
         }
 
@@ -251,11 +277,11 @@
         .btn-outline-soft:hover,
         .btn-outline-soft:focus {
             color: var(--brand-blue);
-            background: rgba(10, 127, 232, 0.08);
+            background: var(--color-errors-layout-3);
         }
 
         .error-help {
-            margin-top: 26px;
+            margin-top: var(--space-errors-layout-2);
             font-size: 13px;
             color: var(--muted);
         }
@@ -301,7 +327,7 @@
             }
 
             .error-actions .btn {
-                width: 100%;
+                width: var(--dimension-errors-layout-1);
             }
         }
     </style>

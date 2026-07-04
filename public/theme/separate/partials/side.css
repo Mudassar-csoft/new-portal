@@ -1,4 +1,19 @@
 @charset "UTF-8";
+:root {
+    --typo-theme-separate-partials-side-font-size-1: 100%;
+    --typo-theme-separate-partials-side-font-size-2: 1em;
+    --typo-theme-separate-partials-side-line-height-3: normal;
+    --typo-theme-separate-partials-side-font-family-4: 'Glyphicons Halflings';
+    --typo-theme-separate-partials-side-font-weight-5: normal;
+    --typo-theme-separate-partials-side-line-height-6: 1;
+    --typo-theme-separate-partials-side-font-family-7: "startui";
+    --typo-theme-separate-partials-side-line-height-8: inherit;
+    --typo-theme-separate-partials-side-font-weight-9: 600;
+    --typo-theme-separate-partials-side-font-size-10: 1rem;
+    --typo-theme-separate-partials-side-line-height-11: 16px;
+    --typo-theme-separate-partials-side-font-size-12: 0.875rem /*14/16*/;
+}
+
 /* ==========================================================================
    HTML5 display definitions
    ========================================================================== */
@@ -40,7 +55,7 @@ audio:not([controls]) {
  *    user zoom.
  */
 html {
-  font-size: 100%;
+  font-size: var(--typo-theme-separate-partials-side-font-size-1);
   /* 1 */
   -ms-text-size-adjust: 100%;
   /* 2 */
@@ -110,7 +125,7 @@ pre,
 samp {
   font-family: monospace, serif;
   _font-family: 'courier new', monospace;
-  font-size: 1em;
+  font-size: var(--typo-theme-separate-partials-side-font-size-2);
 }
 /**
  * Improve readability of pre-formatted text in all browsers.
@@ -248,7 +263,7 @@ button,
 input,
 select,
 textarea {
-  font-size: 100%;
+  font-size: var(--typo-theme-separate-partials-side-font-size-1);
   /* 1 */
   margin: 0;
   /* 2 */
@@ -263,7 +278,7 @@ textarea {
  */
 button,
 input {
-  line-height: normal;
+  line-height: var(--typo-theme-separate-partials-side-line-height-3);
 }
 /**
  * Address inconsistent `text-transform` inheritance for `button` and `select`.
@@ -372,7 +387,7 @@ table {
    Opinionated defaults
    ========================================================================== */
 html {
-  font-size: 1em;
+  font-size: var(--typo-theme-separate-partials-side-font-size-2);
   line-height: 1.4;
 }
 * {
@@ -436,10 +451,10 @@ video {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: var(--typo-theme-separate-partials-side-font-family-4);
   font-style: normal;
-  font-weight: normal;
-  line-height: 1;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-5);
+  line-height: var(--typo-theme-separate-partials-side-line-height-6);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1239,13 +1254,13 @@ video {
 }
 [data-icon]:before {
   content: attr(data-icon);
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-separate-partials-side-font-family-7) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-5) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-separate-partials-side-line-height-8);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -1254,13 +1269,13 @@ video {
 }
 [class^="font-icon-"]:before,
 [class*=" font-icon-"]:before {
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-separate-partials-side-font-family-7) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-5) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-separate-partials-side-line-height-8);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -1928,9 +1943,9 @@ video {
   margin: 0 0 25px;
 }
 .side-menu-list .lbl {
-  font-weight: 600;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-9);
   color: #818181;
-  font-size: 1rem;
+  font-size: var(--typo-theme-separate-partials-side-font-size-10);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
@@ -1949,7 +1964,7 @@ video {
   top: -1px;
 }
 .side-menu-list > li {
-  line-height: 16px;
+  line-height: var(--typo-theme-separate-partials-side-line-height-11);
 }
 .side-menu-list > li.divider {
   border-top: solid 1px #c5d6de;
@@ -2053,7 +2068,7 @@ video {
   position: absolute;
   left: 18px;
   top: 13px;
-  line-height: 16px;
+  line-height: var(--typo-theme-separate-partials-side-line-height-11);
   font-size: 1.0625rem /*17/16*/;
 }
 .side-menu-list .font-icon.active:after,
@@ -2135,13 +2150,13 @@ video {
 }
 .side-menu-big-icon .side-menu-list > li.with-sub > span:after {
   content: '\52';
-  font-family: "startui" !important;
+  font-family: var(--typo-theme-separate-partials-side-font-family-7) !important;
   font-style: normal !important;
-  font-weight: normal !important;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-5) !important;
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
-  line-height: inherit;
+  line-height: var(--typo-theme-separate-partials-side-line-height-8);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   vertical-align: middle;
@@ -2189,7 +2204,7 @@ video {
   left: 0;
   display: inline-block;
   color: #919fa9;
-  line-height: 1;
+  line-height: var(--typo-theme-separate-partials-side-line-height-6);
   font-size: 2rem;
   margin: 0 0 5px;
 }
@@ -2391,11 +2406,11 @@ video {
   padding-top: 60px !important;
 }
 .side-menu .side-menu-title {
-  font-weight: 600;
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-9);
   text-transform: uppercase;
   color: #6c7a86;
   padding: 0 22px 8px;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-separate-partials-side-font-size-12);
 }
 .side-menu .side-menu-avatar {
   padding: 28px 0;
@@ -2436,7 +2451,7 @@ video {
   margin: 0;
   display: inline-block;
   font-size: 2.125rem /*34/16*/;
-  line-height: normal;
+  line-height: var(--typo-theme-separate-partials-side-line-height-3);
   min-height: 40px;
 }
 .side-menu.side-menu-compact .side-menu-list .font-icon.active:after,
@@ -2450,7 +2465,7 @@ video {
 }
 .side-menu.side-menu-compact .side-menu-list .lbl {
   display: block;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-separate-partials-side-font-size-12);
 }
 @media (max-width: 1056px) {
   .side-menu {
@@ -2491,8 +2506,8 @@ video {
   position: relative;
 }
 .side-menu-addl .side-menu-addl-title .caption {
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-separate-partials-side-font-size-12);
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-9);
   color: #818181;
 }
 .side-menu-addl .side-menu-addl-title .font-icon,
@@ -2502,7 +2517,7 @@ video {
   position: absolute;
   top: 8px;
   right: 20px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-separate-partials-side-font-size-10);
   line-height: 18px;
 }
 .side-menu-addl .side-menu-addl-top {
@@ -2513,8 +2528,8 @@ video {
 .side-menu-addl .side-menu-addl-list a {
   display: table;
   width: 100%;
-  font-size: 0.875rem /*14/16*/;
-  font-weight: 600;
+  font-size: var(--typo-theme-separate-partials-side-font-size-12);
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-9);
   color: #818181;
 }
 .side-menu-addl .side-menu-addl-list a .tbl-cell {
@@ -2599,8 +2614,8 @@ video {
    ========================================================================== */
 .side-table-of-contents {
   padding: .5rem 22px 15px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-separate-partials-side-font-size-10);
+  font-weight: var(--typo-theme-separate-partials-side-font-weight-9);
 }
 .side-table-of-contents a {
   color: #343434;
@@ -2616,7 +2631,7 @@ video {
   padding: 0 0 .8em;
 }
 .side-table-of-contents ul {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-separate-partials-side-font-size-12);
   padding-left: 1rem;
   padding-top: .7rem;
 }

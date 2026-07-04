@@ -84,7 +84,7 @@
                     <div class="summary-label">Royalty</div>
                 </div>
             </div>
-            
+
             <div class="col-lg-6 col-md-6">
                 <div class="income-summary-card tone-other">
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['other_income'] ?? 0), 0) }}</div>
@@ -283,12 +283,17 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-finance-income-details-1: 10px;
+            --typo-finance-income-details-font-weight-1: 700;
+        }
+
         .finance-shell { padding: 8px 0 16px; background-color: white; }
         .finance-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-income-details-1);
             flex-wrap: wrap;
         }
         .finance-summary-row { margin: 2px 0 10px;padding:7px; }
@@ -309,12 +314,12 @@
     text-align: center;
     margin-top: 1rem;
         }
-       
+
         .income-summary-card .summary-value {
             margin-top: 30px;
     font-size: 18px;
     text-align: center;
-    font-weight: 700;
+    font-weight: var(--typo-finance-income-details-font-weight-1);
         }
         .tone-admission { background: #f35f62;}
         .tone-registration { background: #4285f4; }
@@ -325,7 +330,7 @@
         .finance-table thead th {
             background: #eef2f7;
             color: #334155;
-            font-weight: 700;
+            font-weight: var(--typo-finance-income-details-font-weight-1);
         }
 
 
@@ -337,7 +342,7 @@
               margin-top: 5px;
             }
          .income-summary-card .summary-value {
-            margin-top: 10px;  
+            margin-top: var(--space-finance-income-details-1);
         }
 }
     </style>

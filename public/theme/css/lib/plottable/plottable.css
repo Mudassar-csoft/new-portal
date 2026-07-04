@@ -1,3 +1,11 @@
+:root {
+    --typo-theme-css-lib-plottable-plottable-font-family-1: "Helvetica Neue", sans-serif;
+    --typo-theme-css-lib-plottable-plottable-font-size-2: 14px;
+    --typo-theme-css-lib-plottable-plottable-font-weight-3: bold;
+    --typo-theme-css-lib-plottable-plottable-line-height-4: normal;
+    --typo-theme-css-lib-plottable-plottable-font-size-5: 12px;
+}
+
 
 .plottable-colors-0 {
   background-color: #5279c7; /* INDIGO */
@@ -56,19 +64,19 @@ svg.plottable {
 }
 
 .plottable .label text {
-  font-family: "Helvetica Neue", sans-serif;
+  font-family: var(--typo-theme-css-lib-plottable-plottable-font-family-1);
   fill: #32313F;
 }
 
 .plottable .bar-label-text-area text {
-  font-family: "Helvetica Neue", sans-serif;
-  font-size: 14px;
+  font-family: var(--typo-theme-css-lib-plottable-plottable-font-family-1);
+  font-size: var(--typo-theme-css-lib-plottable-plottable-font-size-2);
 }
 
 .plottable .label-area text {
   fill: #32313F;
-  font-family: "Helvetica Neue", sans-serif;
-  font-size: 14px;
+  font-family: var(--typo-theme-css-lib-plottable-plottable-font-family-1);
+  font-size: var(--typo-theme-css-lib-plottable-plottable-font-size-2);
 }
 
 .plottable .light-label text {
@@ -90,15 +98,15 @@ svg.plottable {
 
 .plottable .axis-label text {
   font-size: 10px;
-  font-weight: bold;
+  font-weight: var(--typo-theme-css-lib-plottable-plottable-font-weight-3);
   letter-spacing: 1px;
-  line-height: normal;
+  line-height: var(--typo-theme-css-lib-plottable-plottable-line-height-4);
   text-transform: uppercase;
 }
 
 .plottable .title-label text {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: var(--typo-theme-css-lib-plottable-plottable-font-weight-3);
 }
 
 .plottable .axis line.baseline {
@@ -113,10 +121,10 @@ svg.plottable {
 
 .plottable .axis text {
   fill: #32313F;
-  font-family: "Helvetica Neue", sans-serif;
-  font-size: 12px;
+  font-family: var(--typo-theme-css-lib-plottable-plottable-font-family-1);
+  font-size: var(--typo-theme-css-lib-plottable-plottable-font-size-5);
   font-weight: 200;
-  line-height: normal;
+  line-height: var(--typo-theme-css-lib-plottable-plottable-line-height-4);
 }
 
 .plottable .axis .annotation-circle {
@@ -201,10 +209,10 @@ svg.plottable {
 
 .plottable .legend text {
   fill: #32313F;
-  font-family: "Helvetica Neue", sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: normal;
+  font-family: var(--typo-theme-css-lib-plottable-plottable-font-family-1);
+  font-size: var(--typo-theme-css-lib-plottable-plottable-font-size-5);
+  font-weight: var(--typo-theme-css-lib-plottable-plottable-font-weight-3);
+  line-height: var(--typo-theme-css-lib-plottable-plottable-line-height-4);
 }
 
 .plottable .interpolated-color-legend rect.swatch-bounding-box {

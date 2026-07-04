@@ -22,23 +22,12 @@
     @endphp
 
     <div class="lead-status-shell campus-status-shell">
-        <div id="campus-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading campuses...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'campus-status-loader', 'message' => 'Loading campuses...'])
 
         <div id="campus-status-content" class="follow-content">
-            @if(session('status'))
-                <div class="alert alert-success mb-3">{{ session('status') }}</div>
-            @endif
+            @include('partials.session-status-alert-spaced')
 
-            @if(session('error'))
-                <div class="alert alert-danger mb-3">{{ session('error') }}</div>
-            @endif
+            @include('partials.session-error-alert-spaced')
 
             <div class="follow-card box-typical box-typical-dashboard panel panel-default">
                 <div class="follow-tab-bar">
@@ -62,7 +51,7 @@
                         <input type="hidden" name="scope" value="{{ $activeScope }}">
 
                         <div class="follow-controls">
-                            <div class="d-flex" style="gap:0.5rem;align-items: center;">
+                            <div class="d-flex ci-inline-gap-05-center">
                                 <label class="">Show</label>
                                 <select class="form-select form-select-sm">
                                     <option>10</option>
@@ -181,6 +170,22 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-campus-index-1: 100%;
+            --dimension-campus-index-2: 100vh;
+            --dimension-campus-index-3: 12px;
+            --dimension-campus-index-4: 180px;
+            --space-campus-index-1: 14px;
+            --space-campus-index-2: 8px;
+            --color-campus-index-1: #54667a;
+            --typo-campus-index-font-weight-1: 600;
+        }
+
+        .ci-inline-gap-05-center {
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         .bootstrap-table .table a, .fixed-table-body .table a, .table a {
             border-bottom: none;
             position: relative;
@@ -189,8 +194,8 @@
 
         .lead-status-shell {
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-campus-index-2);
+            width: var(--dimension-campus-index-1);
             overflow: hidden;
         }
 
@@ -199,7 +204,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-campus-index-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
@@ -209,11 +214,11 @@
             gap: 12px;
         }
 
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-campus-index-2); }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-campus-index-3);
+            height: var(--dimension-campus-index-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -222,7 +227,7 @@
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: var(--color-campus-index-1); font-weight: var(--typo-campus-index-font-weight-1); }
 
         .follow-content {
             opacity: 0;
@@ -251,7 +256,7 @@
         .follow-action-dropdown { position: relative; }
 
         .follow-action-dropdown .dropdown-menu {
-            min-width: 180px;
+            min-width: var(--dimension-campus-index-4);
             position: absolute !important;
             top: 0 !important;
             right: 100% !important;
@@ -270,38 +275,38 @@
 
         .program-filter-row {
             display: flex;
-            gap: 14px;
+            gap: var(--space-campus-index-1);
             flex-wrap: wrap;
             align-items: end;
-            margin-bottom: 14px;
+            margin-bottom: var(--space-campus-index-1);
         }
 
         .program-filter-field {
             flex: 1 1 200px;
-            min-width: 180px;
+            min-width: var(--dimension-campus-index-4);
         }
 
         .program-filter-field .form-label {
             font-size: 13px;
-            font-weight: 600;
-            color: #54667a;
+            font-weight: var(--typo-campus-index-font-weight-1);
+            color: var(--color-campus-index-1);
             margin-bottom: 4px;
         }
 
         .program-filter-actions {
             display: flex;
-            gap: 8px;
+            gap: var(--space-campus-index-2);
             margin-left: auto;
             align-items: center;
         }
 
         .campus-footer #campus-status-count {
-            color: #54667a;
-            font-weight: 600;
+            color: var(--color-campus-index-1);
+            font-weight: var(--typo-campus-index-font-weight-1);
         }
 
         @media (max-width: 767px) {
-            .program-filter-actions { width: 100%; margin-left: 0; }
+            .program-filter-actions { width: var(--dimension-campus-index-1); margin-left: 0; }
         }
     </style>
 @endpush

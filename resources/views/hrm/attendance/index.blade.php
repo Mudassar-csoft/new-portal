@@ -8,18 +8,8 @@
     @endphp
 
     <div class="hrm-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
             <header class="box-typical-header panel-heading">

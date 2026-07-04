@@ -1,3 +1,13 @@
+:root {
+    --typo-theme-css-separate-partials-typography-font-size-1: 100%;
+    --typo-theme-css-separate-partials-typography-font-size-2: 1em;
+    --typo-theme-css-separate-partials-typography-font-size-3: 80%;
+    --typo-theme-css-separate-partials-typography-font-size-4: 75%;
+    --typo-theme-css-separate-partials-typography-line-height-5: 1.4;
+    --typo-theme-css-separate-partials-typography-font-size-6: 1rem;
+    --typo-theme-css-separate-partials-typography-font-size-7: 0.8125rem /*13/16*/;
+}
+
 /* ==========================================================================
    HTML5 display definitions
    ========================================================================== */
@@ -39,7 +49,7 @@ audio:not([controls]) {
  *    user zoom.
  */
 html {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-1);
   /* 1 */
   -ms-text-size-adjust: 100%;
   /* 2 */
@@ -109,7 +119,7 @@ pre,
 samp {
   font-family: monospace, serif;
   _font-family: 'courier new', monospace;
-  font-size: 1em;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-2);
 }
 /**
  * Improve readability of pre-formatted text in all browsers.
@@ -137,14 +147,14 @@ q:after {
  * Address inconsistent and variable font size in all browsers.
  */
 small {
-  font-size: 80%;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-3);
 }
 /**
  * Prevent `sub` and `sup` affecting `line-height` in all browsers.
  */
 sub,
 sup {
-  font-size: 75%;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-4);
   line-height: 0;
   position: relative;
   vertical-align: baseline;
@@ -247,7 +257,7 @@ button,
 input,
 select,
 textarea {
-  font-size: 100%;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-1);
   /* 1 */
   margin: 0;
   /* 2 */
@@ -371,8 +381,8 @@ table {
    Opinionated defaults
    ========================================================================== */
 html {
-  font-size: 1em;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-2);
+  line-height: var(--typo-theme-css-separate-partials-typography-line-height-5);
 }
 * {
   padding: 0px;
@@ -437,7 +447,7 @@ select,
 textarea {
   color: #343434;
   font-family: 'Proxima Nova', sans-serif;
-  line-height: 1.4;
+  line-height: var(--typo-theme-css-separate-partials-typography-line-height-5);
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -499,7 +509,7 @@ a:focus:hover {
   text-transform: uppercase;
 }
 .font-16 {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-6);
 }
 .font-14 {
   font-size: .875rem;
@@ -523,7 +533,7 @@ h4 .text-muted,
 h5 .text-muted,
 h6 .text-muted {
   display: inline;
-  font-size: 80%;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-3);
 }
 h1 .text-muted.smaller,
 h2 .text-muted.smaller,
@@ -539,7 +549,7 @@ h3 .label,
 h4 .label,
 h5 .label,
 h6 .label {
-  font-size: 75% !important;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-4) !important;
 }
 h1.with-border,
 h2.with-border,
@@ -572,8 +582,8 @@ h6 {
 /* Текстовый блок произвольного форматирования */
 .text-block {
   zoom: 1;
-  font-size: 0.8125rem /*13/16*/;
-  line-height: 1.4;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-7);
+  line-height: var(--typo-theme-css-separate-partials-typography-line-height-5);
 }
 .text-block:before,
 .text-block:after {
@@ -584,7 +594,7 @@ h6 {
   clear: both;
 }
 .text-block.text-block-typical {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-6);
 }
 .text-block p {
   margin: .8em 0;
@@ -631,7 +641,7 @@ h6 {
   border: solid 1px #29313d;
 }
 .text-block.bs {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-6);
 }
 mark {
   background: #e4f6fe;
@@ -641,13 +651,13 @@ mark {
   padding: 0.75rem /*12/16*/ 0 0.75rem /*12/16*/ 1.375rem /*22/16*/;
   border-left: solid 4px #00a8ff;
   background: #f6f8fa;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-6);
 }
 .blockquote p {
   margin-top: 0;
 }
 .blockquote-footer {
-  font-size: 0.8125rem /*13/16*/;
+  font-size: var(--typo-theme-css-separate-partials-typography-font-size-7);
 }
 code {
   color: #6c7a86;

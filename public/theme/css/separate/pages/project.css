@@ -1,3 +1,10 @@
+:root {
+    --typo-theme-css-separate-pages-project-font-size-1: 1.125rem;
+    --typo-theme-css-separate-pages-project-font-weight-2: 600;
+    --typo-theme-css-separate-pages-project-font-size-3: 1rem;
+    --typo-theme-css-separate-pages-project-font-size-4: .9375rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -15,7 +22,7 @@
   height: 38px;
   border: none;
   background: none;
-  font-size: 1.125rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-1);
   color: #919fa9;
 }
 .proj-page .proj-page-del:hover {
@@ -57,8 +64,8 @@
 .proj-page-subtitle h4,
 .proj-page-subtitle h5,
 .proj-page-subtitle h6 {
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: var(--typo-theme-css-separate-pages-project-font-weight-2);
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-3);
   margin: 0;
 }
 .proj-page-subtitle.with-del {
@@ -78,10 +85,10 @@
   border: solid 1px transparent /*@color-border-light*/;
   -webkit-border-radius: .25rem;
           border-radius: .25rem;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-project-font-weight-2);
   padding: .375rem 0;
   margin: 0 0 6px;
-  font-size: 1.125rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-1);
   cursor: default;
 }
 .proj-page-header .title .font-icon {
@@ -117,7 +124,7 @@
 }
 .proj-page-team .tbl-cell-date {
   text-align: right;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-4);
   color: #919fa9;
   white-space: nowrap;
   width: 30px;
@@ -191,7 +198,7 @@
 }
 .proj-page-add-txt .proj-page-del {
   right: 13px;
-  font-size: 1.125rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-1);
   margin-top: 2px;
 }
 .proj-page-attach-section {
@@ -232,7 +239,7 @@
   padding: 0 30px 0 60px;
   height: 54px;
   margin: 0 0 20px 0;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-4);
   line-height: 18px;
 }
 .proj-page-attach p {
@@ -246,7 +253,7 @@
   margin: 0 15px 0 0;
 }
 .proj-page-attach .name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-project-font-weight-2);
 }
 .proj-page-attach .date {
   color: #919fa9;
@@ -278,7 +285,7 @@
   font-size: 0.9375rem /*15/16*/;
 }
 .proj-page-assigned .user-card-row {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-3);
 }
 .proj-page-people .tbl-people > .tbl-row > .tbl-cell {
   padding: 0 0 10px;
@@ -290,7 +297,7 @@
   color: #919fa9;
 }
 .proj-page-people .user-card-row {
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-3);
 }
 .proj-page-dates .tbl-cell {
   padding: 0 0 5px;
@@ -305,7 +312,7 @@
   padding: 0 0 5px;
 }
 .proj-page-actions-list {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-project-font-weight-2);
   margin: -4px 0;
 }
 .proj-page-actions-list li {
@@ -342,7 +349,7 @@
 .chat-area-bottom .caption {
   display: inline-block;
   padding: .375rem 0 .375rem 42px;
-  font-size: 1rem;
+  font-size: var(--typo-theme-css-separate-pages-project-font-size-3);
   line-height: 1.5;
   text-align: center;
   vertical-align: middle;

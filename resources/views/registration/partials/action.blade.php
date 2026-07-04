@@ -7,6 +7,15 @@
 @once
 	@push('styles')
 		<style>
+        :root {
+            --dimension-registration-partials-action-1: 22px;
+            --dimension-registration-partials-action-2: 24px;
+            --space-registration-partials-action-1: 0 !important;
+            --color-registration-partials-action-1: #303740;
+            --typo-registration-partials-action-font-size-1: 17px;
+            --typo-registration-partials-action-font-weight-2: 500;
+        }
+
 			.registration-action-dropdown .dropdown-menu.lead-action-menu {
 				min-width: 252px;
 				padding: 8px 0;
@@ -23,9 +32,9 @@
 				justify-content: flex-start;
 				gap: 14px;
 				padding: 1px 18px !important;
-				color: #303740 !important;
-				font-size: 17px !important;
-				font-weight: 500;
+				color: var(--color-registration-partials-action-1) !important;
+				font-size: var(--typo-registration-partials-action-font-size-1) !important;
+				font-weight: var(--typo-registration-partials-action-font-weight-2);
 				line-height: 1.35;
 				background: transparent !important;
 				border: 0;
@@ -43,35 +52,35 @@
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
-				width: 24px;
-				min-width: 24px;
-				height: 24px;
+				width: var(--dimension-registration-partials-action-2);
+				min-width: var(--dimension-registration-partials-action-2);
+				height: var(--dimension-registration-partials-action-2);
 				font-size: 18px !important;
 				line-height: 1;
-				margin-right: 0 !important;
-				padding: 0 !important;
+				margin-right: var(--space-registration-partials-action-1);
+				padding: var(--space-registration-partials-action-1);
 			}
 
 			.registration-action-dropdown .lead-action-label {
 				display: inline-block;
-				font-size: 17px !important;
-				font-weight: 500;
+				font-size: var(--typo-registration-partials-action-font-size-1) !important;
+				font-weight: var(--typo-registration-partials-action-font-weight-2);
 				letter-spacing: 0.01em;
 			}
 
 			.registration-action-dropdown .lead-action-icon svg {
 				display: block;
-				width: 24px;
-				height: 24px;
+				width: var(--dimension-registration-partials-action-2);
+				height: var(--dimension-registration-partials-action-2);
 			}
 
 			.registration-action-dropdown .lead-action-icon--whatsapp svg {
-				width: 22px;
-				height: 22px;
+				width: var(--dimension-registration-partials-action-1);
+				height: var(--dimension-registration-partials-action-1);
 			}
 
 			.registration-action-dropdown .lead-icon-cyan { color: #19b6e6; }
-			.registration-action-dropdown .lead-icon-black { color: #303740; }
+			.registration-action-dropdown .lead-icon-black { color: var(--color-registration-partials-action-1); }
 			.registration-action-dropdown .lead-icon-green { color: #2db853; }
 		</style>
 	@endpush

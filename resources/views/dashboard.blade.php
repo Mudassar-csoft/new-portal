@@ -85,25 +85,25 @@
 						<div class="chart-container row ">
 							<div class="chart-txt col-md-5 p-0 m-0 ">
 								<div class="chart-txt-top pt-3">
-									<p ><span class="unit"style="font-size:18px !important;">RS.</span><span id="income-headline-value" class="number"style="font-size:18px !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
-									<p class="caption"style="font-size:18px !important;">Income</p>  
+									<p ><span class="unit"style="font-size: var(--typo-dashboard-font-size-1) !important;">RS.</span><span id="income-headline-value" class="number"style="font-size: var(--typo-dashboard-font-size-1) !important;">{{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</span></p>
+									<p class="caption"style="font-size: var(--typo-dashboard-font-size-1) !important;">Income</p>
 								</div>
 								<div class="chart-range d-flex flex-column ml-lg-3 ml-2">
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-today" value="today" checked>
 										<label for="range-today">Today</label>
 									</div>
-									
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-week" value="week">
 										<label for="range-week">Weekly</label>
 									</div>
-									
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-month" value="month">
 										<label for="range-month">Monthly</label>
 									</div>
-								
+
 									<div class="radio">
 										<input type="radio" name="income-range" id="range-year" value="year">
 										<label for="range-year">Yearly</label>
@@ -111,16 +111,16 @@
 								</div>
 								<table class="tbl-data">
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Today</td>
-										<td class="price  collection-amount" data-income-summary="today" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Today</td>
+										<td class="price  collection-amount dashboard-income-summary-cell" data-income-summary="today">RS. {{ number_format((float) ($incomeSummary['today'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2 " style = "font-size:14px;	">Weekly</td>
-										<td class="price collection-amount" data-income-summary="week" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Weekly</td>
+										<td class="price collection-amount dashboard-income-summary-cell" data-income-summary="week">RS. {{ number_format((float) ($incomeSummary['week'] ?? 0), 0) }}</td>
 									</tr>
 									<tr>
-										<td class="collection-label pl-lg-3 pl-2" style = "font-size:14px;	">Monthly</td>
-										<td class="price  collection-amount" data-income-summary="month" style = "font-size:14px;	">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
+										<td class="collection-label pl-lg-3 pl-2 dashboard-income-summary-cell">Monthly</td>
+										<td class="price  collection-amount dashboard-income-summary-cell" data-income-summary="month">RS. {{ number_format((float) ($incomeSummary['month'] ?? 0), 0) }}</td>
 									</tr>
 								</table>
 							</div>
@@ -128,7 +128,7 @@
 								<div class="pr-md-2">
 									<div class="income-chart-stage">
 										<div id="chart_div" ></div>
-										<div id="chart_fallback" style="display:none; height:314px; font-size:11px;">
+										<div id="chart_fallback" style="display:none; height:314px; font-size: var(--typo-dashboard-font-size-2);">
 											<svg viewBox="0 0 400 314" preserveAspectRatio="none" width="100%" height="100%">
 												<defs>
 													<linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
@@ -262,8 +262,8 @@
 					@endif
 				</div><!--.row-->
 			</div><!--.col-->
-		
-		
+
+
 	    </div>
 	@if($showComparisonChart)
 <!--Current Month Charts-->
@@ -488,7 +488,98 @@
 
 @push('styles')
 	<style>
-		
+        :root {
+            --dimension-dashboard-1: 0;
+            --dimension-dashboard-10: 9px;
+            --dimension-dashboard-11: auto;
+            --dimension-dashboard-12: calc(100% - 270px);
+            --dimension-dashboard-13: none;
+            --dimension-dashboard-2: 100%;
+            --dimension-dashboard-3: 100%;
+            --dimension-dashboard-4: 100vh;
+            --dimension-dashboard-5: 12px;
+            --dimension-dashboard-6: 270px;
+            --dimension-dashboard-7: 314px;
+            --dimension-dashboard-8: 320px;
+            --dimension-dashboard-9: 32px;
+            --space-dashboard-1: 0 !important;
+            --space-dashboard-10: 3px !important;
+            --space-dashboard-11: 4px;
+            --space-dashboard-12: 5px 5px;
+            --space-dashboard-13: 6px;
+            --space-dashboard-14: 8px;
+            --space-dashboard-15: auto !important;
+            --space-dashboard-2: 0px;
+            --space-dashboard-3: 10px;
+            --space-dashboard-4: 12px;
+            --space-dashboard-5: 12px !important;
+            --space-dashboard-6: 14px;
+            --space-dashboard-7: 15px;
+            --space-dashboard-8: 18px;
+            --space-dashboard-9: 24px !important;
+            --color-dashboard-1: #00a8ff;
+            --color-dashboard-2: #0a6fd1;
+            --color-dashboard-3: #304b58;
+            --color-dashboard-4: #31465a;
+            --color-dashboard-5: #d7e0ea;
+            --color-dashboard-6: #d8e1ec;
+            --color-dashboard-7: #e6edf3;
+            --color-dashboard-8: #fff;
+            --color-dashboard-9: #ffffff;
+        }
+
+        :root {
+            --dimension-dashboard-1: 0;
+            --dimension-dashboard-10: 9px;
+            --dimension-dashboard-11: auto;
+            --dimension-dashboard-12: calc(100% - 270px);
+            --dimension-dashboard-13: none;
+            --dimension-dashboard-2: 100%;
+            --dimension-dashboard-3: 100%;
+            --dimension-dashboard-4: 100vh;
+            --dimension-dashboard-5: 12px;
+            --dimension-dashboard-6: 270px;
+            --dimension-dashboard-7: 314px;
+            --dimension-dashboard-8: 320px;
+            --dimension-dashboard-9: 32px;
+            --space-dashboard-1: 0 !important;
+            --space-dashboard-10: 3px !important;
+            --space-dashboard-11: 4px;
+            --space-dashboard-12: 5px 5px;
+            --space-dashboard-13: 6px;
+            --space-dashboard-14: 8px;
+            --space-dashboard-15: auto !important;
+            --space-dashboard-2: 0px;
+            --space-dashboard-3: 10px;
+            --space-dashboard-4: 12px;
+            --space-dashboard-5: 12px !important;
+            --space-dashboard-6: 14px;
+            --space-dashboard-7: 15px;
+            --space-dashboard-8: 18px;
+            --space-dashboard-9: 24px !important;
+            --typo-dashboard-font-size-1: 18px;
+            --typo-dashboard-font-size-2: 11px;
+            --typo-dashboard-font-size-3: 14px;
+            --typo-dashboard-font-size-4: 15px;
+            --typo-dashboard-font-size-5: 17px;
+            --typo-dashboard-line-height-6: 1;
+            --typo-dashboard-font-family-7: 'Proxima Nova', sans-serif;
+            --typo-dashboard-font-size-8: 10px;
+            --typo-dashboard-font-weight-9: 700;
+            --typo-dashboard-font-size-10: 13px;
+            --typo-dashboard-font-weight-11: 600;
+            --typo-dashboard-font-weight-12: 800;
+            --typo-dashboard-font-size-13: 15px;
+            --typo-dashboard-font-size-14: 12px;
+            --typo-dashboard-font-size-15: 12.8px;
+            --typo-dashboard-font-weight-16: 500;
+            --typo-dashboard-line-height-17: 1.45;
+            --typo-dashboard-font-size-18: 13px;
+        }0___
+
+		.dashboard-income-summary-cell {
+			font-size: var(--typo-dashboard-font-size-3) !important;
+		}
 	</style>
 @endpush
 
@@ -499,9 +590,36 @@
 	<link rel="stylesheet" href="css/separate/pages/widgets.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
 	<style>
+        :root {
+            --space-dashboard-1: 0 !important;
+            --space-dashboard-10: 3px !important;
+            --space-dashboard-11: 4px;
+            --space-dashboard-12: 5px 5px;
+            --space-dashboard-13: 6px;
+            --space-dashboard-14: 8px;
+            --space-dashboard-15: auto !important;
+            --space-dashboard-2: 0px;
+            --space-dashboard-3: 10px;
+            --space-dashboard-4: 12px;
+            --space-dashboard-5: 12px !important;
+            --space-dashboard-6: 14px;
+            --space-dashboard-7: 15px;
+            --space-dashboard-8: 18px;
+            --space-dashboard-9: 24px !important;
+            --color-dashboard-1: #00a8ff;
+            --color-dashboard-2: #0a6fd1;
+            --color-dashboard-3: #304b58;
+            --color-dashboard-4: #31465a;
+            --color-dashboard-5: #d7e0ea;
+            --color-dashboard-6: #d8e1ec;
+            --color-dashboard-7: #e6edf3;
+            --color-dashboard-8: #fff;
+            --color-dashboard-9: #ffffff;
+        }
+
 		*{
 
-			font-size: 15px;	
+			font-size: var(--typo-dashboard-font-size-4);
 		}
 		body.with-side-menu.control-panel .page-content {
 			padding-right: 67px !important;
@@ -511,7 +629,7 @@
 			height: 414px;
 		}
 		.chart-txt-top.pt-2 {
-    font-size: 17px !important;
+    font-size: var(--typo-dashboard-font-size-5) !important;
 }
 		.chart-range {
 			display: flex;
@@ -531,12 +649,12 @@
 		.chart-statistic-box .chart-txt {
 			float: left;
 			width: 200px;
-			height: 314px;
+			height: var(--dimension-dashboard-7);
 			padding: 15px 20px;
-			background: #304b58;
+			background: var(--color-dashboard-3);
 			-webkit-border-radius: 8px 0 0 8px;
 			border-radius: 8px 0 0 8px;
-			color: #fff;
+			color: var(--color-dashboard-8);
 			position: relative;
 			z-index: 5;
 		}
@@ -544,18 +662,18 @@
 			display: flex;
 			align-items: baseline;
 			justify-content: center;
-			gap: 6px;
-			line-height: 1;
+			gap: var(--space-dashboard-13);
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-txt .chart-txt-top .unit {
 			margin: 0;
 			padding: 0;
 			position: static;
 			top: auto;
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-txt .chart-txt-top .number {
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 		}
 		.chart-statistic-box .chart-container-in {
 			border-radius: 0 12px 12px 0;
@@ -564,13 +682,13 @@
 
 		.chart-statistic-box .income-chart-stage {
 			position: relative;
-			height: 314px;
-			
+			height: var(--dimension-dashboard-7);
+
 		}
 
 		.chart-statistic-box #chart_div,
 		.chart-statistic-box #chart_fallback {
-			height: 314px;
+			height: var(--dimension-dashboard-7);
 		}
 
 		.chart-statistic-box .income-axis {
@@ -578,25 +696,25 @@
 			inset: 0;
 			pointer-events: none;
 			z-index: 3;
-			color: #fff;
-			font-family: 'Proxima Nova', sans-serif;
-			font-size: 10px !important;
-			font-weight: 700;
+			color: var(--color-dashboard-8);
+			font-family: var(--typo-dashboard-font-family-7);
+			font-size: var(--typo-dashboard-font-size-8) !important;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			display: none;
 		}
 
 		.chart-statistic-box .income-axis-label {
 			position: absolute;
-			line-height: 1;
+			line-height: var(--typo-dashboard-line-height-6);
 			white-space: nowrap;
-			/* margin-right:15px; */
-			font-size: 10px !important;
-			
+			/* margin-right:var(--space-dashboard-7); */
+			font-size: var(--typo-dashboard-font-size-8) !important;
+
 		}
 
 		.chart-statistic-box .income-axis-top .income-axis-label {
 			transform: translateX(-50%);
-			font-size: 10px !important;
+			font-size: var(--typo-dashboard-font-size-8) !important;
 		}
 
 		.chart-statistic-box .income-axis-right .income-axis-label {
@@ -614,13 +732,13 @@
 
 		.chart-statistic-box .tbl-data .collection-label {
 			width: auto;
-			padding-right: 10px;
+			padding-right: var(--space-dashboard-3);
 		}
 
 		.chart-statistic-box .tbl-data .collection-amount {
 			text-align: left;
 			white-space: nowrap;
-			padding-left: 12px;
+			padding-left: var(--space-dashboard-4);
 		}
 
 		.dashboard-top-panels > .dashboard-income-panel-column,
@@ -631,19 +749,19 @@
 		.dashboard-top-panels.is-year-expanded > .dashboard-income-panel-column,
 		.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
 			flex: 0 0 100% !important;
-			max-width: 100% !important;
-			width: 100% !important;
+			max-width: var(--dimension-dashboard-3) !important;
+			width: var(--dimension-dashboard-3) !important;
 		}
 
 		.dashboard-top-panels.is-year-expanded > .dashboard-income-panel-column {
-			margin-left: 0 !important;
-			margin-right: 0 !important;
-			padding-right: 24px !important;
+			margin-left: var(--space-dashboard-1);
+			margin-right: var(--space-dashboard-1);
+			padding-right: var(--space-dashboard-9);
 		}
 
 		.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
-			margin-top: 14px;
-			padding-right: 0 !important;
+			margin-top: var(--space-dashboard-6);
+			padding-right: var(--space-dashboard-1);
 		}
 
 		@media (min-width: 768px) {
@@ -654,61 +772,61 @@
 
 			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-txt {
 				flex: 0 0 270px !important;
-				max-width: 270px !important;
-				width: 270px !important;
+				max-width: var(--dimension-dashboard-6) !important;
+				width: var(--dimension-dashboard-6) !important;
 			}
 
 			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container-in {
 				flex: 1 1 auto !important;
-				max-width: calc(100% - 270px) !important;
-				width: calc(100% - 270px) !important;
+				max-width: var(--dimension-dashboard-12) !important;
+				width: var(--dimension-dashboard-12) !important;
 			}
 
 			.dashboard-top-panels.is-year-expanded .chart-statistic-box .chart-container-in > div {
-				/* padding-left: 12px !important; */
+				/* padding-left: var(--space-dashboard-5); */
 				padding-right: 18px !important;
 			}
 
 			.dashboard-top-panels.is-year-expanded > .dashboard-stats-panel-column {
-				padding-left: 12px !important;
-				padding-right: 24px !important;
+				padding-left: var(--space-dashboard-5);
+				padding-right: var(--space-dashboard-9);
 			}
 
 			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row {
 				display: flex;
 				flex-wrap: nowrap;
-				gap: 18px;
-				margin-left: 0 !important;
-				margin-right: 0 !important;
+				gap: var(--space-dashboard-8);
+				margin-left: var(--space-dashboard-1);
+				margin-right: var(--space-dashboard-1);
 			}
 
 			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row > [class*="col-"] {
 				flex: 1 1 0 !important;
-				max-width: none !important;
-				width: auto !important;
-				padding-left: 0 !important;
-				padding-right: 0 !important;
-				margin-bottom: 0 !important;
+				max-width: var(--dimension-dashboard-13) !important;
+				width: var(--dimension-dashboard-11) !important;
+				padding-left: var(--space-dashboard-1);
+				padding-right: var(--space-dashboard-1);
+				margin-bottom: var(--space-dashboard-1);
 			}
 
 			.dashboard-top-panels.is-year-expanded .dashboard-stats-cards-row .statistic-box {
-				margin: 0 !important;
+				margin: var(--space-dashboard-1);
 			}
 		}
 
 		.admission-progress-box {
 			border-radius: 12px;
 			overflow: hidden;
-			background: #ffffff;
-			min-height: 314px;
+			background: var(--color-dashboard-8)fff;
+			min-height: var(--dimension-dashboard-7);
 			border: 1px solid #e5e5e5;
 			box-shadow: 0 14px 30px rgba(15, 23, 42, 0.02);
 		}
 
 		.admission-insight-card {
-			height: 100%;
-			min-height: 314px;
-			background: #ffffff;
+			height: var(--dimension-dashboard-2);
+			min-height: var(--dimension-dashboard-7);
+			background: var(--color-dashboard-8)fff;
 			color: #263748;
 			display: flex;
 			flex-direction: column;
@@ -730,16 +848,16 @@
 
 		.admission-insight-title {
 			font-size: 20px !important;
-			font-weight: 700;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			color: #243746;
 			text-align: left;
-			margin-bottom: 18px;
+			margin-bottom: var(--space-dashboard-8);
 		}
 
 		.admission-insight-bars {
 			display: flex;
 			align-items: flex-end;
-			gap: 18px;
+			gap: var(--space-dashboard-8);
 			min-height: 122px;
 		}
 
@@ -747,7 +865,7 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-dashboard-14);
 		}
 
 		.admission-insight-bar-track {
@@ -765,39 +883,39 @@
 			right: 0;
 			bottom: 0;
 			border-radius: 4px 4px 0 0;
-			background: linear-gradient(180deg, #39bbff 0%, #00a8ff 100%);
+			background: linear-gradient(180deg, #39bbff 0%, var(--color-dashboard-1) 100%);
 		}
 
 		.admission-insight-bar-label {
-			font-size: 13px !important;
-			font-weight: 600;
-			color: #31465a;
+			font-size: var(--typo-dashboard-font-size-10) !important;
+			font-weight: var(--typo-dashboard-font-weight-11);
+			color: var(--color-dashboard-4);
 		}
 
 		.admission-insight-total {
 			flex: 0 0 170px;
 			text-align: right;
-			padding-bottom: 6px;
+			padding-bottom: var(--space-dashboard-13);
 		}
 
 		.admission-insight-total-value {
 			font-size: 54px !important;
-			font-weight: 800;
-			line-height: 1;
-			color: #00a8ff;
+			font-weight: var(--typo-dashboard-font-weight-12);
+			line-height: var(--typo-dashboard-line-height-6);
+			color: var(--color-dashboard-1);
 		}
 
 		.admission-insight-total-note {
 			font-size: 16px !important;
-			color: #31465a;
-			margin-top: 18px;
+			color: var(--color-dashboard-4);
+			margin-top: var(--space-dashboard-8);
 		}
 
 		.admission-insight-footer {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-			border-top: 1px solid #d8e1ec;
-			background: #fff;
+			border-top: 1px solid var(--color-dashboard-6);
+			background: var(--color-dashboard-8);
 		}
 
 		.admission-insight-footer-block {
@@ -806,25 +924,25 @@
 		}
 
 		.admission-insight-footer-block + .admission-insight-footer-block {
-			border-left: 1px solid #d8e1ec;
+			border-left: 1px solid var(--color-dashboard-6);
 		}
 
 		.admission-insight-footer-label {
-			font-size: 15px !important;
-			font-weight: 700;
+			font-size: var(--typo-dashboard-font-size-13) !important;
+			font-weight: var(--typo-dashboard-font-weight-9);
 			color: #2c3f50;
-			margin-bottom: 10px;
+			margin-bottom: var(--space-dashboard-3);
 		}
 
 		.admission-insight-footer-value {
 			font-size: 34px !important;
-			font-weight: 800;
-			line-height: 1;
-			color: #00a8ff;
+			font-weight: var(--typo-dashboard-font-weight-12);
+			line-height: var(--typo-dashboard-line-height-6);
+			color: var(--color-dashboard-1);
 		}
 
 		.admission-insight-footer-value.is-positive {
-			color: #00a8ff;
+			color: var(--color-dashboard-1);
 		}
 
 		.admission-insight-footer-value.is-negative {
@@ -851,9 +969,9 @@
         .chart-range .radio input {
             margin-top: 2px;
         }
-		
+
 		.box-typical .form-label-dashboard{
-			font-size:15px !important;
+			font-size: var(--typo-dashboard-font-size-13) !important;
 			font-weight:500 !important;
 		}
         /* Hide static axes; Google Chart handles axes dynamically */
@@ -863,18 +981,18 @@
         }
 
 		.chart-caption , .caption-text{
-			font-size: 17px !important;
+			font-size: var(--typo-dashboard-font-size-5) !important;
             text-align: center;
-            font-weight: 700;
-            color: #fff;
-            margin-top: 8px;
-            padding-bottom: 6px;
+            font-weight: var(--typo-dashboard-font-weight-9);
+            color: var(--color-dashboard-8);
+            margin-top: var(--space-dashboard-14);
+            padding-bottom: var(--space-dashboard-13);
         }
 
 		#lead-chart .c3-legend-item text {
-			font-size: 12px;
+			font-size: var(--typo-dashboard-font-size-14);
 			fill: #334155;
-			font-weight: 600;
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
 
 		#lead-chart .c3-legend-item:last-child {
@@ -882,23 +1000,23 @@
 		}
 
 		#lead-chart {
-			min-height: 320px;
+			min-height: var(--dimension-dashboard-8);
 			padding: 18px 24px 8px;
 		}
 
 		#lead-chart .c3 svg {
-			font-family: 'Proxima Nova', sans-serif;
+			font-family: var(--typo-dashboard-font-family-7);
 		}
 
 		#lead-chart .c3-axis-x text,
 		#lead-chart .c3-axis-y text {
 			fill: #526273;
-			font-size: 12px;
+			font-size: var(--typo-dashboard-font-size-14);
 		}
 
 		#lead-chart .c3-axis path,
 		#lead-chart .c3-axis line {
-			stroke: #d7e0ea;
+			stroke: var(--color-dashboard-5);
 		}
 
 		#lead-chart .c3-grid line {
@@ -911,8 +1029,8 @@
 
 		#lead-chart .c3-texts text {
 			fill: #1e293b;
-			font-size: 11px;
-			font-weight: 600;
+			font-size: var(--typo-dashboard-font-size-2);
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
 
 		.comparison-empty-state {
@@ -920,23 +1038,23 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			border: 1px dashed #d7e0ea;
+			border: 1px dashed var(--color-dashboard-5);
 			border-radius: 14px;
 			background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
 			color: #64748b;
-			font-size: 15px;
-			font-weight: 600;
+			font-size: var(--typo-dashboard-font-size-4);
+			font-weight: var(--typo-dashboard-font-weight-11);
 		}
  .statistic-box {
        -webkit-border-radius: 4px;
     border-radius: 8px;
     text-align: center;
-    color: #fff;
+    color: var(--color-dashboard-8);
     background: no-repeat 50% 50%;
     background-size: cover;
     margin: 0 0 30px;
 
-    
+
 }
         .statistic-box .stat-inner {
             position: relative;
@@ -955,7 +1073,7 @@
             text-decoration: none;
         }
 
-.statistic-box .number, 
+.statistic-box .number,
 .statistic-box .caption{
     font-size:26px !important;
 
@@ -974,10 +1092,10 @@
             top: 12px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: #fff;
+            color: var(--color-dashboard-8);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: var(--dimension-dashboard-9);
+            height: var(--dimension-dashboard-9);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -995,7 +1113,7 @@
             right: 12px !important;
             top: 12px !important;
             transform: none !important;
-            width: 32px;
+            width: var(--dimension-dashboard-9);
             height: 32px !important;
         }
 
@@ -1009,14 +1127,14 @@
         .month-chart-header {
             padding: 10px 16px !important;
             border-bottom: 1px solid #e6eef3;
-            background: #fff;
+            background: var(--color-dashboard-8);
         }
         .month-chart-header-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            width: 100%;
+            gap: var(--space-dashboard-4);
+            width: var(--dimension-dashboard-2);
         }
         .month-chart-header-wrap {
             display: flex;
@@ -1034,20 +1152,20 @@
         }
         .month-chart-header-title {
             margin: 0;
-            font-size: 15px !important;
+            font-size: var(--typo-dashboard-font-size-13) !important;
             font-weight: 600 !important;
             color: #25364a;
             min-width: 0;
-            width: 100%;
+            width: var(--dimension-dashboard-2);
         }
         .month-chart-header-label {
             margin: 0;
             display: inline-block;
             padding: 0;
             min-width: 0;
-            max-width: 100%;
+            max-width: var(--dimension-dashboard-2);
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: var(--typo-dashboard-font-weight-11);
             line-height: 1.25;
             margin-top: 0;
             white-space: nowrap;
@@ -1063,7 +1181,7 @@
             overflow: visible;
             text-overflow: clip;
             padding: 4px 8px;
-            background: #fff;
+            background: var(--color-dashboard-8);
             border: 1px solid #cfd9e3;
             box-shadow: 0 0 0 3px rgba(18, 160, 255, 0.12);
             outline: none;
@@ -1077,8 +1195,8 @@
             background: transparent;
             border: 0;
             color: #b2bcc7;
-            font-size: 12.8px !important;
-            line-height: 1;
+            font-size: var(--typo-dashboard-font-size-15) !important;
+            line-height: var(--typo-dashboard-line-height-6);
             min-width: 16px;
             transition: color 0.15s ease;
         }
@@ -1095,11 +1213,11 @@
         }
         .month-chart-header-actions .action-btn .font-icon,
         .month-chart-header-actions .action-btn .glyphicon {
-            line-height: 1;
-            font-size: 12.8px !important;
+            line-height: var(--typo-dashboard-line-height-6);
+            font-size: var(--typo-dashboard-font-size-15) !important;
         }
         .month-chart-header-actions .dashboard-panel-action[data-action="fullscreen"] .font-icon {
-            font-size: 14px !important;
+            font-size: var(--typo-dashboard-font-size-3) !important;
         }
         .month-chart-header-actions .action-btn .glyphicon {
             font-family: 'Glyphicons Halflings' !important;
@@ -1111,57 +1229,57 @@
         .dashboard-panel-action.is-spinning .font-icon {
             animation: dashboardSpin 0.75s linear infinite;
         }
-		
+
         .dashboard-panel-offset {
             transform: translate(24px, -14px);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 18px 40px rgba(37, 54, 74, 0.16);
         }
         .month-chart-card {
-            margin-bottom: 15px;
+            margin-bottom: var(--space-dashboard-7);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 	.month-chart-card .panel-body > .tbl-typical td {
-   
+
 			padding:5px !important;
 		}
 
         .month-chart-card .box-typical-body,
         .month-chart-card .panel-body {
-            max-height: none !important;
+            max-height: var(--dimension-dashboard-13) !important;
             height: auto;
             overflow: hidden !important;
-            padding: 0px;
+            padding: var(--space-dashboard-2);
         }
-		
+
         .panel-body-admssion  {
-            max-height: none !important;
+            max-height: var(--dimension-dashboard-13) !important;
             height: auto;
             overflow: auto !important;
-            padding: 0px;
+            padding: var(--space-dashboard-2);
         }
         .dashboard-equal-row > [class*="col-"] {
             display: flex;
             align-items: flex-start;
         }
         .dashboard-equal-card {
-            width: 100%;
+            width: var(--dimension-dashboard-2);
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .dashboard-content .box-typical.box-typical-collapsed {
-            height: auto !important;
-            min-height: 0 !important;
+            height: var(--dimension-dashboard-11) !important;
+            min-height: var(--dimension-dashboard-1) !important;
             align-self: flex-start;
         }
         .dashboard-content .box-typical.box-typical-collapsed .box-typical-body,
         .dashboard-content .box-typical.box-typical-collapsed .panel-body {
             display: none !important;
-            height: 0 !important;
-            min-height: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+            height: var(--dimension-dashboard-1) !important;
+            min-height: var(--dimension-dashboard-1) !important;
+            padding-top: var(--space-dashboard-1);
+            padding-bottom: var(--space-dashboard-1);
             overflow: hidden !important;
             flex: 0 0 auto !important;
         }
@@ -1179,10 +1297,10 @@
             right: 10px !important;
             bottom: 10px !important;
             left: 10px !important;
-            width: auto !important;
-            height: auto !important;
-            max-width: none !important;
-            margin: 0 !important;
+            width: var(--dimension-dashboard-11) !important;
+            height: var(--dimension-dashboard-11) !important;
+            max-width: var(--dimension-dashboard-13) !important;
+            margin: var(--space-dashboard-1);
             z-index: 1200 !important;
             display: flex !important;
             flex-direction: column !important;
@@ -1195,8 +1313,8 @@
         .dashboard-content .box-typical.box-typical-full-screen .box-typical-body,
         .dashboard-content .box-typical.box-typical-full-screen .panel-body {
             flex: 1 1 auto;
-            height: auto !important;
-            max-height: none !important;
+            height: var(--dimension-dashboard-11) !important;
+            max-height: var(--dimension-dashboard-13) !important;
             overflow: auto !important;
         }
         .dashboard-content .box-typical.box-typical-full-screen #leads-chart,
@@ -1209,33 +1327,33 @@
             min-height: 0;
         }
         .daily-activity-card .panel-body {
-            min-height: 320px;
+            min-height: var(--dimension-dashboard-8);
             overflow-y: auto !important;
             overflow-x: hidden !important;
         }
         .dashboard-equal-card #campus-admissions-chart {
-            height: 320px;
+            height: var(--dimension-dashboard-8);
         }
 
         #leads-chart,
         #admissions-chart {
             height: 360px;
-            width: 100%;
-            max-width: 100%;
+            width: var(--dimension-dashboard-2);
+            max-width: var(--dimension-dashboard-2);
         }
 
         #campus-admissions-chart {
             height: 250px;
-            width: 100%;
+            width: var(--dimension-dashboard-2);
         }
 
         /* Page loader */
         .dashboard-shell {
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-dashboard-4);
+            width: var(--dimension-dashboard-2);
             overflow: hidden;
-			
+
 			font-size:10px;
 			margin: 1%;
         }
@@ -1245,32 +1363,32 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-dashboard-4);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-dashboard-4);
         }
 
         .dashboard-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-dashboard-14);
         }
 
         .dashboard-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-dashboard-5);
+            height: var(--dimension-dashboard-5);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
         }
 		text{
 			font-size:8px !important;
-			
+
 		}
         .dashboard-spinner .dot:nth-child(2) {
             animation-delay: 0.15s;
@@ -1285,11 +1403,11 @@
         .dashboard-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-dashboard-font-weight-11);
         }
 
         .dashboard-content {
-			padding: 10px;
+			padding: var(--space-dashboard-3);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease;
@@ -1302,7 +1420,7 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: flex-end;
-            gap: 14px;
+            gap: var(--space-dashboard-6);
             padding: 6px 31px 14px;
             color: #5b6b79;
         }
@@ -1310,14 +1428,14 @@
         .dashboard-live-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 600;
+            gap: var(--space-dashboard-14);
+            font-weight: var(--typo-dashboard-font-weight-11);
             color: #1c7c54;
         }
 
         .dashboard-live-dot {
-            width: 9px;
-            height: 9px;
+            width: var(--dimension-dashboard-10);
+            height: var(--dimension-dashboard-10);
             border-radius: 999px;
             background: #22c55e;
             box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.14);
@@ -1325,21 +1443,21 @@
         }
 
         .dashboard-live-meta {
-            font-size: 13px !important;
-            font-weight: 500;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            font-weight: var(--typo-dashboard-font-weight-16);
         }
 
         .dashboard-live-refresh {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: var(--space-dashboard-13);
             padding: 4px 12px;
             border: 1px solid #cfe0f5;
             border-radius: 999px;
             background: #eef5ff;
-            color: #0a6fd1;
-            font-size: 12px;
-            font-weight: 600;
+            color: var(--color-dashboard-2);
+            font-size: var(--typo-dashboard-font-size-14);
+            font-weight: var(--typo-dashboard-font-weight-11);
             cursor: pointer;
             transition: background 0.18s ease, transform 0.18s ease;
         }
@@ -1405,37 +1523,37 @@
             max-width: calc(100% - 8px);
         }
         .daily-activity-card .panel-body {
-            padding: 0px;
+            padding: var(--space-dashboard-2);
         }
         .daily-activity-card .tbl-typical {
-            width: 100%;
+            width: var(--dimension-dashboard-2);
             margin-bottom: 0;
             table-layout: auto;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
+
         .daily-activity-card .tbl-typical td {
-            font-size: 13px !important;
-            line-height: 1.45;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            line-height: var(--typo-dashboard-line-height-17);
             vertical-align: middle;
-            color: #304b58;
-            width: auto !important;
-            padding: 5px 5px;
-            border-bottom: 1px solid #e6edf3;
+            color: var(--color-dashboard-3);
+            width: var(--dimension-dashboard-11) !important;
+            padding: var(--space-dashboard-12);
+            border-bottom: 1px solid var(--color-dashboard-7);
         }
 		 .daily-activity-card .tbl-typical th
          {
-            font-size: 13px !important;
-            line-height: 1.45;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            line-height: var(--typo-dashboard-line-height-17);
             vertical-align: middle;
-            color: #304b58;
-            width: auto !important;
-            /* padding: 5px 5px; */
-            border-bottom: 1px solid #e6edf3;
+            color: var(--color-dashboard-3);
+            width: var(--dimension-dashboard-11) !important;
+            /* padding: var(--space-dashboard-12); */
+            border-bottom: 1px solid var(--color-dashboard-7);
         }
         .daily-activity-card .tbl-typical th {
-            font-weight: 700;
+            font-weight: var(--typo-dashboard-font-weight-9);
             text-align: left;
             white-space: normal;
             color: #5d7386;
@@ -1454,7 +1572,7 @@
             text-align: left !important;
         }
         .daily-activity-table tbody tr td {
-            border-bottom: 1px solid #e6edf3 !important;
+            border-bottom: 1px solid var(--color-dashboard-7) !important;
         }
         .daily-activity-table tbody tr:last-child td {
             border-bottom: 0;
@@ -1464,9 +1582,9 @@
             min-width: 67px;
             padding: 6px 7px;
             border-radius: 999px;
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
+            color: var(--color-dashboard-8);
+            font-size: var(--typo-dashboard-font-size-18);
+            font-weight: var(--typo-dashboard-font-weight-9);
             line-height: 1.1;
             text-align: center;
         }
@@ -1492,14 +1610,14 @@
             background: #fa424a;
         }
         .daily-student-name {
-            color: #304b58;
-            font-size: 13px;
-            font-weight: 600;
+            color: var(--color-dashboard-3);
+            font-size: var(--typo-dashboard-font-size-18);
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: left;
         }
         .daily-student-name-link {
             display: inline-block;
-            color: #0a6fd1;
+            color: var(--color-dashboard-2);
             text-decoration: none;
         }
         .daily-student-name-link:hover,
@@ -1508,69 +1626,69 @@
             text-decoration: underline;
         }
         .daily-student-campus {
-            margin-top: 4px;
+            margin-top: var(--space-dashboard-11);
             color: #8a9aaa;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-14);
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: left;
         }
         .daily-phone,
         .daily-date {
-            font-size: 13px !important;
-            font-weight: 500;
+            font-size: var(--typo-dashboard-font-size-10) !important;
+            font-weight: var(--typo-dashboard-font-weight-16);
         }
         .daily-empty-state {
             padding: 26px 14px !important;
             color: #7b8b99 !important;
-            font-size: 14px !important;
-            font-weight: 600;
+            font-size: var(--typo-dashboard-font-size-3) !important;
+            font-weight: var(--typo-dashboard-font-weight-11);
             text-align: center !important;
             border-bottom: 0 !important;
         }
 
         @media (max-width: 767px) {
             .dashboard-shell {
-                margin: 0 !important;
+                margin: var(--space-dashboard-1);
             }
 
             .dashboard-shell .dashboard-content {
-                padding-left: 0 !important;
-                padding-right: 0 !important;
+                padding-left: var(--space-dashboard-1);
+                padding-right: var(--space-dashboard-1);
             }
 
             .dashboard-shell .row {
-                margin-left: 3px !important;
-                margin-right: 3px !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
+                margin-left: var(--space-dashboard-10);
+                margin-right: var(--space-dashboard-10);
+                padding-left: var(--space-dashboard-1);
+                padding-right: var(--space-dashboard-1);
             }
 
             .dashboard-shell [class*="col-"] {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
+                margin-left: var(--space-dashboard-1);
+                margin-right: var(--space-dashboard-1);
+                padding-left: var(--space-dashboard-1);
+                padding-right: var(--space-dashboard-1);
             }
 
             .dashboard-shell .box-typical.box-typical-dashboard,
             .dashboard-shell .statistic-box {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
+                margin-left: var(--space-dashboard-1);
+                margin-right: var(--space-dashboard-1);
             }
 
             .dashboard-shell .col-xl-6,
             .dashboard-shell .col-md-6,
             .dashboard-shell .dashboard-equal-row > [class*="col-"] {
                 flex: 0 0 100% !important;
-                max-width: 100% !important;
-                width: 100% !important;
+                max-width: var(--dimension-dashboard-3) !important;
+                width: var(--dimension-dashboard-3) !important;
             }
 
             .dashboard-shell .chart-statistic-box,
             .dashboard-shell .statistic-box,
             .dashboard-shell .month-chart-card,
             .dashboard-shell .dashboard-equal-card {
-                width: 100% !important;
+                width: var(--dimension-dashboard-3) !important;
             }
 
             .statistic-box .stat-inner {
@@ -1585,37 +1703,37 @@
             .statistic-box .number,
             .statistic-box .caption,
             .statistic-box .caption .text {
-                width: 100%;
+                width: var(--dimension-dashboard-2);
                 text-align: center !important;
-                padding: 0 !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
+                padding: var(--space-dashboard-1);
+                margin-left: var(--space-dashboard-15);
+                margin-right: var(--space-dashboard-15);
             }
 
             .statistic-box .number {
-                margin-top: 0 !important;
+                margin-top: var(--space-dashboard-1);
                 margin-bottom: 8px !important;
                 line-height: 1.15;
             }
 
             .statistic-box .caption {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
+                margin-top: var(--space-dashboard-1);
+                margin-bottom: var(--space-dashboard-1);
             }
 
             .statistic-box .caption .text {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
+                margin-top: var(--space-dashboard-1);
+                margin-bottom: var(--space-dashboard-1);
             }
 
             .chart-statistic-box .chart-range,
             .chart-statistic-box .tbl-data {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
+                margin-left: var(--space-dashboard-1);
+                margin-right: var(--space-dashboard-1);
             }
 
             .chart-statistic-box .chart-container-in > div {
-                padding-right: 0 !important;
+                padding-right: var(--space-dashboard-1);
             }
 
             .chart-statistic-box .chart-container {
@@ -1626,8 +1744,8 @@
 
             .chart-statistic-box .chart-txt {
                 float: none;
-                width: 100% !important;
-                max-width: 100%;
+                width: var(--dimension-dashboard-3) !important;
+                max-width: var(--dimension-dashboard-2);
                 height: auto;
                 min-height: 0;
                 display: flex;
@@ -1641,7 +1759,7 @@
 
             .chart-statistic-box .chart-txt .chart-txt-top {
                 flex: 1 1 100%;
-                padding-top: 0 !important;
+                padding-top: var(--space-dashboard-1);
             }
 
             .chart-statistic-box .chart-txt .chart-range {
@@ -1650,23 +1768,23 @@
                 flex-wrap: wrap;
                 align-items: center;
                 gap: 8px 14px;
-                margin: 0 !important;
-                width: 100%;
+                margin: var(--space-dashboard-1);
+                width: var(--dimension-dashboard-2);
             }
 
             .chart-statistic-box .chart-txt .tbl-data {
-                width: 100%;
-                margin: 0 !important;
+                width: var(--dimension-dashboard-2);
+                margin: var(--space-dashboard-1);
             }
 
             .chart-statistic-box .chart-txt .tbl-data td {
-                padding-top: 4px;
-                padding-bottom: 4px;
+                padding-top: var(--space-dashboard-11);
+                padding-bottom: var(--space-dashboard-11);
             }
 
             .chart-statistic-box .chart-container-in {
                 flex: 0 0 100%;
-                max-width: 100%;
+                max-width: var(--dimension-dashboard-2);
                 border-radius: 0 0 4px 4px;
             }
 
@@ -1678,7 +1796,7 @@
 
             .daily-activity-card .tbl-typical {
                 width: max-content !important;
-                min-width: 100% !important;
+                min-width: var(--dimension-dashboard-3) !important;
             }
 
             .daily-activity-card .tbl-typical th,
@@ -2203,7 +2321,7 @@
 
 
 
-			
+
 			function renderActivityTables(payload) {
 				var dailyActivity = (payload || {}).dailyActivity || {};
 				var admissionsActivity = (payload || {}).admissionsActivity || {};
@@ -2244,7 +2362,7 @@ var admissionData = admissionAllowed
 				var hasRealCategory = false;
 
 				leadData.forEach(function (item) {
-					
+
 					var category = item.label || 'No Data';
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
@@ -2254,7 +2372,7 @@ var admissionData = admissionAllowed
 				});
 
 				admissionData.forEach(function (item) {
-					
+
 					var category = item.label || 'No Data';
 					if (category.toLowerCase() !== 'no data') {
 						hasRealCategory = true;
@@ -2289,7 +2407,7 @@ var admissionData = admissionAllowed
 					admissionAllowed: admissionAllowed,
 					isEmpty: isEmpty || (!leadAllowed && !admissionAllowed)
 				};
-			} 
+			}
 
 			function renderMonthlyComparisonChart() {
 				if (!(window.c3 && document.getElementById('lead-chart'))) { return; }

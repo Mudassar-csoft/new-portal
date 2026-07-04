@@ -26,9 +26,7 @@
                     @if(empty($lead))
                         <p class="text-danger mb-0">Lead not found.</p>
                     @else
-                        @if(session('status'))
-                            <div class="alert alert-success">{{ session('status') }}</div>
-                        @endif
+        @include('partials.session-status-alert')
 
                         @if($errors->any())
                             <div class="alert alert-danger">{{ $errors->first() }}</div>
@@ -90,11 +88,42 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-lead-transfer-1: 100%;
+            --dimension-lead-transfer-2: 100vh;
+            --dimension-lead-transfer-3: 12px;
+            --space-lead-transfer-1: 10px;
+            --space-lead-transfer-2: -10px;
+            --space-lead-transfer-3: 12px;
+            --space-lead-transfer-4: 18px;
+            --space-lead-transfer-5: 4px;
+            --space-lead-transfer-6: 6px;
+            --space-lead-transfer-7: 8px;
+            --color-lead-transfer-1: #dc3545;
+            --color-lead-transfer-2: #e53935;
+            --color-lead-transfer-3: #e8eef5;
+            --color-lead-transfer-4: #fff;
+        }
+
+        :root {
+            --dimension-lead-transfer-1: 100%;
+            --dimension-lead-transfer-2: 100vh;
+            --dimension-lead-transfer-3: 12px;
+            --space-lead-transfer-1: 10px;
+            --space-lead-transfer-2: -10px;
+            --space-lead-transfer-3: 12px;
+            --space-lead-transfer-4: 18px;
+            --space-lead-transfer-5: 4px;
+            --space-lead-transfer-6: 6px;
+            --space-lead-transfer-7: 8px;
+            --typo-lead-transfer-font-weight-1: 600;
+        }0___
+
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-lead-transfer-2);
+            width: var(--dimension-lead-transfer-1);
             overflow: hidden;
             padding: 18px 0 24px;
             margin: 0;
@@ -105,25 +134,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-lead-transfer-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-lead-transfer-3);
         }
 
         .lead-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-lead-transfer-7);
         }
 
         .lead-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-lead-transfer-3);
+            height: var(--dimension-lead-transfer-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -142,15 +171,15 @@
         .lead-loader p {
             margin: 0;
             color: #54667a;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfer-font-weight-1);
         }
         .form-label {
-                margin-bottom: 6px;
-                margin-top: 6px;
+                margin-bottom: var(--space-lead-transfer-6);
+                margin-top: var(--space-lead-transfer-6);
                 font-size: 13.8px !important;
                 color: #343a40 !important;
                 text-transform: uppercase;
-                font-weight: 600;
+                font-weight: var(--typo-lead-transfer-font-weight-1);
         }
         .lead-content {
             opacity: 0;
@@ -192,12 +221,12 @@
             border-radius: 24px;
             box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
             overflow: hidden !important;
-            background: #fff;
+            background: var(--color-lead-transfer-4);
         }
 
         .lead-create-card .panel-heading {
             padding: 18px 24px;
-            border-bottom: 1px solid #e8eef5;
+            border-bottom: 1px solid var(--color-lead-transfer-3);
             background: linear-gradient(180deg, #fbfdff 0%, #f5f9ff 100%);
         }
 
@@ -210,40 +239,40 @@
 
         .lead-title small {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: var(--typo-lead-transfer-font-weight-1);
             color: #70839a !important;
         }
 
         .required::after {
             content: '*';
-            color: #e53935;
-            margin-left: 4px;
+            color: var(--color-lead-transfer-2);
+            margin-left: var(--space-lead-transfer-5);
         }
 
         .field-error {
-            color: #e53935;
+            color: var(--color-lead-transfer-2);
             font-size: 12px;
-            margin-top: 4px;
+            margin-top: var(--space-lead-transfer-5);
         }
 
         .lead-transfer-form .form-row {
-            margin-left: -10px;
-            margin-right: -10px;
+            margin-left: var(--space-lead-transfer-2);
+            margin-right: var(--space-lead-transfer-2);
         }
 
         .lead-transfer-form .form-row > [class*="col-"] {
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: var(--space-lead-transfer-1);
+            padding-right: var(--space-lead-transfer-1);
         }
 
         .lead-transfer-form .form-group {
-            margin-bottom: 18px;
+            margin-bottom: var(--space-lead-transfer-4);
         }
 
         .lead-transfer-form label {
             display: inline-block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: var(--space-lead-transfer-7);
+            font-weight: var(--typo-lead-transfer-font-weight-1);
             /* color: #223a57; */
         }
 
@@ -252,7 +281,7 @@
             /* border-radius: 12px; */
             border: 1px solid #d6e2f0;
             padding: 6px 14px;
-            background: #fff;
+            background: var(--color-lead-transfer-4);
             box-shadow: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
@@ -275,11 +304,11 @@
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
-            padding-top: 18px;
-            margin-top: 8px;
-            /* border-top: 1px solid #e8eef5; */
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
+            gap: var(--space-lead-transfer-3);
+            padding-top: var(--space-lead-transfer-4);
+            margin-top: var(--space-lead-transfer-7);
+            /* border-top: 1px solid var(--color-lead-transfer-3); */
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, var(--color-lead-transfer-4) 28%);
         }
 
         /* .form-actions .btn {
@@ -290,7 +319,7 @@
         }
 
         .btn.btn-primary-outline {
-            color: #fff;
+            color: var(--color-lead-transfer-4);
             background: linear-gradient(120deg, #0099f8, #17b3ff);
             border-color: transparent;
             box-shadow: 0 14px 28px rgba(0, 153, 248, 0.24);
@@ -298,7 +327,7 @@
 
         .btn.btn-primary-outline:hover,
         .btn.btn-primary-outline:focus {
-            color: #fff;
+            color: var(--color-lead-transfer-4);
             background: linear-gradient(120deg, #0088dd, #0ea4ef);
             border-color: transparent;
         }
@@ -306,14 +335,14 @@
         .btn.btn-danger-outline {
             color: #d64545;
             border: 1px solid rgba(214, 69, 69, 0.32);
-            background: #fff;
+            background: var(--color-lead-transfer-4);
         }
 
         .btn.btn-danger-outline:hover,
         .btn.btn-danger-outline:focus {
-            color: #fff;
-            background: #dc3545;
-            border-color: #dc3545;
+            color: var(--color-lead-transfer-4);
+            background: var(--color-lead-transfer-1);
+            border-color: var(--color-lead-transfer-1);
         } */
 
         @media (max-width: 767px) {
@@ -331,7 +360,7 @@
 
             .lead-title small {
                 display: block;
-                margin-top: 6px;
+                margin-top: var(--space-lead-transfer-6);
                 margin-left: 0 !important;
             }
 
@@ -340,14 +369,14 @@
             }
 
             .form-actions .btn {
-                width: 100%;
+                width: var(--dimension-lead-transfer-1);
             }
         }
 
         @if(request()->boolean('embed'))
             .lead-shell {
                 min-height: auto;
-                padding: 18px;
+                padding: var(--space-lead-transfer-4);
             }
 
             .lead-create-card {
@@ -356,7 +385,7 @@
             }
 
             .lead-loader {
-                height: 100%;
+                height: var(--dimension-lead-transfer-1);
             }
         @endif
     </style>

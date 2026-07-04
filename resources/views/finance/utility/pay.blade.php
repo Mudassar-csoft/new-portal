@@ -4,18 +4,8 @@
 
 @section('content')
     <div class="finance-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         @if($canCreatePayments)
             <section class="box-typical box-typical-dashboard panel panel-default finance-card">
@@ -40,14 +30,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-lg-3 col-md-6">
-                                <label class="form-label required">Payment Date</label>
-                                <input type="date" name="payment_date" class="form-control" value="{{ old('payment_date', now()->toDateString()) }}" required>
-                            </div>
-                            <div class="form-group col-lg-3 col-md-6">
-                                <label class="form-label required">Paid Amount</label>
-                                <input type="number" step="0.01" min="1" name="paid_amount" class="form-control" value="{{ old('paid_amount') }}" required>
-                            </div>
+                            @include('finance.partials.payment-date-amount-fields')
                             <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Payment Method</label>
                                 <select name="payment_method" id="utility-payment-method" class="form-control manual" required>
@@ -86,8 +69,7 @@
                                     <div class="field-error">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-                        <div class="form-row">
+
                             <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Transaction Image</label>
                                 <input type="file" name="attachment" class="form-control-file" required>

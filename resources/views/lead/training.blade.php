@@ -57,13 +57,13 @@
                     <div class="field-error">{{ $message }}</div>
                 @enderror
             </div>
-        
+
         <div class="col-md-6 col-lg-3 ">
             <label class="form-label text-dark fw-semibold small ">
                Teaching Method <!--  <span class="required-feild_symbol">*</span> -->
             </label>
             <div class="row mt-2 choice-group @error('details.teaching_method') is-invalid @enderror">
-                
+
                 <div class="col-4 d-flex justify-content-center mb-1">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input mt-0 mr-1"
@@ -128,7 +128,7 @@
             @error('email')
                 <div class="field-error">{{ $message }}</div>
             @enderror
-        
+
         </div>
         <div class="col-md-6 col-lg-3">
             <label class="form-label small fw-semibold text-dark required"> Country </label>
@@ -202,7 +202,7 @@
             <select name="campus_id"
                     class="form-select form-select-sm @error('campus_id') is-invalid @enderror">
                 <option value="">-Select-</option>
-               
+
 
                 @foreach($campuses as $campus)
                      <option value="{{ $campus->id }}"
@@ -217,7 +217,7 @@
         </div>
         <div class="col-md-6 col-lg-3 mb-lg-1">
             <label class="form-label text-dark fw-semibold small ">
-                Gender 
+                Gender
                 <!-- <span class="required-feild_symbol">*</span> -->
             </label>
              <div class="row mt-2 choice-group @error('details.gender') is-invalid @enderror">
@@ -298,8 +298,36 @@
 </div>
 
 <style>
+        :root {
+            --dimension-lead-training-1: 100%;
+            --dimension-lead-training-2: 100px;
+            --dimension-lead-training-3: 100px;
+            --dimension-lead-training-4: 1px;
+            --dimension-lead-training-5: 22px;
+            --dimension-lead-training-6: 6px;
+            --dimension-lead-training-7: calc(100% - 4px);
+            --space-lead-training-1: 0px;
+            --color-lead-training-1: #00a8ff;
+            --color-lead-training-2: #1e88e5;
+            --color-lead-training-3: #343434;
+            --color-lead-training-4: #dedfe0;
+            --color-lead-training-5: #fff;
+        }
+
+        :root {
+            --dimension-lead-training-1: 100%;
+            --dimension-lead-training-2: 100px;
+            --dimension-lead-training-3: 100px;
+            --dimension-lead-training-4: 1px;
+            --dimension-lead-training-5: 22px;
+            --dimension-lead-training-6: 6px;
+            --dimension-lead-training-7: calc(100% - 4px);
+            --space-lead-training-1: 0px;
+        --typo-views-lead-training-font-size-1: 12px;
+        }0___
+
 .custom-range {
-    width: 100%;
+    width: var(--dimension-lead-training-1);
 }
 .control-panel .page-content {
     padding-right: 54px !important;
@@ -332,15 +360,15 @@
 }
 
 .range-tick-minor {
-    width: 1px;
+    width: var(--dimension-lead-training-4);
     height: 5px;
-    background: #dedfe0;
+    background: var(--color-lead-training-4);
 }
 
 .range-tick-major {
-    width: 1px;
+    width: var(--dimension-lead-training-4);
     height: 10px;
-    background: #dedfe0;
+    background: var(--color-lead-training-4);
 }
 
 .range-tick-start {
@@ -357,7 +385,7 @@
 .range-numbers {
     display: flex;
     justify-content: space-between;
-    width: calc(100% - 4px);
+    width: var(--dimension-lead-training-7);
     margin: 1px 2px 0 !important;
 }
 
@@ -379,10 +407,22 @@
     </div>
 </div>
 <style>
+        :root {
+            --color-lead-training-1: #00a8ff;
+            --color-lead-training-2: #1e88e5;
+            --color-lead-training-3: #343434;
+            --color-lead-training-4: #dedfe0;
+            --color-lead-training-5: #fff;
+        }
+
+        :root {
+        --typo-views-lead-training-font-size-1: 12px;
+        }0___
+
 .form-radio{
     display: flex !important;
     flex-direction: row;
-    
+
 }
 .lead-form {
   line-height: 1.2;
@@ -405,10 +445,10 @@ gap:.5rem;
     -webkit-border-radius: .25rem;
     border-radius: .25rem;
     line-height: 2 !important;
-    color: #343434;
+    color: var(--color-lead-training-3);
     padding: .300rem 25px .300rem 1rem;
     height: 32px !important;
-    background: #fff;
+    background: var(--color-lead-training-5);
 }
 /* ---------- Input, Select, Textarea ---------- */
 input.form-control-sm,
@@ -419,7 +459,7 @@ padding:0.375rem 0.625rem;
 border:1px solid #ccc;
 border-radius:0.25rem;
 height:2.25rem;
-    color: #343434;
+    color: var(--color-lead-training-3);
 }
 
 textarea.form-control-sm {
@@ -427,9 +467,9 @@ textarea.form-control-sm {
     resize: vertical;
 }
 .training-course-select{
-    width: 100%;
+    width: var(--dimension-lead-training-1);
     min-width: 0;
-    max-width: 100%;
+    max-width: var(--dimension-lead-training-1);
     display: block;
 }
 
@@ -440,14 +480,14 @@ textarea.form-control-sm {
 .training-course-option {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: var(--space-lead-training-1);
     line-height: 1.25;
 }
 
 .training-course-option-line {
     display: block;
     white-space: normal;
-    margin-bottom: 0px;
+    margin-bottom: var(--space-lead-training-1);
 }
 
 .training-course-option-line:last-child {
@@ -460,7 +500,7 @@ textarea.form-control-sm {
 }
 
 .training-course-option-value {
-    color: #343434;
+    color: var(--color-lead-training-3);
     display: inline;
     white-space: normal;
 }
@@ -488,12 +528,12 @@ textarea.form-control-sm {
     outline: none;
     cursor: pointer;
     position: relative;
-    background-color: #fff;
+    background-color: var(--color-lead-training-5);
     transition: background 0.2s, box-shadow 0.2s;
 }
 
 .form-check-input[type="radio"]:checked {
-    border-color: #00a8ff;
+    border-color: var(--color-lead-training-1);
 }
 
 .form-check-input[type="radio"]:checked::before {
@@ -501,10 +541,10 @@ textarea.form-control-sm {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 6px;
+    width: var(--dimension-lead-training-6);
     height: 7px;
     border-radius: 50%;
-    background-color: #00a8ff;
+    background-color: var(--color-lead-training-1);
 }
 
 .form-check-label {
@@ -516,8 +556,8 @@ textarea.form-control-sm {
 }
 .custom-range {
     -webkit-appearance: none;
-    width: 100%;
-    
+    width: var(--dimension-lead-training-1);
+
    height:0.375rem;
     border-radius: 4px;
     background: #ddd;
@@ -526,18 +566,18 @@ textarea.form-control-sm {
 
 /* Webkit Track */
 .custom-range::-webkit-slider-runnable-track {
-    height: 6px;
+    height: var(--dimension-lead-training-6);
     border-radius: 4px;
 }
 
 /* Webkit Thumb */
 .custom-range::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    background: #1e88e5;
+    width: var(--dimension-lead-training-5);
+    height: var(--dimension-lead-training-5);
+    background: var(--color-lead-training-2);
     border-radius: 50%;
-    border: 3px solid #fff;
+    border: 3px solid var(--color-lead-training-5);
     box-shadow: 0 0 4px rgba(0,0,0,0.3);
     cursor: pointer;
     margin-top: -8px;
@@ -545,11 +585,11 @@ textarea.form-control-sm {
 
 /* Firefox Thumb */
 .custom-range::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    background: #1e88e5;
+    width: var(--dimension-lead-training-5);
+    height: var(--dimension-lead-training-5);
+    background: var(--color-lead-training-2);
     border-radius: 50%;
-    border: 3px solid #fff;
+    border: 3px solid var(--color-lead-training-5);
     cursor: pointer;
 }
 
@@ -558,11 +598,11 @@ textarea.form-control-sm {
     display: flex;
     justify-content: space-between;
     gap: 0;
-    width: calc(100% - 4px);
+    width: var(--dimension-lead-training-7);
     font-size:0.625rem;
     margin: 0.5rem 2px 0;
     color: #666;
-    
+
 }
 
 
@@ -575,18 +615,18 @@ textarea.form-control-sm {
 
 .col-3.d-flex.justify-content-center,
 .col-6.d-flex.justify-content-center {
-    justify-content: start; 
+    justify-content: start;
 }
 
 /* Small tweak for slider label */
 input[name="details[probability]"] + .small {
-    margin-top: 0px;
-    font-size: 12px;
+    margin-top: var(--space-lead-training-1);
+    font-size: var(--typo-views-lead-training-font-size-1);
 }
 .range-numbers span{
     flex: 1 1 0;
     text-align: center;
-    font-size: 12px !important;
+    font-size: var(--typo-views-lead-training-font-size-1) !important;
     font-weight:bold;
     color: #99a4ac;
     margin-bottom: 3px ;
@@ -607,8 +647,8 @@ textarea.form-control-sm {
 }
 
 textarea[name="details[remarks]"].form-control-sm {
-    min-height: 100px !important;
-    height: 100px !important;
+    min-height: var(--dimension-lead-training-3) !important;
+    height: var(--dimension-lead-training-3) !important;
 }
 
 @media (max-width: 768px) {
@@ -617,10 +657,10 @@ textarea[name="details[remarks]"].form-control-sm {
     }
 
     textarea[name="details[remarks]"].form-control-sm {
-        min-height: 100px ;
-        height: 100px ;
+        min-height: var(--dimension-lead-training-2);
+        height: var(--dimension-lead-training-2);
     }
-    
+
     .radio-group{
         flex-direction:row;
         flex-wrap:wrap;

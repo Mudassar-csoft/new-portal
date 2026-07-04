@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-css-separate-pages-error-font-weight-1: 600;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -40,11 +44,11 @@ body {
 }
 .page-error-box .error-code {
   font-size: 9.375rem /*150/16*/;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-error-font-weight-1);
 }
 .page-error-box .error-title {
   font-size: 2.25rem /*36/16*/;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-error-font-weight-1);
   margin: 0 0 1.5rem /*24/16*/;
 }
 @media (max-width: 767px) {

@@ -67,9 +67,7 @@
         </header>
 
         <div class="box-typical-body panel-body">
-            @if (session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
-            @endif
+        @include('partials.session-status-alert')
 
             <div class="row">
                 <div class="col-md-6">
@@ -129,6 +127,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-web-leads-show-1: 12px;
+        }
+
         .web-lead-detail-card .panel-body {
             padding: 14px;
         }
@@ -142,7 +144,7 @@
         .web-lead-panel {
             border: 1px solid #dbe4ed;
             border-radius: 8px;
-            padding: 12px;
+            padding: var(--space-web-leads-show-1);
             background: #fbfdff;
             height: 100%;
         }
@@ -154,7 +156,7 @@
             background: #0f172a;
             color: #e2e8f0;
             border-radius: 8px;
-            padding: 12px;
+            padding: var(--space-web-leads-show-1);
         }
     </style>
 @endpush

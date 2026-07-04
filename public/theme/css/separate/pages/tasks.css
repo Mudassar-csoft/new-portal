@@ -1,3 +1,8 @@
+:root {
+    --typo-theme-css-separate-pages-tasks-font-weight-1: 600;
+    --typo-theme-css-separate-pages-tasks-font-size-2: .875rem;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -27,7 +32,7 @@
   margin: 0 0 10px;
 }
 .tasks-grid .tasks-grid-col-title strong {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-tasks-font-weight-1);
 }
 .tasks-grid .sortable {
   padding: 0 0 30px;
@@ -37,14 +42,14 @@
 }
 .task-card .task-card-create-title {
   padding: 15px;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-tasks-font-weight-1);
 }
 .task-card .task-card-create input[type="text"] {
   border: none;
   background: none;
   padding: 15px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-tasks-font-weight-1);
   color: #343434;
 }
 .task-card .task-card-create ::-webkit-input-placeholder {
@@ -102,13 +107,13 @@
 }
 .task-card .task-card-title-label {
   color: #6c7a86;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-tasks-font-size-2);
 }
 .task-card .task-card-tags {
   padding: 5px 0 11px;
 }
 .task-card .task-card-tags .label {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-tasks-font-size-2);
   color: #6c7a86;
   font-weight: 400;
   margin: 0 3px 8px 0;
@@ -124,7 +129,7 @@
   height: 32px;
   line-height: 32px;
   margin: 0 15px 0 0;
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-tasks-font-size-2);
   position: relative;
   top: 1px;
 }
@@ -154,7 +159,7 @@
   margin: 0 0 3px;
 }
 .task-card .progress-compact-style .progress-compact-style-label {
-  font-size: .875rem;
+  font-size: var(--typo-theme-css-separate-pages-tasks-font-size-2);
 }
 .task-card.task {
   padding-top: 20px;
@@ -182,7 +187,7 @@
 }
 .sortable-placeholder:before {
   content: 'Move';
-  font-size: .875rem;
-  font-weight: 600;
+  font-size: var(--typo-theme-css-separate-pages-tasks-font-size-2);
+  font-weight: var(--typo-theme-css-separate-pages-tasks-font-weight-1);
   color: #919fa9;
 }

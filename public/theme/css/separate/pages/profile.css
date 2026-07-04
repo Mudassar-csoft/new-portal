@@ -1,3 +1,11 @@
+:root {
+    --typo-theme-css-separate-pages-profile-font-weight-1: 600;
+    --typo-theme-css-separate-pages-profile-font-size-2: 0.9375rem /*15/16*/;
+    --typo-theme-css-separate-pages-profile-font-size-3: .9375rem;
+    --typo-theme-css-separate-pages-profile-line-height-4: 32px;
+    --typo-theme-css-separate-pages-profile-font-size-5: 0.875rem /*14/16*/;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -23,7 +31,7 @@
           border-radius: 50%;
 }
 .profile-card .profile-card-name {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-profile-font-weight-1);
 }
 .profile-card .profile-card-location {
   color: #6c7a86;
@@ -42,7 +50,7 @@
 .profile-statistic {
   text-align: center;
   table-layout: fixed;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
 }
 .profile-statistic .tbl-cell {
   vertical-align: middle;
@@ -56,12 +64,12 @@
   border-right: none;
 }
 .profile-statistic b {
-  font-weight: 600;
+  font-weight: var(--typo-theme-css-separate-pages-profile-font-weight-1);
   display: block;
 }
 .profile-links-list {
   padding: 10px 0;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
 }
 .profile-links-list li {
   padding: 4px 0;
@@ -99,7 +107,7 @@
   padding: 0 15px 12px;
 }
 .friends-list .friends-list-item .user-card-row {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-3);
 }
 .friends-list.stripped {
   padding: 0;
@@ -113,8 +121,8 @@
 }
 .full-count {
   color: #6c7a86;
-  font-weight: 600;
-  font-size: 0.9375rem /*15/16*/;
+  font-weight: var(--typo-theme-css-separate-pages-profile-font-weight-1);
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
 }
 .full-count:hover {
   color: #00a8ff;
@@ -158,7 +166,7 @@ a.plus-link-circle:hover {
 }
 .see-all {
   padding: 12px 15px;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
 }
 .profile-card-slider {
   padding: 0 0 10px;
@@ -196,7 +204,7 @@ a.plus-link-circle:hover {
   padding: 0 0 20px;
 }
 .people-rel-list .people-rel-list-name {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
   padding: 0 15px 18px;
 }
 .people-rel-list .people-rel-list-photos {
@@ -229,7 +237,7 @@ a.plus-link-circle:hover {
   padding: 2px 0 0;
 }
 .people-rel-list .site-header-search button {
-  line-height: 32px;
+  line-height: var(--typo-theme-css-separate-pages-profile-line-height-4);
 }
 .write-something {
   background: none;
@@ -263,12 +271,12 @@ a.plus-link-circle:hover {
   color: #00a8ff;
 }
 .post-announce .post-announce-date {
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-5);
   color: #6c7a86;
 }
 .post-announce .post-announce-meta {
   zoom: 1;
-  font-size: 0.875rem /*14/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-5);
   color: #6c7a86;
   padding: 12px 0 0;
 }
@@ -314,7 +322,7 @@ a.plus-link-circle:hover {
   padding-bottom: 25px;
 }
 .recomendations-slider .user-card-row {
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-3);
 }
 .profile-info-item {
   position: relative;
@@ -360,7 +368,7 @@ a.plus-link-circle:hover {
   vertical-align: middle;
 }
 .exp-timeline {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
 }
 .exp-timeline .exp-timeline-item {
   padding: 0 0 20px 20px;
@@ -427,7 +435,7 @@ a.plus-link-circle:hover {
   border-bottom-color: rgba(0, 168, 255, 0.5);
 }
 .skill-item {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
   margin: 0 0 12px;
 }
 .skill-item .tbl-cell {
@@ -457,7 +465,7 @@ a.plus-link-circle:hover {
 }
 .skill-item .skill-circle-users {
   float: left;
-  line-height: 32px;
+  line-height: var(--typo-theme-css-separate-pages-profile-line-height-4);
   background: #eceff4;
   color: #6c7a86;
   padding-top: 1px;
@@ -478,12 +486,12 @@ a.plus-link-circle:hover {
 }
 .profile-interests .label {
   margin-bottom: 4px;
-  font-size: .9375rem;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-3);
 }
 .citate-speech-bubble {
   border: solid 1px #d8e2e7;
   padding: 12px 10px 15px 15px;
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
   margin: 0 0 12px;
   position: relative;
 }
@@ -549,7 +557,7 @@ a.plus-link-circle:hover {
   }
 }
 .follow-group {
-  font-size: 0.9375rem /*15/16*/;
+  font-size: var(--typo-theme-css-separate-pages-profile-font-size-2);
   margin: 0 0 22px;
   text-align: left;
 }

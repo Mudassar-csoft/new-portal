@@ -45,6 +45,15 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --dimension-student-partials-action-1: 24px;
+            --space-student-partials-action-1: 0 !important;
+            --color-student-partials-action-1: #303740;
+            --color-student-partials-action-2: #efefef;
+            --typo-student-partials-action-font-size-1: 16px;
+            --typo-student-partials-action-font-weight-2: 500;
+        }
+
             .follow-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 300px;
                 padding: 8px 0;
@@ -63,9 +72,9 @@
                 gap: 12px;
                 width: 100%;
                 padding: 8px 14px !important;
-                color: #303740 !important;
-                font-size: 16px !important;
-                font-weight: 500;
+                color: var(--color-student-partials-action-1) !important;
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
+                font-weight: var(--typo-student-partials-action-font-weight-2);
                 line-height: 1.35;
                 background: transparent !important;
                 border: 0;
@@ -77,7 +86,7 @@
             .follow-action-dropdown .dropdown-item.lead-action-item:focus,
             .follow-action-dropdown form button.dropdown-item.lead-action-item:hover,
             .follow-action-dropdown form button.dropdown-item.lead-action-item:focus {
-                background: #efefef !important;
+                background: var(--color-student-partials-action-2) !important;
                 color: #222b33 !important;
                 text-decoration: none;
             }
@@ -90,33 +99,33 @@
 
             .follow-action-dropdown .dropdown-item.lead-action-item.is-current,
             .follow-action-dropdown form button.dropdown-item.lead-action-item.is-current {
-                background: #efefef !important;
+                background: var(--color-student-partials-action-2) !important;
             }
 
             .follow-action-dropdown .lead-action-icon {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                width: 24px;
-                min-width: 24px;
-                height: 24px;
-                font-size: 16px !important;
+                width: var(--dimension-student-partials-action-1);
+                min-width: var(--dimension-student-partials-action-1);
+                height: var(--dimension-student-partials-action-1);
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
                 line-height: 1;
-                margin-right: 0 !important;
-                padding: 0 !important;
+                margin-right: var(--space-student-partials-action-1);
+                padding: var(--space-student-partials-action-1);
             }
             .span{
-                font-size:16px !important;
+                font-size: var(--typo-student-partials-action-font-size-1) !important;
             }
             .follow-action-dropdown .lead-action-label {
                 display: inline-block;
                 font-size: 18px !important;
-                font-weight: 500;
+                font-weight: var(--typo-student-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }
 
             .follow-action-dropdown .lead-action-icon.lead-icon-blue { color: #19b6e6; }
-            .follow-action-dropdown .lead-action-icon.lead-icon-black { color: #303740; }
+            .follow-action-dropdown .lead-action-icon.lead-icon-black { color: var(--color-student-partials-action-1); }
             .follow-action-dropdown .lead-action-icon.lead-icon-green { color: #22c55e; }
             .follow-action-dropdown .lead-action-icon.lead-icon-red { color: #ff4d5a; }
 
@@ -138,7 +147,7 @@
                     <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
                         <i class="fa {{ $item['icon'] }}"></i>
                     </span>
-                    <span class="lead-action-label" style = "font-size: 16px !important;">{{ $item['label'] }}</span>
+                    <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
                 </button>
             </form>
         @endforeach

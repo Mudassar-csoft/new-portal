@@ -38,13 +38,9 @@
     @endphp
 
     <div class="adm-status-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        @include('partials.session-status-alert')
 
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        @include('partials.session-error-alert')
 
         @if($errors->any())
             <div class="alert alert-danger">
@@ -65,10 +61,29 @@
                 @endforeach
             </div>
 
-            
+
 
             <div class="box-typical-body panel-body follow-body">
-                <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+<form method="GET" action="{{ route('registration.status') }}" class="follow-controls">
+					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
+					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
+						<label class="mr-2 mb-0">Show</label>
+						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
+							@foreach ([10, 25, 50, 100] as $option)
+								<option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
+							@endforeach
+						</select>
+						<label class="ml-2 mb-0">Entries</label>
+					</div>
+					<div class="follow-search">
+						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+						<!-- <button type="submit" class="reg-search-submit" aria-label="Search">
+							<i class="fa fa-search"></i>
+						</button> -->
+					</div>
+				</form>
+
+                <!-- <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
                     <input type="hidden" name="scope" value="{{ $activeScope }}">
                     @if($activeScope === 'all')
                         <input type="hidden" name="period" value="{{ $activePeriod }}">
@@ -84,7 +99,7 @@
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
-                </form>
+                </form> -->
 
                 <div class="table-responsive">
                     <table class="table table-bordered follow-table" id="adm-table">
@@ -159,7 +174,7 @@
 <div class="form-group">
     <label>CNIC Front Side <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-front">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -177,10 +192,9 @@
 
         <input type="file"
                name="document_cnic_front"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-cnic-front"
-               style="width:350px;"
                required>
     </div>
 
@@ -193,7 +207,7 @@
 <div class="form-group">
     <label>CNIC Back Side <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-back">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -211,10 +225,9 @@
 
         <input type="file"
                name="document_cnic_back"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-cnic-back"
-               style="width:350px;"
                required>
     </div>
 
@@ -227,7 +240,7 @@
 <div class="form-group">
     <label>Admission Form <span class="text-danger">*</span></label>
 
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-admission-form">
             <div class="admission-upload-tools">
                 <button type="button"
@@ -245,10 +258,9 @@
 
         <input type="file"
                name="document_admission_form"
-               class="form-control js-admission-doc-input"
+               class="form-control js-admission-doc-input admission-doc-file-input"
                accept=".jpg,.jpeg,.png,.pdf"
                data-preview-target="preview-admission-form"
-               style="width:350px;"
                required>
     </div>
 
@@ -261,7 +273,7 @@
 <div class="form-group mb-0">
     <label>Paid Slip With Authorized Stamp <span class="text-danger">*</span></label>
 
-        <div style="display:flex; align-items:center; gap:15px;">
+        <div class="admission-doc-upload-row">
             <div class="admission-preview-card is-empty" id="preview-paid-slip">
                 <div class="admission-upload-tools">
                     <button type="button"
@@ -279,10 +291,9 @@
 
                     <input type="file"
                         name="document_paid_slip"
-                        class="form-control js-admission-doc-input"
+                        class="form-control js-admission-doc-input admission-doc-file-input"
                         accept=".jpg,.jpeg,.png,.pdf"
                         data-preview-target="preview-paid-slip"
-                        style="width:350px;"
                         required>
                     </div>
 
@@ -374,6 +385,41 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-admission-status-1: 100%;
+            --dimension-admission-status-2: 35px;
+            --space-admission-status-1: 10px;
+            --space-admission-status-2: 12px;
+            --space-admission-status-3: 14px 18px;
+            --space-admission-status-4: 16px;
+            --space-admission-status-5: 8px;
+            --space-admission-status-6: 9px;
+            --color-admission-status-1: #0a6fd1;
+            --color-admission-status-2: #1593ff;
+            --color-admission-status-3: #334155;
+            --color-admission-status-4: #64748b;
+            --color-admission-status-5: #94a3b8;
+            --color-admission-status-6: #dbe3ec;
+            --color-admission-status-7: #e1efff;
+            --color-admission-status-8: #f8fafc;
+            --color-admission-status-9: #f8fbff;
+            --color-admission-status-10: #fff;
+        }
+
+        :root {
+            --dimension-admission-status-1: 100%;
+            --dimension-admission-status-2: 35px;
+            --space-admission-status-1: 10px;
+            --space-admission-status-2: 12px;
+            --space-admission-status-3: 14px 18px;
+            --space-admission-status-4: 16px;
+            --space-admission-status-5: 8px;
+            --space-admission-status-6: 9px;
+            --typo-admission-status-font-weight-1: 600;
+            --typo-admission-status-line-height-2: 1;
+            --typo-admission-status-font-size-3: 12px;
+        }0___
+
         .action-cell {
             min-width: 180px;
             white-space: nowrap;
@@ -381,8 +427,8 @@
         }
 
         .adm-name-link {
-            color: #0a6fd1;
-            font-weight: 600;
+            color: var(--color-admission-status-1);
+            font-weight: var(--typo-admission-status-font-weight-1);
             text-decoration: none;
             border-bottom: 1px dashed transparent;
             transition: color 0.15s ease, border-color 0.15s ease;
@@ -390,23 +436,34 @@
 
         .adm-name-link:hover {
             color: #0958a8;
-            border-bottom-color: #0a6fd1;
+            border-bottom-color: var(--color-admission-status-1);
             text-decoration: none;
         }
+
+        .admission-doc-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admission-doc-file-input {
+            width: 350px;
+        }
+
         .eye-span{
-                height: 35px;
+                height: var(--dimension-admission-status-2);
                 text-align: right !important;
                 /* margin-left: 341px; */
-                padding: 9px;
-                background: #e1efff;
+                padding: var(--space-admission-status-6);
+                background: var(--color-admission-status-7);
                 border-radius: 20px;
         }
          .eye-span-4{
-             height: 35px;      
+             height: var(--dimension-admission-status-2);
          text-align: right !important;
                 /* margin-left: 241px; */
-                padding: 9px;
-                background: #e1efff;
+                padding: var(--space-admission-status-6);
+                background: var(--color-admission-status-7);
                 border-radius: 20px;
         }
         .follow-card,
@@ -421,12 +478,12 @@
 
         .follow-tab-bar--sub {
             border-top: 1px solid #eef2f7;
-            background: #f8fbff;
+            background: var(--color-admission-status-9);
         }
 
         .follow-tab-bar--sub .follow-tab {
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding-top: var(--space-admission-status-1);
+            padding-bottom: var(--space-admission-status-1);
         }
 
         .follow-tab-bar--sub .follow-tab.active {
@@ -437,20 +494,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: var(--space-admission-status-2);
+            margin-bottom: var(--space-admission-status-4);
         }
 
         .follow-status-copy {
             font-size: 15px;
-            font-weight: 600;
-            color: #334155;
+            font-weight: var(--typo-admission-status-font-weight-1);
+            color: var(--color-admission-status-3);
         }
 
         .follow-search {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-admission-status-5);
             margin-left: auto;
         }
 
@@ -462,13 +519,13 @@
             border: 0;
             background: transparent;
             color: #8a97a8;
-            line-height: 1;
+            line-height: var(--typo-admission-status-line-height-2);
             padding: 0;
         }
 
         .adm-search-submit:hover,
         .adm-search-submit:focus {
-            color: #1593ff;
+            color: var(--color-admission-status-2);
         }
 
         .admission-action-dropdown {
@@ -494,7 +551,7 @@
             z-index: 1100;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: var(--space-admission-status-4);
         }
 
         .admission-modal.is-open {
@@ -509,9 +566,9 @@
 
         .admission-modal__dialog {
             position: relative;
-            width: 100%;
+            width: var(--dimension-admission-status-1);
             max-width: 560px;
-            background: #fff;
+            background: var(--color-admission-status-10);
             border-radius: 8px;
             box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
             overflow: hidden;
@@ -521,23 +578,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 18px;
-            background: #1593ff;
-            color: #fff;
+            padding: var(--space-admission-status-3);
+            background: var(--color-admission-status-2);
+            color: var(--color-admission-status-10);
         }
 
         .admission-modal__title {
             margin: 0;
             font-size: 17px;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
         }
 
         .admission-modal__close {
             border: 0;
             background: transparent;
-            color: #fff;
+            color: var(--color-admission-status-10);
             font-size: 30px !important;
-            line-height: 1;
+            line-height: var(--typo-admission-status-line-height-2);
             cursor: pointer;
             padding: 0;
         }
@@ -551,7 +608,7 @@
         .admission-modal__student {
             margin: 0 0 16px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             color: #1f2937;
         }
 
@@ -564,37 +621,37 @@
         .admission-upload-tools {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-admission-status-1);
             margin-bottom: 0px;
             flex-wrap: wrap;
         }
 
         .admission-upload-tools__hint {
-            color: #64748b;
-            font-size: 12px;
+            color: var(--color-admission-status-4);
+            font-size: var(--typo-admission-status-font-size-3);
             line-height: 1.4;
         }
 
         .admission-preview-card {
             margin-top: 2px;
             padding: 6px;
-            border: 1px solid #dbe3ec;
+            border: 1px solid var(--color-admission-status-6);
             border-radius: 6px;
-            background: #f8fbff;
+            background: var(--color-admission-status-9);
         }
 
         .admission-preview-card__empty {
-            color: #64748b;
-            font-size: 12px;
+            color: var(--color-admission-status-4);
+            font-size: var(--typo-admission-status-font-size-3);
         }
 
         .admission-preview-card__image,
         .admission-preview-card__frame {
             display: none;
-            width: 100%;
+            width: var(--dimension-admission-status-1);
             border: 0;
             border-radius: 4px;
-            background: #fff;
+            background: var(--color-admission-status-10);
         }
 
         .admission-preview-card__image {
@@ -610,9 +667,9 @@
 
         .admission-preview-card__meta {
             display: none;
-            margin-top: 8px;
-            font-size: 12px;
-            color: #334155;
+            margin-top: var(--space-admission-status-5);
+            font-size: var(--typo-admission-status-font-size-3);
+            color: var(--color-admission-status-3);
             word-break: break-word;
         }
 
@@ -620,9 +677,9 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 10px;
-            padding: 14px 18px;
-            background: #f8fafc;
+            gap: var(--space-admission-status-1);
+            padding: var(--space-admission-status-3);
+            background: var(--color-admission-status-8);
             border-top: 1px solid #e2e8f0;
         }
 
@@ -632,24 +689,24 @@
 
         .admission-modal__actions {
             display: flex;
-            gap: 10px;
+            gap: var(--space-admission-status-1);
         }
 
         .admission-doc-list {
             display: grid;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: var(--space-admission-status-1);
+            margin-bottom: var(--space-admission-status-4);
         }
 
         .admission-doc-link {
             display: flex;
             padding: 10px 12px;
-            border: 1px solid #dbe3ec;
+            border: 1px solid var(--color-admission-status-6);
             border-radius: 6px;
             color: #0f5fa8;
-            font-weight: 600;
+            font-weight: var(--typo-admission-status-font-weight-1);
             text-decoration: none;
-            background: #f8fbff;
+            background: var(--color-admission-status-9);
              justify-content: space-between;
     align-items: center;
         }
@@ -660,13 +717,13 @@
         }
 
         .admission-doc-link.is-disabled {
-            color: #94a3b8;
+            color: var(--color-admission-status-5);
             pointer-events: none;
-            background: #f8fafc;
+            background: var(--color-admission-status-8);
         }
 
         .admission-doc-link a.is-disabled {
-            color: #94a3b8;
+            color: var(--color-admission-status-5);
             pointer-events: none;
         }
 
@@ -684,15 +741,15 @@
         .admission-document-modal__body {
             flex: 1;
             min-height: 0;
-            padding: 12px;
-            background: #f8fafc;
+            padding: var(--space-admission-status-2);
+            background: var(--color-admission-status-8);
             overflow: hidden;
         }
 
         .admission-document-modal__frame {
-            width: 100%;
-            height: 100%;
-            border: 1px solid #dbe3ec;
+            width: var(--dimension-admission-status-1);
+            height: var(--dimension-admission-status-1);
+            border: 1px solid var(--color-admission-status-6);
             border-radius: 6px;
             background: white;
             display: block;
@@ -726,7 +783,7 @@
             }
 
             .admission-modal__actions {
-                width: 100%;
+                width: var(--dimension-admission-status-1);
             }
 
             .admission-modal__actions .btn {

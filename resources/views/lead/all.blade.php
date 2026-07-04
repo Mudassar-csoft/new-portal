@@ -30,14 +30,7 @@
 	@endphp
 
 	<div class="lead-status-shell">
-		<div id="lead-status-loader" class="follow-loader">
-			<div class="follow-spinner">
-				<div class="dot"></div>
-				<div class="dot"></div>
-				<div class="dot"></div>
-			</div>
-			<p>Loading leads...</p>
-		</div>
+		@include('partials.status-loader', ['id' => 'lead-status-loader', 'message' => 'Loading leads...'])
 
 		<div id="lead-status-content" class="follow-content">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
@@ -74,7 +67,7 @@
 						@if($selectedStatus !== 'all')
 							<input type="hidden" name="status" value="{{ $selectedStatus }}">
 						@endif
-						<div class="d-flex control-flow-show-bar" style="gap:0.5rem;align-items: center;">
+						<div class="d-flex control-flow-show-bar ci-inline-gap-05-center">
 							<label class="">Show</label>
 							<select class="form-select form-select-sm" name="per_page" id="lead-per-page">
 								@foreach([10, 25, 50, 100] as $option)
@@ -208,7 +201,22 @@
 
 @push('styles')
 	<style>
-		
+        :root {
+            --dimension-lead-all-1: 100%;
+            --dimension-lead-all-2: 100vh;
+            --dimension-lead-all-3: 12px;
+            --space-lead-all-1: 12px;
+            --space-lead-all-2: 8px;
+            --color-lead-all-1: #fff;
+            --typo-lead-all-font-weight-1: 600;
+        }
+
+		.ci-inline-gap-05-center {
+			gap: 0.5rem;
+			align-items: center;
+		}
+
+
 .bootstrap-table .table a, .fixed-table-body .table a, .table a {
     border-bottom: none;
     position: relative;
@@ -217,8 +225,8 @@
 
 		.lead-status-shell {
 			position: relative;
-			min-height: 100vh;
-			width: 100%;
+			min-height: var(--dimension-lead-all-2);
+			width: var(--dimension-lead-all-1);
 			overflow: hidden;
 		}
 
@@ -228,25 +236,25 @@
 			top: 0;
 			left: 0;
 			right: 0;
-			height: 100vh;
+			height: var(--dimension-lead-all-2);
 			background: rgba(245, 247, 251, 0.95);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			flex-direction: column;
 			z-index: 10;
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 		}
 
 		.follow-spinner {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-lead-all-2);
 		}
 
 		.follow-spinner .dot {
-			width: 12px;
-			height: 12px;
+			width: var(--dimension-lead-all-3);
+			height: var(--dimension-lead-all-3);
 			border-radius: 50%;
 			background: #12a0ff;
 			animation: bounce 0.9s ease-in-out infinite;
@@ -265,7 +273,7 @@
 		.follow-loader p {
 			margin: 0;
 			color: #54667a;
-			font-weight: 600;
+			font-weight: var(--typo-lead-all-font-weight-1);
 		}
 
 		.follow-content {
@@ -306,7 +314,7 @@
 		}
 
 		.follow-controls {
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 			flex-wrap: wrap;
 		}
 
@@ -338,7 +346,8 @@
 		.lead-date-range-inputs {
 			display: flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-lead-all-2);
+			margin-left: auto;
 		}
 
 		.lead-date-range-inputs .form-control {
@@ -363,14 +372,14 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 			margin-bottom: 16px;
 			padding: 12px 16px;
 			border: 1px solid #cfe0f6;
 			border-radius: 14px;
 			background: #f5f9ff;
 			color: #1f3558;
-			font-weight: 600;
+			font-weight: var(--typo-lead-all-font-weight-1);
 		}
 
 		.lead-filter-banner-link {
@@ -385,11 +394,11 @@
 			text-decoration: none;
 		}
 .table-responsive {
-    overflow: visible !important;  
+    overflow: visible !important;
 }
 .follow-action-dropdown {
     position: relative;
-		
+
 
 }
 
@@ -432,7 +441,7 @@
 		}
 
 		.lead-modal .modal-card {
-			background: #fff;
+			background: var(--color-lead-all-1);
 			width: min(1320px, 98vw);
 			height: min(900px, 94vh);
 			border-radius: 20px;
@@ -470,7 +479,7 @@
 		.lead-modal iframe {
 			flex: 1;
 			border: 0;
-			width: 100%;
+			width: var(--dimension-lead-all-1);
 			background: #f3f8fd;
 		}
 		.table td{
@@ -486,22 +495,10 @@
     color: #343434;
     padding: .375rem 25px .375rem 1rem;
     min-height: 21px !important;
-    background: #fff
+    background: var(--color-lead-all-1)
 }
 
-		@media (max-width: 767px) {
-			.lead-date-range-inputs {
-				flex-direction: column;
-				align-items: stretch;
-			}
 
-			.lead-filter-actions {
-				width: 100%;
-				margin-left: 0;
-			}
-		}
-		
-		
 	</style>
 @endpush
 

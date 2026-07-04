@@ -1,3 +1,8 @@
+:root {
+    --typo-theme-css-separate-elements-steps-line-height-1: 50px;
+    --typo-theme-css-separate-elements-steps-font-size-2: 1.25rem /*20/16*/;
+}
+
 /* ==========================================================================
    Mixins
    ========================================================================== */
@@ -32,7 +37,7 @@
 .steps-numeric-block .steps-numeric-header-in .item {
   display: inline-block;
   height: 50px;
-  line-height: 50px;
+  line-height: var(--typo-theme-css-separate-elements-steps-line-height-1);
   overflow: hidden;
   font-size: 1rem;
   border-bottom: solid 2px transparent;
@@ -68,13 +73,13 @@
   max-width: 280px;
 }
 .steps-numeric-block .steps-numeric-title {
-  font-size: 1.25rem /*20/16*/;
+  font-size: var(--typo-theme-css-separate-elements-steps-font-size-2);
   margin: 0 0 20px;
 }
 .steps-numeric-block .steps-numeric-footer {
   border-top: solid 1px #d8e2e7;
   text-align: center;
-  line-height: 50px;
+  line-height: var(--typo-theme-css-separate-elements-steps-line-height-1);
   font-weight: 600;
 }
 .steps-numeric-block .steps-numeric-footer .tbl-cell {
@@ -104,7 +109,7 @@
   clear: both;
 }
 .steps-icon-block .steps-numeric-title {
-  font-size: 1.25rem /*20/16*/;
+  font-size: var(--typo-theme-css-separate-elements-steps-font-size-2);
   margin: 0 0 15px;
 }
 .steps-icon-block .form-control {

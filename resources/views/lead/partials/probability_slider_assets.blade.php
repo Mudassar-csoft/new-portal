@@ -1,27 +1,54 @@
 <style>
+        :root {
+            --dimension-lead-partials-probability-slider-assets-1: 100%;
+            --dimension-lead-partials-probability-slider-assets-2: 14px;
+            --dimension-lead-partials-probability-slider-assets-3: 18px;
+            --dimension-lead-partials-probability-slider-assets-4: 22px;
+            --dimension-lead-partials-probability-slider-assets-5: 8px;
+            --space-lead-partials-probability-slider-assets-1: 0 !important;
+            --color-lead-partials-probability-slider-assets-1: #566a7f;
+            --color-lead-partials-probability-slider-assets-2: #fff;
+            --color-lead-partials-probability-slider-assets-3: rgba(0, 130, 198, 0.15);
+            --color-lead-partials-probability-slider-assets-4: rgba(0, 168, 255, 0.12);
+            --color-lead-partials-probability-slider-assets-5: rgba(0, 168, 255, 0.35);
+            --color-lead-partials-probability-slider-assets-6: rgba(0, 168, 255, 0.45);
+            --color-lead-partials-probability-slider-assets-7: rgba(229, 57, 53, 0.16);
+            --color-lead-partials-probability-slider-assets-8: rgba(25, 42, 70, 0.08);
+        }
+
+        :root {
+            --dimension-lead-partials-probability-slider-assets-1: 100%;
+            --dimension-lead-partials-probability-slider-assets-2: 14px;
+            --dimension-lead-partials-probability-slider-assets-3: 18px;
+            --dimension-lead-partials-probability-slider-assets-4: 22px;
+            --dimension-lead-partials-probability-slider-assets-5: 8px;
+            --space-lead-partials-probability-slider-assets-1: 0 !important;
+            --typo-lead-partials-probability-slider-assets-font-weight-1: 600;
+        }0___
+
     .probability-field {
         --probability-accent: #00a8ff;
         --probability-accent-dark: #0082c6;
         --probability-track: #e6eef3;
         --probability-muted: #8d9aa5;
         --probability-progress: 0%;
-        width: 100%;
+        width: var(--dimension-lead-partials-probability-slider-assets-1);
         max-width: 360px;
     }
 
     .probability-shell {
         position: relative;
-        width: 100%;
+        width: var(--dimension-lead-partials-probability-slider-assets-1);
         padding: 7px 0 0;
     }
 
     .probability-field .probability-input {
         -webkit-appearance: none;
         appearance: none;
-        width: 100%;
-        height: 18px !important;
-        min-height: 18px !important;
-        padding: 0 !important;
+        width: var(--dimension-lead-partials-probability-slider-assets-1);
+        height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        min-height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        padding: var(--space-lead-partials-probability-slider-assets-1);
         margin: 0;
         border: 0 !important;
         outline: 0;
@@ -31,15 +58,15 @@
 
     .lead-form .probability-field input.probability-input,
     .probability-field input.probability-input {
-        height: 18px !important;
-        min-height: 18px !important;
-        padding: 0 !important;
+        height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        min-height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        padding: var(--space-lead-partials-probability-slider-assets-1);
         border: 0 !important;
         background-color: transparent !important;
     }
 
     .probability-field .probability-input::-webkit-slider-runnable-track {
-        height: 8px;
+        height: var(--dimension-lead-partials-probability-slider-assets-5);
         border-radius: 999px;
         background: linear-gradient(
             90deg,
@@ -48,56 +75,56 @@
             var(--probability-track) var(--probability-progress),
             var(--probability-track) 100%
         );
-        box-shadow: inset 0 1px 2px rgba(25, 42, 70, 0.08);
+        box-shadow: inset 0 1px 2px var(--color-lead-partials-probability-slider-assets-8);
     }
 
     .probability-field .probability-input::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 22px;
-        height: 22px;
+        width: var(--dimension-lead-partials-probability-slider-assets-4);
+        height: var(--dimension-lead-partials-probability-slider-assets-4);
         margin-top: -7px;
-        border: 4px solid #fff;
+        border: 4px solid var(--color-lead-partials-probability-slider-assets-2);
         border-radius: 50%;
         background: var(--probability-accent);
-        box-shadow: 0 4px 12px rgba(0, 168, 255, 0.35), 0 0 0 1px rgba(0, 130, 198, 0.15);
+        box-shadow: 0 4px 12px var(--color-lead-partials-probability-slider-assets-5), 0 0 0 1px var(--color-lead-partials-probability-slider-assets-3);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .probability-field .probability-input::-moz-range-track {
-        height: 8px;
+        height: var(--dimension-lead-partials-probability-slider-assets-5);
         border: 0;
         border-radius: 999px;
         background: var(--probability-track);
-        box-shadow: inset 0 1px 2px rgba(25, 42, 70, 0.08);
+        box-shadow: inset 0 1px 2px var(--color-lead-partials-probability-slider-assets-8);
     }
 
     .probability-field .probability-input::-moz-range-progress {
-        height: 8px;
+        height: var(--dimension-lead-partials-probability-slider-assets-5);
         border-radius: 999px;
         background: var(--probability-accent);
     }
 
     .probability-field .probability-input::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
-        border: 4px solid #fff;
+        width: var(--dimension-lead-partials-probability-slider-assets-2);
+        height: var(--dimension-lead-partials-probability-slider-assets-2);
+        border: 4px solid var(--color-lead-partials-probability-slider-assets-2);
         border-radius: 50%;
         background: var(--probability-accent);
-        box-shadow: 0 4px 12px rgba(0, 168, 255, 0.35), 0 0 0 1px rgba(0, 130, 198, 0.15);
+        box-shadow: 0 4px 12px var(--color-lead-partials-probability-slider-assets-5), 0 0 0 1px var(--color-lead-partials-probability-slider-assets-3);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .probability-field .probability-input:hover::-webkit-slider-thumb,
     .probability-field .probability-input:focus::-webkit-slider-thumb {
         transform: scale(1.08);
-        box-shadow: 0 5px 16px rgba(0, 168, 255, 0.45), 0 0 0 5px rgba(0, 168, 255, 0.12);
+        box-shadow: 0 5px 16px var(--color-lead-partials-probability-slider-assets-6), 0 0 0 5px var(--color-lead-partials-probability-slider-assets-4);
     }
 
     .probability-field .probability-input:hover::-moz-range-thumb,
     .probability-field .probability-input:focus::-moz-range-thumb {
         transform: scale(1.08);
-        box-shadow: 0 5px 16px rgba(0, 168, 255, 0.45), 0 0 0 5px rgba(0, 168, 255, 0.12);
+        box-shadow: 0 5px 16px var(--color-lead-partials-probability-slider-assets-6), 0 0 0 5px var(--color-lead-partials-probability-slider-assets-4);
     }
 
     .probability-ticks {
@@ -128,11 +155,11 @@
     .probability-scale {
         display: flex;
         justify-content: space-between;
-        width: 100%;
+        width: var(--dimension-lead-partials-probability-slider-assets-1);
         margin-top: 5px;
-        color: #566a7f;
+        color: var(--color-lead-partials-probability-slider-assets-1);
         font-size: 10px;
-        font-weight: 600;
+        font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1;
     }
 
@@ -160,9 +187,9 @@
         border: 1px solid rgba(0, 168, 255, 0.16);
         border-radius: 999px;
         background: rgba(0, 168, 255, 0.08);
-        color: #566a7f;
+        color: var(--color-lead-partials-probability-slider-assets-1);
         font-size: 13px;
-        font-weight: 600;
+        font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1.1;
     }
 
@@ -172,16 +199,16 @@
     }
 
     .probability-shell.has-error .probability-input::-webkit-slider-runnable-track {
-        box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.16);
+        box-shadow: 0 0 0 2px var(--color-lead-partials-probability-slider-assets-7);
     }
 
     .probability-shell.has-error .probability-input::-moz-range-track {
-        box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.16);
+        box-shadow: 0 0 0 2px var(--color-lead-partials-probability-slider-assets-7);
     }
 
     @media (max-width: 576px) {
         .probability-field {
-            max-width: 100%;
+            max-width: var(--dimension-lead-partials-probability-slider-assets-1);
         }
 
         .probability-scale {

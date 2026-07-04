@@ -1,3 +1,7 @@
+:root {
+    --typo-theme-css-lib-daterangepicker-daterangepicker-line-height-1: 30px;
+}
+
 .daterangepicker {
   position: absolute;
   color: inherit;
@@ -138,7 +142,7 @@
     border-radius: 4px;
     color: #555;
     height: 30px;
-    line-height: 30px;
+    line-height: var(--typo-theme-css-lib-daterangepicker-daterangepicker-line-height-1);
     display: block;
     vertical-align: middle;
     margin: 0 0 5px 0;
@@ -156,7 +160,7 @@
   .daterangepicker .calendar-time {
     text-align: center;
     margin: 5px auto;
-    line-height: 30px;
+    line-height: var(--typo-theme-css-lib-daterangepicker-daterangepicker-line-height-1);
     position: relative;
     padding-left: 28px; }
     .daterangepicker .calendar-time select.disabled {

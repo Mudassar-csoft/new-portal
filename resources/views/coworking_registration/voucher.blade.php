@@ -10,8 +10,12 @@
     <meta charset="UTF-8">
     <title>Coworking Registration Slip</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 24px; color: #1f2937; }
-        .sheet { border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; max-width: 920px; margin: 0 auto; }
+        :root {
+            --space-coworking-registration-voucher-1: 24px;
+        }
+
+        body { font-family: Arial, sans-serif; margin: var(--space-coworking-registration-voucher-1); color: #1f2937; }
+        .sheet { border: 1px solid #cbd5e1; border-radius: 12px; padding: var(--space-coworking-registration-voucher-1); max-width: 920px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
         .header h1 { margin: 0; font-size: 24px; }
         .subtle { color: #64748b; font-size: 13px; }

@@ -149,6 +149,12 @@
 @once
     @push('styles')
         <style>
+        :root {
+            --space-finance-receivables-partials-payment-modal-1: 4px;
+            --typo-finance-receivables-partials-payment-modal-font-size-1: 16px;
+            --typo-finance-receivables-partials-payment-modal-font-weight-2: 600;
+        }
+
             .invoice-payment-modal-summary {
                 display: flex;
                 justify-content: space-between;
@@ -166,19 +172,19 @@
                 letter-spacing: .08em;
                 text-transform: uppercase;
                 color: #64748b;
-                margin-bottom: 4px;
+                margin-bottom: var(--space-finance-receivables-partials-payment-modal-1);
             }
             .invoice-payment-modal-summary .summary-value {
-                font-size: 16px;
-                font-weight: 600;
+                font-size: var(--typo-finance-receivables-partials-payment-modal-font-size-1);
+                font-weight: var(--typo-finance-receivables-partials-payment-modal-font-weight-2);
                 color: #0f172a;
                 line-height: 1.15;
             }
             .invoice-payment-modal-summary .summary-subtitle {
-                margin-top: 4px;
+                margin-top: var(--space-finance-receivables-partials-payment-modal-1);
                 color: #475569;
-                font-weight: 600;
-                font-size: 16px;
+                font-weight: var(--typo-finance-receivables-partials-payment-modal-font-weight-2);
+                font-size: var(--typo-finance-receivables-partials-payment-modal-font-size-1);
 
 
             }

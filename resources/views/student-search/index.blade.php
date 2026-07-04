@@ -30,12 +30,12 @@
                 <div class="box-typical-body panel-body follow-body">
                     @if($query === '')
                         <div class="search-empty">
-                            <i class="fa fa-search" style="font-size: 32px; color: #cbd5e1;"></i>
+                            <i class="fa fa-search" style="font-size: var(--typo-student-search-index-font-size-1); color: #cbd5e1;"></i>
                             <p>Enter a name, phone number, CNIC, roll number, or registration number to find a student.</p>
                         </div>
                     @elseif($totalMatches === 0)
                         <div class="search-empty">
-                            <i class="fa fa-frown-o" style="font-size: 32px; color: #cbd5e1;"></i>
+                            <i class="fa fa-frown-o" style="font-size: var(--typo-student-search-index-font-size-1); color: #cbd5e1;"></i>
                             <p>No students or leads matched "<strong>{{ $query }}</strong>".</p>
                         </div>
                     @else
@@ -175,9 +175,16 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-student-search-index-1: 12px;
+            --color-student-search-index-1: #0a6fd1;
+            --typo-student-search-index-font-size-1: 32px;
+            --typo-student-search-index-font-weight-2: 700;
+        }
+
         .lead-status-shell { position: relative; min-height: 100vh; width: 100%; }
         .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
-        .search-needle { color: #0a6fd1; font-weight: 700; }
+        .search-needle { color: var(--color-student-search-index-1); font-weight: var(--typo-student-search-index-font-weight-2); }
 
         .inline-search-form {
             display: inline-flex;
@@ -192,7 +199,7 @@
             padding: 60px 20px;
             color: #64748b;
         }
-        .search-empty p { margin-top: 12px; font-size: 14px; }
+        .search-empty p { margin-top: var(--space-student-search-index-1); font-size: 14px; }
 
         .search-summary {
             padding: 10px 14px;
@@ -200,14 +207,14 @@
             background: #eff6ff;
             border: 1px solid #cfe0f5;
             border-radius: 8px;
-            color: #0a6fd1;
+            color: var(--color-student-search-index-1);
             font-size: 13px;
         }
 
         .section-heading {
             margin: 16px 0 10px;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: var(--typo-student-search-index-font-weight-2);
             color: #334155;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 6px;
@@ -216,8 +223,8 @@
         .follow-table th, .follow-table td { padding: 6px 10px; vertical-align: middle; }
         .table-responsive { overflow: visible !important; }
         .student-search-name-link {
-            color: #0a6fd1;
-            font-weight: 700;
+            color: var(--color-student-search-index-1);
+            font-weight: var(--typo-student-search-index-font-weight-2);
             text-decoration: none;
         }
         .student-search-name-link:hover,
@@ -226,7 +233,7 @@
             text-decoration: underline;
         }
 
-        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-student-search-index-1); }
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }
     </style>
 @endpush
