@@ -251,6 +251,10 @@
                 break-inside: avoid;
             }
 
+            .page + .page {
+                margin-top: 0 !important;
+            }
+
             .page:not(:last-child) {
                 page-break-after: always;
                 break-after: page;
