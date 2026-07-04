@@ -284,12 +284,111 @@
 @push('scripts')
     <script>
         (function () {
+            var activeRequestController = null;
+
             function reveal() {
                 setTimeout(function () { document.body.classList.add('certificates-ready'); }, 150);
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
-                reveal();
+            function setLoadingState(isLoading) {
+                var content = document.getElementById('certificate-status-content');
+
+                if (!content) {
+                    return;
+                }
+
+                content.style.opacity = isLoading ? '0.55' : '';
+                content.style.pointerEvents = isLoading ? 'none' : '';
+            }
+
+            function buildFilterUrl(form) {
+                var params = new URLSearchParams(new FormData(form));
+                var normalized = new URL(form.getAttribute('action') || window.location.href, window.location.origin);
+
+                Array.from(params.keys()).forEach(function (key) {
+                    var values = params.getAll(key).filter(function (value) {
+                        return String(value).trim() !== '';
+                    });
+
+                    normalized.searchParams.delete(key);
+
+                    values.forEach(function (value) {
+                        normalized.searchParams.append(key, value);
+                    });
+                });
+
+                normalized.searchParams.delete('page');
+
+                return normalized.toString();
+            }
+
+            function loadCertificatePage(url) {
+                var requestUrl = url || window.location.href;
+                var content = document.getElementById('certificate-status-content');
+
+                if (!content) {
+                    window.location.assign(requestUrl);
+                    return;
+                }
+
+                if (activeRequestController) {
+                    activeRequestController.abort();
+                }
+
+                var requestController = new AbortController();
+                activeRequestController = requestController;
+                setLoadingState(true);
+
+                fetch(requestUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    signal: requestController.signal
+                })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Request failed with status ' + response.status);
+                        }
+
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(html, 'text/html');
+                        var nextContent = doc.getElementById('certificate-status-content');
+
+                        if (!nextContent) {
+                            throw new Error('Certificate content container not found in response.');
+                        }
+
+                        content.innerHTML = nextContent.innerHTML;
+                        window.history.replaceState({}, '', requestUrl);
+                        initializeCertificatePage();
+                        reveal();
+                    })
+                    .catch(function (error) {
+                        if (error && error.name === 'AbortError') {
+                            return;
+                        }
+
+                        window.location.assign(requestUrl);
+                    })
+                    .finally(function () {
+                        if (activeRequestController === requestController) {
+                            activeRequestController = null;
+                            setLoadingState(false);
+                        }
+                    });
+            }
+
+            function initializeCertificatePage() {
+                var content = document.getElementById('certificate-status-content');
+
+                if (!content) {
+                    return;
+                }
 
                 var search = document.getElementById('certificate-status-search');
                 var form = document.getElementById('certificate-filter-form');
@@ -310,16 +409,60 @@
                             }
 
                             lastSearchValue = currentValue;
-                            form.submit();
+                            loadCertificatePage(buildFilterUrl(form));
                         }, 400);
                     });
 
                     search.addEventListener('keydown', function (e) {
-                        if (e.key === 'Enter') { e.preventDefault(); form.submit(); }
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            loadCertificatePage(buildFilterUrl(form));
+                        }
+                    });
+
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        loadCertificatePage(buildFilterUrl(form));
                     });
                 }
 
-                document.querySelectorAll('.follow-action-dropdown .dropdown-toggle').forEach(function (button) {
+                content.querySelectorAll('.follow-tab-bar a.follow-tab').forEach(function (link) {
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        var href = link.getAttribute('href');
+
+                        if (href) {
+                            loadCertificatePage(href);
+                        }
+                    });
+                });
+
+                content.querySelectorAll('.follow-footer .pagination a.page-link').forEach(function (link) {
+                    link.addEventListener('click', function (event) {
+                        var href = link.getAttribute('href');
+
+                        if (!href || href === '#') {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        event.preventDefault();
+                        loadCertificatePage(href);
+                    });
+                });
+
+                content.querySelectorAll('.program-filter-actions a.btn-danger-outline').forEach(function (link) {
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        var href = link.getAttribute('href');
+
+                        if (href) {
+                            loadCertificatePage(href);
+                        }
+                    });
+                });
+
+                content.querySelectorAll('.follow-action-dropdown .dropdown-toggle').forEach(function (button) {
                     button.addEventListener('click', function () {
                         var wrapper = this.closest('.follow-action-dropdown');
                         if (!wrapper) return;
@@ -422,6 +565,11 @@
                 }
 
                 syncBulkSelectionState();
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                reveal();
+                initializeCertificatePage();
             });
         })();
     </script>
