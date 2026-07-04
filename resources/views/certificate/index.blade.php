@@ -103,17 +103,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Programme</label>
-                                <select class="form-control form-control-sm" name="program_id">
-                                    <option value="">All Programmes</option>
-                                    @foreach($programs as $program)
-                                        <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                            {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            @include('partials.filter-program-select')
                             <div class="program-filter-actions">
                                 <button type="submit" class="btn btn-primary-outline">Filter</button>
                                 <a href="{{ route('certificate.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
@@ -126,16 +116,16 @@
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="remarks" id="certificate-bulk-remarks" value="">
-                            <div class="certificate-bulk-toolbar__left">
+                            <!-- <div class="certificate-bulk-toolbar__left">
                                 <span class="certificate-bulk-count">
                                     Selected: <strong id="certificate-selected-count">0</strong>
                                 </span>
-                            </div>
-                            <div class="certificate-bulk-toolbar__right">
+                            </div> -->
+                            <!-- <div class="certificate-bulk-toolbar__right">
                                 <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-approve-button" disabled>
                                     Approve Selected
                                 </button>
-                            </div>
+                            </div> -->
                         </form>
                     @endif
 
