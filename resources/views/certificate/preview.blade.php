@@ -188,7 +188,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 2.2in;
+            margin-top: 2in;
             margin-left: 20px;
             margin-right: 50px;
             font-family: sans-serif;
