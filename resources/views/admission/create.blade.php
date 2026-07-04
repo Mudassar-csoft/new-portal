@@ -467,7 +467,7 @@
             --typo-admission-create-font-size-1: 14px;
             --typo-admission-create-font-weight-2: 600;
             --typo-admission-create-font-size-3: 12px;
-        }0___
+        }
 
 		.ci-inline-pad-04 {
 			padding: 0.4rem !important;

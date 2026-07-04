@@ -324,7 +324,7 @@
             --dimension-lead-training-7: calc(100% - 4px);
             --space-lead-training-1: 0px;
         --typo-views-lead-training-font-size-1: 12px;
-        }0___
+        }
 
 .custom-range {
     width: var(--dimension-lead-training-1);

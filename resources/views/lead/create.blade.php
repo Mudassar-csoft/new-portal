@@ -137,8 +137,7 @@
             --space-lead-create-5: 6px;
             --space-lead-create-6: 8px 10px;
             --typo-lead-create-font-weight-1: 600;
-        }0___
-
+        }
 		.lead-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;

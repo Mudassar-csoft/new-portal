@@ -197,7 +197,7 @@
                                 <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-approve-button" disabled>
                                     Approve Selected
                                 </button>
-                            </div> -->
+                            </div>
                         </form>
                     @endif
 
@@ -396,11 +396,8 @@
 
         .user-mgmt-header { display: flex; align-items: stretch; justify-content: space-between; gap: var(--space-certificate-index-1); flex-wrap: wrap; }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
-        .create-action-btn { align-self: center; padding: 0.5rem 1rem !important; white-space: nowrap; margin: 8px 12px 8px 0; }
-
         @media (max-width: 767px) {
             .program-filter-actions { width: var(--dimension-certificate-index-1); margin-left: 0; }
-            .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
             .follow-controls .follow-search { width: 100%; margin-left: 0; }
         }
     </style>
