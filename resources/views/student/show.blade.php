@@ -4,10 +4,10 @@
 
 @section('content')
     @php
-        $totalCourses = $admission ? 1 : 0;
+        $totalCourses = $admissions->count();
         $studentPhone = preg_replace('/\D+/', '', (string) ($registration->phone ?? ''));
         $studentEmail = trim((string) ($registration->email ?? ''));
-        $studentLeadId = $registration->lead_id ?? optional($admission)->lead_id;
+        $studentLeadId = $registration->lead_id ?? optional($latestAdmission)->lead_id;
         $studentSmsUrl = $studentPhone !== '' ? 'sms:' . $studentPhone : null;
         $studentEmailUrl = $studentEmail !== '' ? 'mailto:' . $studentEmail : null;
         $studentWhatsappUrl = $studentPhone !== '' ? 'https://wa.me/' . $studentPhone : null;
@@ -54,7 +54,7 @@
                                 Action <span class="caret"></span>
                             </button>
                             <div class="dropdown-menu student-action-menu" aria-labelledby="student-action-{{ $registration->id }}">
-                                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_registration_id' => $registration->id, 'source_admission_id' => optional($admission)->id]) }}">
+                                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_registration_id' => $registration->id, 'source_admission_id' => optional($latestAdmission)->id]) }}">
                                     <span class="lead-action-icon lead-icon-black" aria-hidden="true">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M8 3.75h5.5L18.25 8.5V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6.25 19V5A1.25 1.25 0 0 1 7.5 3.75Z"/>
@@ -143,8 +143,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if($admission)
-                                    @php
+                                @if($admissions->isNotEmpty())
+                                    @foreach($admissions as $admission)
+                                        @php
                                         $admissionFees = $feeCollections->where('admission_id', $admission->id);
                                         $admissionTotal = $admissionFees->sum('net_amount');
                                         $admissionPaid = $admissionFees->where('status', 'paid')->sum('net_amount');
@@ -187,6 +188,7 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    @endforeach
                                 @else
                                     <tr>
                                         <td colspan="7" class="empty-state">
@@ -217,9 +219,21 @@
                             <tbody>
                                 @forelse($feeCollections as $fee)
                                     @php
+                                        $feeAdmission = $fee->admission ?? $admissions->firstWhere('id', $fee->admission_id);
+                                        $feeProgramTitle = $fee->fee_type === 'registration'
+                                            ? 'Registration Fee'
+                                            : ($feeAdmission?->program?->title
+                                                ?? $feeAdmission?->program?->name
+                                                ?? $fee->program?->title
+                                                ?? $fee->program?->name
+                                                ?? 'â€”');
+                                        $admission = $feeAdmission
+                                            ?? ($fee->program ? (object) ['program' => $fee->program] : null)
+                                            ?? $admission
+                                            ?? null;
                                         $voucherUrl = $fee->fee_type === 'registration'
                                             ? route('registration.voucher', $registration)
-                                            : ($admission ? route('admission.voucher', ['admission' => $admission, 'fee_collection' => $fee->id]) : null);
+                                            : ($feeAdmission ? route('admission.voucher', ['admission' => $feeAdmission, 'fee_collection' => $fee->id]) : null);
                                         $nextPendingInstallment = $fee->fee_type === 'admission'
                                             ? $feeCollections
                                                 ->filter(function ($candidate) use ($fee) {
@@ -290,6 +304,7 @@
                     </div>
                 </div>
 
+                @php($admission = $latestAdmission)
                 {{-- ===== PERSONAL INFORMATION ===== --}}
                 <div class="student-pane" id="pane-personal">
                     <div class="pane-card pane-card--info">
