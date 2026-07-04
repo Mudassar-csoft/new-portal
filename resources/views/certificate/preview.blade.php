@@ -215,9 +215,9 @@
             }
 
             html, body {
-                width: 297mm !important;
-                height: 210mm !important;
-                overflow: hidden !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
             }
 
             body {
