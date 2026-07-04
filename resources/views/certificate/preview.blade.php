@@ -74,6 +74,9 @@
             height: 210mm;
             margin: 0 auto;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 10mm;
             background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
         }
@@ -188,9 +191,11 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 2in;
+            margin-top: auto;
             margin-left: 20px;
             margin-right: 50px;
+            margin-bottom: 0;
+            padding-top: 8mm;
             font-family: sans-serif;
             font-size: 12px;
             gap: 28px;
