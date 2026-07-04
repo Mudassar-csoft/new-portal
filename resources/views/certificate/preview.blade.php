@@ -233,9 +233,9 @@
             .page-stack {
                 padding: 0;
                 margin: 0;
-                width: 280mm;
-                min-width: 280mm;
-                max-width: 280mm;
+                width: 100%;
+                min-width: 0;
+                max-width: none;
             }
 
             .page {
@@ -245,7 +245,7 @@
                 height: 209mm;
                 min-height: 209mm;
                 max-height: 209mm;
-                margin: 0;
+                margin: 0 auto;
                 box-shadow: none;
                 page-break-inside: avoid;
                 break-inside: avoid;
