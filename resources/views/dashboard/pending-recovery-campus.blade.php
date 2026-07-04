@@ -103,7 +103,7 @@
                                 <th>Roll No</th>
                                 <th>Name</th>
                                 <th>Father Name</th>
-                                <th>Admission Date</th>
+                                <th>Primary Contact</th>
                                 <th>Fee Package</th>
                                 <th>Total Received</th>
                                 <th>Total Pending</th>
@@ -119,7 +119,7 @@
                                     <td>{{ $row['roll_no'] ?? 'N/A' }}</td>
                                     <td>{{ $row['name'] ?? 'N/A' }}</td>
                                     <td>{{ $row['father_name'] ?? 'N/A' }}</td>
-                                    <td>{{ $row['admission_date'] ?? 'N/A' }}</td>
+                                    <td>{{ $row['primary_contact'] ?? 'N/A' }}</td>
                                     <td class="numeric-cell">{{ number_format((float) ($row['fee_package'] ?? 0), 0) }}</td>
                                     <td class="numeric-cell">{{ number_format((float) ($row['total_received'] ?? 0), 0) }}</td>
                                     <td class="numeric-cell">{{ number_format((float) ($row['total_pending'] ?? 0), 0) }}</td>

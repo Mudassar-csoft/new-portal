@@ -7,6 +7,19 @@
         $activeScope = $activeScope ?? 'all';
         $scopeCards = $scopeCards ?? [];
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'search' => null];
+        $currentUser = auth()->user();
+        $campusOptionCount = $campuses->count();
+        $canBulkApprove = $activeScope === 'requested'
+            && ($currentUser?->isAdmin() ?? false)
+            && ($currentUser?->hasAnyPermission(['certificate.approve']) ?? false);
+        $showActionColumn = match ($activeScope) {
+            'requested' => $currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false,
+            'approved' => $currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false,
+            'printing' => $currentUser?->hasAnyPermission(['certificate.mark-ready', 'certificate.view']) ?? false,
+            'ready' => $currentUser?->hasAnyPermission(['certificate.mark-delivered', 'certificate.view']) ?? false,
+            default => $activeScope !== 'requested'
+                || ($currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false),
+        };
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',
@@ -23,7 +36,6 @@
             'printing' => 'label-primary',
             'ready' => 'label-success',
             'delivered' => 'label-default',
-            'rejected' => 'label-danger',
         ];
     @endphp
 
@@ -81,7 +93,9 @@
                             <div class="program-filter-field">
                                 <label class="form-label">Campus</label>
                                 <select class="form-control form-control-sm" name="campus_id">
-                                    <option value="">All Campuses</option>
+                                    @if($campusOptionCount > 1)
+                                        <option value="">All Campuses</option>
+                                    @endif
                                     @foreach($campuses as $campus)
                                         <option value="{{ $campus->id }}" @selected(($filters['campus_id'] ?? null) == $campus->id)>
                                             {{ $campus->code }} - {{ $campus->name }}
@@ -107,51 +121,83 @@
                         </div>
                     </form>
 
+                    @if($canBulkApprove)
+                        <form method="POST" action="{{ route('certificate.bulk-approve') }}" id="certificate-bulk-approve-form" class="certificate-bulk-toolbar">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="remarks" id="certificate-bulk-remarks" value="">
+                            <div class="certificate-bulk-toolbar__left">
+                                <span class="certificate-bulk-count">
+                                    Selected: <strong id="certificate-selected-count">0</strong>
+                                </span>
+                            </div>
+                            <div class="certificate-bulk-toolbar__right">
+                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-approve-button" disabled>
+                                    Approve Selected
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+
                     <div class="table-responsive">
                         <table class="table table-bordered follow-table">
                             <thead>
                                 <tr>
+                                    @if($canBulkApprove)
+                                        <th class="text-center certificate-select-col">
+                                            <label class="certificate-select-all" for="certificate-select-all">
+                                                <input type="checkbox" id="certificate-select-all">
+                                            </label>
+                                        </th>
+                                    @endif
                                     <th>Sr</th>
-                                    <th>Certificate #</th>
                                     <th>Student</th>
-                                    <th>Roll / Reg No</th>
+                                    <th>Reg No</th>
                                     <th>Programme</th>
                                     <th>Campus</th>
-                                    <th>Requested</th>
-                                    <th>Status</th>
-                                    <th class="text-left">Action</th>
+                                    @if($showActionColumn)
+                                        <th class="text-left">Action</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($certificates as $idx => $cert)
                                     @php
                                         $rowIndex = ($certificates->firstItem() ?? 0) + $idx;
-                                        $statusKey = $cert->status ?? 'requested';
+                                        $statusKey = $cert->student_status ?? 'requested';
                                     @endphp
                                     <tr>
+                                        @if($canBulkApprove)
+                                            <td class="text-center certificate-select-col">
+                                                <input
+                                                    type="checkbox"
+                                                    class="certificate-bulk-checkbox"
+                                                    name="admission_ids[]"
+                                                    value="{{ $cert->id }}"
+                                                    form="certificate-bulk-approve-form"
+                                                >
+                                            </td>
+                                        @endif
                                         <td class="text-center">{{ $rowIndex }}</td>
-                                        <td><strong>{{ $cert->certificate_number }}</strong></td>
-                                        <td>{{ $cert->admission?->student_name ?? 'N/A' }}</td>
                                         <td>
-                                            {{ $cert->admission?->roll_number ?? 'N/A' }}
-                                            <br>
-                                            <span class="text-muted">{{ $cert->admission?->registration_number ?? '' }}</span>
+                                            @if((int) ($cert->registration_id ?? 0) > 0)
+                                                <a href="{{ route('student.show', $cert->registration_id) }}">{{ $cert->student_name ?? 'N/A' }}</a>
+                                            @else
+                                                {{ $cert->student_name ?? 'N/A' }}
+                                            @endif
                                         </td>
+                                        <td>{{ $cert->registration_number ?? 'N/A' }}</td>
                                         <td>{{ $cert->program?->title ?? $cert->program?->name ?? 'N/A' }}</td>
                                         <td>{{ $cert->campus?->code ?? $cert->campus?->name ?? 'N/A' }}</td>
-                                        <td>{{ optional($cert->requested_at)->format('d-M-Y') ?? 'N/A' }}</td>
-                                        <td>
-                                            <span class="label {{ $statusLabelClasses[$statusKey] ?? 'label-default' }}">
-                                                {{ ucfirst($statusKey) }}
-                                            </span>
-                                        </td>
-                                        <td class="action-cell">
-                                            @include('certificate.partials.action', ['actionId' => 'cert-action-' . $cert->id])
-                                        </td>
+                                        @if($showActionColumn)
+                                            <td class="action-cell">
+                                                @include('certificate.partials.action', ['actionId' => 'cert-action-' . $cert->id, 'activeScope' => $activeScope])
+                                            </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted">No certificates found for the selected filters.</td>
+                                        <td colspan="{{ ($canBulkApprove ? 1 : 0) + ($showActionColumn ? 6 : 5) }}" class="text-center text-muted">No certificates found for the selected filters.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -266,6 +312,96 @@
                         }
                     });
                 });
+
+                var bulkForm = document.getElementById('certificate-bulk-approve-form');
+                var selectAll = document.getElementById('certificate-select-all');
+                var selectedCount = document.getElementById('certificate-selected-count');
+                var bulkButton = document.getElementById('certificate-bulk-approve-button');
+                var bulkRemarks = document.getElementById('certificate-bulk-remarks');
+                var bulkCheckboxes = Array.prototype.slice.call(document.querySelectorAll('.certificate-bulk-checkbox'));
+
+                function syncBulkSelectionState() {
+                    if (!bulkCheckboxes.length) return;
+
+                    var checkedCount = bulkCheckboxes.filter(function (checkbox) {
+                        return checkbox.checked;
+                    }).length;
+
+                    if (selectedCount) {
+                        selectedCount.textContent = String(checkedCount);
+                    }
+
+                    if (bulkButton) {
+                        bulkButton.disabled = checkedCount === 0;
+                    }
+
+                    if (selectAll) {
+                        selectAll.checked = checkedCount > 0 && checkedCount === bulkCheckboxes.length;
+                        selectAll.indeterminate = checkedCount > 0 && checkedCount < bulkCheckboxes.length;
+                    }
+                }
+
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        bulkCheckboxes.forEach(function (checkbox) {
+                            checkbox.checked = selectAll.checked;
+                        });
+
+                        syncBulkSelectionState();
+                    });
+                }
+
+                bulkCheckboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', syncBulkSelectionState);
+                });
+
+                if (bulkForm) {
+                    bulkForm.addEventListener('submit', function (event) {
+                        var checkedCount = bulkCheckboxes.filter(function (checkbox) {
+                            return checkbox.checked;
+                        }).length;
+
+                        if (checkedCount === 0) {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        if (window.Swal && typeof window.Swal.fire === 'function') {
+                            event.preventDefault();
+
+                            window.Swal.fire({
+                                title: 'Approve selected certificates?',
+                                input: 'textarea',
+                                inputLabel: 'Remarks (optional)',
+                                inputPlaceholder: 'Enter remarks for all selected students',
+                                inputAttributes: {
+                                    'aria-label': 'Remarks'
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: 'Approve',
+                                cancelButtonText: 'Cancel'
+                            }).then(function (result) {
+                                if (!result.isConfirmed) {
+                                    return;
+                                }
+
+                                if (bulkRemarks) {
+                                    bulkRemarks.value = result.value || '';
+                                }
+
+                                bulkForm.submit();
+                            });
+
+                            return;
+                        }
+
+                        if (!window.confirm('Approve ' + checkedCount + ' selected certificate request(s)?')) {
+                            event.preventDefault();
+                        }
+                    });
+                }
+
+                syncBulkSelectionState();
             });
         })();
     </script>

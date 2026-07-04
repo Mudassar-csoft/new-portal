@@ -20,7 +20,7 @@
                         <div class="tbl-row">
                             <div class="tbl-cell tbl-cell-title p-0 m-0">
                                 <h2 class="panel-title lead-title">
-                                    Certificate <strong>{{ $certificate->certificate_number }}</strong>
+                                    Certificate <strong>{{ 'CERT-ADM-' . str_pad((string) $admission->id, 6, '0', STR_PAD_LEFT) }}</strong>
                                 </h2>
                             </div>
                             <div class="tbl-cell text-right" style="width: 200px;">
@@ -32,32 +32,29 @@
 
                 <div class="box-typical-body panel-body lead-body">
                     <div class="cert-summary">
-                        <div><span class="label-mute">Student:</span> <strong>{{ $certificate->admission?->student_name ?? 'N/A' }}</strong></div>
-                        <div><span class="label-mute">Roll No:</span> {{ $certificate->admission?->roll_number ?? 'N/A' }}</div>
-                        <div><span class="label-mute">Programme:</span> {{ $certificate->admission?->program?->title ?? $certificate->admission?->program?->name ?? 'N/A' }}</div>
-                        <div><span class="label-mute">Campus:</span> {{ $certificate->admission?->campus?->code ?? $certificate->admission?->campus?->name ?? 'N/A' }}</div>
-                        <div><span class="label-mute">Status:</span> <span class="label label-info">{{ ucfirst($certificate->status) }}</span></div>
-                        <div><span class="label-mute">Requested:</span> {{ optional($certificate->requested_at)->format('d-M-Y H:i') ?? 'N/A' }}</div>
-                        @if($certificate->approved_at)
-                            <div><span class="label-mute">Approved:</span> {{ $certificate->approved_at->format('d-M-Y H:i') }}</div>
+                        <div><span class="label-mute">Student:</span> <strong>{{ $admission->student_name ?? 'N/A' }}</strong></div>
+                        <div><span class="label-mute">Roll No:</span> {{ $admission->roll_number ?? 'N/A' }}</div>
+                        <div><span class="label-mute">Programme:</span> {{ $admission->program?->title ?? $admission->program?->name ?? 'N/A' }}</div>
+                        <div><span class="label-mute">Campus:</span> {{ $admission->campus?->code ?? $admission->campus?->name ?? 'N/A' }}</div>
+                        <div><span class="label-mute">Status:</span> <span class="label {{ $statusClasses[$admission->student_status] ?? 'label-default' }}">{{ $statusLabels[$admission->student_status] ?? ucfirst((string) $admission->student_status) }}</span></div>
+                        <div><span class="label-mute">Status Updated:</span> {{ optional($admission->status_updated_at)->format('d-M-Y H:i') ?? 'N/A' }}</div>
+                        @if($admission->certificate_delivered_at)
+                            <div><span class="label-mute">Delivered:</span> {{ $admission->certificate_delivered_at->format('d-M-Y H:i') }}</div>
                         @endif
-                        @if($certificate->delivered_at)
-                            <div><span class="label-mute">Delivered:</span> {{ $certificate->delivered_at->format('d-M-Y H:i') }} to {{ $certificate->delivered_to ?? 'N/A' }}</div>
-                        @endif
-                        @if($certificate->rejected_at)
-                            <div><span class="label-mute">Rejected:</span> {{ $certificate->rejected_at->format('d-M-Y H:i') }} — {{ $certificate->rejection_reason ?? 'No reason' }}</div>
+                        @if($admission->certificate_delivery_notes)
+                            <div><span class="label-mute">Delivery Notes:</span> {{ $admission->certificate_delivery_notes }}</div>
                         @endif
                     </div>
 
         @include('partials.validation-errors-alert')
 
-                    <form method="POST" action="{{ route('certificate.update', $certificate) }}">
+                    <form method="POST" action="{{ route('certificate.update', $admission) }}">
                         @csrf
                         @method('PUT')
                         <div class="form-row">
                             <div class="form-group col-md-12">
                                 <label class="form-label">Remarks</label>
-                                <textarea name="remarks" class="form-control" rows="3" placeholder="Notes about this certificate">{{ old('remarks', $certificate->remarks) }}</textarea>
+                                <textarea name="remarks" class="form-control" rows="3" placeholder="Notes about this certificate">{{ old('remarks', $admission->remarks) }}</textarea>
                             </div>
                         </div>
 

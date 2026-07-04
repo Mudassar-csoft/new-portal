@@ -155,7 +155,9 @@ class LeadController extends Controller
                     'lead_id' => $lead->id,
                     'campus_id' => $lead->campus_id,
                     'user_id' => $request->user()?->id,
-                    'note' => 'Initial follow-up created automatically.',
+                    'note' => trim((string) ($details['remarks'] ?? '')) !== ''
+                        ? trim((string) $details['remarks'])
+                        : 'Initial follow-up created automatically.',
                     'method' => $initialMethod,
                     'probability' => $initialProbability,
                     'next_action_date' => $initialNextAt,
@@ -973,9 +975,11 @@ class LeadController extends Controller
         $type = $this->normalizeLeadType($type);
         $todayOnly = $request->boolean('today');
         $typeMeta = $this->leadTypeMeta($type);
-        $search = $this->normalizeSearchTerm((string) $request->query('q', ''));
         $status = $this->normalizeLeadStatusFilter($request->query('status'), $type);
         $perPage = $this->resolvePerPage($request);
+        $filters = $this->resolveLeadIndexFilters($request);
+        $campuses = $this->leadIndexCampusOptions();
+        $programs = $this->leadIndexProgramOptions($type, $filters['program_id'], $filters['campus_id']);
 
         $baseLeadQuery = $this->leadQueryForType($type);
 
@@ -983,9 +987,7 @@ class LeadController extends Controller
             $baseLeadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
         }
 
-        if ($search !== null) {
-            $this->applyLeadIndexSearch($baseLeadQuery, $search, $type);
-        }
+        $this->applyLeadIndexFilters($baseLeadQuery, $filters);
 
         $tabs = $this->leadIndexTabs($type);
         $badgeColors = $this->leadIndexBadgeColors($type);
@@ -1035,7 +1037,6 @@ class LeadController extends Controller
             'badgeColors' => $badgeColors,
             'tabCounts' => $tabCounts,
             'selectedStatus' => $status ?? 'all',
-            'search' => $search ?? '',
             'perPage' => $perPage,
             'todayOnly' => $todayOnly,
             'type' => $type,
@@ -1043,7 +1044,119 @@ class LeadController extends Controller
             'interestHeading' => $this->leadInterestHeading($type),
             'emptyStateMessage' => $typeMeta['emptyStateMessage'],
             'indexRoute' => route($typeMeta['indexRoute']),
+            'filters' => $filters,
+            'campuses' => $campuses,
+            'programs' => $programs,
         ]);
+    }
+
+    /**
+     * @return array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}
+     */
+    private function resolveLeadIndexFilters(Request $request): array
+    {
+        $campusScopeId = $this->currentUserCampusScopeId();
+        $requestedCampusId = (int) $request->query('campus_id', 0);
+        $campusId = $campusScopeId ?: ($requestedCampusId > 0 ? $requestedCampusId : null);
+
+        $requestedProgramId = (int) $request->query('program_id', 0);
+        $programId = $requestedProgramId > 0 ? $requestedProgramId : null;
+
+        $createdFrom = $this->normalizeLeadIndexDate($request->query('created_from'));
+        $createdTo = $this->normalizeLeadIndexDate($request->query('created_to'));
+
+        if ($createdFrom !== null && $createdTo !== null && $createdFrom > $createdTo) {
+            [$createdFrom, $createdTo] = [$createdTo, $createdFrom];
+        }
+
+        return [
+            'campus_id' => $campusId,
+            'program_id' => $programId,
+            'created_from' => $createdFrom,
+            'created_to' => $createdTo,
+        ];
+    }
+
+    private function normalizeLeadIndexDate(mixed $value): ?string
+    {
+        $date = trim((string) $value);
+
+        if ($date === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($date)->toDateString();
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * @param  array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}  $filters
+     */
+    private function applyLeadIndexFilters(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when(
+                $filters['campus_id'],
+                fn (Builder $builder, int $campusId) => $builder->where('campus_id', $campusId)
+            )
+            ->when(
+                $filters['program_id'],
+                fn (Builder $builder, int $programId) => $builder->where('program_id', $programId)
+            )
+            ->when(
+                $filters['created_from'],
+                fn (Builder $builder, string $createdFrom) => $builder->whereDate('created_at', '>=', $createdFrom)
+            )
+            ->when(
+                $filters['created_to'],
+                fn (Builder $builder, string $createdTo) => $builder->whereDate('created_at', '<=', $createdTo)
+            );
+    }
+
+    private function leadIndexCampusOptions(): Collection
+    {
+        return Campus::query()
+            ->when(
+                $this->currentUserCampusScopeId(),
+                fn ($query, int $campusId) => $query->whereKey($campusId)
+            )
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name', 'title']);
+    }
+
+    private function leadIndexProgramOptions(string $type, ?int $selectedProgramId = null, ?int $campusId = null): Collection
+    {
+        $programIds = (clone $this->leadQueryForType($type))
+            ->when(
+                $campusId,
+                fn (Builder $builder, int $resolvedCampusId) => $builder->where('campus_id', $resolvedCampusId)
+            )
+            ->whereNotNull('program_id')
+            ->distinct()
+            ->orderBy('program_id')
+            ->pluck('program_id')
+            ->map(fn ($programId) => (int) $programId)
+            ->filter(fn (int $programId) => $programId > 0)
+            ->values()
+            ->all();
+
+        if ($selectedProgramId && ! in_array($selectedProgramId, $programIds, true)) {
+            $programIds[] = $selectedProgramId;
+        }
+
+        if ($programIds === []) {
+            return collect();
+        }
+
+        return Program::query()
+            ->whereIn('id', $programIds)
+            ->orderBy('title')
+            ->orderBy('name')
+            ->get(['id', 'title', 'name']);
     }
 
     private function applyLeadTypeScope(Builder $query, string $type): Builder
@@ -1510,6 +1623,10 @@ class LeadController extends Controller
     {
         $todayStart = now()->startOfDay();
         $todayEnd = now()->endOfDay();
+
+        if ($window === 'pending') {
+            $query->where('status', 'pending');
+        }
 
         return $query->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($todayEnd, $todayStart, $window) {
             $latestFollowupQuery->whereNotNull('next_action_date');

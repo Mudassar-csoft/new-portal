@@ -57,6 +57,7 @@ class DashboardController extends Controller
         );
 
         $selectedCampusId = $this->resolveCampusId($request);
+        $this->ensureDashboardScopedUserHasCampus($selectedCampusId, $request->user());
         $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'title', 'campus_type'])
             : null;
@@ -1241,7 +1242,7 @@ $programLabels = Program::query()
         $rowsQuery = FeeCollection::query()
             ->with([
                 'program:id,code,title,name',
-                'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,admission_date,fee_package,discounted_fee,roll_number',
+                'admission:id,registration_id,campus_id,program_id,student_name,guardian_name,phone,admission_date,fee_package,discounted_fee,roll_number',
             ])
             ->where('campus_id', $campusId)
             ->orderBy('program_id')
@@ -1297,7 +1298,7 @@ $programLabels = Program::query()
                         'roll_no' => (string) ($admission?->roll_number ?: 'N/A'),
                         'name' => (string) ($admission?->student_name ?: 'N/A'),
                         'father_name' => (string) ($admission?->guardian_name ?: 'N/A'),
-                        'admission_date' => $this->pendingRecoveryFormatDate($admission?->admission_date),
+                        'primary_contact' => (string) ($admission?->phone ?: 'N/A'),
                         'fee_package' => round((float) $feePackage, 2),
                         'total_received' => round((float) ($totals->received_total ?? 0), 2),
                         'total_pending' => round((float) ($totals->pending_total ?? 0), 2),
@@ -1938,5 +1939,18 @@ $programLabels = Program::query()
         if ($userCampusId > 0 && $campusId && $campusId !== $userCampusId) {
             abort(403, 'You are not allowed to access records from another campus.');
         }
+    }
+
+    private function ensureDashboardScopedUserHasCampus(?int $campusId, ?User $user): void
+    {
+        if ($this->canSelectDashboardCampus($user)) {
+            return;
+        }
+
+        abort_unless(
+            (int) ($campusId ?? 0) > 0,
+            403,
+            'You are not allowed to view all campuses in this report.'
+        );
     }
 }
