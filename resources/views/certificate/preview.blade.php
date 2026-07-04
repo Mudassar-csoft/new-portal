@@ -93,6 +93,10 @@
             box-shadow: 0 28px 60px rgba(15, 23, 42, 0.14);
         }
 
+        .certificate-page + .certificate-page {
+            margin-top: 18px;
+        }
+
         .certificate-page::before {
             content: '';
             position: absolute;
@@ -244,6 +248,13 @@
                 box-shadow: none;
                 border-width: 12px;
                 margin: 0;
+                page-break-after: always;
+                break-after: page;
+            }
+
+            .certificate-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
             }
         }
 
@@ -261,41 +272,49 @@
 </head>
 <body>
     <div class="preview-toolbar">
-        <a href="{{ route('certificate.index', ['scope' => 'printing']) }}">Back</a>
+        <a href="{{ $backUrl ?? route('certificate.index', ['scope' => 'printing']) }}">Back</a>
         <button type="button" onclick="window.print()">Print</button>
     </div>
 
     <div class="certificate-page-wrap">
-        <div class="certificate-page">
-            <div class="certificate-inner">
-                <img src="{{ $certificateLogo }}" alt="Career Institute" class="brand-mark">
-                <p class="certificate-kicker">Career Institute</p>
-                <h1 class="certificate-title">Certificate of Achievement</h1>
+        @foreach(($previewItems ?? collect()) as $preview)
+            @php
+                $admission = $preview['admission'];
+                $studentName = $preview['studentName'];
+                $programTitle = $preview['programTitle'];
+                $dateLine = $preview['dateLine'];
+            @endphp
+            <div class="certificate-page">
+                <div class="certificate-inner">
+                    <img src="{{ $certificateLogo }}" alt="Career Institute" class="brand-mark">
+                    <p class="certificate-kicker">Career Institute</p>
+                    <h1 class="certificate-title">Certificate of Achievement</h1>
 
-                <p class="certificate-subtitle"><strong>Presented to:</strong></p>
-                <div class="student-name">{{ $studentName }}</div>
+                    <p class="certificate-subtitle"><strong>Presented to:</strong></p>
+                    <div class="student-name">{{ $studentName }}</div>
 
-                <p class="completion-line">for successfully completing the training course</p>
-                <div class="program-title">{{ $programTitle }}</div>
+                    <p class="completion-line">for successfully completing the training course</p>
+                    <div class="program-title">{{ $programTitle }}</div>
 
-                <p class="certificate-date-line">{{ $dateLine }}</p>
+                    <p class="certificate-date-line">{{ $dateLine }}</p>
 
-                <div class="certificate-meta">
-                    <div class="verification-block">
-                        <strong>For Verification, please visit: www.career.edu.pk</strong>
-                        <div>Verification ID: {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}</div>
-                        @if($admission->campus?->code)
-                            <div>Campus: {{ $admission->campus->code }}</div>
-                        @endif
-                    </div>
+                    <div class="certificate-meta">
+                        <div class="verification-block">
+                            <strong>For Verification, please visit: www.career.edu.pk</strong>
+                            <div>Verification ID: {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}</div>
+                            @if($admission->campus?->code)
+                                <div>Campus: {{ $admission->campus->code }}</div>
+                            @endif
+                        </div>
 
-                    <div class="signature-block">
-                        <strong>Muhammad Adeel Javaid</strong>
-                        <div>Founder and Chairman</div>
+                        <div class="signature-block">
+                            <strong>Muhammad Adeel Javaid</strong>
+                            <div>Founder and Chairman</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endforeach
     </div>
 </body>
 </html>

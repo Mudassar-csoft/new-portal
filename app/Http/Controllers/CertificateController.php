@@ -79,7 +79,7 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function preview(Admission $admission): View
+    public function preview(Request $request, Admission $admission): View
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), auth()->user(), 'You are not allowed to access certificate records from another campus.');
         $this->ensurePrintableCertificateAdmission($admission);
@@ -91,10 +91,10 @@ class CertificateController extends Controller
         ]);
 
         return view('certificate.preview', [
-            'admission' => $admission,
-            'studentName' => $this->resolveCertificateStudentName($admission),
-            'programTitle' => $admission->program?->title ?: $admission->program?->name ?: 'Training Programme',
-            'dateLine' => $this->resolveCertificateDateLine($admission),
+            'previewItems' => collect([
+                $this->buildCertificatePreviewItem($admission),
+            ]),
+            'backUrl' => $this->resolvePreviewBackUrl($request),
         ]);
     }
 
@@ -244,6 +244,59 @@ class CertificateController extends Controller
         }
 
         return redirect()->back()->with('status', $approvedCount.' certificate request(s) approved.');
+    }
+
+    public function bulkSendToPrinting(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()?->isAdmin() ?? false, 403);
+
+        return $this->performBulkWorkflowTransition(
+            $request,
+            Admission::CERTIFICATE_STATUS_APPROVED,
+            Admission::CERTIFICATE_STATUS_PRINTING,
+            'Select at least one approved certificate to send to printing.',
+            'No selected approved certificates were eligible for printing.',
+            ' certificate(s) sent to printing.'
+        );
+    }
+
+    public function bulkMarkReady(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()?->isAdmin() ?? false, 403);
+
+        return $this->performBulkWorkflowTransition(
+            $request,
+            Admission::CERTIFICATE_STATUS_PRINTING,
+            Admission::CERTIFICATE_STATUS_READY,
+            'Select at least one printing certificate to mark ready.',
+            'No selected printing certificates were eligible to mark ready.',
+            ' certificate(s) marked ready for collection.'
+        );
+    }
+
+    public function bulkPreview(Request $request): View
+    {
+        $ids = $this->extractBulkAdmissionIds($request);
+
+        abort_if($ids->isEmpty(), 404);
+
+        $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+            ->with([
+                'registration:id,student_name',
+                'program:id,code,title,name',
+                'campus:id,code,name,title,city',
+            ])
+            ->whereIn('id', $ids->all())
+            ->where('student_status', Admission::CERTIFICATE_STATUS_READY)
+            ->orderByRaw('COALESCE(student_name, registration_number, roll_number)')
+            ->get();
+
+        abort_if($admissions->isEmpty(), 404);
+
+        return view('certificate.preview', [
+            'previewItems' => $admissions->map(fn (Admission $admission) => $this->buildCertificatePreviewItem($admission)),
+            'backUrl' => $this->resolvePreviewBackUrl($request, 'ready'),
+        ]);
     }
 
     public function reject(Request $request, Admission $admission): RedirectResponse
@@ -448,6 +501,61 @@ class CertificateController extends Controller
         );
     }
 
+    private function extractBulkAdmissionIds(Request $request)
+    {
+        $validated = $request->validate([
+            'admission_ids' => ['required', 'array', 'min:1'],
+            'admission_ids.*' => ['integer', 'distinct', 'exists:admissions,id'],
+        ]);
+
+        return collect($validated['admission_ids'] ?? [])
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
+            ->values();
+    }
+
+    private function performBulkWorkflowTransition(
+        Request $request,
+        string $fromStatus,
+        string $toStatus,
+        string $emptySelectionMessage,
+        string $notEligibleMessage,
+        string $successSuffix
+    ): RedirectResponse {
+        $ids = $this->extractBulkAdmissionIds($request);
+
+        if ($ids->isEmpty()) {
+            return redirect()->back()->with('error', $emptySelectionMessage);
+        }
+
+        $updatedCount = 0;
+        $timestamp = now();
+
+        DB::transaction(function () use ($request, $ids, $fromStatus, $toStatus, $timestamp, &$updatedCount): void {
+            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+                ->whereIn('id', $ids->all())
+                ->where('student_status', $fromStatus)
+                ->lockForUpdate()
+                ->get();
+
+            $updatedCount = $admissions->count();
+
+            foreach ($admissions as $admission) {
+                $admission->update([
+                    'student_status' => $toStatus,
+                    'status_updated_at' => $timestamp,
+                ]);
+            }
+        });
+
+        if ($updatedCount === 0) {
+            return redirect()->back()->with('error', $notEligibleMessage);
+        }
+
+        return redirect()->back()->with('status', $updatedCount.$successSuffix);
+    }
+
     /**
      * @return array<string, string>
      */
@@ -518,6 +626,32 @@ class CertificateController extends Controller
     private function resolveCertificateStudentName(Admission $admission): string
     {
         return trim((string) ($admission->student_name ?: $admission->registration?->student_name ?: 'Student'));
+    }
+
+    /**
+     * @return array{admission: \App\Models\Admission, studentName: string, programTitle: string, dateLine: string}
+     */
+    private function buildCertificatePreviewItem(Admission $admission): array
+    {
+        return [
+            'admission' => $admission,
+            'studentName' => $this->resolveCertificateStudentName($admission),
+            'programTitle' => $admission->program?->title ?: $admission->program?->name ?: 'Training Programme',
+            'dateLine' => $this->resolveCertificateDateLine($admission),
+        ];
+    }
+
+    private function resolvePreviewBackUrl(Request $request, string $defaultScope = 'printing'): string
+    {
+        $scope = (string) $request->query('scope', $defaultScope);
+
+        if (! in_array($scope, self::ALLOWED_SCOPES, true)) {
+            $scope = $defaultScope;
+        }
+
+        return route('certificate.index', array_filter([
+            'scope' => $scope !== 'all' ? $scope : null,
+        ]));
     }
 
     private function resolveCertificateDateLine(Admission $admission): string
