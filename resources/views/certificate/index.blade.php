@@ -83,9 +83,16 @@
                                 <label>Entries</label>
                             </div>
                             <div class="follow-search">
-                                <input type="text" name="search" id="certificate-status-search" class="form-control form-control-sm"
+                                <input type="text" name="search" id="certificate-status-search" class="form-control form-control-sm certificate-search-input"
                                        placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
-                                <i class="fa fa-search"></i>
+                                <span class="certificate-search-shell" id="certificate-search-shell" aria-hidden="true">
+                                    <span class="certificate-search-icon"><i class="fa fa-search"></i></span>
+                                    <span class="certificate-search-loader" id="certificate-search-loader">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </span>
+                                </span>
                             </div>
                         </div>
 
@@ -126,6 +133,7 @@
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="remarks" id="certificate-bulk-remarks" value="">
+                            <div id="certificate-bulk-selected-inputs"></div>
                             <div class="certificate-bulk-toolbar__left">
                                 <span class="certificate-bulk-count">
                                     Selected: <strong id="certificate-selected-count">0</strong>
@@ -172,9 +180,8 @@
                                                 <input
                                                     type="checkbox"
                                                     class="certificate-bulk-checkbox"
-                                                    name="admission_ids[]"
+                                                    data-admission-id="{{ $cert->id }}"
                                                     value="{{ $cert->id }}"
-                                                    form="certificate-bulk-approve-form"
                                                 >
                                             </td>
                                         @endif
@@ -265,6 +272,67 @@
             top: 0 !important; left: auto !important; right: 100% !important; transform: none !important;
         }
 
+        .follow-controls .follow-search {
+            position: relative;
+            width: min(340px, 100%);
+            margin-left: auto;
+        }
+        .certificate-search-input {
+            height: 46px;
+            padding-right: 58px !important;
+            border-radius: 999px !important;
+        }
+        .certificate-search-shell {
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .certificate-search-icon {
+            color: #50697d;
+            font-size: 18px;
+            transition: opacity 0.2s ease;
+        }
+        .certificate-search-loader {
+            position: absolute;
+            inset: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .certificate-search-loader span {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #169de8;
+            animation: certificate-search-pulse 1s ease-in-out infinite;
+        }
+        .certificate-search-loader span:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+        .certificate-search-loader span:nth-child(3) {
+            animation-delay: 0.32s;
+        }
+        .certificate-search-shell.is-loading .certificate-search-icon {
+            opacity: 0;
+        }
+        .certificate-search-shell.is-loading .certificate-search-loader {
+            opacity: 1;
+        }
+        @keyframes certificate-search-pulse {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+            40% { transform: translateY(-3px); opacity: 1; }
+        }
+
         .program-filter-row { display: flex; gap: var(--space-certificate-index-2); flex-wrap: wrap; align-items: end; margin-bottom: var(--space-certificate-index-2); }
         .program-filter-field { flex: 1 1 200px; min-width: 180px; }
         .program-filter-field .form-label { font-size: 13px; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
@@ -277,6 +345,7 @@
         @media (max-width: 767px) {
             .program-filter-actions { width: var(--dimension-certificate-index-1); margin-left: 0; }
             .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
+            .follow-controls .follow-search { width: 100%; margin-left: 0; }
         }
     </style>
 @endpush
@@ -285,6 +354,7 @@
     <script>
         (function () {
             var activeRequestController = null;
+            var selectedCertificateIds = [];
 
             function reveal() {
                 setTimeout(function () { document.body.classList.add('certificates-ready'); }, 150);
@@ -292,6 +362,7 @@
 
             function setLoadingState(isLoading) {
                 var content = document.getElementById('certificate-status-content');
+                var searchShell = document.getElementById('certificate-search-shell');
 
                 if (!content) {
                     return;
@@ -299,6 +370,10 @@
 
                 content.style.opacity = isLoading ? '0.55' : '';
                 content.style.pointerEvents = isLoading ? 'none' : '';
+
+                if (searchShell) {
+                    searchShell.classList.toggle('is-loading', !!isLoading);
+                }
             }
 
             function buildFilterUrl(form) {
@@ -381,6 +456,26 @@
                             setLoadingState(false);
                         }
                     });
+            }
+
+            function hasSelectedCertificateId(id) {
+                return selectedCertificateIds.indexOf(String(id)) !== -1;
+            }
+
+            function addSelectedCertificateId(id) {
+                var normalizedId = String(id);
+
+                if (!hasSelectedCertificateId(normalizedId)) {
+                    selectedCertificateIds.push(normalizedId);
+                }
+            }
+
+            function removeSelectedCertificateId(id) {
+                var normalizedId = String(id);
+
+                selectedCertificateIds = selectedCertificateIds.filter(function (value) {
+                    return value !== normalizedId;
+                });
             }
 
             function initializeCertificatePage() {
@@ -481,12 +576,35 @@
                 var selectedCount = document.getElementById('certificate-selected-count');
                 var bulkButton = document.getElementById('certificate-bulk-approve-button');
                 var bulkRemarks = document.getElementById('certificate-bulk-remarks');
+                var bulkSelectedInputs = document.getElementById('certificate-bulk-selected-inputs');
                 var bulkCheckboxes = Array.prototype.slice.call(document.querySelectorAll('.certificate-bulk-checkbox'));
 
-                function syncBulkSelectionState() {
-                    if (!bulkCheckboxes.length) return;
+                function renderBulkSelectionInputs() {
+                    if (!bulkSelectedInputs) {
+                        return;
+                    }
 
-                    var checkedCount = bulkCheckboxes.filter(function (checkbox) {
+                    bulkSelectedInputs.innerHTML = '';
+
+                    selectedCertificateIds.forEach(function (id) {
+                        var input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'admission_ids[]';
+                        input.value = id;
+                        bulkSelectedInputs.appendChild(input);
+                    });
+                }
+
+                function syncBulkSelectionState() {
+                    bulkCheckboxes.forEach(function (checkbox) {
+                        var id = checkbox.getAttribute('data-admission-id') || checkbox.value;
+                        checkbox.checked = hasSelectedCertificateId(id);
+                    });
+
+                    renderBulkSelectionInputs();
+
+                    var checkedCount = selectedCertificateIds.length;
+                    var currentPageCheckedCount = bulkCheckboxes.filter(function (checkbox) {
                         return checkbox.checked;
                     }).length;
 
@@ -499,15 +617,22 @@
                     }
 
                     if (selectAll) {
-                        selectAll.checked = checkedCount > 0 && checkedCount === bulkCheckboxes.length;
-                        selectAll.indeterminate = checkedCount > 0 && checkedCount < bulkCheckboxes.length;
+                        selectAll.checked = bulkCheckboxes.length > 0 && currentPageCheckedCount === bulkCheckboxes.length;
+                        selectAll.indeterminate = currentPageCheckedCount > 0 && currentPageCheckedCount < bulkCheckboxes.length;
                     }
                 }
 
                 if (selectAll) {
                     selectAll.addEventListener('change', function () {
                         bulkCheckboxes.forEach(function (checkbox) {
+                            var id = checkbox.getAttribute('data-admission-id') || checkbox.value;
                             checkbox.checked = selectAll.checked;
+
+                            if (selectAll.checked) {
+                                addSelectedCertificateId(id);
+                            } else {
+                                removeSelectedCertificateId(id);
+                            }
                         });
 
                         syncBulkSelectionState();
@@ -515,14 +640,22 @@
                 }
 
                 bulkCheckboxes.forEach(function (checkbox) {
-                    checkbox.addEventListener('change', syncBulkSelectionState);
+                    checkbox.addEventListener('change', function () {
+                        var id = checkbox.getAttribute('data-admission-id') || checkbox.value;
+
+                        if (checkbox.checked) {
+                            addSelectedCertificateId(id);
+                        } else {
+                            removeSelectedCertificateId(id);
+                        }
+
+                        syncBulkSelectionState();
+                    });
                 });
 
                 if (bulkForm) {
                     bulkForm.addEventListener('submit', function (event) {
-                        var checkedCount = bulkCheckboxes.filter(function (checkbox) {
-                            return checkbox.checked;
-                        }).length;
+                        var checkedCount = selectedCertificateIds.length;
 
                         if (checkedCount === 0) {
                             event.preventDefault();
