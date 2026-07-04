@@ -115,6 +115,7 @@
             margin-right: 40px !important;
             margin-left: 5px;
             font-family: 'Montserrat', sans-serif;
+            transform: translateY(-4mm);
         }
 
         .pre p {
@@ -129,6 +130,7 @@
             margin-left: 5px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
+            transform: translateY(-4mm);
         }
 
         .s_name h1 {
@@ -149,6 +151,7 @@
             margin-right: 40px !important;
             margin-left: 5px;
             font-family: sans-serif;
+            transform: translateY(-4mm);
         }
 
         .t_line p {
@@ -164,6 +167,7 @@
             margin-left: 5px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
+            transform: translateY(-4mm);
         }
 
         .c_name h1 {
