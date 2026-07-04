@@ -73,6 +73,7 @@
             width: 297mm;
             height: 210mm;
             margin: 0 auto;
+            position: relative;
             overflow: hidden;
             background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
@@ -253,6 +254,14 @@
 
             .page + .page {
                 margin-top: 0 !important;
+            }
+
+            .footer {
+                position: absolute;
+                left: 20px;
+                right: 50px;
+                bottom: 8mm;
+                margin-top: 0;
             }
 
             .page:not(:last-child) {
