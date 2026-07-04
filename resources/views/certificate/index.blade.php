@@ -9,6 +9,9 @@
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'search' => null];
         $currentUser = auth()->user();
         $campusOptionCount = $campuses->count();
+        $canBulkApprove = $activeScope === 'requested'
+            && ($currentUser?->isAdmin() ?? false)
+            && ($currentUser?->hasAnyPermission(['certificate.approve']) ?? false);
         $showActionColumn = match ($activeScope) {
             'requested' => $currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false,
             'approved' => $currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false,
@@ -129,10 +132,35 @@
                         </div>
                     </form>
 
+                    @if($canBulkApprove)
+                        <form method="POST" action="{{ route('certificate.bulk-approve') }}" id="certificate-bulk-approve-form" class="certificate-bulk-toolbar">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="remarks" id="certificate-bulk-remarks" value="">
+                            <div class="certificate-bulk-toolbar__left">
+                                <span class="certificate-bulk-count">
+                                    Selected: <strong id="certificate-selected-count">0</strong>
+                                </span>
+                            </div>
+                            <div class="certificate-bulk-toolbar__right">
+                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-approve-button" disabled>
+                                    Approve Selected
+                                </button>
+                            </div>
+                        </form>
+                    @endif
+
                     <div class="table-responsive">
                         <table class="table table-bordered follow-table">
                             <thead>
                                 <tr>
+                                    @if($canBulkApprove)
+                                        <th class="text-center certificate-select-col">
+                                            <label class="certificate-select-all" for="certificate-select-all">
+                                                <input type="checkbox" id="certificate-select-all">
+                                            </label>
+                                        </th>
+                                    @endif
                                     <th>Sr</th>
                                     <th>Student</th>
                                     <th>Reg No</th>
@@ -150,6 +178,17 @@
                                         $statusKey = $cert->student_status ?? 'requested';
                                     @endphp
                                     <tr>
+                                        @if($canBulkApprove)
+                                            <td class="text-center certificate-select-col">
+                                                <input
+                                                    type="checkbox"
+                                                    class="certificate-bulk-checkbox"
+                                                    name="admission_ids[]"
+                                                    value="{{ $cert->id }}"
+                                                    form="certificate-bulk-approve-form"
+                                                >
+                                            </td>
+                                        @endif
                                         <td class="text-center">{{ $rowIndex }}</td>
                                         <td>
                                             @if((int) ($cert->registration_id ?? 0) > 0)
@@ -169,7 +208,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $showActionColumn ? 6 : 5 }}" class="text-center text-muted">No certificates found for the selected filters.</td>
+                                        <td colspan="{{ ($canBulkApprove ? 1 : 0) + ($showActionColumn ? 6 : 5) }}" class="text-center text-muted">No certificates found for the selected filters.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -221,6 +260,37 @@
             top: 0 !important; left: auto !important; right: 100% !important; transform: none !important;
         }
 
+        .certificate-bulk-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border: 1px solid #dbe6ef;
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+        .certificate-bulk-count {
+            color: #54667a;
+            font-weight: 600;
+        }
+        .certificate-select-col {
+            width: 48px;
+            min-width: 48px;
+        }
+        .certificate-select-col input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .certificate-select-all {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
         .program-filter-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; margin-bottom: 14px; }
         .program-filter-field { flex: 1 1 200px; min-width: 180px; }
         .program-filter-field .form-label { font-size: 13px; font-weight: 600; color: #54667a; margin-bottom: 4px; }
@@ -268,6 +338,96 @@
                         }
                     });
                 });
+
+                var bulkForm = document.getElementById('certificate-bulk-approve-form');
+                var selectAll = document.getElementById('certificate-select-all');
+                var selectedCount = document.getElementById('certificate-selected-count');
+                var bulkButton = document.getElementById('certificate-bulk-approve-button');
+                var bulkRemarks = document.getElementById('certificate-bulk-remarks');
+                var bulkCheckboxes = Array.prototype.slice.call(document.querySelectorAll('.certificate-bulk-checkbox'));
+
+                function syncBulkSelectionState() {
+                    if (!bulkCheckboxes.length) return;
+
+                    var checkedCount = bulkCheckboxes.filter(function (checkbox) {
+                        return checkbox.checked;
+                    }).length;
+
+                    if (selectedCount) {
+                        selectedCount.textContent = String(checkedCount);
+                    }
+
+                    if (bulkButton) {
+                        bulkButton.disabled = checkedCount === 0;
+                    }
+
+                    if (selectAll) {
+                        selectAll.checked = checkedCount > 0 && checkedCount === bulkCheckboxes.length;
+                        selectAll.indeterminate = checkedCount > 0 && checkedCount < bulkCheckboxes.length;
+                    }
+                }
+
+                if (selectAll) {
+                    selectAll.addEventListener('change', function () {
+                        bulkCheckboxes.forEach(function (checkbox) {
+                            checkbox.checked = selectAll.checked;
+                        });
+
+                        syncBulkSelectionState();
+                    });
+                }
+
+                bulkCheckboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', syncBulkSelectionState);
+                });
+
+                if (bulkForm) {
+                    bulkForm.addEventListener('submit', function (event) {
+                        var checkedCount = bulkCheckboxes.filter(function (checkbox) {
+                            return checkbox.checked;
+                        }).length;
+
+                        if (checkedCount === 0) {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        if (window.Swal && typeof window.Swal.fire === 'function') {
+                            event.preventDefault();
+
+                            window.Swal.fire({
+                                title: 'Approve selected certificates?',
+                                input: 'textarea',
+                                inputLabel: 'Remarks (optional)',
+                                inputPlaceholder: 'Enter remarks for all selected students',
+                                inputAttributes: {
+                                    'aria-label': 'Remarks'
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: 'Approve',
+                                cancelButtonText: 'Cancel'
+                            }).then(function (result) {
+                                if (!result.isConfirmed) {
+                                    return;
+                                }
+
+                                if (bulkRemarks) {
+                                    bulkRemarks.value = result.value || '';
+                                }
+
+                                bulkForm.submit();
+                            });
+
+                            return;
+                        }
+
+                        if (!window.confirm('Approve ' + checkedCount + ' selected certificate request(s)?')) {
+                            event.preventDefault();
+                        }
+                    });
+                }
+
+                syncBulkSelectionState();
             });
         })();
     </script>

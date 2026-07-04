@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
@@ -195,6 +196,54 @@ class CertificateController extends Controller
 
         return redirect()->route('certificate.index')
             ->with('status', 'Certificate approved.');
+    }
+
+    public function bulkApprove(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()?->isAdmin() ?? false, 403);
+
+        $validated = $request->validate([
+            'admission_ids' => ['required', 'array', 'min:1'],
+            'admission_ids.*' => ['integer', 'distinct', 'exists:admissions,id'],
+            'remarks' => ['nullable', 'string'],
+        ]);
+
+        $ids = collect($validated['admission_ids'] ?? [])
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return redirect()->back()->with('error', 'Select at least one certificate request to approve.');
+        }
+
+        $remarks = $validated['remarks'] ?? null;
+        $approvedCount = 0;
+
+        DB::transaction(function () use ($request, $ids, $remarks, &$approvedCount): void {
+            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+                ->whereIn('id', $ids->all())
+                ->where('student_status', Admission::CERTIFICATE_STATUS_REQUESTED)
+                ->lockForUpdate()
+                ->get();
+
+            $approvedCount = $admissions->count();
+
+            foreach ($admissions as $admission) {
+                $admission->update([
+                    'student_status' => Admission::CERTIFICATE_STATUS_APPROVED,
+                    'status_updated_at' => now(),
+                    'remarks' => $this->mergeCertificateRemarks($admission->remarks, $remarks),
+                ]);
+            }
+        });
+
+        if ($approvedCount === 0) {
+            return redirect()->back()->with('error', 'No selected certificate requests were eligible for approval.');
+        }
+
+        return redirect()->back()->with('status', $approvedCount.' certificate request(s) approved.');
     }
 
     public function reject(Request $request, Admission $admission): RedirectResponse
