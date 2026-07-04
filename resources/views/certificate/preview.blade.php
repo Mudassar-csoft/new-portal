@@ -66,7 +66,8 @@
         }
 
         .page-stack {
-            padding: 12px 20px 32px;
+            padding: 0;
+            background: #fff;
         }
 
         .page {
@@ -76,13 +77,13 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            padding-bottom: 7mm;
+            padding-bottom: 4mm;
             background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+            box-shadow: none;
         }
 
         .page + .page {
-            margin-top: 18px;
+            margin-top: 0;
         }
 
         .header {
@@ -195,7 +196,7 @@
             margin-left: 20px;
             margin-right: 50px;
             margin-bottom: 0;
-            padding-top: 4mm;
+            padding-top: 2mm;
             font-family: sans-serif;
             font-size: 12px;
             gap: 28px;
