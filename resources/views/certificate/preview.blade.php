@@ -210,7 +210,7 @@
 
         @media print {
             @page {
-                size: 297mm 210mm;
+                size: A4 landscape;
                 margin: 0;
             }
 
