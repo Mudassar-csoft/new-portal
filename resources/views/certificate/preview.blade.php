@@ -74,7 +74,7 @@
             height: 209mm;
             margin: 0 auto;
             overflow: hidden;
-            background: url('{{ $certificateBackground }}') center center / cover no-repeat;
+            background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
         }
 
