@@ -10,12 +10,18 @@ use Illuminate\Http\JsonResponse;
 
 class CertificateVerificationController extends Controller
 {
-    private const CURRENT_STATUS_ALLOWLIST = [
-        'concluded',
-        'approved',
-        'printing',
-        'ready',
-        'delivered',
+    private const LEGACY_CERTIFIED_STATUS = 'certified';
+
+    /**
+     * @var array<string, string>
+     */
+    private const CURRENT_STATUS_MESSAGES = [
+        'concluded' => 'Student record verified successfully. Course status is concluded.',
+        'completed' => 'Student record verified successfully. Course status is completed.',
+        'approved' => 'Student record verified successfully. Certificate status is approved.',
+        'printing' => 'Student record verified successfully. Certificate is in printing process.',
+        'ready' => 'Student record verified successfully. Certificate is ready for collection.',
+        'delivered' => 'Student record verified successfully. Certificate has been delivered.',
     ];
 
     /**
@@ -54,92 +60,157 @@ class CertificateVerificationController extends Controller
 
     public function show(string $rollNumber): JsonResponse
     {
-        $rollNumber = trim($rollNumber);
+        $verificationId = trim($rollNumber);
 
-        if ($rollNumber === '') {
+        if ($verificationId === '') {
             return $this->errorResponse('No matching records found for the provided Verification ID.', 404);
         }
 
-        $admission = Admission::query()
+        $legacyAdmission = $this->findCertifiedLegacyAdmission($verificationId);
+        if ($legacyAdmission !== null) {
+            return $this->legacySuccessResponse($legacyAdmission);
+        }
+
+        $admission = $this->findCurrentAdmission($verificationId);
+        if ($admission === null) {
+            return $this->errorResponse('No matching records found for the provided Verification ID.', 404);
+        }
+
+        return $this->verifyCurrentAdmission($admission);
+    }
+
+    private function verifyCurrentAdmission(Admission $admission): JsonResponse
+    {
+        $feeCollections = FeeCollection::query()
+            ->where('admission_id', $admission->id)
+            ->get(['id', 'fee_type', 'installment_no', 'status']);
+
+        if ($feeCollections->isEmpty()) {
+            return $this->errorResponse('No fee collection records found for this admission.', 404, [
+                'M' => 2,
+                'roll_number' => $this->resolveVerificationId($admission),
+                'student_status' => $this->normalizeCurrentStatus($admission->student_status),
+            ]);
+        }
+
+        $pendingFees = $feeCollections->filter(
+            fn (FeeCollection $feeCollection) => strtolower(trim((string) $feeCollection->status)) !== 'paid'
+        )->values();
+
+        if ($pendingFees->isNotEmpty()) {
+            return $this->errorResponse('Student has pending fee against this admission. Clear all fee records before certificate verification.', 400, [
+                'M' => 2,
+                'roll_number' => $this->resolveVerificationId($admission),
+                'student_status' => $this->normalizeCurrentStatus($admission->student_status),
+                'pending_fee_count' => $pendingFees->count(),
+            ]);
+        }
+
+        $status = $this->normalizeCurrentStatus($admission->student_status);
+        if (! array_key_exists($status, self::CURRENT_STATUS_MESSAGES)) {
+            return $this->errorResponse(
+                'Student status "'.($admission->student_status ?: 'unknown').'" is not eligible for certificate verification yet.',
+                400,
+                [
+                    'M' => 2,
+                    'roll_number' => $this->resolveVerificationId($admission),
+                    'student_status' => $status,
+                ]
+            );
+        }
+
+        return response()->json([
+            'message' => self::CURRENT_STATUS_MESSAGES[$status],
+            'status' => 'success',
+            'M' => 2,
+            'source' => 'admission',
+            'roll_number' => $this->resolveVerificationId($admission),
+            'name' => $this->resolveCurrentStudentName($admission),
+            'guardian_name' => $this->cleanText($admission->registration?->guardian_name ?: $admission->guardian_name) ?? '',
+            'course_duration' => $this->resolveCurrentCourseDuration($admission),
+            'course_completed' => $this->resolveCurrentCourseTitle($admission),
+            'student_status' => $status,
+            'student_status_label' => $this->resolveCurrentStatusLabel($status),
+        ], 200);
+    }
+
+    private function findCertifiedLegacyAdmission(string $verificationId): ?OldAdmission
+    {
+        return OldAdmission::query()
+            ->where('roll_number', $verificationId)
+            ->whereRaw('LOWER(TRIM(status)) = ?', [self::LEGACY_CERTIFIED_STATUS])
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    private function legacySuccessResponse(OldAdmission $record): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Certificate verified successfully',
+            'status' => 'success',
+            'M' => 1,
+            'source' => 'old_admissions',
+            'roll_number' => $record->roll_number,
+            'name' => $this->cleanText($record->name) ?? 'Legacy Student',
+            'guardian_name' => '',
+            'course_duration' => '3-Months',
+            'course_completed' => $this->cleanText($record->course) ?? 'Training Programme',
+            'student_status' => self::LEGACY_CERTIFIED_STATUS,
+            'student_status_label' => 'Certified',
+        ], 200);
+    }
+
+    private function findCurrentAdmission(string $verificationId): ?Admission
+    {
+        return Admission::query()
             ->with([
                 'registration:id,student_name,guardian_name',
                 'program:id,title,name,duration_weeks',
                 'batch:id,program_id,code,name',
                 'batch.program:id,title,name,duration_weeks',
             ])
-            ->where('roll_number', $rollNumber)
-            ->first();
-
-        if ($admission !== null) {
-            return $this->verifyCurrentAdmission($admission);
-        }
-
-        return $this->verifyLegacyAdmission($rollNumber);
-    }
-
-    private function verifyCurrentAdmission(Admission $admission): JsonResponse
-    {
-        $status = strtolower(trim((string) ($admission->student_status ?? '')));
-
-        if (! in_array($status, self::CURRENT_STATUS_ALLOWLIST, true)) {
-            return $this->errorResponse('Certificate is not ready for verification yet.', 400);
-        }
-
-        $feeCollections = FeeCollection::query()
-            ->where('admission_id', $admission->id)
-            ->where('fee_type', 'admission')
-            ->get(['id', 'status']);
-
-        if ($feeCollections->isEmpty()) {
-            return $this->errorResponse('No fee collection records found for this admission.', 404);
-        }
-
-        $hasPendingFees = $feeCollections->contains(
-            fn (FeeCollection $feeCollection) => strtolower(trim((string) $feeCollection->status)) !== 'paid'
-        );
-
-        if ($hasPendingFees) {
-            return $this->errorResponse('All admission fees must be cleared before certificate verification.', 400);
-        }
-
-        return response()->json([
-            'message' => 'Certificate verified successfully',
-            'status' => 'success',
-            'M' => 2,
-            'roll_number' => $admission->roll_number,
-            'name' => $this->resolveCurrentStudentName($admission),
-            'guardian_name' => $this->cleanText($admission->registration?->guardian_name ?: $admission->guardian_name) ?? '',
-            'course_duration' => $this->resolveCurrentCourseDuration($admission),
-            'course_completed' => $this->resolveCurrentCourseTitle($admission),
-        ], 200);
-    }
-
-    private function verifyLegacyAdmission(string $rollNumber): JsonResponse
-    {
-        $record = OldAdmission::query()
-            ->where('roll_number', $rollNumber)
-            ->whereRaw('LOWER(status) IN (?, ?)', ['certified', 'completed'])
+            ->where(function ($query) use ($verificationId): void {
+                $query
+                    ->where('roll_number', $verificationId)
+                    ->orWhere('registration_number', $verificationId);
+            })
             ->orderByDesc('id')
             ->first();
-
-        if ($record === null) {
-            return $this->errorResponse('No matching records found for the provided Verification ID.', 404);
-        }
-
-        return response()->json([
-            'message' => 'Certificate verified successfully',
-            'status' => 'success',
-            'M' => 1,
-            'roll_number' => $record->roll_number,
-            'name' => $this->cleanText($record->name) ?? 'Legacy Student',
-            'course_duration' => '3-Months',
-            'course_completed' => $this->cleanText($record->course) ?? 'Training Programme',
-        ], 200);
     }
 
     private function resolveCurrentStudentName(Admission $admission): string
     {
         return $this->cleanText($admission->student_name ?: $admission->registration?->student_name) ?? 'Student';
+    }
+
+    private function resolveVerificationId(Admission $admission): string
+    {
+        return (string) ($admission->roll_number ?: $admission->registration_number ?: '');
+    }
+
+    private function normalizeCurrentStatus(?string $status): string
+    {
+        $normalized = strtolower(trim((string) $status));
+
+        return match ($normalized) {
+            'conclude' => 'concluded',
+            'complete', 'completed' => 'completed',
+            'print' => 'printing',
+            default => $normalized,
+        };
+    }
+
+    private function resolveCurrentStatusLabel(string $status): string
+    {
+        return match ($status) {
+            'concluded' => 'Concluded',
+            'completed' => 'Completed',
+            'approved' => 'Approved',
+            'printing' => 'Printing',
+            'ready' => 'Ready',
+            'delivered' => 'Delivered',
+            default => ucfirst(str_replace('_', ' ', $status)),
+        };
     }
 
     private function resolveCurrentCourseTitle(Admission $admission): string
@@ -189,11 +260,14 @@ class CertificateVerificationController extends Controller
         return $trimmed === '' ? null : $trimmed;
     }
 
-    private function errorResponse(string $message, int $statusCode): JsonResponse
+    /**
+     * @param array<string, mixed> $extra
+     */
+    private function errorResponse(string $message, int $statusCode, array $extra = []): JsonResponse
     {
         return response()->json([
             'message' => $message,
             'status' => 'error',
-        ], $statusCode);
+        ] + $extra, $statusCode);
     }
 }
