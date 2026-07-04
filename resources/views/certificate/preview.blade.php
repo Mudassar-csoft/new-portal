@@ -15,9 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         html, body {
@@ -34,7 +34,7 @@
         .preview-toolbar {
             position: sticky;
             top: 0;
-            z-index: 5;
+            z-index: 10;
             display: flex;
             justify-content: flex-end;
             gap: 12px;
@@ -65,129 +65,143 @@
             border: 1px solid #d5dee8;
         }
 
-        .certificate-stack {
+        .page-stack {
             padding: 12px 20px 32px;
         }
 
-        .certificate-sheet {
+        .page {
             width: 280mm;
             height: 209mm;
             margin: 0 auto;
-            position: relative;
             overflow: hidden;
             background: url('{{ $certificateBackground }}') center center / cover no-repeat;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
         }
 
-        .certificate-sheet + .certificate-sheet {
+        .page + .page {
             margin-top: 18px;
         }
 
-        .certificate-frame {
-            position: relative;
+        .header {
+            height: 1.5in;
             width: 100%;
-            height: 100%;
-            padding: 36mm 18mm 18mm;
         }
 
-        .certificate-title {
+        .c_title {
+            width: 100%;
             display: flex;
             justify-content: center;
-            text-align: center;
+            margin-top: 7mm;
+            margin-left: 5px;
             font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
             font-size: 60px;
-            line-height: 1;
-            letter-spacing: 2px;
             font-weight: 400;
+            letter-spacing: 2px;
+            line-height: 1;
         }
 
-        .certificate-pre {
+        .c_title h1 {
+            font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
+            font-size: 60px;
+            font-weight: 400;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            line-height: 1;
+        }
+
+        .pre {
             display: flex;
             justify-content: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .pre p {
             margin-top: 0.5in;
             font-size: 16px;
-            font-weight: 600;
         }
 
-        .certificate-name {
+        .s_name {
             display: flex;
             justify-content: center;
-            margin-top: 0.2in;
-            text-align: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
         }
 
-        .certificate-name span {
-            display: inline-block;
+        .s_name h1 {
+            margin-top: 0.2in;
             padding: 0 8px 8px;
             border-bottom: 2px solid #000;
             font-size: 25px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: -1px;
+            line-height: 1.15;
+            text-align: center;
         }
 
-        .certificate-line {
+        .t_line {
             display: flex;
             justify-content: center;
+            margin-right: 40px !important;
+            margin-left: 5px;
+            font-family: sans-serif;
+        }
+
+        .t_line p {
             margin-top: 0.2in;
-            text-align: center;
             font-size: 16px;
             font-weight: 400;
-        }
-
-        .certificate-course {
-            display: flex;
-            justify-content: center;
-            margin-top: 0.3in;
             text-align: center;
         }
 
-        .certificate-course span {
-            display: inline-block;
+        .c_name {
+            display: flex;
+            justify-content: center;
+            margin-left: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+
+        .c_name h1 {
+            margin-top: 0.3in;
+            margin-right: 40px !important;
+            margin-left: 5px;
             padding: 0 8px 8px;
             border-bottom: 2px solid #000;
             font-size: 25px;
             font-weight: 800;
             letter-spacing: -1px;
-            max-width: 76%;
-        }
-
-        .certificate-date {
-            display: flex;
-            justify-content: center;
-            margin-top: 0.18in;
+            line-height: 1.15;
             text-align: center;
-            font-size: 16px;
-            font-weight: 400;
+            max-width: 70%;
         }
 
-        .certificate-footer {
-            position: absolute;
-            left: 20px;
-            right: 50px;
-            bottom: 24px;
+        .footer {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            gap: 30px;
+            margin-top: 1.8in;
+            margin-left: 20px;
+            margin-right: 50px;
+            font-family: sans-serif;
             font-size: 12px;
+            gap: 28px;
         }
 
-        .certificate-footer-left {
-            line-height: 1.45;
+        .left {
+            line-height: 1.4;
         }
 
-        .certificate-footer-right {
-            min-width: 235px;
+        .right {
+            min-width: 250px;
             padding-top: 4px;
             border-top: 2px solid #000;
+            line-height: 1.4;
             text-align: center;
-            line-height: 1.45;
-        }
-
-        .certificate-footer-right strong,
-        .certificate-footer-left strong {
-            font-weight: 800;
         }
 
         @media print {
@@ -212,45 +226,38 @@
                 display: none;
             }
 
-            .certificate-stack {
+            .page-stack {
+                padding: 0;
+                margin: 0;
                 width: 280mm;
                 min-width: 280mm;
                 max-width: 280mm;
-                padding: 0;
-                margin: 0;
-                overflow: hidden;
             }
 
-            .certificate-sheet {
+            .page {
                 width: 280mm;
                 min-width: 280mm;
                 max-width: 280mm;
                 height: 209mm;
                 min-height: 209mm;
                 max-height: 209mm;
-                padding: 0;
                 margin: 0;
                 box-shadow: none;
-                overflow: hidden;
                 page-break-inside: avoid;
                 break-inside: avoid;
             }
 
-            .certificate-sheet:not(:last-child) {
+            .page:not(:last-child) {
                 page-break-after: always;
                 break-after: page;
             }
         }
 
         @media (max-width: 1200px) {
-            .certificate-stack {
+            .page-stack {
                 overflow-x: auto;
                 padding-left: 12px;
                 padding-right: 12px;
-            }
-
-            .certificate-sheet {
-                transform-origin: top center;
             }
         }
     </style>
@@ -261,7 +268,7 @@
         <button type="button" onclick="window.print()">Print</button>
     </div>
 
-    <div class="certificate-stack">
+    <div class="page-stack">
         @foreach(($previewItems ?? collect()) as $preview)
             @php
                 $admission = $preview['admission'];
@@ -269,40 +276,41 @@
                 $programTitle = $preview['programTitle'];
                 $dateLine = $preview['dateLine'];
             @endphp
-            <section class="certificate-sheet">
-                <div class="certificate-frame">
-                    <div class="certificate-title">Certificate of Achievement</div>
+            <section class="page">
+                <div class="header"></div>
 
-                    <div class="certificate-pre">
-                        <strong>Presented to:</strong>
+                <div class="c_title">
+                    <h1>Certificate of Achievement</h1>
+                </div>
+
+                <div class="pre">
+                    <p><strong>Presented to:</strong></p>
+                </div>
+
+                <div class="s_name">
+                    <h1>{{ $studentName }}</h1>
+                </div>
+
+                <div class="t_line">
+                    <p>for successfully completing the training course</p>
+                </div>
+
+                <div class="c_name">
+                    <h1>{{ $programTitle }}</h1>
+                </div>
+
+                <div class="t_line">
+                    <p>{{ $dateLine }}</p>
+                </div>
+
+                <div class="footer">
+                    <div class="left">
+                        <p><strong>For Verification, please visit: www.career.edu.pk</strong></p>
+                        <p>Verification ID: {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}</p>
                     </div>
-
-                    <div class="certificate-name">
-                        <span>{{ $studentName }}</span>
-                    </div>
-
-                    <div class="certificate-line">
-                        <span>for successfully completing the training course</span>
-                    </div>
-
-                    <div class="certificate-course">
-                        <span>{{ $programTitle }}</span>
-                    </div>
-
-                    <div class="certificate-date">
-                        <span>{{ $dateLine }}</span>
-                    </div>
-
-                    <div class="certificate-footer">
-                        <div class="certificate-footer-left">
-                            <div><strong>For Verification, please visit: www.career.edu.pk</strong></div>
-                            <div>Verification ID: {{ $admission->roll_number ?: $admission->registration_number ?: 'N/A' }}</div>
-                        </div>
-
-                        <div class="certificate-footer-right">
-                            <div><strong>Muhammad Adeel Javaid</strong></div>
-                            <div>Founder and Chairman</div>
-                        </div>
+                    <div class="right">
+                        <p><strong>Muhammad Adeel Javaid</strong></p>
+                        <p>Founder and Chairman</p>
                     </div>
                 </div>
             </section>
