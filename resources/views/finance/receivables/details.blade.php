@@ -153,6 +153,7 @@
 @push('styles')
     <style>
         :root {
+            --space-finance-receivables-details-1: 10px;
             --typo-finance-receivables-details-font-weight-1: 700;
         }
 
@@ -161,7 +162,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-receivables-details-1);
             flex-wrap: wrap;
         }
         .finance-summary-row { margin: 2px 0 10px; }
@@ -206,7 +207,7 @@
                 margin-top: 5px;
             }
             .receivable-value {
-                margin-top: 10px;
+                margin-top: var(--space-finance-receivables-details-1);
             }
         }
     </style>

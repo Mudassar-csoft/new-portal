@@ -18,19 +18,9 @@
         </div>
 
         <div id="timetable-content" class="follow-content">
-            @if(session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
-            @endif
+        @include('partials.session-status-alert')
 
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        @include('partials.validation-errors-alert')
 
         <div class="box-typical box-typical-dashboard panel panel-default batch-timetable-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
@@ -282,6 +272,18 @@
 @push('styles')
     <style>
         :root {
+            --dimension-batch-timetable-index-1: 100%;
+            --dimension-batch-timetable-index-2: 100vh;
+            --dimension-batch-timetable-index-3: 12px;
+            --space-batch-timetable-index-1: 10px;
+            --space-batch-timetable-index-2: 12px;
+            --space-batch-timetable-index-3: 14px;
+            --space-batch-timetable-index-4: 16px;
+            --space-batch-timetable-index-5: 4px;
+            --space-batch-timetable-index-6: 8px;
+            --color-batch-timetable-index-1: #54667a;
+            --color-batch-timetable-index-2: #64748b;
+            --color-batch-timetable-index-3: #dbe5f1;
             --typo-batch-timetable-index-font-weight-1: 600;
             --typo-batch-timetable-index-font-weight-2: 500;
             --typo-batch-timetable-index-font-size-3: 12px;
@@ -289,8 +291,8 @@
 
         .lead-status-shell {
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-batch-timetable-index-2);
+            width: var(--dimension-batch-timetable-index-1);
             overflow: hidden;
         }
 
@@ -299,21 +301,21 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-batch-timetable-index-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-batch-timetable-index-2);
         }
 
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-batch-timetable-index-6); }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-batch-timetable-index-3);
+            height: var(--dimension-batch-timetable-index-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -322,7 +324,7 @@
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s;  background: #36b1ff; }
 
-        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-batch-timetable-index-font-weight-1); }
+        .follow-loader p { margin: 0; color: var(--color-batch-timetable-index-1); font-weight: var(--typo-batch-timetable-index-font-weight-1); }
 
         .follow-content {
             opacity: 0;
@@ -350,7 +352,7 @@
         .required::after {
             content: '*';
             color: #e53935;
-            margin-left: 4px;
+            margin-left: var(--space-batch-timetable-index-5);
         }
 
         .table-responsive { overflow: visible !important; }
@@ -358,10 +360,10 @@
 
         .program-filter-row {
             display: flex;
-            gap: 14px;
+            gap: var(--space-batch-timetable-index-3);
             flex-wrap: wrap;
             align-items: end;
-            margin-bottom: 14px;
+            margin-bottom: var(--space-batch-timetable-index-3);
         }
 
         .program-filter-field {
@@ -372,13 +374,13 @@
         .program-filter-field .form-label {
             font-size: 13px;
             font-weight: var(--typo-batch-timetable-index-font-weight-1);
-            color: #54667a;
-            margin-bottom: 4px;
+            color: var(--color-batch-timetable-index-1);
+            margin-bottom: var(--space-batch-timetable-index-5);
         }
 
         .program-filter-actions {
             display: flex;
-            gap: 8px;
+            gap: var(--space-batch-timetable-index-6);
             margin-left: auto;
             align-items: center;
         }
@@ -388,19 +390,19 @@
             grid-template-columns: minmax(320px, 380px) 1fr;
             gap: 18px;
             align-items: start;
-            margin-top: 16px;
+            margin-top: var(--space-batch-timetable-index-4);
         }
 
         .batch-timetable-form-card,
         .batch-timetable-board-card {
-            border: 1px solid #dbe5f1;
+            border: 1px solid var(--color-batch-timetable-index-3);
             border-radius: 12px;
-            padding: 16px;
+            padding: var(--space-batch-timetable-index-4);
             background: #fbfdff;
         }
 
         .batch-subtitle {
-            margin-bottom: 14px;
+            margin-bottom: var(--space-batch-timetable-index-3);
             font-size: 16px;
             font-weight: 700;
             color: #334155;
@@ -409,11 +411,11 @@
         .timetable-board-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
+            gap: var(--space-batch-timetable-index-2);
         }
 
         .timetable-day-card {
-            border: 1px solid #dbe5f1;
+            border: 1px solid var(--color-batch-timetable-index-3);
             border-radius: 10px;
             overflow: hidden;
             background: #fff;
@@ -425,35 +427,35 @@
             align-items: center;
             padding: 10px 12px;
             background: #eff7ff;
-            border-bottom: 1px solid #dbe5f1;
+            border-bottom: 1px solid var(--color-batch-timetable-index-3);
             font-size: var(--typo-batch-timetable-index-font-size-3);
-            color: #64748b;
+            color: var(--color-batch-timetable-index-2);
         }
 
         .timetable-day-body {
-            padding: 12px;
+            padding: var(--space-batch-timetable-index-2);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: var(--space-batch-timetable-index-1);
         }
 
         .timetable-slot {
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 10px;
+            padding: var(--space-batch-timetable-index-1);
             background: #f8fbff;
         }
 
-        .slot-time { font-weight: var(--typo-batch-timetable-index-font-weight-2); color: #0f172a; margin-bottom: 4px; }
+        .slot-time { font-weight: var(--typo-batch-timetable-index-font-weight-2); color: #0f172a; margin-bottom: var(--space-batch-timetable-index-5); }
         .slot-title { color: #1e293b; margin-bottom: 2px; }
-        .slot-meta { font-size: var(--typo-batch-timetable-index-font-size-3); color: #64748b; }
+        .slot-meta { font-size: var(--typo-batch-timetable-index-font-size-3); color: var(--color-batch-timetable-index-2); }
 
         @media (max-width: 992px) {
             .batch-timetable-layout { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 767px) {
-            .program-filter-actions { width: 100%; margin-left: 0; }
+            .program-filter-actions { width: var(--dimension-batch-timetable-index-1); margin-left: 0; }
         }
     </style>
 @endpush

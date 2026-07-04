@@ -7,11 +7,17 @@
     @push('styles')
         <style>
         :root {
+            --dimension-user-partials-action-1: 24px;
+            --color-user-partials-action-1: #303740;
+        }
+
+        :root {
+            --dimension-user-partials-action-1: 24px;
             --typo-user-partials-action-font-size-1: 16px;
             --typo-user-partials-action-font-weight-2: 500;
             --typo-user-partials-action-line-height-3: 1;
             --typo-user-partials-action-font-size-4: 18px;
-        }
+        }0___
 
             .user-action-dropdown .dropdown-menu.lead-action-menu {
                 min-width: 320px;
@@ -31,7 +37,7 @@
                 gap: 12px;
                 width: 100%;
                 padding: 8px 18px !important;
-                color: #303740 !important;
+                color: var(--color-user-partials-action-1) !important;
                 font-size: var(--typo-user-partials-action-font-size-1) !important;
                 font-weight: var(--typo-user-partials-action-font-weight-2);
                 line-height: 1.35;
@@ -59,11 +65,11 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                width: 24px;
-                min-width: 24px;
-                height: 24px;
+                width: var(--dimension-user-partials-action-1);
+                min-width: var(--dimension-user-partials-action-1);
+                height: var(--dimension-user-partials-action-1);
                 line-height: var(--typo-user-partials-action-line-height-3);
-                color: #303740;
+                color: var(--color-user-partials-action-1);
                 font-size: 21px;
             }
 
@@ -91,8 +97,8 @@
                 font-weight: 700 !important;
             }
             .user-action-dropdown .lead-icon-blue { color: #1698ff; }
-            .user-action-dropdown .lead-icon-black { color: #303740; }
-            .user-action-dropdown .lead-icon-red { color: #303740; }
+            .user-action-dropdown .lead-icon-black { color: var(--color-user-partials-action-1); }
+            .user-action-dropdown .lead-icon-red { color: var(--color-user-partials-action-1); }
             .user-action-dropdown form { margin: 0; }
         </style>
     @endpush

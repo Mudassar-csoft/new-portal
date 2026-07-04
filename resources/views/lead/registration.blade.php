@@ -165,6 +165,12 @@
 
 @push('styles')
 <style>
+        :root {
+            --dimension-lead-registration-1: 7px;
+            --color-lead-registration-1: #00a8ff;
+            --color-lead-registration-2: #e53935;
+        }
+
 
 	.registration-shell { padding: 8px 0 16px; }
 	.registration-card {
@@ -173,12 +179,12 @@
 		box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
 	}
 	.reg-title { margin-bottom: 16px; font-weight: 700; color: #2f3b52; }
-	.required::after { content: ' *'; color: #e53935; }
+	.required::after { content: ' *'; color: var(--color-lead-registration-2); }
 
 	/* validation styles */
-	.is-invalid { border-color: #e53935; }
+	.is-invalid { border-color: var(--color-lead-registration-2); }
 	.choice-group.is-invalid {
-		border: 1px solid #e53935;
+		border: 1px solid var(--color-lead-registration-2);
 		border-radius: 6px;
 		margin-left: 0;
 		margin-right: 0;
@@ -199,17 +205,17 @@
 		transition: background 0.2s, box-shadow 0.2s;
 	}
 	.form-check-input[type="radio"]:checked {
-		border-color: #00a8ff;
+		border-color: var(--color-lead-registration-1);
 	}
 	.form-check-input[type="radio"]:checked::before {
 		content: '';
 		position: absolute;
 		top: 2px;
 		left: 2px;
-		width: 7px;
-		height: 7px;
+		width: var(--dimension-lead-registration-1);
+		height: var(--dimension-lead-registration-1);
 		border-radius: 50%;
-		background-color: #00a8ff;
+		background-color: var(--color-lead-registration-1);
 	}
 	.form-check-label {
 		font-size: .75rem;

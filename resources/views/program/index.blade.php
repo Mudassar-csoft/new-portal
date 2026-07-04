@@ -22,19 +22,10 @@
     @endphp
 
     <div class="lead-status-shell">
-        <div id="program-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading programmes...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'program-status-loader', 'message' => 'Loading programmes...'])
 
         <div id="program-status-content" class="follow-content">
-            @if(session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
-            @endif
+        @include('partials.session-status-alert')
 
             <div class="follow-card box-typical box-typical-dashboard panel panel-default">
                 <div class="follow-tab-bar">
@@ -188,6 +179,14 @@
 @push('styles')
     <style>
         :root {
+            --dimension-program-index-1: 100%;
+            --dimension-program-index-2: 100vh;
+            --dimension-program-index-3: 12px;
+            --dimension-program-index-4: 180px;
+            --space-program-index-1: 14px;
+            --space-program-index-2: 6px;
+            --space-program-index-3: 8px;
+            --color-program-index-1: #54667a;
             --typo-program-index-font-weight-1: 600;
         }
 
@@ -204,8 +203,8 @@
 
         .lead-status-shell {
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-program-index-2);
+            width: var(--dimension-program-index-1);
             overflow: hidden;
         }
 
@@ -214,7 +213,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-program-index-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
@@ -227,12 +226,12 @@
         .follow-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-program-index-3);
         }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-program-index-3);
+            height: var(--dimension-program-index-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -250,7 +249,7 @@
 
         .follow-loader p {
             margin: 0;
-            color: #54667a;
+            color: var(--color-program-index-1);
             font-weight: var(--typo-program-index-font-weight-1);
         }
 
@@ -296,7 +295,7 @@
         }
 
         .follow-action-dropdown .dropdown-menu {
-            min-width: 180px;
+            min-width: var(--dimension-program-index-4);
             position: absolute !important;
             top: 0 !important;
             right: 100% !important;
@@ -320,27 +319,27 @@
 
         .program-filter-row {
             display: flex;
-            gap: 14px;
+            gap: var(--space-program-index-1);
             flex-wrap: wrap;
             align-items: end;
-            margin-bottom: 14px;
+            margin-bottom: var(--space-program-index-1);
         }
 
         .program-filter-field {
             flex: 1 1 200px;
-            min-width: 180px;
+            min-width: var(--dimension-program-index-4);
         }
 
         .program-filter-field .form-label {
             font-size: 13px;
             font-weight: var(--typo-program-index-font-weight-1);
-            color: #54667a;
+            color: var(--color-program-index-1);
             margin-bottom: 4px;
         }
 
         .program-filter-actions {
             display: flex;
-            gap: 8px;
+            gap: var(--space-program-index-3);
             margin-left: auto;
             align-items: center;
         }
@@ -349,8 +348,8 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
+            gap: var(--space-program-index-2);
+            margin-bottom: var(--space-program-index-2);
         }
 
         .select2-container--arrow .select2-selection--single .select2-selection__rendered,
@@ -369,7 +368,7 @@
 
         @media (max-width: 767px) {
             .program-filter-actions {
-                width: 100%;
+                width: var(--dimension-program-index-1);
                 margin-left: 0;
             }
         }

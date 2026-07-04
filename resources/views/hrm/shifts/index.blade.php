@@ -4,18 +4,8 @@
 
 @section('content')
     <div class="hrm-shell hrm-shifts-page">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         <div class="row">
             <div class="col-lg-6 pr-0">
@@ -194,6 +184,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-hrm-shifts-index-1: 8px !important;
+        }
+
        
 .selection{
     height: 20px !important;
@@ -206,8 +200,8 @@
     margin: 8px 5px 3px 5px;
 }
 .hrm-shifts-page form .form-row > .form-group.col-md-4{
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    padding-left: var(--space-hrm-shifts-index-1);
+    padding-right: var(--space-hrm-shifts-index-1);
 }
         /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-table thead th { background: #eef2f7; color: #334155; }

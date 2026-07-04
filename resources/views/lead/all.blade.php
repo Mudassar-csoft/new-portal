@@ -22,14 +22,7 @@
 	@endphp
 
 	<div class="lead-status-shell">
-		<div id="lead-status-loader" class="follow-loader">
-			<div class="follow-spinner">
-				<div class="dot"></div>
-				<div class="dot"></div>
-				<div class="dot"></div>
-			</div>
-			<p>Loading leads...</p>
-		</div>
+		@include('partials.status-loader', ['id' => 'lead-status-loader', 'message' => 'Loading leads...'])
 
 		<div id="lead-status-content" class="follow-content">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
@@ -168,6 +161,12 @@
 @push('styles')
 	<style>
         :root {
+            --dimension-lead-all-1: 100%;
+            --dimension-lead-all-2: 100vh;
+            --dimension-lead-all-3: 12px;
+            --space-lead-all-1: 12px;
+            --space-lead-all-2: 8px;
+            --color-lead-all-1: #fff;
             --typo-lead-all-font-weight-1: 600;
         }
 
@@ -185,8 +184,8 @@
 
 		.lead-status-shell {
 			position: relative;
-			min-height: 100vh;
-			width: 100%;
+			min-height: var(--dimension-lead-all-2);
+			width: var(--dimension-lead-all-1);
 			overflow: hidden;
 		}
 
@@ -196,25 +195,25 @@
 			top: 0;
 			left: 0;
 			right: 0;
-			height: 100vh;
+			height: var(--dimension-lead-all-2);
 			background: rgba(245, 247, 251, 0.95);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			flex-direction: column;
 			z-index: 10;
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 		}
 
 		.follow-spinner {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-lead-all-2);
 		}
 
 		.follow-spinner .dot {
-			width: 12px;
-			height: 12px;
+			width: var(--dimension-lead-all-3);
+			height: var(--dimension-lead-all-3);
 			border-radius: 50%;
 			background: #12a0ff;
 			animation: bounce 0.9s ease-in-out infinite;
@@ -274,14 +273,14 @@
 		}
 
 		.follow-controls {
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 			flex-wrap: wrap;
 		}
 
 		.follow-search {
 			display: flex;
 			align-items: center;
-			gap: 8px;
+			gap: var(--space-lead-all-2);
 			margin-left: auto;
 		}
 
@@ -297,7 +296,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			gap: 12px;
+			gap: var(--space-lead-all-1);
 			margin-bottom: 16px;
 			padding: 12px 16px;
 			border: 1px solid #cfe0f6;
@@ -366,7 +365,7 @@
 		}
 
 		.lead-modal .modal-card {
-			background: #fff;
+			background: var(--color-lead-all-1);
 			width: min(1320px, 98vw);
 			height: min(900px, 94vh);
 			border-radius: 20px;
@@ -404,7 +403,7 @@
 		.lead-modal iframe {
 			flex: 1;
 			border: 0;
-			width: 100%;
+			width: var(--dimension-lead-all-1);
 			background: #f3f8fd;
 		}
 		.table td{
@@ -420,7 +419,7 @@
     color: #343434;
     padding: .375rem 25px .375rem 1rem;
     min-height: 21px !important;
-    background: #fff
+    background: var(--color-lead-all-1)
 }
 
 

@@ -8,18 +8,8 @@
     @endphp
 
     <div class="hrm-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         <!-- <div class="row mb-3 bg-white p-2 m-2">
             <div class="col-md-6 col-lg-4">
@@ -260,6 +250,10 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-hrm-payroll-index-1: 10px;
+        }
+
       
         /* .hrm-shell { padding: 8px 0 16px; } */
         .payroll-stat {
@@ -278,10 +272,10 @@
         .tone-cash { background: #fdc518; }
         .tone-cheque { background: #a2cf37 }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
-        .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: 10px; }
+        .hrm-box { border: 1px solid #e6ebf1; border-radius: 8px; padding: var(--space-hrm-payroll-index-1); }
         @media (max-width: 760px)  {
             .payroll-label { margin-top: 5px; }
-            .payroll-value { margin-top: 10px; }
+            .payroll-value { margin-top: var(--space-hrm-payroll-index-1); }
         }
     </style>
 @endpush

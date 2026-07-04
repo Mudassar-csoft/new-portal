@@ -138,20 +138,23 @@
 @push('styles')
     <style>
         :root {
+            --space-finance-accounting-journal-1: 12px;
+            --color-finance-accounting-journal-1: #334155;
+            --color-finance-accounting-journal-2: #fff;
             --typo-finance-accounting-journal-font-weight-1: 700;
             --typo-finance-accounting-journal-font-size-2: 13px;
         }
 
-        .finance-shell { padding: 8px 0 16px; background: #fff; }
-        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .finance-shell { padding: 8px 0 16px; background: var(--color-finance-accounting-journal-2); }
+        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-finance-accounting-journal-1); flex-wrap: wrap; }
         .finance-summary-row { margin: 2px 0 10px; padding: 7px; }
         .journal-summary-card {
             border-radius: 10px;
             padding: 16px 18px;
             height:25vh;
             
-            color: #fff;
-            margin-bottom: 12px;
+            color: var(--color-finance-accounting-journal-2);
+            margin-bottom: var(--space-finance-accounting-journal-1);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
         .journal-summary-card .summary-value { font-size: 22px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); text-align:center}
@@ -159,19 +162,19 @@
         .tone-blue { background: #2563eb; }
         .tone-green { background: #16a34a; }
         .tone-red { background: #dc2626; }
-        .journal-entry-card { margin-bottom: 12px; }
+        .journal-entry-card { margin-bottom: var(--space-finance-accounting-journal-1); }
         .journal-entry-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
+            gap: var(--space-finance-accounting-journal-1);
             flex-wrap: wrap;
         }
         .journal-entry-title { font-size: 16px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); color: #1e293b; }
         .journal-entry-meta { margin-top: 4px; color: #64748b; font-size: 12px; }
-        .journal-entry-ref { color: #334155; font-size: var(--typo-finance-accounting-journal-font-size-2); }
-        .journal-entry-description { margin-bottom: 12px; color: #334155; }
+        .journal-entry-ref { color: var(--color-finance-accounting-journal-1); font-size: var(--typo-finance-accounting-journal-font-size-2); }
+        .journal-entry-description { margin-bottom: var(--space-finance-accounting-journal-1); color: var(--color-finance-accounting-journal-1); }
         .meta-dot { margin: 0 6px; }
-        .finance-table thead th { background: #eef2f7; color: #334155; font-weight: var(--typo-finance-accounting-journal-font-weight-1); }
+        .finance-table thead th { background: #eef2f7; color: var(--color-finance-accounting-journal-1); font-weight: var(--typo-finance-accounting-journal-font-weight-1); }
     </style>
 @endpush

@@ -258,11 +258,21 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-finance-receivables-show-1: 0 !important;
+            --space-finance-receivables-show-2: 10px;
+            --space-finance-receivables-show-3: 6px;
+            --color-finance-receivables-show-1: #0f172a;
+            --typo-finance-receivable-show-font-size-1: 12px;
+            --typo-finance-receivable-show-font-weight-1: 700;
+            --typo-finance-receivable-show-letter-spacing-1: .08em;
+        }
+
         .invoice-page-shell { padding: 8px 0 16px; }
         .invoice-toolbar {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: var(--space-finance-receivables-show-2);
             margin-bottom: 12px;
         }
         .invoice-card .panel-body { padding: 18px; }
@@ -273,21 +283,21 @@
             flex-wrap: wrap;
         }
         .invoice-kicker {
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .08em;
+            font-size: var(--typo-finance-receivable-show-font-size-1);
+            font-weight: var(--typo-finance-receivable-show-font-weight-1);
+            letter-spacing: var(--typo-finance-receivable-show-letter-spacing-1);
             text-transform: uppercase;
             color: #0f6cbd;
-            margin-bottom: 6px;
+            margin-bottom: var(--space-finance-receivables-show-3);
         }
         .invoice-title {
             font-size: 28px;
             margin: 0 0 10px;
-            color: #0f172a;
+            color: var(--color-finance-receivables-show-1);
         }
         .invoice-meta-grid {
             display: grid;
-            gap: 6px;
+            gap: var(--space-finance-receivables-show-3);
             color: #475569;
         }
         .invoice-campus-box,
@@ -301,29 +311,29 @@
         }
         .invoice-campus-box .label,
         .invoice-section-label {
-            font-size: 12px;
+            font-size: var(--typo-finance-receivable-show-font-size-1);
             text-transform: uppercase;
-            letter-spacing: .08em;
+            letter-spacing: var(--typo-finance-receivable-show-letter-spacing-1);
             color: #64748b;
             margin-bottom: 8px;
         }
         .invoice-campus-box .value,
         .invoice-party-name {
             font-size: 20px;
-            font-weight: 700;
-            color: #0f172a;
+            font-weight: var(--typo-finance-receivable-show-font-weight-1);
+            color: var(--color-finance-receivables-show-1);
         }
         .invoice-address-row { margin-top: 16px; }
         .invoice-totals-line {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: var(--space-finance-receivables-show-2);
             padding: 6px 0;
             border-bottom: 1px solid #edf2f7;
         }
         .invoice-totals-line.total {
             border-bottom: 0;
-            padding-top: 10px;
+            padding-top: var(--space-finance-receivables-show-2);
             margin-top: 4px;
             font-size: 16px;
         }
@@ -343,8 +353,8 @@
                 display: none !important;
             }
             .page-content {
-                margin: 0 !important;
-                padding: 0 !important;
+                margin: var(--space-finance-receivables-show-1);
+                padding: var(--space-finance-receivables-show-1);
             }
             .invoice-card {
                 border: 0 !important;

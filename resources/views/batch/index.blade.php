@@ -20,19 +20,10 @@
     @endphp
 
     <div class="lead-status-shell">
-        <div id="batch-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading batches...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'batch-status-loader', 'message' => 'Loading batches...'])
 
         <div id="batch-status-content" class="follow-content">
-            @if(session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
-            @endif
+        @include('partials.session-status-alert')
 
             <div class="follow-card box-typical box-typical-dashboard panel panel-default">
                 <div class="follow-tab-bar">
@@ -186,6 +177,13 @@
 @push('styles')
     <style>
         :root {
+            --dimension-batch-index-1: 100%;
+            --dimension-batch-index-2: 100vh;
+            --dimension-batch-index-3: 12px;
+            --dimension-batch-index-4: 180px;
+            --space-batch-index-1: 14px;
+            --space-batch-index-2: 8px;
+            --color-batch-index-1: #54667a;
             --typo-batch-index-font-weight-1: 600;
         }
 
@@ -202,8 +200,8 @@
 
         .lead-status-shell {
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-batch-index-2);
+            width: var(--dimension-batch-index-1);
             overflow: hidden;
         }
 
@@ -212,7 +210,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-batch-index-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
@@ -225,12 +223,12 @@
         .follow-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-batch-index-2);
         }
 
         .follow-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-batch-index-3);
+            height: var(--dimension-batch-index-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -241,7 +239,7 @@
 
         .follow-loader p {
             margin: 0;
-            color: #54667a;
+            color: var(--color-batch-index-1);
             font-weight: var(--typo-batch-index-font-weight-1);
         }
 
@@ -268,7 +266,7 @@
         .follow-action-dropdown { position: relative; }
 
         .follow-action-dropdown .dropdown-menu {
-            min-width: 180px;
+            min-width: var(--dimension-batch-index-4);
             position: absolute !important;
             top: 0 !important;
             right: 100% !important;
@@ -289,33 +287,33 @@
 
         .program-filter-row {
             display: flex;
-            gap: 14px;
+            gap: var(--space-batch-index-1);
             flex-wrap: wrap;
             align-items: end;
-            margin-bottom: 14px;
+            margin-bottom: var(--space-batch-index-1);
         }
 
         .program-filter-field {
             flex: 1 1 200px;
-            min-width: 180px;
+            min-width: var(--dimension-batch-index-4);
         }
 
         .program-filter-field .form-label {
             font-size: 13px;
             font-weight: var(--typo-batch-index-font-weight-1);
-            color: #54667a;
+            color: var(--color-batch-index-1);
             margin-bottom: 4px;
         }
 
         .program-filter-actions {
             display: flex;
-            gap: 8px;
+            gap: var(--space-batch-index-2);
             margin-left: auto;
             align-items: center;
         }
 
         @media (max-width: 767px) {
-            .program-filter-actions { width: 100%; margin-left: 0; }
+            .program-filter-actions { width: var(--dimension-batch-index-1); margin-left: 0; }
         }
     </style>
 @endpush

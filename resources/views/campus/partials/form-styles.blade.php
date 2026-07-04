@@ -1,5 +1,15 @@
 <style>
         :root {
+            --dimension-campus-partials-form-styles-1: 100vh;
+            --dimension-campus-partials-form-styles-2: 12px;
+            --dimension-campus-partials-form-styles-3: 37px;
+            --dimension-campus-partials-form-styles-4: 7px;
+            --dimension-campus-partials-form-styles-5: 82px;
+            --space-campus-partials-form-styles-1: 12px;
+            --space-campus-partials-form-styles-2: 8px;
+            --color-campus-partials-form-styles-1: #00a8ff;
+            --color-campus-partials-form-styles-2: #1f2937;
+            --color-campus-partials-form-styles-3: #343434;
             --typo-campus-partials-form-styles-font-weight-1: 600;
             --typo-campus-partials-form-styles-font-size-2: 14px;
             --typo-campus-partials-form-styles-font-size-3: 12px;
@@ -8,7 +18,7 @@
     .lead-shell {
         font-family: 'Proxima Nova', sans-serif;
         position: relative;
-        min-height: 100vh;
+        min-height: var(--dimension-campus-partials-form-styles-1);
         width: 100%;
         overflow: visible;
         padding: 0;
@@ -20,21 +30,21 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 100vh;
+        height: var(--dimension-campus-partials-form-styles-1);
         background: rgba(245, 247, 251, 0.95);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
         z-index: 10;
-        gap: 12px;
+        gap: var(--space-campus-partials-form-styles-1);
     }
 
-    .lead-spinner { display: inline-flex; align-items: center; gap: 8px; }
+    .lead-spinner { display: inline-flex; align-items: center; gap: var(--space-campus-partials-form-styles-2); }
 
     .lead-spinner .dot {
-        width: 12px;
-        height: 12px;
+        width: var(--dimension-campus-partials-form-styles-2);
+        height: var(--dimension-campus-partials-form-styles-2);
         border-radius: 50%;
         background: #12a0ff;
         animation: bounce 0.9s ease-in-out infinite;
@@ -68,7 +78,7 @@
     .lead-title {
         font-size: 18px;
         font-weight: 500;
-        color: #1f2937;
+        color: var(--color-campus-partials-form-styles-2);
         line-height: 1.4;
         margin: 0;
     }
@@ -76,15 +86,15 @@
     .lead-title span {
         font-size: var(--typo-campus-partials-form-styles-font-size-2);
         font-weight: 400;
-        color: #1f2937;
+        color: var(--color-campus-partials-form-styles-2);
     }
 
     .lead-create-card .form-row { padding: 3px 10px; }
-    .lead-create-card .form-group { margin-bottom: 8px; }
+    .lead-create-card .form-group { margin-bottom: var(--space-campus-partials-form-styles-2); }
 
     .lead-create-card label,
     .lead-create-card .form-label {
-        color: #343434;
+        color: var(--color-campus-partials-form-styles-3);
         font-size: var(--typo-campus-partials-form-styles-font-size-3);
         font-weight: var(--typo-campus-partials-form-styles-font-weight-1);
         line-height: 1.2;
@@ -93,17 +103,17 @@
 
     .lead-create-card .form-control {
         font-size: var(--typo-campus-partials-form-styles-font-size-3);
-        height: 37px !important;
-        min-height: 37px !important;
+        height: var(--dimension-campus-partials-form-styles-3) !important;
+        min-height: var(--dimension-campus-partials-form-styles-3) !important;
         padding: 0.375rem 0.625rem !important;
         border: 1px solid #ccc;
         border-radius: 0.25rem;
-        color: #343434;
+        color: var(--color-campus-partials-form-styles-3);
     }
 
     .lead-create-card textarea.form-control {
-        height: 82px !important;
-        min-height: 82px !important;
+        height: var(--dimension-campus-partials-form-styles-5) !important;
+        min-height: var(--dimension-campus-partials-form-styles-5) !important;
         resize: vertical;
     }
 
@@ -114,7 +124,7 @@
     }
 
     .campus-type-options {
-        margin-top: 8px;
+        margin-top: var(--space-campus-partials-form-styles-2);
     }
 
     .campus-type-option {
@@ -144,7 +154,7 @@
     }
 
     .campus-type-option .form-check-input:checked {
-        border-color: #00a8ff;
+        border-color: var(--color-campus-partials-form-styles-1);
     }
 
     .campus-type-option .form-check-input:checked::before {
@@ -152,17 +162,17 @@
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 7px;
-        height: 7px;
+        width: var(--dimension-campus-partials-form-styles-4);
+        height: var(--dimension-campus-partials-form-styles-4);
         border-radius: 50%;
-        background-color: #00a8ff;
+        background-color: var(--color-campus-partials-form-styles-1);
     }
 
     .campus-type-option .form-check-label {
         font-size: var(--typo-campus-partials-form-styles-font-size-2);
         margin-bottom: 0;
         cursor: pointer;
-        color: #343434;
+        color: var(--color-campus-partials-form-styles-3);
     }
 
     .lead-body .alert {
@@ -178,7 +188,7 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: var(--space-campus-partials-form-styles-1);
     }
 
     .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }

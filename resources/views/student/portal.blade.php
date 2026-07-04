@@ -17,10 +17,39 @@
     <link rel="stylesheet" href="{{ asset('theme/main.css') }}">
     <style>
         :root {
+            --dimension-student-portal-1: 100%;
+            --dimension-student-portal-2: 160px;
+            --dimension-student-portal-3: 96px;
+            --dimension-student-portal-4: none;
+            --space-student-portal-1: 12px;
+            --space-student-portal-2: 16px;
+            --space-student-portal-3: 24px;
+            --space-student-portal-4: 4px;
+            --space-student-portal-5: 6px;
+            --color-student-portal-1: #00a8ff;
+            --color-student-portal-2: #1f2d3d;
+            --color-student-portal-3: #41546a;
+            --color-student-portal-4: #6b7a90;
+            --color-student-portal-5: #e6edf5;
+            --color-student-portal-6: #f2f5f9;
+            --color-student-portal-7: #fff;
+            --color-student-portal-8: rgba(0, 0, 0, 0.08);
+        }
+
+        :root {
+            --dimension-student-portal-1: 100%;
+            --dimension-student-portal-2: 160px;
+            --dimension-student-portal-3: 96px;
+            --dimension-student-portal-4: none;
+            --space-student-portal-1: 12px;
+            --space-student-portal-2: 16px;
+            --space-student-portal-3: 24px;
+            --space-student-portal-4: 4px;
+            --space-student-portal-5: 6px;
             --typo-student-portal-font-size-1: 12px;
             --typo-student-portal-font-size-2: 20px;
             --typo-student-portal-font-weight-3: 600;
-        }
+        }0___
 
          * {
     font-family: 'Proxima Nova', sans-serif;
@@ -30,7 +59,7 @@
 
 }
         body {
-            background: #f2f5f9;
+            background: var(--color-student-portal-6);
         }
 
         .portal-wrap {
@@ -38,11 +67,11 @@
         }
 
         .portal-header {
-            background: #ffffff;
+            background: var(--color-student-portal-7)fff;
             border-radius: 12px;
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 24px var(--color-student-portal-8);
             padding: 16px 20px;
-            margin-bottom: 24px;
+            margin-bottom: var(--space-student-portal-3);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -51,7 +80,7 @@
         .portal-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-student-portal-1);
         }
 
         .portal-brand img {
@@ -62,18 +91,18 @@
         .portal-title {
             font-size: var(--typo-student-portal-font-size-2);
             font-weight: 700;
-            color: #1f2d3d;
+            color: var(--color-student-portal-2);
         }
 
         .portal-subtitle {
             font-size: var(--typo-student-portal-font-size-1);
-            color: #6b7a90;
+            color: var(--color-student-portal-4);
         }
 
         .portal-header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-student-portal-1);
         }
 
         .portal-header-actions .btn {
@@ -83,26 +112,26 @@
         .portal-grid {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 24px;
+            gap: var(--space-student-portal-3);
         }
 
         .student-card {
-            background: #fff;
+            background: var(--color-student-portal-7);
             border-radius: 12px;
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 24px var(--color-student-portal-8);
             overflow: hidden;
         }
 
         .student-cover {
-            height: 160px;
-            background-color: #00a8ff;
+            height: var(--dimension-student-portal-2);
+            background-color: var(--color-student-portal-1);
         }
 
         .student-avatar {
-            width: 96px;
-            height: 96px;
+            width: var(--dimension-student-portal-3);
+            height: var(--dimension-student-portal-3);
             border-radius: 50%;
-            border: 4px solid #fff;
+            border: 4px solid var(--color-student-portal-7);
             background: #eef4fb;
             display: flex;
             align-items: center;
@@ -112,8 +141,8 @@
         }
 
         .student-avatar img {
-            width: 100%;
-            height: 100%;
+            width: var(--dimension-student-portal-1);
+            height: var(--dimension-student-portal-1);
             object-fit: cover;
         }
 
@@ -125,16 +154,16 @@
         .student-name {
             font-size: var(--typo-student-portal-font-size-2);
             font-weight: var(--typo-student-portal-font-weight-3);
-            margin-bottom: 4px;
+            margin-bottom: var(--space-student-portal-4);
         }
 
         .student-phone {
-            color: #6b7a90;
-            margin-bottom: 16px;
+            color: var(--color-student-portal-4);
+            margin-bottom: var(--space-student-portal-2);
         }
 
         .student-actions {
-            margin-bottom: 16px;
+            margin-bottom: var(--space-student-portal-2);
         }
 
         .action-dropdown {
@@ -146,9 +175,9 @@
             position: absolute;
             top: calc(100% + 8px);
             left: 0;
-            min-width: 160px;
-            background: #fff;
-            border: 1px solid #e6edf5;
+            min-width: var(--dimension-student-portal-2);
+            background: var(--color-student-portal-7);
+            border: 1px solid var(--color-student-portal-5);
             border-radius: 10px;
             box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
             padding: 8px 0;
@@ -163,27 +192,27 @@
         .action-item {
             display: block;
             padding: 10px 16px;
-            color: #1f2d3d;
+            color: var(--color-student-portal-2);
             text-decoration: none;
             font-weight: var(--typo-student-portal-font-weight-3);
         }
 
         .action-item:hover {
-            background: #f2f5f9;
-            color: #1f2d3d;
+            background: var(--color-student-portal-6);
+            color: var(--color-student-portal-2);
             text-decoration: none;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            border-top: 1px solid #e6edf5;
+            border-top: 1px solid var(--color-student-portal-5);
         }
 
         .stat-item {
             padding: 12px 8px;
             text-align: center;
-            border-right: 1px solid #e6edf5;
+            border-right: 1px solid var(--color-student-portal-5);
         }
 
         .stat-item:last-child {
@@ -192,20 +221,20 @@
 
         .stat-label {
             font-size: var(--typo-student-portal-font-size-1);
-            color: #6b7a90;
-            margin-bottom: 4px;
+            color: var(--color-student-portal-4);
+            margin-bottom: var(--space-student-portal-4);
         }
 
         .stat-value {
             font-size: 16px;
             font-weight: var(--typo-student-portal-font-weight-3);
-            color: #1f2d3d;
+            color: var(--color-student-portal-2);
         }
 
         .portal-tabs {
-            background: #fff;
+            background: var(--color-student-portal-7);
             border-radius: 12px;
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 24px var(--color-student-portal-8);
             padding: 16px 20px 20px;
         }
 
@@ -221,24 +250,24 @@
             padding: 6px 12px;
             border-radius: 8px;
             font-weight: var(--typo-student-portal-font-weight-3);
-            color: #41546a;
-            background: #f2f5f9;
+            color: var(--color-student-portal-3);
+            background: var(--color-student-portal-6);
             cursor: pointer;
             border: 1px solid transparent;
         }
         .bootstrap-table .table thead th, .fixed-table-body .table thead th, .table thead th {
     border-bottom: none;
-    padding-top: 6px;
-    padding-bottom: 6px;
+    padding-top: var(--space-student-portal-5);
+    padding-bottom: var(--space-student-portal-5);
 
 }
 .table td {
     padding-bottom: 5px;
 }
         .tab-link.is-active {
-            background: #00a8ff;
-            color: #fff;
-            border-color: #00a8ff;
+            background: var(--color-student-portal-1);
+            color: var(--color-student-portal-7);
+            border-color: var(--color-student-portal-1);
         }
 
         .tab-panel {
@@ -250,8 +279,8 @@
         }
 
         .table thead th {
-            background: #00a8ff;
-            color: #fff;
+            background: var(--color-student-portal-1);
+            color: var(--color-student-portal-7);
             border: 0;
             font-weight: var(--typo-student-portal-font-weight-3);
             font-size: 13px;
@@ -260,8 +289,8 @@
 
         .portal-tabs .table {
             width: auto;
-            min-width: 100%;
-            max-width: none;
+            min-width: var(--dimension-student-portal-1);
+            max-width: var(--dimension-student-portal-4);
             table-layout: auto;
         }
 
@@ -269,12 +298,12 @@
         .portal-tabs .table td {
             width: auto;
             min-width: 0;
-            max-width: none;
+            max-width: var(--dimension-student-portal-4);
         }
 
         .badge-status {
-            background: #00a8ff;
-            color: #fff;
+            background: var(--color-student-portal-1);
+            color: var(--color-student-portal-7);
             padding: 4px 8px;
             border-radius: 6px;
             font-size: var(--typo-student-portal-font-size-1);
@@ -282,8 +311,8 @@
         }
 
         .info-list {
-            width: 100%;
-            border: 1px solid #e6edf5;
+            width: var(--dimension-student-portal-1);
+            border: 1px solid var(--color-student-portal-5);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -292,8 +321,8 @@
             display: grid;
             grid-template-columns: 220px 1fr;
             padding: 8px 16px;
-            border-bottom: 1px solid #e6edf5;
-            background: #fff;
+            border-bottom: 1px solid var(--color-student-portal-5);
+            background: var(--color-student-portal-7);
         }
 
         .info-row:last-child {
@@ -302,11 +331,11 @@
 
         .info-label {
             font-weight: var(--typo-student-portal-font-weight-3);
-            color: #1f2d3d;
+            color: var(--color-student-portal-2);
         }
 
         .info-value {
-            color: #41546a;
+            color: var(--color-student-portal-3);
         }
 
         @media (max-width: 992px) {
@@ -316,7 +345,7 @@
 
             .info-row {
                 grid-template-columns: 1fr;
-                gap: 6px;
+                gap: var(--space-student-portal-5);
             }
         }
     </style>

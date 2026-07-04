@@ -12,14 +12,7 @@
     @endphp
 
     <div class="lead-status-shell">
-        <div id="user-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading users...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'user-status-loader', 'message' => 'Loading users...'])
 
         <div id="user-status-content" class="follow-content">
             <div class="follow-card box-typical box-typical-dashboard panel panel-default user-directory">
@@ -66,22 +59,27 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
         :root {
+            --dimension-user-index-1: 100vh;
+            --dimension-user-index-2: 12px;
+            --space-user-index-1: 12px;
+            --space-user-index-2: 8px;
+            --color-user-index-1: #54667a;
             --typo-user-index-font-weight-1: 600;
         }
 
-        .lead-status-shell { position: relative; min-height: 100vh; width: 100%; overflow: visible; }
+        .lead-status-shell { position: relative; min-height: var(--dimension-user-index-1); width: 100%; overflow: visible; }
 
         .follow-loader {
-            position: absolute; top: 0; left: 0; right: 0; height: 100vh;
+            position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-user-index-1);
             background: rgba(245, 247, 251, 0.95);
             display: flex; align-items: center; justify-content: center; flex-direction: column;
-            z-index: 10; gap: 12px;
+            z-index: 10; gap: var(--space-user-index-1);
         }
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
-        .follow-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-user-index-2); }
+        .follow-spinner .dot { width: var(--dimension-user-index-2); height: var(--dimension-user-index-2); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-user-index-font-weight-1); }
+        .follow-loader p { margin: 0; color: var(--color-user-index-1); font-weight: var(--typo-user-index-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
 
         .follow-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
@@ -96,7 +94,7 @@
             display: flex;
             align-items: stretch;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-user-index-1);
             flex-wrap: wrap;
         }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
@@ -110,7 +108,7 @@
             .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
         }
 
-        #users-table { margin-top: 8px; }
+        #users-table { margin-top: var(--space-user-index-2); }
         #users-table th, #users-table td { padding: 6px 10px; vertical-align: middle; }
         #users-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
         #users-table .table-name-link {
@@ -126,9 +124,9 @@
 
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
         .dataTables_wrapper .follow-footer {
-            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            display: flex; align-items: center; justify-content: space-between; gap: var(--space-user-index-1);
         }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: #54667a; font-size: 13px; }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-user-index-1); font-size: 13px; }
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info,

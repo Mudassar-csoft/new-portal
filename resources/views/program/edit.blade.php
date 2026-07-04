@@ -51,17 +51,44 @@
 @push('styles')
     <style>
         :root {
+            --dimension-program-edit-1: 100%;
+            --dimension-program-edit-2: 100vh;
+            --dimension-program-edit-3: 12px;
+            --dimension-program-edit-4: 1px;
+            --dimension-program-edit-5: 25px;
+            --dimension-program-edit-6: 37px;
+            --dimension-program-edit-7: 82px;
+            --space-program-edit-1: 10px;
+            --space-program-edit-2: 12px;
+            --space-program-edit-3: 8px;
+            --color-program-edit-1: #00a8ff;
+            --color-program-edit-2: #1f2937;
+            --color-program-edit-3: #343434;
+            --color-program-edit-4: #566a7f;
+        }
+
+        :root {
+            --dimension-program-edit-1: 100%;
+            --dimension-program-edit-2: 100vh;
+            --dimension-program-edit-3: 12px;
+            --dimension-program-edit-4: 1px;
+            --dimension-program-edit-5: 25px;
+            --dimension-program-edit-6: 37px;
+            --dimension-program-edit-7: 82px;
+            --space-program-edit-1: 10px;
+            --space-program-edit-2: 12px;
+            --space-program-edit-3: 8px;
             --typo-program-edit-font-weight-1: 600;
             --typo-program-edit-font-weight-2: 500;
             --typo-program-edit-font-size-3: 14px;
             --typo-program-edit-font-size-4: 12px;
-        }
+        }0___
 
         .lead-shell {
             font-family: 'Proxima Nova', sans-serif;
             position: relative;
-            min-height: 100vh;
-            width: 100%;
+            min-height: var(--dimension-program-edit-2);
+            width: var(--dimension-program-edit-1);
             overflow: visible;
             padding: 0;
             margin: 0;
@@ -72,25 +99,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: var(--dimension-program-edit-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             z-index: 10;
-            gap: 12px;
+            gap: var(--space-program-edit-2);
         }
 
         .lead-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-program-edit-3);
         }
 
         .lead-spinner .dot {
-            width: 12px;
-            height: 12px;
+            width: var(--dimension-program-edit-3);
+            height: var(--dimension-program-edit-3);
             border-radius: 50%;
             background: #12a0ff;
             animation: bounce 0.9s ease-in-out infinite;
@@ -157,14 +184,14 @@
         .lead-title {
             font-size: 18px;
             font-weight: var(--typo-program-edit-font-weight-2);
-            color: #1f2937;
+            color: var(--color-program-edit-2);
             line-height: 1.4;
         }
 
         .lead-title span {
             font-size: var(--typo-program-edit-font-size-3);
             font-weight: 400;
-            color: #1f2937;
+            color: var(--color-program-edit-2);
         }
 
         .lead-create-card .form-row {
@@ -172,7 +199,7 @@
         }
 
         .lead-create-card .form-group {
-            margin-bottom: 8px;
+            margin-bottom: var(--space-program-edit-3);
         }
 
         .lead-create-card .form-row > .form-group.col-lg-3,
@@ -183,7 +210,7 @@
 
         .lead-create-card label,
         .lead-create-card .form-label {
-            color: #343434;
+            color: var(--color-program-edit-3);
             font-size: var(--typo-program-edit-font-size-4);
             font-weight: var(--typo-program-edit-font-weight-1);
             line-height: 1.2;
@@ -196,23 +223,23 @@
         }
 
         .lead-create-card .form-control {
-            height: 37px !important;
-            min-height: 37px !important;
+            height: var(--dimension-program-edit-6) !important;
+            min-height: var(--dimension-program-edit-6) !important;
             padding: 0.375rem 0.625rem !important;
             border: 1px solid #ccc;
             border-radius: 0.25rem;
-            color: #343434;
+            color: var(--color-program-edit-3);
         }
 
         .lead-create-card .program-code-field[readonly] {
             background: #f4f8fb !important;
-            color: #566a7f;
+            color: var(--color-program-edit-4);
             cursor: not-allowed;
         }
 
         .lead-create-card textarea.form-control {
-            height: 82px !important;
-            min-height: 82px !important;
+            height: var(--dimension-program-edit-7) !important;
+            min-height: var(--dimension-program-edit-7) !important;
             resize: vertical;
         }
 
@@ -230,7 +257,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-program-edit-2);
             padding: 5px 10px;
             margin: 4px 10px 8px;
         }
@@ -238,20 +265,20 @@
         .program-discount-header h4 {
             font-size: var(--typo-program-edit-font-size-3);
             font-weight: var(--typo-program-edit-font-weight-1);
-            color: #343434;
+            color: var(--color-program-edit-3);
         }
 
         .program-discount-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: var(--space-program-edit-1);
             margin: 0 10px 10px;
-            padding: 10px;
+            padding: var(--space-program-edit-1);
             border: 1px solid #dbe5f1;
             border-radius: 6px;
             background: #f8fbff;
             width: auto;
-            max-width: 100%;
+            max-width: var(--dimension-program-edit-1);
             box-sizing: border-box;
         }
 
@@ -268,30 +295,30 @@
         .program-upload {
             display: flex !important;
             align-items: center;
-            gap: 10px;
-            width: 100%;
+            gap: var(--space-program-edit-1);
+            width: var(--dimension-program-edit-1);
             min-height: 37px;
             padding: 6px 10px;
             margin: 0;
             border: 1px dashed #b8d7ea;
             border-radius: 7px;
             background: linear-gradient(180deg, #fbfdff 0%, #f3faff 100%);
-            color: #566a7f !important;
+            color: var(--color-program-edit-4) !important;
             cursor: pointer;
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
 
         .program-upload:hover,
         .program-upload:focus-within {
-            border-color: #00a8ff;
+            border-color: var(--color-program-edit-1);
             box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.10);
             background: #f8fcff;
         }
 
         .program-upload input[type="file"] {
             position: absolute;
-            width: 1px;
-            height: 1px;
+            width: var(--dimension-program-edit-4);
+            height: var(--dimension-program-edit-4);
             opacity: 0;
             pointer-events: none;
         }
@@ -300,12 +327,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 25px;
-            min-width: 25px;
-            height: 25px;
+            width: var(--dimension-program-edit-5);
+            min-width: var(--dimension-program-edit-5);
+            height: var(--dimension-program-edit-5);
             border-radius: 999px;
             background: rgba(0, 168, 255, 0.12);
-            color: #00a8ff;
+            color: var(--color-program-edit-1);
             font-size: 13px;
         }
 
@@ -321,7 +348,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            color: #343434;
+            color: var(--color-program-edit-3);
             font-size: var(--typo-program-edit-font-size-4);
             font-weight: var(--typo-program-edit-font-weight-1);
         }
@@ -348,7 +375,7 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-program-edit-2);
         }
 
         .tbl-cell.text-right {
@@ -368,7 +395,7 @@
             .lead-create-card .form-row > .form-group.col-lg-3,
             .lead-create-card .form-row > .form-group.col-lg-4 {
                 flex: 0 0 100%;
-                max-width: 100%;
+                max-width: var(--dimension-program-edit-1);
             }
 
             .tbl-row {

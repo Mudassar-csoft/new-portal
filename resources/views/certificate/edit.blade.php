@@ -49,15 +49,7 @@
                         @endif
                     </div>
 
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+        @include('partials.validation-errors-alert')
 
                     <form method="POST" action="{{ route('certificate.update', $certificate) }}">
                         @csrf
@@ -83,16 +75,20 @@
 @push('styles')
     <style>
         :root {
+            --dimension-certificate-edit-1: 100vh;
+            --dimension-certificate-edit-2: 12px;
+            --space-certificate-edit-1: 12px;
+            --color-certificate-edit-1: #54667a;
             --typo-certificate-edit-font-weight-1: 600;
         }
 
-        .lead-shell { font-family: 'Proxima Nova', sans-serif; position: relative; min-height: 100vh; width: 100%; overflow: visible; padding: 0; margin: 0; }
-        .lead-loader { position: absolute; top: 0; left: 0; right: 0; height: 100vh; background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: 12px; }
+        .lead-shell { font-family: 'Proxima Nova', sans-serif; position: relative; min-height: var(--dimension-certificate-edit-1); width: 100%; overflow: visible; padding: 0; margin: 0; }
+        .lead-loader { position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-certificate-edit-1); background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: var(--space-certificate-edit-1); }
         .lead-spinner { display: inline-flex; align-items: center; gap: 8px; }
-        .lead-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
+        .lead-spinner .dot { width: var(--dimension-certificate-edit-2); height: var(--dimension-certificate-edit-2); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .lead-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .lead-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .lead-loader p { margin: 0; color: #54667a; font-weight: var(--typo-certificate-edit-font-weight-1); }
+        .lead-loader p { margin: 0; color: var(--color-certificate-edit-1); font-weight: var(--typo-certificate-edit-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
         .lead-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
         body.cert-form-ready .lead-content { opacity: 1; visibility: visible; }
@@ -114,8 +110,8 @@
             background: #f8fbff;
             font-size: 13px;
         }
-        .label-mute { color: #54667a; font-weight: var(--typo-certificate-edit-font-weight-1); margin-right: 4px; }
-        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+        .label-mute { color: var(--color-certificate-edit-1); font-weight: var(--typo-certificate-edit-font-weight-1); margin-right: 4px; }
+        .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-certificate-edit-1); }
         .tbl-cell.text-right { flex: 0 0 auto; text-align: right; }
     </style>
 @endpush

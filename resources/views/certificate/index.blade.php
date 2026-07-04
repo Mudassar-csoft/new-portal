@@ -28,22 +28,11 @@
     @endphp
 
     <div class="lead-status-shell">
-        <div id="certificate-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading certificates...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'certificate-status-loader', 'message' => 'Loading certificates...'])
 
         <div id="certificate-status-content" class="follow-content">
-            @if(session('status'))
-                <div class="alert alert-success mb-3">{{ session('status') }}</div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-danger mb-3">{{ session('error') }}</div>
-            @endif
+            @include('partials.session-status-alert-spaced')
+            @include('partials.session-error-alert-spaced')
 
             <div class="follow-card box-typical box-typical-dashboard panel panel-default">
                 <div class="user-mgmt-header">
@@ -181,6 +170,13 @@
 @push('styles')
     <style>
         :root {
+            --dimension-certificate-index-1: 100%;
+            --dimension-certificate-index-2: 100vh;
+            --dimension-certificate-index-3: 12px;
+            --space-certificate-index-1: 12px;
+            --space-certificate-index-2: 14px;
+            --space-certificate-index-3: 8px;
+            --color-certificate-index-1: #54667a;
             --typo-certificate-index-font-weight-1: 600;
         }
 
@@ -189,19 +185,19 @@
             align-items: center;
         }
 
-        .lead-status-shell { position: relative; min-height: 100vh; width: 100%; overflow: hidden; }
+        .lead-status-shell { position: relative; min-height: var(--dimension-certificate-index-2); width: var(--dimension-certificate-index-1); overflow: hidden; }
 
         .follow-loader {
-            position: absolute; top: 0; left: 0; right: 0; height: 100vh;
+            position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-certificate-index-2);
             background: rgba(245, 247, 251, 0.95);
             display: flex; align-items: center; justify-content: center; flex-direction: column;
-            z-index: 10; gap: 12px;
+            z-index: 10; gap: var(--space-certificate-index-1);
         }
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
-        .follow-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-certificate-index-3); }
+        .follow-spinner .dot { width: var(--dimension-certificate-index-3); height: var(--dimension-certificate-index-3); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .follow-loader p { margin: 0; color: #54667a; font-weight: var(--typo-certificate-index-font-weight-1); }
+        .follow-loader p { margin: 0; color: var(--color-certificate-index-1); font-weight: var(--typo-certificate-index-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
 
         .follow-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
@@ -223,17 +219,17 @@
             top: 0 !important; left: auto !important; right: 100% !important; transform: none !important;
         }
 
-        .program-filter-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; margin-bottom: 14px; }
+        .program-filter-row { display: flex; gap: var(--space-certificate-index-2); flex-wrap: wrap; align-items: end; margin-bottom: var(--space-certificate-index-2); }
         .program-filter-field { flex: 1 1 200px; min-width: 180px; }
-        .program-filter-field .form-label { font-size: 13px; font-weight: var(--typo-certificate-index-font-weight-1); color: #54667a; margin-bottom: 4px; }
-        .program-filter-actions { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+        .program-filter-field .form-label { font-size: 13px; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
+        .program-filter-actions { display: flex; gap: var(--space-certificate-index-3); margin-left: auto; align-items: center; }
 
-        .user-mgmt-header { display: flex; align-items: stretch; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .user-mgmt-header { display: flex; align-items: stretch; justify-content: space-between; gap: var(--space-certificate-index-1); flex-wrap: wrap; }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
         .create-action-btn { align-self: center; padding: 0.5rem 1rem !important; white-space: nowrap; margin: 8px 12px 8px 0; }
 
         @media (max-width: 767px) {
-            .program-filter-actions { width: 100%; margin-left: 0; }
+            .program-filter-actions { width: var(--dimension-certificate-index-1); margin-left: 0; }
             .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
         }
     </style>

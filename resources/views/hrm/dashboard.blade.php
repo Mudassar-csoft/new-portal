@@ -19,9 +19,7 @@
     @endphp
 
     <div class="hrm-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        @include('partials.session-status-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default hrm-card">
             <header class="box-typical-header panel-heading hrm-head">
@@ -51,6 +49,12 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-hrm-dashboard-1: 10px;
+            --color-hrm-dashboard-1: #975ce7;
+            --color-hrm-dashboard-2: #f35f62;
+        }
+
         .hrm-dashboard-div{
             padding:14px !important;
         }
@@ -59,7 +63,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-hrm-dashboard-1);
             flex-wrap: wrap;
         }
         .hrm-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -87,21 +91,21 @@
             text-align: center;
             font-weight: 700;
         }
-        .tone-total { background: #f35f62; }
+        .tone-total { background: var(--color-hrm-dashboard-2); }
         .tone-active { background: #fdc518; }
-        .tone-inactive { background: #975ce7 }
+        .tone-inactive { background: var(--color-hrm-dashboard-1) }
         .tone-attendance { background: #a2cf37; }
-        .tone-request { background: #975ce7; }
+        .tone-request { background: var(--color-hrm-dashboard-1); }
         .tone-leave { background: #4285f4; }
         .tone-payroll { background: #00a8ff; }
-        .tone-notice { background: #f35f62; }
+        .tone-notice { background: var(--color-hrm-dashboard-2); }
         .tone-doc { background: #34a853; }
         @media (max-width: 760px)  {
             .hrm-stat .stat-label {
                 margin-top: 5px;
             }
             .hrm-stat .stat-value {
-                margin-top: 10px;
+                margin-top: var(--space-hrm-dashboard-1);
             }
         }
     </style>

@@ -12,14 +12,7 @@
     @endphp
 
     <div class="lead-status-shell">
-        <div id="permission-status-loader" class="follow-loader">
-            <div class="follow-spinner">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <p>Loading permissions...</p>
-        </div>
+        @include('partials.status-loader', ['id' => 'permission-status-loader', 'message' => 'Loading permissions...'])
 
         <div id="permission-status-content" class="follow-content">
             <div class="follow-card box-typical box-typical-dashboard panel panel-default permission-directory">
@@ -63,13 +56,21 @@
     <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
-        .lead-status-shell { position: relative; min-height: 100vh; width: 100%; overflow: visible; }
-        .follow-loader { position: absolute; top: 0; left: 0; right: 0; height: 100vh; background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: 12px; }
-        .follow-spinner { display: inline-flex; align-items: center; gap: 8px; }
-        .follow-spinner .dot { width: 12px; height: 12px; border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
+        :root {
+            --dimension-permission-index-1: 100vh;
+            --dimension-permission-index-2: 12px;
+            --space-permission-index-1: 12px;
+            --space-permission-index-2: 8px;
+            --color-permission-index-1: #54667a;
+        }
+
+        .lead-status-shell { position: relative; min-height: var(--dimension-permission-index-1); width: 100%; overflow: visible; }
+        .follow-loader { position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-permission-index-1); background: rgba(245,247,251,0.95); display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 10; gap: var(--space-permission-index-1); }
+        .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-permission-index-2); }
+        .follow-spinner .dot { width: var(--dimension-permission-index-2); height: var(--dimension-permission-index-2); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
         .follow-spinner .dot:nth-child(2) { animation-delay: 0.15s; background: #1f8ef1; }
         .follow-spinner .dot:nth-child(3) { animation-delay: 0.3s; background: #36b1ff; }
-        .follow-loader p { margin: 0; color: #54667a; font-weight: 600; }
+        .follow-loader p { margin: 0; color: var(--color-permission-index-1); font-weight: 600; }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
         .follow-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
         body.permissions-ready .follow-content { opacity: 1; visibility: visible; }
@@ -83,7 +84,7 @@
             display: flex;
             align-items: stretch;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-permission-index-1);
             flex-wrap: wrap;
         }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
@@ -96,14 +97,14 @@
         @media (max-width: 767px) {
             .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
         }
-        #permissions-table { margin-top: 8px; }
+        #permissions-table { margin-top: var(--space-permission-index-2); }
         #permissions-table th, #permissions-table td { padding: 6px 10px; vertical-align: middle; text-align: center; }
         #permissions-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
         #permissions-table .follow-action-dropdown .dropdown-menu { z-index: 1070 !important; }
 
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
-        .dataTables_wrapper .follow-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: #54667a; font-size: 13px; }
+        .dataTables_wrapper .follow-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-permission-index-1); }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-permission-index-1); font-size: 13px; }
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate {
             margin: 0; padding: 0; float: none !important;

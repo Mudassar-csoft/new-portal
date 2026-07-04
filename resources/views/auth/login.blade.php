@@ -11,6 +11,16 @@
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 	<style>
         :root {
+            --dimension-auth-login-1: 100%;
+            --dimension-auth-login-2: 136px;
+            --dimension-auth-login-3: 240px;
+            --dimension-auth-login-4: 50%;
+            --space-auth-login-1: 12px;
+            --space-auth-login-2: 20px;
+            --space-auth-login-3: 6px;
+            --color-auth-login-1: #009e60;
+            --color-auth-login-2: #0a3d62;
+            --color-auth-login-3: #fff;
             --typo-auth-login-font-size-1: 12px;
         }
 
@@ -26,13 +36,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			padding: 20px;
-			background: linear-gradient(135deg, #0a3d62, #0f766e);
+			padding: var(--space-auth-login-2);
+			background: linear-gradient(135deg, var(--color-auth-login-2), #0f766e);
 		}
 
 		.container {
 			width: 850px;
-			max-width: 100%;
+			max-width: var(--dimension-auth-login-1);
 			min-height: 420px;
 			display: flex;
 			border-radius: 15px;
@@ -42,10 +52,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		.left {
-			width: 50%;
+			width: var(--dimension-auth-login-4);
 			padding: 25px 40px;
 			background: linear-gradient(135deg, #00b894, #00cec9);
-			color: #fff;
+			color: var(--color-auth-login-3);
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -60,7 +70,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 		.logo img {
 			height: 58px;
-			max-width: 100%;
+			max-width: var(--dimension-auth-login-1);
 			object-fit: contain;
 		}
 
@@ -81,13 +91,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		.input-group input {
-			width: 100%;
+			width: var(--dimension-auth-login-1);
 			padding: 10px;
 			border-radius: 8px;
 			border: none;
 			outline: none;
 			background: rgba(255, 255, 255, 0.3);
-			color: #fff;
+			color: var(--color-auth-login-3);
 		}
 
 		.input-group input::placeholder {
@@ -99,7 +109,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		.field-error {
-			margin-top: 6px;
+			margin-top: var(--space-auth-login-3);
 			font-size: var(--typo-auth-login-font-size-1);
 			color: red;
 		}
@@ -108,23 +118,23 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			gap: 12px;
-			margin-bottom: 20px;
+			gap: var(--space-auth-login-1);
+			margin-bottom: var(--space-auth-login-2);
 			font-size: var(--typo-auth-login-font-size-1);
 		}
 
 		.remember-me {
 			display: inline-flex;
 			align-items: center;
-			gap: 6px;
+			gap: var(--space-auth-login-3);
 		}
 
 		.remember-me input {
-			accent-color: #009e60;
+			accent-color: var(--color-auth-login-1);
 		}
 
 		.forgot {
-			color: #fff;
+			color: var(--color-auth-login-3);
 			text-decoration: none;
 			cursor: pointer;
 		}
@@ -134,10 +144,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		button {
-			padding: 12px;
+			padding: var(--space-auth-login-1);
 			border: none;
 			border-radius: 8px;
-			background: #009e60;
+			background: var(--color-auth-login-1);
 			color: white;
 			font-weight: bold;
 			cursor: pointer;
@@ -149,18 +159,18 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		button[type="submit"] {
-			width: 100%;
+			width: var(--dimension-auth-login-1);
 		}
 
 		.right {
-			width: 50%;
-			background: linear-gradient(135deg, #0a3d62, #1e5f74);
-			color: #fff;
+			width: var(--dimension-auth-login-4);
+			background: linear-gradient(135deg, var(--color-auth-login-2), #1e5f74);
+			color: var(--color-auth-login-3);
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			position: relative;
-			padding: 20px;
+			padding: var(--space-auth-login-2);
 			overflow: hidden;
 		}
 
@@ -191,7 +201,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			height: 4px;
 			margin-top: 14px;
 			border-radius: 999px;
-			background: linear-gradient(90deg, #7ef2d7 0%, #ffffff 100%);
+			background: linear-gradient(90deg, #7ef2d7 0%, var(--color-auth-login-3)fff 100%);
 			box-shadow: 0 8px 18px rgba(126, 242, 215, 0.35);
 		}
 
@@ -200,8 +210,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			position: absolute;
 			top: 6px;
 			right: -8px;
-			width: 136px;
-			height: 136px;
+			width: var(--dimension-auth-login-2);
+			height: var(--dimension-auth-login-2);
 			background: url("{{ asset('theme/img/login/group.png') }}") no-repeat center / contain;
 			opacity: 0.8;
 			pointer-events: none;
@@ -212,8 +222,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			position: absolute;
 			top: -34px;
 			right: -28px;
-			width: 240px;
-			height: 240px;
+			width: var(--dimension-auth-login-3);
+			height: var(--dimension-auth-login-3);
 			background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.34) 0%, rgba(210, 218, 226, 0.13) 34%, rgba(255, 255, 255, 0) 72%);
 			pointer-events: none;
 		}
@@ -224,7 +234,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			justify-content: center;
 			align-items: center;
 			margin-top: 95px;
-			max-width: 100%;
+			max-width: var(--dimension-auth-login-1);
 			object-fit: contain;
 		}
 
@@ -239,7 +249,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		.password-field input {
-			width: 100%;
+			width: var(--dimension-auth-login-1);
 			padding-right: 45px;
 		}
 
@@ -260,7 +270,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 			.left,
 			.right {
-				width: 100%;
+				width: var(--dimension-auth-login-1);
 			}
 
 			.left {
@@ -268,7 +278,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			}
 
 			.right {
-				min-height: 240px;
+				min-height: var(--dimension-auth-login-3);
 			}
 
 			.hero-copy {
@@ -415,7 +425,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 	</script>
 </body>
 </html>
-
 
 
 

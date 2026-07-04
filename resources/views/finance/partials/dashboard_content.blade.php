@@ -20,9 +20,7 @@
 @endphp
 
 <div class="finance-dashboard">
-    @if(session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
-    @endif
+        @include('partials.session-status-alert')
 
     <div class="finance-header">
         <div>
@@ -371,6 +369,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
     <style>
         :root {
+            --dimension-finance-partials-dashboard-content-1: 100%;
+            --dimension-finance-partials-dashboard-content-2: 32px;
+            --space-finance-partials-dashboard-content-1: 10px;
+            --space-finance-partials-dashboard-content-2: 14px;
+            --space-finance-partials-dashboard-content-3: 6px;
+            --color-finance-partials-dashboard-content-1: #1d4ed8;
+            --color-finance-partials-dashboard-content-2: #6c7a89;
+            --color-finance-partials-dashboard-content-3: #fff;
             --typo-finance-partials-dashboard-content-font-size-1: 12px;
             --typo-finance-partials-dashboard-content-font-size-2: 24px;
             --typo-finance-partials-dashboard-content-font-weight-3: 700;
@@ -383,7 +389,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            gap: 14px;
+            gap: var(--space-finance-partials-dashboard-content-2);
             flex-wrap: wrap;
             margin-bottom: 16px;
         }
@@ -395,7 +401,7 @@
     margin-top: 1rem;
         }
         .kpi-value {
-           /* margin-top: 6px; */
+           /* margin-top: var(--space-finance-partials-dashboard-content-3); */
     font-size: var(--typo-finance-partials-dashboard-content-font-size-2);
     text-align: center;
     font-weight: var(--typo-finance-partials-dashboard-content-font-weight-3);
@@ -404,11 +410,11 @@
             margin: 0 0 4px;  
                font-size: 22px !important;
     font-weight: 500 !important; }
-        .finance-subtitle { margin: 0; color: #6c7a89; }
+        .finance-subtitle { margin: 0; color: var(--color-finance-partials-dashboard-content-2); }
         .finance-filter-summary-wrap {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-partials-dashboard-content-1);
             flex-wrap: wrap;
             justify-content: flex-end;
         }
@@ -417,7 +423,7 @@
             flex-wrap: wrap;
             gap: 6px 12px;
             font-size: var(--typo-finance-partials-dashboard-content-font-size-1);
-            color: #6c7a89;
+            color: var(--color-finance-partials-dashboard-content-2);
         }
         .finance-filter-modal {
             position: fixed;
@@ -426,7 +432,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1050;
-            padding: 14px;
+            padding: var(--space-finance-partials-dashboard-content-2);
         }
         .finance-filter-modal.is-open { display: flex; }
         .finance-filter-backdrop {
@@ -437,17 +443,17 @@
         .finance-filter-dialog {
             position: relative;
             width: min(460px, 100%);
-            background: #fff;
+            background: var(--color-finance-partials-dashboard-content-3);
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
-            padding: 14px;
+            padding: var(--space-finance-partials-dashboard-content-2);
             z-index: 1;
         }
         .finance-filter-dialog-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: var(--space-finance-partials-dashboard-content-1);
         }
         .finance-filter-dialog-header h2 {
             margin: 0;
@@ -460,11 +466,11 @@
             background: transparent;
             font-size: var(--typo-finance-partials-dashboard-content-font-size-2);
             line-height: 1;
-            color: #6c7a89;
+            color: var(--color-finance-partials-dashboard-content-2);
             padding: 0 4px;
             cursor: pointer;
         }
-        .finance-filter-form { display: grid; gap: 10px; }
+        .finance-filter-form { display: grid; gap: var(--space-finance-partials-dashboard-content-1); }
         .finance-filter-field { display: grid; gap: 4px; }
         .finance-filter-field label {
             margin: 0;
@@ -475,11 +481,11 @@
         .finance-filter-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 6px;
+            gap: var(--space-finance-partials-dashboard-content-1);
+            margin-top: var(--space-finance-partials-dashboard-content-3);
         }
         body.finance-filter-open { overflow: hidden; }
-        .finance-kpis { margin-bottom: 14px; }
+        .finance-kpis { margin-bottom: var(--space-finance-partials-dashboard-content-2); }
         .finance-stat-link {
             display: block;
             text-decoration: none;
@@ -501,10 +507,10 @@
             top: 12px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            color: #fff;
+            color: var(--color-finance-partials-dashboard-content-3);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: var(--dimension-finance-partials-dashboard-content-2);
+            height: var(--dimension-finance-partials-dashboard-content-2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -520,8 +526,8 @@
             right: 12px !important;
             top: 12px !important;
             transform: none !important;
-            width: 32px;
-            height: 32px;
+            width: var(--dimension-finance-partials-dashboard-content-2);
+            height: var(--dimension-finance-partials-dashboard-content-2);
         }
         .finance-kpi-link {
             display: block;
@@ -560,7 +566,7 @@
             justify-content: space-between;
             /* gap: auto !important; */
             flex-wrap: wrap;
-            width: 100%;
+            width: var(--dimension-finance-partials-dashboard-content-1);
         }
         .month-chart-header-wrap {
             min-width: 0;
@@ -583,8 +589,8 @@
             border: 0;
             background: transparent;
             color: #6b7c93;
-            width: 32px;
-            height: 32px;
+            width: var(--dimension-finance-partials-dashboard-content-2);
+            height: var(--dimension-finance-partials-dashboard-content-2);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -596,12 +602,12 @@
         }
         /* .month-chart-header-actions .action-btn:hover,
         .month-chart-header-actions .action-btn:focus {
-            color: #1d4ed8;
+            color: var(--color-finance-partials-dashboard-content-1);
             background: #eff6ff;
             outline: 0;
         } */
         .dashboard-panel-action.is-active {
-            color: #1d4ed8;
+            color: var(--color-finance-partials-dashboard-content-1);
         }
         .dashboard-panel-action.is-spinning .font-icon {
             animation: financeSpin 0.8s linear infinite;
@@ -610,7 +616,7 @@
             position: fixed;
             inset: 18px;
             z-index: 1060;
-            background: #fff;
+            background: var(--color-finance-partials-dashboard-content-3);
             overflow: auto;
         }
         body.finance-panel-fullscreen-active {
@@ -644,8 +650,8 @@
             height: 260px;
         }
         @media (max-width: 576px) {
-            .finance-filter-summary-wrap { width: 100%; justify-content: space-between; }
-            .finance-filter-summary { width: 100%; }
+            .finance-filter-summary-wrap { width: var(--dimension-finance-partials-dashboard-content-1); justify-content: space-between; }
+            .finance-filter-summary { width: var(--dimension-finance-partials-dashboard-content-1); }
         }
     </style>
 @endpush

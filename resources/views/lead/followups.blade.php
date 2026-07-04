@@ -209,6 +209,7 @@
 @push('styles')
     <style>
         :root {
+            --space-lead-followups-1: 12px;
             --typo-lead-followups-line-height-1: 1;
         }
 
@@ -284,7 +285,7 @@
         }
 
         .follow-controls {
-            gap: 12px;
+            gap: var(--space-lead-followups-1);
             flex-wrap: wrap;
         }
 
@@ -307,7 +308,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: var(--space-lead-followups-1);
             flex-wrap: wrap;
         }
 

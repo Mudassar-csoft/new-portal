@@ -4,18 +4,8 @@
 
 @section('content')
     <div class="hrm-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         <div class="row">
             <div class="col-lg-6">
@@ -219,6 +209,14 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-hrm-masters-index-1: 4px !important;
+            --space-hrm-masters-index-2: 6px;
+            --space-hrm-masters-index-3: -6px;
+            --space-hrm-masters-index-4: 6px !important;
+            --space-hrm-masters-index-5: 8px !important;
+        }
+
         
 .box-typical .panel-heading {
     padding: 7px 20px;
@@ -233,30 +231,30 @@
         /* .hrm-shell { padding: 8px 0 16px; } */
         .hrm-shell form .form-row {
             gap: 9px !important;
-            padding-left: 8px !important;
-            padding-right: 8px !important;
+            padding-left: var(--space-hrm-masters-index-5);
+            padding-right: var(--space-hrm-masters-index-5);
         }
         .hrm-shell form .form-row > [class*="col-"],
         .hrm-shell form .form-row > .custom-col-4 {
-            padding-left: 4px !important;
-            padding-right: 4px !important;
+            padding-left: var(--space-hrm-masters-index-1);
+            padding-right: var(--space-hrm-masters-index-1);
         }
         .hrm-shell .table-responsive {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
+            padding-left: var(--space-hrm-masters-index-5);
+            padding-right: var(--space-hrm-masters-index-5);
         }
         .hrm-shell > .row {
-            margin-left: -6px;
-            margin-right: -6px;
+            margin-left: var(--space-hrm-masters-index-3);
+            margin-right: var(--space-hrm-masters-index-3);
         }
         .hrm-shell > .row > [class*="col-"] {
-            padding-left: 6px;
-            padding-right: 6px;
+            padding-left: var(--space-hrm-masters-index-2);
+            padding-right: var(--space-hrm-masters-index-2);
         }
         .hrm-table th,
         .hrm-table td {
-            padding-left: 6px !important;
-            padding-right: 6px !important;
+            padding-left: var(--space-hrm-masters-index-4);
+            padding-right: var(--space-hrm-masters-index-4);
         }
         .hrm-table thead th { background: #eef2f7; color: #334155; }
     </style>

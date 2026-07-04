@@ -436,10 +436,38 @@
 @push('styles')
 	<style>
         :root {
+            --dimension-admission-create-1: 100%;
+            --dimension-admission-create-2: 46px;
+            --dimension-admission-create-3: 54px;
+            --dimension-admission-create-4: 6px;
+            --space-admission-create-1: 10px;
+            --space-admission-create-2: -10px;
+            --space-admission-create-3: 18px;
+            --space-admission-create-4: 6px;
+            --space-admission-create-5: 8px;
+            --color-admission-create-1: #00a8ff;
+            --color-admission-create-2: #14a2f6;
+            --color-admission-create-3: #42556d;
+            --color-admission-create-4: #54667a;
+            --color-admission-create-5: #d6e2f0;
+            --color-admission-create-6: #dc3545;
+            --color-admission-create-7: #fff;
+        }
+
+        :root {
+            --dimension-admission-create-1: 100%;
+            --dimension-admission-create-2: 46px;
+            --dimension-admission-create-3: 54px;
+            --dimension-admission-create-4: 6px;
+            --space-admission-create-1: 10px;
+            --space-admission-create-2: -10px;
+            --space-admission-create-3: 18px;
+            --space-admission-create-4: 6px;
+            --space-admission-create-5: 8px;
             --typo-admission-create-font-size-1: 14px;
             --typo-admission-create-font-weight-2: 600;
             --typo-admission-create-font-size-3: 12px;
-        }
+        }0___
 
 		.ci-inline-pad-04 {
 			padding: 0.4rem !important;
@@ -454,7 +482,7 @@
 			border-radius: 5px;
 			box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 			overflow: hidden;
-			background: #fff;
+			background: var(--color-admission-create-7);
 		}
 
 		.admission-card .card-body {
@@ -493,44 +521,44 @@
 
 		.admission-prefill-alert--warning {
 			border-color: #f5d18b;
-			background: linear-gradient(135deg, #fffaf0 0%, #fff4db 100%);
+			background: linear-gradient(135deg, var(--color-admission-create-7)af0 0%, var(--color-admission-create-7)4db 100%);
 			color: #8a5b00;
 		}
 
 		.field-help {
-			margin-top: 6px;
+			margin-top: var(--space-admission-create-4);
 			font-size: var(--typo-admission-create-font-size-3);
-			color: #54667a;
+			color: var(--color-admission-create-4);
 		}
 
 		.admission-form .form-row {
-			margin-left: -10px;
-			margin-right: -10px;
+			margin-left: var(--space-admission-create-2);
+			margin-right: var(--space-admission-create-2);
 		}
 
 		.admission-form .form-row > [class*="col-"] {
-			padding-left: 10px;
-			padding-right: 10px;
+			padding-left: var(--space-admission-create-1);
+			padding-right: var(--space-admission-create-1);
 		}
 
 		.admission-form .form-group {
-			margin-bottom: 18px;
+			margin-bottom: var(--space-admission-create-3);
 		}
 
 		.admission-form label,
 		.admission-form .form-label {
 			display: inline-block;
-			margin-bottom: 8px;
+			margin-bottom: var(--space-admission-create-5);
 			font-weight: var(--typo-admission-create-font-weight-2);
 			/* color: #223a57 ; */
 		}
 
 		.admission-form .form-control {
-			min-height: 46px;
+			min-height: var(--dimension-admission-create-2);
 			border-radius: 12px;
-			border: 1px solid #d6e2f0;
+			border: 1px solid var(--color-admission-create-5);
 			padding: 10px 14px;
-			background: #fff;
+			background: var(--color-admission-create-7);
 			box-shadow: none;
 			transition: border-color 0.2s ease, box-shadow 0.2s ease;
 		}
@@ -541,21 +569,21 @@
 		}
 
 		.admission-form .admission-textarea-address {
-			min-height: 54px !important;
-			height: 54px !important;
-			max-height: 54px !important;
+			min-height: var(--dimension-admission-create-3) !important;
+			height: var(--dimension-admission-create-3) !important;
+			max-height: var(--dimension-admission-create-3) !important;
 			resize: none;
 		}
 
 		.admission-form .admission-textarea-remarks {
-			min-height: 54px !important;
-			height: 54px !important;
-			max-height: 54px !important;
+			min-height: var(--dimension-admission-create-3) !important;
+			height: var(--dimension-admission-create-3) !important;
+			max-height: var(--dimension-admission-create-3) !important;
 			resize: none;
 		}
 
 		.admission-form .form-control:focus {
-			border-color: #14a2f6;
+			border-color: var(--color-admission-create-2);
 			box-shadow: 0 0 0 3px rgba(20, 162, 246, 0.12);
 		}
 
@@ -566,15 +594,15 @@
 		}
 
 		.admission-form .field-error {
-			margin-top: 6px;
+			margin-top: var(--space-admission-create-4);
 			font-size: var(--typo-admission-create-font-size-3);
-			color: #dc3545;
+			color: var(--color-admission-create-6);
 		}
 
 		.training-course-select {
-			width: 100%;
+			width: var(--dimension-admission-create-1);
 			min-width: 0;
-			max-width: 100%;
+			max-width: var(--dimension-admission-create-1);
 			display: block;
 		}
 
@@ -601,7 +629,7 @@
 
 		.training-course-option-label {
 			font-weight: 700 !important;
-			color: #54667a;
+			color: var(--color-admission-create-4);
 		}
 
 		.training-course-option-value {
@@ -619,14 +647,14 @@
 			margin-left: 0;
 			margin-right: 0;
 			padding: 11px 14px;
-			border: 1px solid #d6e2f0;
+			border: 1px solid var(--color-admission-create-5);
 			border-radius: 12px;
 			background: #fbfdff;
-			min-height: 46px;
+			min-height: var(--dimension-admission-create-2);
 		}
 
 		.admission-form .choice-group.is-invalid {
-			border-color: #dc3545;
+			border-color: var(--color-admission-create-6);
 		}
 
 		.admission-form .form-check-input[type="radio"] {
@@ -640,12 +668,12 @@
 			outline: none;
 			cursor: pointer;
 			position: relative;
-			background-color: #fff;
+			background-color: var(--color-admission-create-7);
 			transition: background 0.2s, box-shadow 0.2s;
 		}
 
 		.admission-form .form-check-input[type="radio"]:checked {
-			border-color: #00a8ff;
+			border-color: var(--color-admission-create-1);
 		}
 
 		.admission-form .form-check-input[type="radio"]:checked::before {
@@ -653,17 +681,17 @@
 			position: absolute;
 			top: 2px;
 			left: 2px;
-			width: 6px;
-			height: 6px;
+			width: var(--dimension-admission-create-4);
+			height: var(--dimension-admission-create-4);
 			border-radius: 50%;
-			background-color: #00a8ff;
+			background-color: var(--color-admission-create-1);
 		}
 
 		.admission-form .form-check-label {
 			font-size: var(--typo-admission-create-font-size-1);
 			margin-bottom: 0;
 			cursor: pointer;
-			/* color: #42556d; */
+			/* color: var(--color-admission-create-3); */
 			font-weight: var(--typo-admission-create-font-weight-2);
 		}
 
@@ -674,10 +702,10 @@
 			display: flex;
 			justify-content: flex-end;
 			gap: 12px;
-			padding-top: 18px;
-			margin-top: 6px;
+			padding-top: var(--space-admission-create-3);
+			margin-top: var(--space-admission-create-4);
 			border-top: 1px solid #e8eef5;
-			background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, #fff 28%);
+			background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, var(--color-admission-create-7) 28%);
 		}
 
 		.embed-actions .btn {
@@ -688,7 +716,7 @@
 		}
 
 		.embed-actions .btn-primary {
-			color: #fff !important;
+			color: var(--color-admission-create-7) !important;
 			background: linear-gradient(120deg, #0099f8, #17b3ff);
 			border-color: transparent;
 			box-shadow: 0 14px 28px rgba(0, 153, 248, 0.24);
@@ -696,7 +724,7 @@
 
 		.embed-actions .btn-primary:hover,
 		.embed-actions .btn-primary:focus {
-			color: #fff !important;
+			color: var(--color-admission-create-7) !important;
 			background: linear-gradient(120deg, #0088dd, #0ea4ef);
 			border-color: transparent;
 		}
@@ -704,20 +732,20 @@
 		.embed-actions .btn-outline-danger {
 			color: #d64545 !important;
 			border: 1px solid rgba(214, 69, 69, 0.32);
-			background: #fff;
+			background: var(--color-admission-create-7);
 		}
 
 		.embed-actions .btn-outline-danger:hover,
 		.embed-actions .btn-outline-danger:focus {
-			color: #fff !important;
-			background: #dc3545;
-			border-color: #dc3545;
+			color: var(--color-admission-create-7) !important;
+			background: var(--color-admission-create-6);
+			border-color: var(--color-admission-create-6);
 		}
 
 		.installments-rows {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 8px;
+			gap: var(--space-admission-create-5);
 		}
 
 		.installments-rows .installment-item {
@@ -726,7 +754,7 @@
 
 		.installments-rows .installment-item label {
 			font-size: var(--typo-admission-create-font-size-3);
-			color: #54667a;
+			color: var(--color-admission-create-4);
 			margin-bottom: 4px;
 			display: block;
 			font-weight: var(--typo-admission-create-font-weight-2);
@@ -735,22 +763,22 @@
 		.installments-rows .installment-item input {
 			min-height: 38px;
 			border-radius: 8px;
-			border: 1px solid #d6e2f0;
+			border: 1px solid var(--color-admission-create-5);
 			padding: 6px 10px;
-			width: 100%;
-			background: #fff;
+			width: var(--dimension-admission-create-1);
+			background: var(--color-admission-create-7);
 		}
 
 		.installments-rows .installment-item input:focus {
 			outline: 0;
-			border-color: #14a2f6;
+			border-color: var(--color-admission-create-2);
 			box-shadow: 0 0 0 2px rgba(20, 162, 246, 0.15);
 		}
 
 		.installments-summary {
-			margin-top: 10px;
+			margin-top: var(--space-admission-create-1);
 			font-size: 13px;
-			color: #42556d;
+			color: var(--color-admission-create-3);
 		}
 
 		.installments-summary strong {
@@ -758,10 +786,10 @@
 		}
 
 		.discount-limit-hint {
-			color: #dc3545;
+			color: var(--color-admission-create-6);
 			font-weight: var(--typo-admission-create-font-weight-2);
 			font-size: var(--typo-admission-create-font-size-3);
-			margin-left: 6px;
+			margin-left: var(--space-admission-create-4);
 		}
 
 		.discount-limit-hint:empty {
@@ -769,8 +797,8 @@
 		}
 
 		#admission-discount-amount.is-invalid {
-			border-color: #dc3545;
-			background-color: #fff5f5;
+			border-color: var(--color-admission-create-6);
+			background-color: var(--color-admission-create-7)5f5;
 		}
 
 		@media (max-width: 991px) {
@@ -780,7 +808,7 @@
 
 			.adm-title small {
 				display: block;
-				margin-top: 8px;
+				margin-top: var(--space-admission-create-5);
 			}
 		}
 
@@ -794,13 +822,13 @@
 			}
 
 			.embed-actions .btn {
-				width: 100%;
+				width: var(--dimension-admission-create-1);
 			}
 		}
 
 @if(request()->boolean('embed'))
 		.admission-shell {
-			padding: 18px;
+			padding: var(--space-admission-create-3);
 		}
 
 		.admission-card {

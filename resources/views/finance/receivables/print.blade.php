@@ -19,6 +19,43 @@
     <title>Invoice {{ $invoiceNumber }}</title>
     <style>
         :root {
+            --dimension-finance-receivables-print-1: 100%;
+            --dimension-finance-receivables-print-2: 12mm;
+            --dimension-finance-receivables-print-3: 18mm;
+            --dimension-finance-receivables-print-4: 210mm;
+            --dimension-finance-receivables-print-5: 26mm;
+            --dimension-finance-receivables-print-6: 31mm;
+            --dimension-finance-receivables-print-7: 68mm;
+            --space-finance-receivables-print-1: 10px;
+            --space-finance-receivables-print-2: 2.4mm;
+            --space-finance-receivables-print-3: 20px;
+            --space-finance-receivables-print-4: 2mm;
+            --space-finance-receivables-print-5: 3.2mm 3mm;
+            --space-finance-receivables-print-6: 3mm;
+            --space-finance-receivables-print-7: 5mm;
+            --color-finance-receivables-print-1: #0f8ef2;
+            --color-finance-receivables-print-2: #1188cc;
+            --color-finance-receivables-print-3: #2e2e32;
+            --color-finance-receivables-print-4: #d8e2e7;
+            --color-finance-receivables-print-5: #fff;
+            --color-finance-receivables-print-6: rgba(238, 242, 247, 0.96);
+        }
+
+        :root {
+            --dimension-finance-receivables-print-1: 100%;
+            --dimension-finance-receivables-print-2: 12mm;
+            --dimension-finance-receivables-print-3: 18mm;
+            --dimension-finance-receivables-print-4: 210mm;
+            --dimension-finance-receivables-print-5: 26mm;
+            --dimension-finance-receivables-print-6: 31mm;
+            --dimension-finance-receivables-print-7: 68mm;
+            --space-finance-receivables-print-1: 10px;
+            --space-finance-receivables-print-2: 2.4mm;
+            --space-finance-receivables-print-3: 20px;
+            --space-finance-receivables-print-4: 2mm;
+            --space-finance-receivables-print-5: 3.2mm 3mm;
+            --space-finance-receivables-print-6: 3mm;
+            --space-finance-receivables-print-7: 5mm;
             --typo-finance-receivables-print-font-size-1: 14px;
             --typo-finance-receivables-print-font-size-2: 20px;
             --typo-finance-receivables-print-font-weight-3: 600;
@@ -33,7 +70,7 @@
             --typo-finance-receivables-print-font-size-12: 3.8mm;
             --typo-finance-receivables-print-line-height-13: 1.2;
             --typo-finance-receivables-print-font-size-14: 16px;
-        }
+        }0___
 
         @page {
             size: A4 portrait;
@@ -56,18 +93,18 @@
         }
 
         .toolbar {
-            width: 210mm;
+            width: var(--dimension-finance-receivables-print-4);
             margin: 14px auto 10px;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: var(--space-finance-receivables-print-1);
         }
 
         .toolbar a,
         .toolbar button {
-            border: 1px solid #1188cc;
-            background: #fff;
-            color: #1188cc;
+            border: 1px solid var(--color-finance-receivables-print-2);
+            background: var(--color-finance-receivables-print-5);
+            color: var(--color-finance-receivables-print-2);
             padding: 8px 16px;
             border-radius: 999px;
             font-size: var(--typo-finance-receivables-print-font-size-1);
@@ -76,15 +113,15 @@
         }
 
         .toolbar button {
-            background: #1188cc;
-            color: #fff;
+            background: var(--color-finance-receivables-print-2);
+            color: var(--color-finance-receivables-print-5);
         }
 
         .sheet {
-            width: 210mm;
+            width: var(--dimension-finance-receivables-print-4);
             min-height: 297mm;
             margin: 0 auto;
-            background: #fff;
+            background: var(--color-finance-receivables-print-5);
             position: relative;
             overflow: hidden;
             padding: 12mm 17mm 68mm;
@@ -93,8 +130,8 @@
         .brand-header {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            width: 100%;
+            gap: var(--space-finance-receivables-print-1);
+            width: var(--dimension-finance-receivables-print-1);
         }
 
         .brand-logo {
@@ -138,8 +175,8 @@
 
         .invoice-title-band {
             background: #ececec;
-            width: 100%;
-            min-height: 18mm;
+            width: var(--dimension-finance-receivables-print-1);
+            min-height: var(--dimension-finance-receivables-print-3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -148,20 +185,20 @@
             line-height: var(--typo-finance-receivables-print-line-height-8);
             font-weight: 800;
             text-transform: uppercase;
-            padding:20px;
+            padding:var(--space-finance-receivables-print-3);
         }
 
         .bill-to {
             margin-top: 9mm;
             width: 72mm;
-            min-height: 26mm;
+            min-height: var(--dimension-finance-receivables-print-5);
         }
 
         .bill-to-name {
             font-size: 6.2mm;
             line-height: 1.08;
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
-            margin-bottom: 2.4mm;
+            margin-bottom: var(--space-finance-receivables-print-2);
         }
 
         .bill-to-line {
@@ -172,18 +209,18 @@
         }
 
         .summary-grid {
-            margin-top: 5mm;
-            width: 100%;
+            margin-top: var(--space-finance-receivables-print-7);
+            width: var(--dimension-finance-receivables-print-1);
             display: grid;
             grid-template-columns: repeat(4, minmax(0, auto));
             column-gap: 12mm;
             padding: 1mm 0 0mm;
             /* border-bottom: 1px solid #f0f0f0; */
-            background: #fff;
+            background: var(--color-finance-receivables-print-5);
         }
 
         .summary-label {
-            color: #2e2e32;
+            color: var(--color-finance-receivables-print-3);
             font-size: 3.9mm;
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
             line-height: var(--typo-finance-receivables-print-line-height-5);
@@ -193,7 +230,7 @@
 
         .summary-value {
             margin-top: 2.2mm;
-            color: #2e2e32;
+            color: var(--color-finance-receivables-print-3);
             font-size: var(--typo-finance-receivables-print-font-size-1);
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
             line-height: 1.12;
@@ -202,20 +239,20 @@
         }
 
         .items-table {
-            width: 100%;
+            width: var(--dimension-finance-receivables-print-1);
             border-collapse: collapse;
             border-spacing: 0;
             table-layout: fixed;
-            margin-top: 5mm;
-            border: 1px solid #d8e2e7;
+            margin-top: var(--space-finance-receivables-print-7);
+            border: 1px solid var(--color-finance-receivables-print-4);
             background: rgba(255, 255, 255, 0.96);
         }
 
         .items-table th {
             background: #00a8ff;
-            color: #fff;
-            border: 1px solid #0f8ef2;
-            padding: 3.2mm 3mm;
+            color: var(--color-finance-receivables-print-5);
+            border: 1px solid var(--color-finance-receivables-print-1);
+            padding: var(--space-finance-receivables-print-5);
             font-size: var(--typo-finance-receivables-print-font-size-9);
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
             text-align: left;
@@ -232,15 +269,15 @@
         }
 
         .items-table td {
-            background: #fff;
-            border: 1px solid #d8e2e7;
-            padding: 3.2mm 3mm;
+            background: var(--color-finance-receivables-print-5);
+            border: 1px solid var(--color-finance-receivables-print-4);
+            padding: var(--space-finance-receivables-print-5);
             font-size: var(--typo-finance-receivables-print-font-size-11);
             vertical-align: top;
         }
 
         .items-table tbody tr + tr td {
-            border-top: 1px solid #d8e2e7;
+            border-top: 1px solid var(--color-finance-receivables-print-4);
         }
 
         .description-title {
@@ -260,18 +297,18 @@
 
         .empty-row td {
             color: transparent;
-            height: 18mm;
+            height: var(--dimension-finance-receivables-print-3);
         }
 
         .tracking-panel {
-            margin-top: 5mm;
+            margin-top: var(--space-finance-receivables-print-7);
             min-height: 11mm;
-            background: rgba(238, 242, 247, 0.96);
-            border: 1px solid #d8e2e7;
+            background: var(--color-finance-receivables-print-6);
+            border: 1px solid var(--color-finance-receivables-print-4);
             padding: 3.2mm 4mm;
             display: grid;
             grid-template-columns: 1.1fr repeat(4, 1fr);
-            gap: 3mm;
+            gap: var(--space-finance-receivables-print-6);
             align-items: start;
         }
 
@@ -298,25 +335,25 @@
         }
 
         .bottom-grid {
-            margin-top: 5mm;
+            margin-top: var(--space-finance-receivables-print-7);
             display: grid;
             grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
-            gap: 5mm;
+            gap: var(--space-finance-receivables-print-7);
         }
 
         .notes-panel,
         .totals-panel {
-            background: rgba(238, 242, 247, 0.96);
-            border: 1px solid #d8e2e7;
-            min-height: 18mm;
+            background: var(--color-finance-receivables-print-6);
+            border: 1px solid var(--color-finance-receivables-print-4);
+            min-height: var(--dimension-finance-receivables-print-3);
             padding: 4mm 5mm;
         }
 
         .notes-title {
-            color: #0f8ef2;
+            color: var(--color-finance-receivables-print-1);
             font-size: var(--typo-finance-receivables-print-font-size-12);
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
-            margin-bottom: 2mm;
+            margin-bottom: var(--space-finance-receivables-print-4);
         }
 
         .notes-text {
@@ -326,7 +363,7 @@
         }
 
         .notes-trust {
-            margin-top: 3mm;
+            margin-top: var(--space-finance-receivables-print-6);
             font-size: var(--typo-finance-receivables-print-font-size-11);
             font-weight: var(--typo-finance-receivables-print-font-weight-6);
             color: #b8b8b8;
@@ -338,7 +375,7 @@
             align-items: baseline;
             gap: 8px;
             font-size: var(--typo-finance-receivables-print-font-size-11);
-            margin-bottom: 2.4mm;
+            margin-bottom: var(--space-finance-receivables-print-2);
         }
 
         .totals-line:last-child {
@@ -351,12 +388,12 @@
         }
 
         .totals-line.balance {
-            padding-top: 2mm;
+            padding-top: var(--space-finance-receivables-print-4);
             border-top: 1px solid #c8c8c8;
         }
 
         .totals-line.balance strong {
-            color: #1188cc;
+            color: var(--color-finance-receivables-print-2);
         }
 
         .approved-block {
@@ -378,7 +415,7 @@
 
         .signature-line {
             border-top: 1px solid #2b2b2b;
-            padding-top: 3mm;
+            padding-top: var(--space-finance-receivables-print-6);
             text-align: right;
         }
 
@@ -399,7 +436,7 @@
             bottom: 20px;
             width: 112mm;
             display: grid;
-            gap: 20px;
+            gap: var(--space-finance-receivables-print-3);
             z-index: 3;
         }
 
@@ -412,8 +449,8 @@
         }
 
         .contact-icon {
-            width: 12mm;
-            height: 12mm;
+            width: var(--dimension-finance-receivables-print-2);
+            height: var(--dimension-finance-receivables-print-2);
             border: 1.2mm solid #d6d9db;
             border-left-color: #17dfe3;
             border-radius: 50%;
@@ -454,7 +491,7 @@
         .shape-gray-top {
             left: 43mm;
             top: 0;
-            width: 31mm;
+            width: var(--dimension-finance-receivables-print-6);
             height: 34mm;
             background: #bfc5c8;
             transform: skewX(-45deg);
@@ -463,8 +500,8 @@
         .shape-gray-bottom {
             left: 39mm;
             top: 34mm;
-            width: 31mm;
-            height: 26mm;
+            width: var(--dimension-finance-receivables-print-6);
+            height: var(--dimension-finance-receivables-print-5);
             background: #dfe4e6;
             transform: skewX(45deg);
         }
@@ -473,7 +510,7 @@
             left: 68mm;
             top: 0;
             width: 62mm;
-            height: 68mm;
+            height: var(--dimension-finance-receivables-print-7);
             background: #108ef2;
             clip-path: polygon(0 0, 72% 0, 100% 50%, 72% 100%, 0 100%, 28% 50%);
         }
@@ -481,7 +518,7 @@
         .shape-blue-dark {
             left: 122mm;
             top: 20mm;
-            width: 26mm;
+            width: var(--dimension-finance-receivables-print-5);
             height: 28mm;
             background: #0a5dae;
             clip-path: polygon(0 0, 100% 50%, 0 100%, 34% 50%);
@@ -491,7 +528,7 @@
             left: 139mm;
             top: 0;
             width: 60mm;
-            height: 68mm;
+            height: var(--dimension-finance-receivables-print-7);
             background: #16dfe4;
             clip-path: polygon(0 50%, 28% 0, 100% 0, 72% 50%, 100% 100%, 28% 100%);
         }
@@ -502,7 +539,7 @@
 
         @media print {
             body {
-                background: #fff;
+                background: var(--color-finance-receivables-print-5);
             }
 
             .screen-only {

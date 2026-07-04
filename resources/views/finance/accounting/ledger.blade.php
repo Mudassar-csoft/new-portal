@@ -191,17 +191,19 @@
 @push('styles')
     <style>
         :root {
+            --space-finance-accounting-ledger-1: 12px;
+            --color-finance-accounting-ledger-1: #fff;
             --typo-finance-accounting-ledger-font-weight-1: 700;
         }
 
-        .finance-shell { padding: 8px 0 16px; background: #fff; }
-        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .finance-shell { padding: 8px 0 16px; background: var(--color-finance-accounting-ledger-1); }
+        .finance-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-finance-accounting-ledger-1); flex-wrap: wrap; }
         .finance-summary-row { margin: 2px 0 10px; padding: 7px; }
         .ledger-summary-card {
             border-radius: 10px;
             padding: 16px 18px;
-            color: #fff;
-            margin-bottom: 12px;
+            color: var(--color-finance-accounting-ledger-1);
+            margin-bottom: var(--space-finance-accounting-ledger-1);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
         .ledger-summary-card .summary-value { font-size: 20px; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }

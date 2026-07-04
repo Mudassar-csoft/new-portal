@@ -68,6 +68,10 @@
     @push('styles')
         <style>
         :root {
+            --dimension-user-partials-direct-permissions-1: 16px;
+            --space-user-partials-direct-permissions-1: 12px;
+            --space-user-partials-direct-permissions-2: 8px;
+            --color-user-partials-direct-permissions-1: #e6e9ed;
             --typo-user-partials-direct-permissions-font-weight-1: 700;
         }
 
@@ -79,8 +83,8 @@
                 max-height: 300px;
                 overflow-y: auto;
                 overflow-x: hidden;
-                padding: 12px;
-                border: 1px solid #e6e9ed;
+                padding: var(--space-user-partials-direct-permissions-1);
+                border: 1px solid var(--color-user-partials-direct-permissions-1);
                 border-radius: 6px;
                 background: #fff;
             }
@@ -90,23 +94,23 @@
             .permission-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                gap: 12px;
+                gap: var(--space-user-partials-direct-permissions-1);
             }
             .perm-column {
-                padding: 12px;
-                border: 1px solid #e6e9ed;
+                padding: var(--space-user-partials-direct-permissions-1);
+                border: 1px solid var(--color-user-partials-direct-permissions-1);
                 border-radius: 6px;
                 background: #fafbfc;
                 min-height: 120px;
             }
             .perm-heading {
-                margin-bottom: 8px;
+                margin-bottom: var(--space-user-partials-direct-permissions-2);
                 font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.5px;
             }
             .perm-section + .perm-section {
                 margin-top: 14px;
-                padding-top: 12px;
+                padding-top: var(--space-user-partials-direct-permissions-1);
                 border-top: 1px solid #e6edf5;
             }
             .perm-subheading {
@@ -120,7 +124,7 @@
             .perm-item {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: var(--space-user-partials-direct-permissions-2);
                 padding: 6px 0;
                 cursor: pointer;
                 font-weight: 500 !important;
@@ -128,8 +132,8 @@
             }
             .perm-item input[type="checkbox"] {
                 margin: 0;
-                width: 16px;
-                height: 16px;
+                width: var(--dimension-user-partials-direct-permissions-1);
+                height: var(--dimension-user-partials-direct-permissions-1);
             }
             .perm-item-locked {
                 cursor: default;

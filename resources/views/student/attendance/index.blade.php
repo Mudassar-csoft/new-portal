@@ -23,19 +23,9 @@
     @endphp
 
     <div class="student-attendance-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        @include('partials.session-status-alert')
 
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.validation-errors-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default student-attendance-card">
             <header class="box-typical-header panel-heading d-flex justify-content-between">
@@ -274,8 +264,15 @@
 
 @push('styles')
     <style>
+        :root {
+            --dimension-student-attendance-index-1: auto;
+            --dimension-student-attendance-index-2: none;
+            --space-student-attendance-index-1: 10px;
+            --space-student-attendance-index-2: 14px;
+        }
+
         /* .student-attendance-shell {
-            padding: 10px;
+            padding: var(--space-student-attendance-index-1);
         } */
 
         .student-attendance-card {
@@ -285,14 +282,14 @@
 
         .student-attendance-filters {
             display: flex;
-            /* gap: 14px; */
+            /* gap: var(--space-student-attendance-index-2); */
             flex-wrap: wrap;
             align-items: end;
         }
 
         .student-actions {
             display: flex;
-            gap: 10px;
+            gap: var(--space-student-attendance-index-1);
             align-items: end;
             margin-left: auto;
         }
@@ -300,7 +297,7 @@
         .student-summary-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(150px, 1fr));
-            gap: 14px;
+            gap: var(--space-student-attendance-index-2);
             padding:15px;
         }
 
@@ -343,22 +340,22 @@
         }
 
         .student-attendance-table {
-            width: auto !important;
+            width: var(--dimension-student-attendance-index-1) !important;
             min-width: 100% !important;
-            max-width: none !important;
+            max-width: var(--dimension-student-attendance-index-2) !important;
             table-layout: auto !important;
         }
 
         .student-attendance-table th,
         .student-attendance-table td {
-            width: auto !important;
+            width: var(--dimension-student-attendance-index-1) !important;
             min-width: 0 !important;
-            max-width: none !important;
+            max-width: var(--dimension-student-attendance-index-2) !important;
         }
 
         @media (max-width: 767px) {
             .student-summary-card strong {
-                margin-top: 10px;
+                margin-top: var(--space-student-attendance-index-1);
             }
             .student-summary-label {
                 margin-top: 5px;

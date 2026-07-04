@@ -14,18 +14,8 @@
     @endphp
 
     <div class="finance-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        @include('partials.session-status-alert')
+        @include('partials.validation-errors-alert')
 
         @if($canCreatePayroll)
             <section class="box-typical box-typical-dashboard panel panel-default finance-card">
@@ -51,14 +41,7 @@
                                 <label class="form-label required">Payroll Month</label>
                                 <input type="month" name="month" class="form-control" value="{{ old('month', now()->format('Y-m')) }}" required>
                             </div>
-                            <div class="form-group col-lg-3 col-md-6">
-                                <label class="form-label required">Payment Method</label>
-                                <select name="payment_method" class="form-control" required>
-                                    <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
-                                    <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
-                                    <option value="cheque" @selected(old('payment_method') === 'cheque')>Cheque</option>
-                                </select>
-                            </div>
+                            @include('finance.partials.payment-method-field')
                             <div class="form-group col-lg-3 col-md-6">
                                 <label class="form-label required">Remarks</label>
                                 <input type="text" name="remarks" class="form-control" value="{{ old('remarks') }}">
@@ -158,6 +141,11 @@
 
 @push('styles')
     <style>
+        :root {
+            --color-finance-expense-payroll-1: #343434;
+            --color-finance-expense-payroll-2: #fff;
+        }
+
       
 .box-typical.box-typical-dashboard .box-typical-body {
     overflow: hidden;
@@ -184,15 +172,15 @@
     border-radius: .25rem;
     font-size: 1rem;
     line-height: 1.5;
-    color: #343434;
+    color: var(--color-finance-expense-payroll-1);
     padding: .375rem 25px .375rem 1rem;
     min-height: 32px;
-    background: #fff
+    background: var(--color-finance-expense-payroll-2)
 }
 .form-label{
     font-size: 11px;
     font-weight: 600 ;
-    color: #343434;
+    color: var(--color-finance-expense-payroll-1);
     text-transform: uppercase;
     margin-bottom: 3px;
     
@@ -202,7 +190,7 @@
         .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #e53935; }
-        .finance-table thead th { background: #1ea7ff; color: #fff; }
+        .finance-table thead th { background: #1ea7ff; color: var(--color-finance-expense-payroll-2); }
         .dropdown-menu form { margin: 0; }
         .dropdown-menu form .dropdown-item { width: 100%; text-align: left; background: transparent; border: 0; }
     </style>

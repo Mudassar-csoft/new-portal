@@ -141,6 +141,7 @@
 @push('styles')
     <style>
         :root {
+            --space-finance-net-cashflow-details-1: 10px;
             --typo-finance-net-cashflow-details-font-weight-1: 700;
         }
 
@@ -149,7 +150,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-net-cashflow-details-1);
             flex-wrap: wrap;
         }
         .finance-summary-row { margin: 2px 0 10px; }
@@ -189,7 +190,7 @@
                 margin-top: 5px;
             }
             .cash-value {
-                margin-top: 10px;
+                margin-top: var(--space-finance-net-cashflow-details-1);
             }
         }
     </style>

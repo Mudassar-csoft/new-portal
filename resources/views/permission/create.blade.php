@@ -5,6 +5,11 @@
 @section('content')
 <div class="permission-page">
     <style>
+        :root {
+            --dimension-permission-create-1: 100%;
+            --space-permission-create-1: 10px;
+        }
+
         /* ========== GLOBAL FIXES ========== */
         * {
             box-sizing: border-box;
@@ -39,7 +44,7 @@
 
         /* ========== FORM ========== */
         .form-control {
-            width: 100%;
+            width: var(--dimension-permission-create-1);
         }
 
         textarea {
@@ -51,7 +56,7 @@
             display: flex;
             justify-content: flex-end;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: var(--space-permission-create-1);
         }
 
         /* ========== RESPONSIVE ========== */
@@ -66,13 +71,13 @@
             }
 
             .card-header .btn {
-                margin-top: 10px;
+                margin-top: var(--space-permission-create-1);
             }
         }
 
         @media (max-width: 576px) {
             .btn-group-custom button {
-                width: 100%;
+                width: var(--dimension-permission-create-1);
             }
         }
     </style>

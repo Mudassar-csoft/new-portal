@@ -4,9 +4,7 @@
 
 @section('content')
     <div class="inventory-shell">
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
+        @include('partials.session-status-alert')
 
         <section class="box-typical box-typical-dashboard panel panel-default inventory-card">
             <header class="box-typical-header panel-heading inventory-header">
@@ -157,29 +155,41 @@
 
 @push('styles')
     <style>
+        :root {
+            --space-inventory-index-1: 12px;
+            --space-inventory-index-2: 4px;
+            --space-inventory-index-3: 8px;
+            --color-inventory-index-1: #00a8ff;
+            --color-inventory-index-2: #975ce7;
+            --color-inventory-index-3: #a2cf37;
+            --color-inventory-index-4: #f35f62;
+            --color-inventory-index-5: #fdc518;
+            --color-inventory-index-6: #fff;
+        }
+
         .inventory-shell { padding: 8px 0 16px; }
         .inventory-card { margin: 0 0 6px !important; }
         .inventory-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
+            gap: var(--space-inventory-index-1);
             flex-wrap: wrap;
         }
         .inventory-summary {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: var(--space-inventory-index-1);
+            margin-bottom: var(--space-inventory-index-1);
             padding: 23px;
         }
         .summary-tile {
             height: 25vh;
             padding: 14px 16px;
             text-align: center;
-            border: 1px solid #00a8ff;
+            border: 1px solid var(--color-inventory-index-1);
             border-radius: 12px;
-            background: #00a8ff;
+            background: var(--color-inventory-index-1);
             color: white;
         }
 
@@ -189,32 +199,32 @@
         .summary-tile:hover strong,
         .summary-tile:focus,
         .summary-tile:focus strong {
-            color: #fff !important;
+            color: var(--color-inventory-index-6) !important;
         }
 
         .summary-tile:nth-child(5n + 1) {
-            background: #f35f62;
-            border-color: #f35f62;
+            background: var(--color-inventory-index-4);
+            border-color: var(--color-inventory-index-4);
         }
 
         .summary-tile:nth-child(5n + 2) {
-            background: #fdc518;
-            border-color: #fdc518;
+            background: var(--color-inventory-index-5);
+            border-color: var(--color-inventory-index-5);
         }
 
         .summary-tile:nth-child(5n + 3) {
-            background: #975ce7;
-            border-color: #975ce7;
+            background: var(--color-inventory-index-2);
+            border-color: var(--color-inventory-index-2);
         }
 
         .summary-tile:nth-child(5n + 4) {
-            background: #a2cf37;
-            border-color: #a2cf37;
+            background: var(--color-inventory-index-3);
+            border-color: var(--color-inventory-index-3);
         }
 
         .summary-tile:nth-child(5n + 5) {
-            background: #00a8ff;
-            border-color: #00a8ff;
+            background: var(--color-inventory-index-1);
+            border-color: var(--color-inventory-index-1);
         }
 
         .summary-tile strong {
@@ -236,16 +246,16 @@
         .inventory-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
-            margin-top: 4px;
+            gap: var(--space-inventory-index-3);
+            margin-top: var(--space-inventory-index-2);
         }
         .inventory-table thead th {
             background: #1f8ef1;
-            color: #fff;
+            color: var(--color-inventory-index-6);
         }
         .stock-badge {
             display: inline-block;
-            margin-top: 4px;
+            margin-top: var(--space-inventory-index-2);
             padding: 2px 8px;
             border-radius: 999px;
             font-size: 11px;
@@ -256,7 +266,7 @@
             color: #1e8e4d;
         }
         .stock-badge.low {
-            background: #fff0ef;
+            background: var(--color-inventory-index-6)0ef;
             color: #d93025;
         }
         @media (max-width: 760px) {
@@ -268,7 +278,7 @@
             }
         }
         .inventory-pagination {
-            margin-top: 12px;
+            margin-top: var(--space-inventory-index-1);
         }
         .inventory-action-cell {
             min-width: 100px;
@@ -290,7 +300,7 @@
 
             .summary-tile strong {
                 margin-top: 0;
-                margin-bottom: 8px;
+                margin-bottom: var(--space-inventory-index-3);
             }
         }
     </style>

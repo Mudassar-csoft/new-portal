@@ -84,7 +84,7 @@
                     <div class="summary-label">Royalty</div>
                 </div>
             </div>
-            
+
             <div class="col-lg-6 col-md-6">
                 <div class="income-summary-card tone-other">
                     <div class="summary-value">Rs. {{ number_format((float) ($summary['other_income'] ?? 0), 0) }}</div>
@@ -284,6 +284,7 @@
 @push('styles')
     <style>
         :root {
+            --space-finance-income-details-1: 10px;
             --typo-finance-income-details-font-weight-1: 700;
         }
 
@@ -292,7 +293,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-finance-income-details-1);
             flex-wrap: wrap;
         }
         .finance-summary-row { margin: 2px 0 10px;padding:7px; }
@@ -313,7 +314,7 @@
     text-align: center;
     margin-top: 1rem;
         }
-       
+
         .income-summary-card .summary-value {
             margin-top: 30px;
     font-size: 18px;
@@ -341,7 +342,7 @@
               margin-top: 5px;
             }
          .income-summary-card .summary-value {
-            margin-top: 10px;  
+            margin-top: var(--space-finance-income-details-1);
         }
 }
     </style>

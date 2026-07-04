@@ -271,8 +271,32 @@
 @push('styles')
     <style>
         :root {
-            --typo-coworking-registration-create-font-weight-1: 600;
+            --dimension-coworking-registration-create-1: 54px;
+            --dimension-coworking-registration-create-2: 7px;
+            --dimension-coworking-registration-create-3: none;
+            --space-coworking-registration-create-1: 0 !important;
+            --space-coworking-registration-create-2: 10px;
+            --space-coworking-registration-create-3: -10px;
+            --space-coworking-registration-create-4: 10px 14px;
+            --space-coworking-registration-create-5: 8px;
+            --color-coworking-registration-create-1: #00a8ff;
+            --color-coworking-registration-create-2: #223a57;
+            --color-coworking-registration-create-3: #5f7289;
+            --color-coworking-registration-create-4: #e53935;
+            --color-coworking-registration-create-5: #fff;
         }
+
+        :root {
+            --dimension-coworking-registration-create-1: 54px;
+            --dimension-coworking-registration-create-2: 7px;
+            --dimension-coworking-registration-create-3: none;
+            --space-coworking-registration-create-1: 0 !important;
+            --space-coworking-registration-create-2: 10px;
+            --space-coworking-registration-create-3: -10px;
+            --space-coworking-registration-create-4: 10px 14px;
+            --space-coworking-registration-create-5: 8px;
+            --typo-coworking-registration-create-font-weight-1: 600;
+        }0___
 
         .ci-inline-pad-04 {
             padding: 0.4rem !important;
@@ -295,10 +319,10 @@
 
         .registration-card {
             overflow: visible !important;
-            max-height: none !important;
+            max-height: var(--dimension-coworking-registration-create-3) !important;
             border: 1px solid #e3edf7;
             box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
-            background: #fff;
+            background: var(--color-coworking-registration-create-5);
         }
 
         .registration-card .panel-heading {
@@ -306,13 +330,13 @@
         }
 
         .registration-card .panel-body {
-            max-height: none !important;
+            max-height: var(--dimension-coworking-registration-create-3) !important;
             overflow: visible !important;
         }
 
         .registration-header {
             border-bottom: 1px solid #e6eef3;
-            background: #fff;
+            background: var(--color-coworking-registration-create-5);
         }
 
         .registration-title {
@@ -325,7 +349,7 @@
         .registration-title > span {
             font-size: 14px;
             font-weight: 400;
-            color: #5f7289;
+            color: var(--color-coworking-registration-create-3);
         }
 
         .registration-body {
@@ -335,17 +359,17 @@
 
         .registration-form .required::after {
             content: ' *';
-            color: #e53935;
+            color: var(--color-coworking-registration-create-4);
         }
 
         .registration-form .form-row {
-            margin-left: -10px;
-            margin-right: -10px;
+            margin-left: var(--space-coworking-registration-create-3);
+            margin-right: var(--space-coworking-registration-create-3);
         }
 
         .registration-form .form-row > [class*="col-"] {
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: var(--space-coworking-registration-create-2);
+            padding-right: var(--space-coworking-registration-create-2);
         }
 
         .registration-form .form-group {
@@ -356,17 +380,17 @@
         .registration-form .form-label {
             display: block;
             min-height: 22px;
-            margin-bottom: 8px;
+            margin-bottom: var(--space-coworking-registration-create-5);
             font-weight: var(--typo-coworking-registration-create-font-weight-1);
-            color: #223a57;
+            color: var(--color-coworking-registration-create-2);
         }
 
         .registration-form .form-control {
             min-height: 46px;
             border-radius: 12px;
             border: 1px solid #d6e2f0;
-            padding: 10px 14px;
-            background: #fff;
+            padding: var(--space-coworking-registration-create-4);
+            background: var(--color-coworking-registration-create-5);
             box-shadow: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
@@ -378,9 +402,9 @@
 
         .registration-form .registration-textarea-address,
         .registration-form .registration-textarea-remarks {
-            min-height: 54px !important;
-            height: 54px !important;
-            max-height: 54px !important;
+            min-height: var(--dimension-coworking-registration-create-1) !important;
+            height: var(--dimension-coworking-registration-create-1) !important;
+            max-height: var(--dimension-coworking-registration-create-1) !important;
             resize: none;
         }
 
@@ -392,7 +416,7 @@
         .registration-form .form-control[disabled],
         .registration-form .form-control[readonly] {
             background: #f4f8fc;
-            color: #5f7289;
+            color: var(--color-coworking-registration-create-3);
         }
 
         .registration-form .field-error {
@@ -410,20 +434,20 @@
         }
 
         .registration-form .choice-group.is-invalid {
-            border: 1px solid #e53935;
+            border: 1px solid var(--color-coworking-registration-create-4);
             border-radius: 6px;
             padding: 4px 0;
         }
 
         .registration-form .form-control.is-invalid {
-            border-color: #e53935 !important;
+            border-color: var(--color-coworking-registration-create-4) !important;
             box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.12);
         }
 
         .registration-form .choice-group .form-check {
             display: inline-flex !important;
             align-items: center !important;
-            gap: 8px;
+            gap: var(--space-coworking-registration-create-5);
             margin-bottom: 0;
             padding-left: 0;
             position: relative;
@@ -436,18 +460,18 @@
         .registration-gender-title {
             font-size: 15px;
             font-weight: var(--typo-coworking-registration-create-font-weight-1);
-            margin-bottom: 10px;
+            margin-bottom: var(--space-coworking-registration-create-2);
         }
 
         .registration-gender-options {
-            margin-top: 0 !important;
+            margin-top: var(--space-coworking-registration-create-1);
         }
 
         .registration-gender-group .form-check-input[type="radio"] {
             width: 17px;
             height: 17px !important;
             border-width: 2px;
-            margin: 0 !important;
+            margin: var(--space-coworking-registration-create-1);
             position: static;
             top: auto;
             left: auto;
@@ -465,12 +489,12 @@
             outline: none;
             cursor: pointer;
             position: relative;
-            background-color: #fff;
+            background-color: var(--color-coworking-registration-create-5);
             transition: background 0.2s, box-shadow 0.2s;
         }
 
         .registration-form .form-check-input[type="radio"]:checked {
-            border-color: #00a8ff;
+            border-color: var(--color-coworking-registration-create-1);
         }
 
         .registration-form .form-check-input[type="radio"]:checked::before {
@@ -478,25 +502,25 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 7px;
-            height: 7px;
+            width: var(--dimension-coworking-registration-create-2);
+            height: var(--dimension-coworking-registration-create-2);
             border-radius: 50%;
-            background-color: #00a8ff;
+            background-color: var(--color-coworking-registration-create-1);
         }
 
         .registration-gender-group .form-check-input[type="radio"]:checked::before {
             top: 3px;
             left: 3px;
-            width: 7px;
-            height: 7px;
+            width: var(--dimension-coworking-registration-create-2);
+            height: var(--dimension-coworking-registration-create-2);
         }
 
         .registration-gender-group .form-check-label {
             font-size: 15px !important;
-            margin: 0 !important;
+            margin: var(--space-coworking-registration-create-1);
             cursor: pointer;
             font-weight: var(--typo-coworking-registration-create-font-weight-1);
-            color: #223a57;
+            color: var(--color-coworking-registration-create-2);
             line-height: 1.2;
             display: inline-flex;
             align-items: center;
@@ -509,7 +533,7 @@
 
         @media (max-width: 767px) {
             .registration-card .panel-heading {
-                padding: 10px 14px;
+                padding: var(--space-coworking-registration-create-4);
             }
 
             .registration-body {

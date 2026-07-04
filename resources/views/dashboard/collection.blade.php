@@ -23,12 +23,13 @@
 
     <div class="collection-shell">
         <div class="collection-heading">
-            Showing Collection {{ $titleLabel }}
+            Showing Collection {{ $titleLabel }}  @if($campusLabel)
+            <span class="collection-campus">{{ $campusLabel }}
+                </span>
+                @endif
         </div>
 
-        @if($campusLabel)
-            <div class="collection-campus">{{ $campusLabel }}</div>
-        @endif
+
 
         <div class="collection-divider"></div>
 
@@ -42,7 +43,7 @@
                         @endforeach
                     </select>
                     <!-- <small class="collection-help">Select one month for week-wise view, multiple for month-wise.</small> -->
-                   
+
                 </div>
                 <div class="form-group col-md-4">
                     <label class="collection-label">Select Year:</label>
@@ -118,6 +119,23 @@
 @push('styles')
     <style>
         :root {
+            --dimension-dashboard-collection-1: 100%;
+            --dimension-dashboard-collection-2: 48px;
+            --space-dashboard-collection-1: 0 14px;
+            --space-dashboard-collection-2: 14px;
+            --space-dashboard-collection-3: 16px 12px;
+            --color-dashboard-collection-1: #0994de;
+            --color-dashboard-collection-2: #17a8f5;
+            --color-dashboard-collection-3: #6b7280;
+            --color-dashboard-collection-4: #fff;
+        }
+
+        :root {
+            --dimension-dashboard-collection-1: 100%;
+            --dimension-dashboard-collection-2: 48px;
+            --space-dashboard-collection-1: 0 14px;
+            --space-dashboard-collection-2: 14px;
+            --space-dashboard-collection-3: 16px 12px;
             --collection-font-sm: 13px;
             --collection-font-md: 16px;
             --collection-font-lg: 18px;
@@ -129,7 +147,7 @@
 
         .collection-shell {
             padding: 8px 0 18px;
-            background: #fff;
+            background: var(--color-dashboard-collection-4);
             border-radius: 5px;
         }
 
@@ -138,14 +156,14 @@
             font-weight: var(--collection-weight-medium);
             color: #2d2d2d;
             margin-bottom: 6px;
-            padding: 14px;
+            padding: var(--space-dashboard-collection-2);
         }
 
         .collection-campus {
-            color: #6b7280;
+            color: var(--color-dashboard-collection-3);
             font-size: 14px;
-            margin-bottom: 14px;
-            padding: 0 14px;
+            margin-bottom: var(--space-dashboard-collection-2);
+            padding: var(--space-dashboard-collection-1);
         }
 
         .collection-divider {
@@ -156,7 +174,7 @@
 
         .collection-filter {
             margin-bottom: 34px;
-            padding: 0 14px;
+            padding: var(--space-dashboard-collection-1);
         }
 
         .collection-label {
@@ -173,7 +191,7 @@
         }
 
         .collection-filter select.form-control:not(.collection-month-select) {
-            height: 48px;
+            height: var(--dimension-dashboard-collection-2);
         }
 
         .collection-month-select {
@@ -184,23 +202,23 @@
         .collection-help {
             display: block;
             margin-top: 10px;
-            color: #6b7280;
+            color: var(--color-dashboard-collection-3);
             font-size: var(--collection-font-sm);
         }
 
         /* .collection-button {
             min-width: 78px;
-            height: 48px;
+            height: var(--dimension-dashboard-collection-2);
             border-radius: 6px;
-            background: #17a8f5;
-            border-color: #17a8f5;
+            background: var(--color-dashboard-collection-2);
+            border-color: var(--color-dashboard-collection-2);
             font-weight: 600;
         } */
 
         /* .collection-button:hover,
         .collection-button:focus {
-            background: #0994de;
-            border-color: #0994de;
+            background: var(--color-dashboard-collection-1);
+            border-color: var(--color-dashboard-collection-1);
         } */
 
         .collection-table-wrap {
@@ -212,21 +230,21 @@
 
         .collection-table {
             margin-bottom: 0;
-            background: #fff;
+            background: var(--color-dashboard-collection-4);
             width: max-content;
-            min-width: 100%;
+            min-width: var(--dimension-dashboard-collection-1);
         }
 
         .collection-table thead th,
         .collection-table tfoot th {
             background: #1ea7ef !important;
-            color: #fff;
+            color: var(--color-dashboard-collection-4);
             text-align: center;
             font-size: var(--collection-font-md);
             font-weight: var(--collection-weight-bold) !important;
             vertical-align: middle;
-            border-color: #fff !important;
-            padding: 16px 12px;
+            border-color: var(--color-dashboard-collection-4) !important;
+            padding: var(--space-dashboard-collection-3);
             white-space: nowrap;
             word-break: normal;
             overflow-wrap: normal;
@@ -241,7 +259,7 @@
             text-align: center;
             vertical-align: middle;
             border-color: #d6dbe7;
-            padding: 16px 12px;
+            padding: var(--space-dashboard-collection-3);
             font-size: 15px;
             color: #2f3b52;
             white-space: nowrap;
@@ -270,7 +288,7 @@
         }
 
         .collection-total-row td {
-            background: #ffffff !important;
+            background: var(--color-dashboard-collection-4)fff !important;
             font-size: var(--collection-font-xl);
             font-weight: var(--collection-weight-bold);
             color: #12314c;
@@ -286,8 +304,8 @@
         }
 
         .collection-empty {
-            color: #6b7280 !important;
-            background: #fff !important;
+            color: var(--color-dashboard-collection-3) !important;
+            background: var(--color-dashboard-collection-4) !important;
         }
 
         @media (max-width: 767px) {
@@ -296,7 +314,7 @@
             }
 
             .collection-button {
-                width: 100%;
+                width: var(--dimension-dashboard-collection-1);
             }
 
             .collection-month-select {

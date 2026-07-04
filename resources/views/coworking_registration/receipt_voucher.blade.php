@@ -28,6 +28,11 @@
     <title>{{ $receiptTitle }}</title>
     <style>
         :root {
+            --dimension-coworking-registration-receipt-voucher-1: 42%;
+            --space-coworking-registration-receipt-voucher-1: 10px;
+            --space-coworking-registration-receipt-voucher-2: 18px;
+            --space-coworking-registration-receipt-voucher-3: 8px;
+            --color-coworking-registration-receipt-voucher-1: #fff;
             --typo-coworking-registration-receipt-voucher-font-size-1: 14px;
             --typo-coworking-registration-receipt-voucher-font-size-2: 15px;
             --typo-coworking-registration-receipt-voucher-font-weight-3: 400;
@@ -46,11 +51,11 @@
         }
 
         body {
-            background: #fff;
+            background: var(--color-coworking-registration-receipt-voucher-1);
             color: #111;
             font-size: var(--typo-coworking-registration-receipt-voucher-font-size-1);
             line-height: 1.2;
-            padding: 10px;
+            padding: var(--space-coworking-registration-receipt-voucher-1);
         }
 
         .voucher-sheet {
@@ -61,27 +66,27 @@
         .voucher-copy {
             border: 1px solid #444;
             padding: 18px 18px 14px;
-            margin-bottom: 18px;
+            margin-bottom: var(--space-coworking-registration-receipt-voucher-2);
             page-break-inside: avoid;
         }
 
         .copy-label {
             text-align: center;
             font-size: var(--typo-coworking-registration-receipt-voucher-font-size-1);
-            margin-bottom: 8px;
+            margin-bottom: var(--space-coworking-registration-receipt-voucher-3);
         }
 
         .voucher-header {
             display: flex;
             justify-content: space-between;
-            gap: 18px;
-            margin-bottom: 10px;
+            gap: var(--space-coworking-registration-receipt-voucher-2);
+            margin-bottom: var(--space-coworking-registration-receipt-voucher-1);
         }
 
         .brand-block {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--space-coworking-registration-receipt-voucher-1);
             min-width: 0;
         }
 
@@ -123,7 +128,7 @@
         .info-table th {
             font-weight: var(--typo-coworking-registration-receipt-voucher-font-weight-3);
             text-align: left;
-            background: #fff;
+            background: var(--color-coworking-registration-receipt-voucher-1);
         }
 
         .tables-row {
@@ -138,7 +143,7 @@
         }
 
         .status-wrap {
-            width: 42%;
+            width: var(--dimension-coworking-registration-receipt-voucher-1);
         }
 
         .summary-table td:first-child,
@@ -148,11 +153,11 @@
 
         .summary-table td:last-child,
         .status-table td:last-child {
-            width: 42%;
+            width: var(--dimension-coworking-registration-receipt-voucher-1);
         }
 
         .amount-table {
-            margin-top: 10px;
+            margin-top: var(--space-coworking-registration-receipt-voucher-1);
         }
 
         .amount-table td {
@@ -163,14 +168,14 @@
         .voucher-notes {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            margin-top: 8px;
+            gap: var(--space-coworking-registration-receipt-voucher-1);
+            margin-top: var(--space-coworking-registration-receipt-voucher-3);
             font-size: 11px;
             color: #8a8a8a;
         }
 
         .voucher-footer {
-            margin-top: 18px;
+            margin-top: var(--space-coworking-registration-receipt-voucher-2);
             font-size: 12px;
             line-height: 1.25;
         }

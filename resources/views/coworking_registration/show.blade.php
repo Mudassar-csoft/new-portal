@@ -116,9 +116,7 @@
     @endphp
 
     <div class="student-detail-shell coworking-detail-shell">
-        @if(session('status'))
-            <div class="student-flash">{{ session('status') }}</div>
-        @endif
+        @include('partials.student-session-status-flash')
 
         <div class="box-typical box-typical-dashboard panel panel-default student-detail-header">
             <div class="panel-body">
@@ -635,6 +633,41 @@
 @push('styles')
     <style>
         :root {
+            --dimension-coworking-registration-show-1: 100%;
+            --dimension-coworking-registration-show-2: 100px;
+            --space-coworking-registration-show-1: 12px;
+            --space-coworking-registration-show-2: -12px;
+            --space-coworking-registration-show-3: 14px;
+            --space-coworking-registration-show-4: 16px;
+            --space-coworking-registration-show-5: 18px;
+            --space-coworking-registration-show-6: 4px;
+            --space-coworking-registration-show-7: 4px 10px;
+            --space-coworking-registration-show-8: 6px;
+            --space-coworking-registration-show-9: 8px;
+            --color-coworking-registration-show-1: #0a96cc;
+            --color-coworking-registration-show-2: #0f766e;
+            --color-coworking-registration-show-3: #1f2d3d;
+            --color-coworking-registration-show-4: #334155;
+            --color-coworking-registration-show-5: #4c5a6a;
+            --color-coworking-registration-show-6: #94a3b8;
+            --color-coworking-registration-show-7: #e2e8f0;
+            --color-coworking-registration-show-8: #f8fafc;
+            --color-coworking-registration-show-9: #fff;
+            --color-coworking-registration-show-10: rgba(15, 23, 42, 0.48);
+        }
+
+        :root {
+            --dimension-coworking-registration-show-1: 100%;
+            --dimension-coworking-registration-show-2: 100px;
+            --space-coworking-registration-show-1: 12px;
+            --space-coworking-registration-show-2: -12px;
+            --space-coworking-registration-show-3: 14px;
+            --space-coworking-registration-show-4: 16px;
+            --space-coworking-registration-show-5: 18px;
+            --space-coworking-registration-show-6: 4px;
+            --space-coworking-registration-show-7: 4px 10px;
+            --space-coworking-registration-show-8: 6px;
+            --space-coworking-registration-show-9: 8px;
             --typo-coworking-registration-show-font-size-1: 18px;
             --typo-coworking-registration-show-font-weight-2: 600;
             --typo-coworking-registration-show-font-size-3: 16px;
@@ -642,7 +675,7 @@
             --typo-coworking-registration-show-font-weight-5: 500;
             --typo-coworking-registration-show-font-size-6: 14px;
             --typo-coworking-registration-show-font-size-7: 13px;
-        }
+        }0___
 
         .ci-muted-meta {
             font-size: 14px !important;
@@ -654,7 +687,7 @@
         }
 
         .student-detail-header {
-            margin-bottom: 14px;
+            margin-bottom: var(--space-coworking-registration-show-3);
         }
 
         .student-detail-header .panel-body {
@@ -670,7 +703,7 @@
         .student-detail-grid {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 16px;
+            gap: var(--space-coworking-registration-show-4);
             align-items: start;
         }
 
@@ -707,8 +740,8 @@
 
         .profile-banner--coworking {
             background:
-                linear-gradient(135deg, rgba(15, 23, 42, 0.48), rgba(15, 23, 42, 0.48)),
-                linear-gradient(135deg, #1f2937 0%, #334155 55%, #0f766e 100%);
+                linear-gradient(135deg, var(--color-coworking-registration-show-10), var(--color-coworking-registration-show-10)),
+                linear-gradient(135deg, #1f2937 0%, var(--color-coworking-registration-show-4) 55%, var(--color-coworking-registration-show-2) 100%);
         }
 
         .profile-avatar-wrap {
@@ -720,19 +753,19 @@
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
+            width: var(--dimension-coworking-registration-show-2);
+            height: var(--dimension-coworking-registration-show-2);
             border-radius: 50%;
-            border: 4px solid #fff;
-            background: #fff;
+            border: 4px solid var(--color-coworking-registration-show-9);
+            background: var(--color-coworking-registration-show-9);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
 
         .profile-avatar svg {
             display: block;
-            width: 100%;
-            height: 100%;
+            width: var(--dimension-coworking-registration-show-1);
+            height: var(--dimension-coworking-registration-show-1);
         }
 
         .profile-body {
@@ -744,20 +777,20 @@
             margin: 8px 0 4px;
             font-size: var(--typo-coworking-registration-show-font-size-1);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            color: #1f2d3d;
+            color: var(--color-coworking-registration-show-3);
         }
 
         .profile-phone {
-            color: #4c5a6a;
+            color: var(--color-coworking-registration-show-5);
             font-size: var(--typo-coworking-registration-show-font-size-3);
-            margin-bottom: 8px;
+            margin-bottom: var(--space-coworking-registration-show-9);
         }
 
         .profile-campus {
-            color: #0f766e;
+            color: var(--color-coworking-registration-show-2);
             font-size: 15px;
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            margin-bottom: 16px;
+            margin-bottom: var(--space-coworking-registration-show-4);
         }
 
         .profile-action {
@@ -769,12 +802,12 @@
             align-items: center;
             justify-content: center;
             min-width: 80px;
-            padding: 4px 10px;
+            padding: var(--space-coworking-registration-show-7);
             margin: 0;
             border: none;
             border-radius: 3px;
             background: #f0ad4e;
-            color: #fff;
+            color: var(--color-coworking-registration-show-9);
             font-size: var(--typo-coworking-registration-show-font-size-4);
             text-transform: uppercase;
             cursor: pointer;
@@ -790,8 +823,8 @@
         }
 
         .student-action-btn {
-            /* background: #fff !important; */
-            /* color: #1f2d3d !important; */
+            /* background: var(--color-coworking-registration-show-9) !important; */
+            /* color: var(--color-coworking-registration-show-3) !important; */
             /* border: 1px solid #cfd7df !important; */
             /* padding: 6px 18px !important; */
             /* border-radius: 4px; */
@@ -799,14 +832,14 @@
         }
 
         .student-action-btn:hover {
-            /* border-color: #94a3b8 !important; */
+            /* border-color: var(--color-coworking-registration-show-6) !important; */
         }
 
         .student-action-wrap .dropdown-menu {
             display: none;
             min-width: 200px;
-            background: #fff;
-            border: 1px solid #e2e8f0;
+            background: var(--color-coworking-registration-show-9);
+            border: 1px solid var(--color-coworking-registration-show-7);
             border-radius: 10px;
             box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
             padding: 10px 0;
@@ -825,7 +858,7 @@
         .student-action-wrap .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: var(--space-coworking-registration-show-1);
             padding: 12px 18px;
             color: #303740;
             font-size: var(--typo-coworking-registration-show-font-size-6);
@@ -838,7 +871,7 @@
         }
 
         .student-action-wrap button.dropdown-item {
-            width: 100%;
+            width: var(--dimension-coworking-registration-show-1);
             border: 0;
             background: transparent;
             text-align: left;
@@ -862,11 +895,11 @@
         .profile-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: var(--space-coworking-registration-show-9);
         }
 
         .stat-tile {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--color-coworking-registration-show-7);
             border-radius: 4px;
             padding: 10px 6px;
             text-align: center;
@@ -874,19 +907,19 @@
 
         .stat-label {
             font-size: var(--typo-coworking-registration-show-font-size-7);
-            color: #1f2d3d;
+            color: var(--color-coworking-registration-show-3);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
         .stat-value {
             font-size: var(--typo-coworking-registration-show-font-size-3);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            margin-top: 4px;
-            color: #1f2d3d;
+            margin-top: var(--space-coworking-registration-show-6);
+            color: var(--color-coworking-registration-show-3);
         }
 
         .stat-value--blue {
-            color: #0a96cc;
+            color: var(--color-coworking-registration-show-1);
         }
 
         .stat-value--orange {
@@ -902,8 +935,8 @@
             margin: 0;
             padding: 0;
             list-style: none;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
+            background: var(--color-coworking-registration-show-9);
+            border-bottom: 1px solid var(--color-coworking-registration-show-7);
             overflow: hidden;
         }
 
@@ -912,7 +945,7 @@
             padding: 14px 12px;
             text-align: center;
             cursor: pointer;
-            color: #4c5a6a;
+            color: var(--color-coworking-registration-show-5);
             font-size: var(--typo-coworking-registration-show-font-size-3);
             font-weight: var(--typo-coworking-registration-show-font-weight-5);
             border-bottom: 3px solid transparent;
@@ -924,9 +957,9 @@
         }
 
         .student-tab.active {
-            color: #0a96cc;
+            color: var(--color-coworking-registration-show-1);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            border-bottom-color: #0a96cc;
+            border-bottom-color: var(--color-coworking-registration-show-1);
         }
 
         .student-pane {
@@ -938,7 +971,7 @@
         }
 
         .pane-card {
-            padding: 14px;
+            padding: var(--space-coworking-registration-show-3);
         }
 
         .pane-card--info {
@@ -946,13 +979,13 @@
         }
 
         .info-columns {
-            margin-left: -12px;
-            margin-right: -12px;
+            margin-left: var(--space-coworking-registration-show-2);
+            margin-right: var(--space-coworking-registration-show-2);
         }
 
         .info-column {
-            padding-left: 12px;
-            padding-right: 12px;
+            padding-left: var(--space-coworking-registration-show-1);
+            padding-right: var(--space-coworking-registration-show-1);
         }
 
         .student-pane .follow-table {
@@ -969,7 +1002,7 @@
 
         .empty-state {
             text-align: center;
-            color: #94a3b8;
+            color: var(--color-coworking-registration-show-6);
             font-style: italic;
             padding: 22px 12px !important;
         }
@@ -979,13 +1012,13 @@
         }
 
         .fee-status-cell .label {
-            padding: 4px 10px;
+            padding: var(--space-coworking-registration-show-7);
             font-size: 11px;
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
         .fee-action-btn {
-            margin-left: 4px;
+            margin-left: var(--space-coworking-registration-show-6);
             padding: 3px 8px;
         }
 
@@ -997,13 +1030,13 @@
             margin: 0 0 14px;
             font-size: var(--typo-coworking-registration-show-font-size-1);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            color: #1f2d3d;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
+            color: var(--color-coworking-registration-show-3);
+            padding-bottom: var(--space-coworking-registration-show-1);
+            border-bottom: 1px solid var(--color-coworking-registration-show-7);
         }
 
         .info-table {
-            width: 100%;
+            width: var(--dimension-coworking-registration-show-1);
             border-collapse: collapse;
         }
 
@@ -1018,7 +1051,7 @@
         .info-table th {
             max-width: 28%;
             text-align: left;
-            color: #1f2d3d;
+            color: var(--color-coworking-registration-show-3);
             font-weight: 700;
             text-transform: uppercase;
             font-size: var(--typo-coworking-registration-show-font-size-4);
@@ -1026,7 +1059,7 @@
         }
 
         .info-table td {
-            color: #334155;
+            color: var(--color-coworking-registration-show-4);
         }
 
         .info-table tr:last-child th,
@@ -1040,7 +1073,7 @@
             border: 1px solid #a7f3d0;
             padding: 10px 14px;
             border-radius: 6px;
-            margin-bottom: 12px;
+            margin-bottom: var(--space-coworking-registration-show-1);
             font-size: var(--typo-coworking-registration-show-font-size-7);
         }
 
@@ -1048,8 +1081,8 @@
             font-size: var(--typo-coworking-registration-show-font-size-7);
             color: #475569;
             margin-bottom: 7px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: var(--space-coworking-registration-show-8);
+            border-bottom: 1px solid var(--color-coworking-registration-show-7);
         }
 
         .inactive-dialog {
@@ -1077,13 +1110,13 @@
 
         .fee-edit-dialog {
             position: relative;
-            background: #fff;
+            background: var(--color-coworking-registration-show-9);
             border-radius: 8px;
-            width: 100%;
+            width: var(--dimension-coworking-registration-show-1);
             height: 95vh;
             overflow-y: scroll !important;
             max-width: 723px;
-            margin: 16px;
+            margin: var(--space-coworking-registration-show-4);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: feeEditIn 0.15s ease-out;
@@ -1100,7 +1133,7 @@
             align-items: center;
             padding: 4px 18px;
             background: #1fb2ff;
-            color: #fff;
+            color: var(--color-coworking-registration-show-9);
         }
 
         .fee-edit-header h4 {
@@ -1112,7 +1145,7 @@
         .fee-edit-close {
             background: transparent;
             border: 0;
-            color: #fff;
+            color: var(--color-coworking-registration-show-9);
             font-size: 24px;
             line-height: 1;
             cursor: pointer;
@@ -1120,50 +1153,50 @@
         }
 
         .fee-edit-body {
-            padding: 18px;
+            padding: var(--space-coworking-registration-show-5);
         }
 
         .fee-edit-field {
-            margin-bottom: 14px;
+            margin-bottom: var(--space-coworking-registration-show-3);
         }
 
         .fee-edit-field label {
             display: block;
             font-size: var(--typo-coworking-registration-show-font-size-7);
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
-            color: #1f2d3d;
-            margin-bottom: 6px;
+            color: var(--color-coworking-registration-show-3);
+            margin-bottom: var(--space-coworking-registration-show-8);
         }
 
         .fee-edit-field input,
         .fee-edit-field textarea {
-            width: 100%;
+            width: var(--dimension-coworking-registration-show-1);
             padding: 8px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
             font-size: var(--typo-coworking-registration-show-font-size-6);
-            color: #1f2d3d;
+            color: var(--color-coworking-registration-show-3);
         }
 
         .fee-edit-field input[readonly],
         .fee-edit-field textarea[readonly] {
-            background: #f8fafc;
+            background: var(--color-coworking-registration-show-8);
         }
 
         .fee-edit-field input:focus,
         .fee-edit-field textarea:focus {
             outline: 0;
-            border-color: #0a96cc;
+            border-color: var(--color-coworking-registration-show-1);
             box-shadow: 0 0 0 2px rgba(10, 150, 204, 0.15);
         }
 
         .fee-edit-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 8px;
+            gap: var(--space-coworking-registration-show-9);
             padding: 0px 31px 18px;
-            /* border-top: 1px solid #e2e8f0; */
-            /* background: #f8fafc; */
+            /* border-top: 1px solid var(--color-coworking-registration-show-7); */
+            /* background: var(--color-coworking-registration-show-8); */
         }
 
         .btn-fee-cancel{
@@ -1176,13 +1209,13 @@
         }
 
         .btn-fee-cancel {
-            background: #e2e8f0;
-            color: #1f2d3d;
+            background: var(--color-coworking-registration-show-7);
+            color: var(--color-coworking-registration-show-3);
         }
 
         /* .btn-fee-save {
             background: #20b2aa;
-            color: #fff;
+            color: var(--color-coworking-registration-show-9);
         } */
 
         @media (max-width: 767px) {
@@ -1191,17 +1224,17 @@
             }
 
             .info-column + .info-column {
-                margin-top: 18px;
+                margin-top: var(--space-coworking-registration-show-5);
             }
 
             .info-table th,
             .info-table td {
                 display: block;
-                width: 100%;
+                width: var(--dimension-coworking-registration-show-1);
             }
 
             .info-table th {
-                padding-bottom: 4px;
+                padding-bottom: var(--space-coworking-registration-show-6);
                 border-bottom: 0;
             }
 
