@@ -70,8 +70,8 @@
         }
 
         .page {
-            width: 280mm;
-            height: 209mm;
+            width: 297mm;
+            height: 210mm;
             margin: 0 auto;
             overflow: hidden;
             background: url('{{ $certificateBackground }}') left top / 100% 100% no-repeat;
@@ -210,13 +210,13 @@
 
         @media print {
             @page {
-                size: 280mm 209mm;
+                size: 297mm 210mm;
                 margin: 0;
             }
 
             html, body {
-                width: 280mm !important;
-                height: 209mm !important;
+                width: 297mm !important;
+                height: 210mm !important;
                 overflow: hidden !important;
             }
 
@@ -239,12 +239,12 @@
             }
 
             .page {
-                width: 280mm;
-                min-width: 280mm;
-                max-width: 280mm;
-                height: 209mm;
-                min-height: 209mm;
-                max-height: 209mm;
+                width: 297mm;
+                min-width: 297mm;
+                max-width: 297mm;
+                height: 210mm;
+                min-height: 210mm;
+                max-height: 210mm;
                 margin: 0 auto;
                 box-shadow: none;
                 page-break-inside: avoid;
