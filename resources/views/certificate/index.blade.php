@@ -294,6 +294,26 @@
                 var search = document.getElementById('certificate-status-search');
                 var form = document.getElementById('certificate-filter-form');
                 if (search && form) {
+                    var searchTimer = null;
+                    var lastSearchValue = search.value;
+
+                    search.addEventListener('input', function () {
+                        var currentValue = search.value;
+
+                        if (searchTimer) {
+                            window.clearTimeout(searchTimer);
+                        }
+
+                        searchTimer = window.setTimeout(function () {
+                            if (currentValue === lastSearchValue) {
+                                return;
+                            }
+
+                            lastSearchValue = currentValue;
+                            form.submit();
+                        }, 400);
+                    });
+
                     search.addEventListener('keydown', function (e) {
                         if (e.key === 'Enter') { e.preventDefault(); form.submit(); }
                     });
