@@ -241,10 +241,7 @@
         .lead-status-shell { position: relative; min-height: var(--dimension-certificate-index-2); width: var(--dimension-certificate-index-1); overflow: hidden; }
 
         .follow-loader {
-            position: absolute; top: 0; left: 0; right: 0; height: var(--dimension-certificate-index-2);
-            background: rgba(245, 247, 251, 0.95);
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
-            z-index: 10; gap: var(--space-certificate-index-1);
+            display: none !important;
         }
         .follow-spinner { display: inline-flex; align-items: center; gap: var(--space-certificate-index-3); }
         .follow-spinner .dot { width: var(--dimension-certificate-index-3); height: var(--dimension-certificate-index-3); border-radius: 50%; background: #12a0ff; animation: bounce 0.9s ease-in-out infinite; }
@@ -253,7 +250,7 @@
         .follow-loader p { margin: 0; color: var(--color-certificate-index-1); font-weight: var(--typo-certificate-index-font-weight-1); }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.6; } 40% { transform: translateY(-12px); opacity: 1; } }
 
-        .follow-content { opacity: 0; visibility: hidden; transition: opacity 0.4s ease; position: relative; min-height: 400px; }
+        .follow-content { opacity: 1; visibility: visible; transition: opacity 0.2s ease; position: relative; min-height: 400px; }
         body.certificates-ready .follow-content { opacity: 1; visibility: visible; }
         body.certificates-ready #certificate-status-loader { display: none; }
 
@@ -293,6 +290,7 @@
             align-items: center;
             justify-content: center;
             pointer-events: none;
+            z-index: 2;
         }
         .certificate-search-icon {
             color: #50697d;
@@ -328,6 +326,10 @@
         .certificate-search-shell.is-loading .certificate-search-loader {
             opacity: 1;
         }
+        .certificate-search-input.is-loading {
+            border-color: #19a6f0 !important;
+            box-shadow: 0 0 0 3px rgba(25, 166, 240, 0.12);
+        }
         @keyframes certificate-search-pulse {
             0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
             40% { transform: translateY(-3px); opacity: 1; }
@@ -357,22 +359,31 @@
             var selectedCertificateIds = [];
 
             function reveal() {
-                setTimeout(function () { document.body.classList.add('certificates-ready'); }, 150);
+                document.body.classList.add('certificates-ready');
             }
 
             function setLoadingState(isLoading) {
                 var content = document.getElementById('certificate-status-content');
+                var pageLoader = document.getElementById('certificate-status-loader');
                 var searchShell = document.getElementById('certificate-search-shell');
+                var searchInput = document.getElementById('certificate-status-search');
 
                 if (!content) {
                     return;
                 }
 
-                content.style.opacity = isLoading ? '0.55' : '';
+                if (pageLoader) {
+                    pageLoader.style.display = 'none';
+                }
+
                 content.style.pointerEvents = isLoading ? 'none' : '';
 
                 if (searchShell) {
                     searchShell.classList.toggle('is-loading', !!isLoading);
+                }
+
+                if (searchInput) {
+                    searchInput.classList.toggle('is-loading', !!isLoading);
                 }
             }
 
