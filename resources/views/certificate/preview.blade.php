@@ -216,6 +216,7 @@
 
             html, body {
                 width: 100% !important;
+                min-height: 0 !important;
                 height: auto !important;
                 overflow: visible !important;
             }
@@ -253,11 +254,8 @@
 
             .page + .page {
                 margin-top: 0 !important;
-            }
-
-            .page:not(:last-child) {
-                page-break-after: always;
-                break-after: page;
+                page-break-before: always;
+                break-before: page;
             }
         }
 
