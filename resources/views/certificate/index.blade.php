@@ -18,7 +18,7 @@
         $canBulkMarkReady = $activeScope === 'printing'
             && ($currentUser?->isAdmin() ?? false)
             && ($currentUser?->hasAnyPermission(['certificate.mark-ready']) ?? false);
-        $canBulkPreview = $activeScope === 'ready'
+        $canBulkPreview = in_array($activeScope, ['printing', 'ready'], true)
             && ($currentUser?->hasAnyPermission(['certificate.view']) ?? false);
         $showBulkSelection = $canBulkApprove || $canBulkSendToPrinting || $canBulkMarkReady || $canBulkPreview;
         $bulkActionConfig = null;
@@ -39,6 +39,14 @@
                 'action' => route('certificate.bulk-send-to-printing'),
                 'button' => 'Send Selected to Printing',
                 'confirm' => 'Send selected certificates to printing?',
+            ];
+        } elseif ($canBulkPreview && $activeScope === 'printing') {
+            $bulkActionConfig = [
+                'mode' => 'preview',
+                'method' => 'POST',
+                'action' => route('certificate.bulk-preview'),
+                'button' => 'Print Selected',
+                'target' => '_blank',
             ];
         } elseif ($canBulkMarkReady) {
             $bulkActionConfig = [
@@ -161,6 +169,20 @@
                             <div class="program-filter-actions">
                                 <button type="submit" class="btn btn-primary-outline">Filter</button>
                                 <a href="{{ route('certificate.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
+                                @if($showBulkSelection && $bulkActionConfig)
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary-outline"
+                                        id="certificate-bulk-action-button"
+                                        form="certificate-bulk-action-form"
+                                        disabled
+                                    >
+                                        {{ $bulkActionConfig['button'] }}
+                                    </button>
+                                    <span class="certificate-bulk-count">
+                                        Selected: <strong id="certificate-selected-count">0</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
                     </form>
@@ -170,10 +192,10 @@
                             method="{{ $bulkActionConfig['method'] }}"
                             action="{{ $bulkActionConfig['action'] }}"
                             id="certificate-bulk-action-form"
-                            class="certificate-bulk-toolbar"
                             data-bulk-mode="{{ $bulkActionConfig['mode'] }}"
                             data-confirm-message="{{ $bulkActionConfig['confirm'] ?? '' }}"
                             @if(!empty($bulkActionConfig['target'])) target="{{ $bulkActionConfig['target'] }}" @endif
+                            hidden
                         >
                             @if($bulkActionConfig['method'] !== 'GET')
                                 @csrf
@@ -188,16 +210,6 @@
                                 <input type="hidden" name="scope" value="{{ $activeScope }}">
                             @endif
                             <div id="certificate-bulk-selected-inputs"></div>
-                            <div class="certificate-bulk-toolbar__left">
-                                <span class="certificate-bulk-count">
-                                    Selected: <strong id="certificate-selected-count">0</strong>
-                                </span>
-                            </div>
-                            <div class="certificate-bulk-toolbar__right">
-                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-action-button" disabled>
-                                    {{ $bulkActionConfig['button'] }}
-                                </button>
-                            </div>
                         </form>
                     @endif
 
