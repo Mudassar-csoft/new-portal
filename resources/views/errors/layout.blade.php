@@ -149,7 +149,7 @@
         }
 
         .brand-label {
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: var(--error-weight-bold);
             line-height: var(--error-line-tight);
         }
@@ -169,7 +169,7 @@
 
         .error-code {
             margin: 24px 0 10px;
-            font-size: 96px;
+            font-size: clamp(4.125rem, 12vw, 6rem);
             line-height: 0.95;
             font-weight: var(--error-weight-heavy);
             letter-spacing: -0.04em;
@@ -178,7 +178,7 @@
         .error-caption {
             max-width: 340px;
             color: var(--color-errors-layout-5);
-            font-size: 15px;
+            font-size: 0.9375rem;
             line-height: 1.7;
             margin: 0;
         }
@@ -202,7 +202,7 @@
 
         .error-title {
             margin: 0;
-            font-size: 36px;
+            font-size: clamp(1.625rem, 4vw, 2.25rem);
             line-height: var(--error-line-tight);
             font-weight: var(--error-weight-heavy);
             color: var(--ink);
@@ -210,7 +210,7 @@
 
         .error-message {
             margin: 16px 0 0;
-            font-size: 16px;
+            font-size: 1rem;
             line-height: 1.8;
             color: var(--muted);
             max-width: 520px;
@@ -236,7 +236,7 @@
         .error-meta-value {
             margin: 0;
             color: var(--ink);
-            font-size: 14px;
+            font-size: 0.875rem;
             word-break: break-word;
         }
 
@@ -282,7 +282,7 @@
 
         .error-help {
             margin-top: var(--space-errors-layout-2);
-            font-size: 13px;
+            font-size: 0.8125rem;
             color: var(--muted);
         }
 
@@ -301,11 +301,11 @@
             }
 
             .error-code {
-                font-size: 78px;
+                font-size: clamp(4.125rem, 12vw, 6rem);
             }
 
             .error-title {
-                font-size: 30px;
+                font-size: clamp(1.625rem, 4vw, 2.25rem);
             }
         }
 
@@ -319,11 +319,11 @@
             }
 
             .error-code {
-                font-size: 66px;
+                font-size: clamp(4.125rem, 12vw, 6rem);
             }
 
             .error-title {
-                font-size: 26px;
+                font-size: clamp(1.625rem, 4vw, 2.25rem);
             }
 
             .error-actions .btn {

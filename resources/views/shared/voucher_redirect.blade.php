@@ -26,7 +26,7 @@
     <div class="card">
         <h2>{{ $heading }}</h2>
         <p>{{ $message }}</p>
-        <p style="font-size: 13px; color: #54667a;">
+        <p style="font-size: 0.8125rem; color: #54667a;">
             If the voucher didn't open,
             <a href="{{ $primaryVoucherUrl }}" target="_blank" rel="noopener">click here</a>.
             Otherwise you'll be redirected shortly.

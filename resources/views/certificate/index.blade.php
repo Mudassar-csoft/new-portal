@@ -18,7 +18,7 @@
         $canBulkMarkReady = $activeScope === 'printing'
             && ($currentUser?->isAdmin() ?? false)
             && ($currentUser?->hasAnyPermission(['certificate.mark-ready']) ?? false);
-        $canBulkPreview = $activeScope === 'ready'
+        $canBulkPreview = in_array($activeScope, ['printing', 'ready'], true)
             && ($currentUser?->hasAnyPermission(['certificate.view']) ?? false);
         $showBulkSelection = $canBulkApprove || $canBulkSendToPrinting || $canBulkMarkReady || $canBulkPreview;
         $bulkActionConfig = null;
@@ -39,6 +39,14 @@
                 'action' => route('certificate.bulk-send-to-printing'),
                 'button' => 'Send Selected to Printing',
                 'confirm' => 'Send selected certificates to printing?',
+            ];
+        } elseif ($canBulkPreview && $activeScope === 'printing') {
+            $bulkActionConfig = [
+                'mode' => 'preview',
+                'method' => 'POST',
+                'action' => route('certificate.bulk-preview'),
+                'button' => 'Print Selected',
+                'target' => '_blank',
             ];
         } elseif ($canBulkMarkReady) {
             $bulkActionConfig = [
@@ -157,20 +165,24 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Programme</label>
-                                <select class="form-control form-control-sm" name="program_id">
-                                    <option value="">All Programmes</option>
-                                    @foreach($programs as $program)
-                                        <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                            {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            @include('partials.filter-program-select')
                             <div class="program-filter-actions">
                                 <button type="submit" class="btn btn-primary-outline">Filter</button>
                                 <a href="{{ route('certificate.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
+                                @if($showBulkSelection && $bulkActionConfig)
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary-outline"
+                                        id="certificate-bulk-action-button"
+                                        form="certificate-bulk-action-form"
+                                        disabled
+                                    >
+                                        {{ $bulkActionConfig['button'] }}
+                                    </button>
+                                    <span class="certificate-bulk-count">
+                                        Selected: <strong id="certificate-selected-count">0</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
                     </form>
@@ -180,10 +192,10 @@
                             method="{{ $bulkActionConfig['method'] }}"
                             action="{{ $bulkActionConfig['action'] }}"
                             id="certificate-bulk-action-form"
-                            class="certificate-bulk-toolbar"
                             data-bulk-mode="{{ $bulkActionConfig['mode'] }}"
                             data-confirm-message="{{ $bulkActionConfig['confirm'] ?? '' }}"
                             @if(!empty($bulkActionConfig['target'])) target="{{ $bulkActionConfig['target'] }}" @endif
+                            hidden
                         >
                             @if($bulkActionConfig['method'] !== 'GET')
                                 @csrf
@@ -198,16 +210,6 @@
                                 <input type="hidden" name="scope" value="{{ $activeScope }}">
                             @endif
                             <div id="certificate-bulk-selected-inputs"></div>
-                            <div class="certificate-bulk-toolbar__left">
-                                <span class="certificate-bulk-count">
-                                    Selected: <strong id="certificate-selected-count">0</strong>
-                                </span>
-                            </div>
-                            <div class="certificate-bulk-toolbar__right">
-                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-action-button" disabled>
-                                    {{ $bulkActionConfig['button'] }}
-                                </button>
-                            </div>
                         </form>
                     @endif
 
@@ -358,7 +360,7 @@
         }
         .certificate-search-icon {
             color: #50697d;
-            font-size: 18px;
+            font-size: 1.125rem;
             transition: opacity 0.2s ease;
         }
         .certificate-search-loader {
@@ -401,16 +403,13 @@
 
         .program-filter-row { display: flex; gap: var(--space-certificate-index-2); flex-wrap: wrap; align-items: end; margin-bottom: var(--space-certificate-index-2); }
         .program-filter-field { flex: 1 1 200px; min-width: 180px; }
-        .program-filter-field .form-label { font-size: 13px; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
+        .program-filter-field .form-label { font-size: 0.8125rem; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
         .program-filter-actions { display: flex; gap: var(--space-certificate-index-3); margin-left: auto; align-items: center; }
 
         .user-mgmt-header { display: flex; align-items: stretch; justify-content: space-between; gap: var(--space-certificate-index-1); flex-wrap: wrap; }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
-        .create-action-btn { align-self: center; padding: 0.5rem 1rem !important; white-space: nowrap; margin: 8px 12px 8px 0; }
-
         @media (max-width: 767px) {
             .program-filter-actions { width: var(--dimension-certificate-index-1); margin-left: 0; }
-            .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
             .follow-controls .follow-search { width: 100%; margin-left: 0; }
         }
     </style>

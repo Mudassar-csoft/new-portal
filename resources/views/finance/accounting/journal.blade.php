@@ -157,7 +157,7 @@
             margin-bottom: var(--space-finance-accounting-journal-1);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .journal-summary-card .summary-value { font-size: 22px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); text-align:center}
+        .journal-summary-card .summary-value { font-size: 1.375rem; font-weight: var(--typo-finance-accounting-journal-font-weight-1); text-align:center}
         .journal-summary-card .summary-label { margin-top: 8px; font-size: var(--typo-finance-accounting-journal-font-size-2);text-align:center; text-transform: uppercase; opacity: 0.92; }
         .tone-blue { background: #2563eb; }
         .tone-green { background: #16a34a; }
@@ -170,8 +170,8 @@
             gap: var(--space-finance-accounting-journal-1);
             flex-wrap: wrap;
         }
-        .journal-entry-title { font-size: 16px; font-weight: var(--typo-finance-accounting-journal-font-weight-1); color: #1e293b; }
-        .journal-entry-meta { margin-top: 4px; color: #64748b; font-size: 12px; }
+        .journal-entry-title { font-size: 1rem; font-weight: var(--typo-finance-accounting-journal-font-weight-1); color: #1e293b; }
+        .journal-entry-meta { margin-top: 4px; color: #64748b; font-size: 0.75rem; }
         .journal-entry-ref { color: var(--color-finance-accounting-journal-1); font-size: var(--typo-finance-accounting-journal-font-size-2); }
         .journal-entry-description { margin-bottom: var(--space-finance-accounting-journal-1); color: var(--color-finance-accounting-journal-1); }
         .meta-dot { margin: 0 6px; }

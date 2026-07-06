@@ -76,7 +76,7 @@
                             id="batch-session-{{ $key }}"
                             value="{{ $key }}"
                             @checked($selectedSession === $key)>
-                        <label class="form-check-label  mb-0 mt-1" for="batch-session-{{ $key }}"  style="font-size: 14px !important;">
+                        <label class="form-check-label  mb-0 mt-1" for="batch-session-{{ $key }}"  style="font-size: 0.875rem !important;">
                             {{ ($label) }}
                         </label>
                     </div>

@@ -236,7 +236,7 @@
         }0___
 
         .form-label-role{
-            font-size: 14px !important;
+            font-size: 0.875rem !important;
             margin-bottom: var(--space-user-edit-6);
             margin-top: var(--space-user-edit-6);
             
@@ -278,14 +278,14 @@
             /* background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98)); */
         }
         .user-edit-page .user-kicker {
-            font-size: 12px;
+            font-size: 0.75rem;
             letter-spacing: 0.18em;
             text-transform: uppercase;
             color: #7f93ac;
             font-weight: var(--typo-user-edit-font-weight-2);
         }
         .user-edit-page .user-card .panel-title {
-            font-size: 32px !important;
+            font-size: 2rem !important;
             line-height: 1.15;
             font-weight: 400 !important;
             color: #1d2f40;
@@ -376,7 +376,7 @@
             border-radius: 0 5px 5px 0;
             background: #eef4fb;
             color: #4e6278;
-            font-size: 17px;
+            font-size: 1.0625rem;
             font-weight: var(--typo-user-edit-font-weight-1);
             white-space: nowrap;
         }
@@ -510,7 +510,7 @@
             position: relative;
         }
         .form-label{
-`           font-size:16px !important; 
+`           font-size:1rem !important;
         }
         .user-edit-page .select2-container--white .select2-selection--multiple .select2-selection__choice__remove {
             position: static;
@@ -539,7 +539,7 @@
             width: 176px;
             height: 48px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: var(--typo-user-edit-font-weight-2);
             display: inline-flex;
             align-items: center;
@@ -568,7 +568,7 @@
                 padding-right: var(--space-user-edit-4);
             }
             .user-edit-page .user-card .panel-title {
-                font-size: 26px !important;
+                font-size: 1.625rem !important;
             }
             .user-edit-page .user-actions {
                 flex-direction: column;

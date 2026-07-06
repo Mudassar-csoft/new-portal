@@ -279,7 +279,7 @@
             background: #f7fbfe;
         }
         .source-section-title {
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 700;
             color: #2c3e50;
             text-transform: uppercase;

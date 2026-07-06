@@ -229,14 +229,14 @@
 
         .summary-tile strong {
             display: block;
-            font-size: 18px;
+            font-size: 1.125rem;
             margin-top: 30px;
         }
         .summary-label {
             display: block;
             margin-top: 1rem;
             color: white;
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -258,7 +258,7 @@
             margin-top: var(--space-inventory-index-2);
             padding: 2px 8px;
             border-radius: 999px;
-            font-size: 11px;
+            font-size: 0.6875rem;
             font-weight: 700;
         }
         .stock-badge.ok {

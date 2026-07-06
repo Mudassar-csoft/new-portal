@@ -77,15 +77,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Status</label>
-                                <select class="form-control form-control-sm" name="status">
-                                    <option value="">All Statuses</option>
-                                    @foreach(['active' => 'Active', 'inactive' => 'Inactive'] as $key => $label)
-                                        <option value="{{ $key }}" @selected(($filters['status'] ?? '') === $key)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            @include('partials.filter-active-status-select')
                             <div class="program-filter-field">
                                 <label class="form-label">Country</label>
                                 <input type="text" class="form-control form-control-sm" name="country" value="{{ $filters['country'] ?? '' }}" placeholder="e.g. Pakistan">
@@ -287,7 +279,7 @@
         }
 
         .program-filter-field .form-label {
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: var(--typo-campus-index-font-weight-1);
             color: var(--color-campus-index-1);
             margin-bottom: 4px;

@@ -481,7 +481,7 @@
         }0___
 
         .ci-muted-meta {
-            font-size: 14px !important;
+            font-size: 0.875rem !important;
             font-weight: 400 !important;
         }
 
@@ -493,7 +493,7 @@
             margin-bottom: var(--space-student-show-2);
         }
         .student-detail-header .panel-body { padding: var(--space-student-show-3); }
-        .student-detail-header .panel-title { margin: 0; font-size: 18px !important; font-weight: 600 !important; }
+        .student-detail-header .panel-title { margin: 0; font-size: 1.125rem !important; font-weight: 600 !important; }
 
         .student-detail-grid {
             display: grid;
@@ -539,7 +539,7 @@
             z-index: 2;
         }
         span {
-    font-size: 16px !important;
+    font-size: 1rem !important;
     line-height: 1.5;
 }
         .student-cert-request-link {
@@ -614,7 +614,7 @@
             gap: 10px;
             padding: 8px 22px;
             color: var(--color-student-show-4);
-            font-size: 17px;
+            font-size: 1.0625rem;
             font-weight: var(--typo-student-show-font-weight-5);
             line-height: 1.4;
             text-decoration: none;
@@ -830,7 +830,7 @@
             background: transparent;
             border: 0;
             color: var(--color-student-show-8);
-            font-size: 24px;
+            font-size: 1.5rem;
             line-height: var(--typo-student-show-line-height-6);
             cursor: pointer;
             padding: 0;

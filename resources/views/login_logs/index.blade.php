@@ -65,7 +65,7 @@
 			margin-top: 10px;
 			margin-bottom: 0;
 			color: #54667a;
-			font-size: 13px;
+			font-size: 0.8125rem;
 		}
 		.login-logs .dataTables_wrapper .dataTables_length,
 		.login-logs .dataTables_wrapper .dataTables_filter,
@@ -89,7 +89,7 @@
 			top: 50%;
 			transform: translateY(-50%);
 			color: #9aa8b6;
-			font-size: 12px;
+			font-size: 0.75rem;
 			pointer-events: none;
 		}
 		.login-logs .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {

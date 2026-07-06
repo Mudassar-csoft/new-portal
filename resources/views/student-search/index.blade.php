@@ -183,7 +183,7 @@
         }
 
         .lead-status-shell { position: relative; min-height: 100vh; width: 100%; }
-        .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
+        .lead-title { font-size: 1.125rem; font-weight: 500; color: #1f2937; line-height: 1.4; }
         .search-needle { color: var(--color-student-search-index-1); font-weight: var(--typo-student-search-index-font-weight-2); }
 
         .inline-search-form {
@@ -199,7 +199,7 @@
             padding: 60px 20px;
             color: #64748b;
         }
-        .search-empty p { margin-top: var(--space-student-search-index-1); font-size: 14px; }
+        .search-empty p { margin-top: var(--space-student-search-index-1); font-size: 0.875rem; }
 
         .search-summary {
             padding: 10px 14px;
@@ -208,12 +208,12 @@
             border: 1px solid #cfe0f5;
             border-radius: 8px;
             color: var(--color-student-search-index-1);
-            font-size: 13px;
+            font-size: 0.8125rem;
         }
 
         .section-heading {
             margin: 16px 0 10px;
-            font-size: 15px;
+            font-size: 0.9375rem;
             font-weight: var(--typo-student-search-index-font-weight-2);
             color: #334155;
             border-bottom: 1px solid #e2e8f0;

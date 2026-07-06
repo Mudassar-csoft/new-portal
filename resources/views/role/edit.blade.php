@@ -91,8 +91,8 @@
             --space-role-edit-1: 6px;
         }
 
-        .form-label-role {
-            font-size: 14px !important;
+        label.form-label-role {
+            font-size: clamp(0.675rem, 1.2vw, 0.875rem) !important;
             margin-bottom: var(--space-role-edit-1);
     margin-top: var(--space-role-edit-1);
     

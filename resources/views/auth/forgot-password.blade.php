@@ -21,7 +21,7 @@
         .container { width: 460px; max-width: var(--dimension-auth-forgot-password-1); background: linear-gradient(135deg, #00b894, #00cec9); color: var(--color-auth-forgot-password-1); padding: 32px 36px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
         .logo { display: flex; justify-content: center; margin-bottom: var(--space-auth-forgot-password-1); }
         .logo img { height: 58px; max-width: var(--dimension-auth-forgot-password-1); object-fit: contain; }
-        h2 { text-align: center; font-size: 22px; margin: 8px 0 18px; }
+        h2 { text-align: center; font-size: 1.375rem; margin: 8px 0 18px; }
         p.subtitle { text-align: center; font-size: var(--typo-auth-forgot-password-font-size-1); margin-bottom: 22px; opacity: 0.9; }
         .input-group { margin-bottom: var(--space-auth-forgot-password-2); }
         .input-group label { display: block; font-size: var(--typo-auth-forgot-password-font-size-1); margin-bottom: var(--space-auth-forgot-password-3); }

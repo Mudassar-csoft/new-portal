@@ -324,7 +324,7 @@
             --dimension-lead-training-7: calc(100% - 4px);
             --space-lead-training-1: 0px;
         --typo-views-lead-training-font-size-1: 12px;
-        }0___
+        }
 
 .custom-range {
     width: var(--dimension-lead-training-1);
@@ -548,7 +548,7 @@ textarea.form-control-sm {
 }
 
 .form-check-label {
-   font-size:13.8px !important;
+   font-size:0.8625rem !important;
    font-weight:600;
    color:#566a7f;
     margin-bottom: 0;

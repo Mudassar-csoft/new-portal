@@ -314,7 +314,7 @@
 
         .student-summary-card strong {
             display: block;
-            font-size: 18px;
+            font-size: 1.125rem;
             line-height: 1.2;
             margin-top: 30px;
             text-align:center;
@@ -322,7 +322,7 @@
 
         .student-summary-label {
             color: white;
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .04em;

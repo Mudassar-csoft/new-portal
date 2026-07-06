@@ -131,7 +131,7 @@
         .lead-create-card { overflow: visible !important; max-height: none !important; }
         .lead-create-card .panel-heading { padding: 10px 20px; }
         .lead-body { padding: 14px 18px; overflow: visible !important; }
-        .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
+        .lead-title { font-size: 1.125rem; font-weight: 500; color: #1f2937; line-height: 1.4; }
         .lead-create-card .form-row { padding: 3px 10px; }
         .lead-create-card .form-group { margin-bottom: var(--space-profile-show-5); }
         .lead-create-card label, .lead-create-card .form-label { color: var(--color-profile-show-1); font-size: var(--typo-profile-show-font-size-2); font-weight: var(--typo-profile-show-font-weight-1); line-height: 1.2; margin-bottom: 6px; }

@@ -178,7 +178,7 @@
     background: var(--color-finance-expense-payroll-2)
 }
 .form-label{
-    font-size: 11px;
+    font-size: 0.6875rem;
     font-weight: 600 ;
     color: var(--color-finance-expense-payroll-1);
     text-transform: uppercase;

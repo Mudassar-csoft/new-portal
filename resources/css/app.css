@@ -1,4 +1,32 @@
 @import 'tailwindcss';
+@import './theme/variables.css';
+@import './theme/typography.css';
+@import './theme/colors.css';
+@import './theme/spacing.css';
+@import './theme/buttons.css';
+@import './theme/forms.css';
+@import './theme/tables.css';
+@import './theme/cards.css';
+@import './theme/modals.css';
+@import './theme/layout.css';
+@import './theme/utilities.css';
+@import './modules/dashboard.css';
+@import './modules/users.css';
+@import './modules/roles.css';
+@import './modules/permissions.css';
+@import './modules/orders.css';
+@import './modules/reports.css';
+@import './modules/settings.css';
+@import './modules/leads.css';
+@import './modules/certificates.css';
+@import './modules/finance.css';
+@import './modules/hrm.css';
+@import './modules/students.css';
+@import './modules/programs.css';
+@import './modules/campus.css';
+@import './modules/batches.css';
+@import './modules/registration.css';
+@import './modules/inventory.css';
 
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

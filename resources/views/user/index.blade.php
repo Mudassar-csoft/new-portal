@@ -98,16 +98,6 @@
             flex-wrap: wrap;
         }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
-        .create-action-btn {
-            align-self: center;
-            padding: 0.5rem 1rem !important;
-            white-space: nowrap;
-            margin: 8px 12px 8px 0;
-        }
-        @media (max-width: 767px) {
-            .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
-        }
-
         #users-table { margin-top: var(--space-user-index-2); }
         #users-table th, #users-table td { padding: 6px 10px; vertical-align: middle; }
         #users-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
@@ -126,7 +116,7 @@
         .dataTables_wrapper .follow-footer {
             display: flex; align-items: center; justify-content: space-between; gap: var(--space-user-index-1);
         }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-user-index-1); font-size: 13px; }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-user-index-1); font-size: 0.8125rem; }
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info,
@@ -134,7 +124,7 @@
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label { position: relative; margin: 0; font-size: 0; }
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
             content: "\f002"; font-family: FontAwesome; position: absolute; right: 10px; top: 50%;
-            transform: translateY(-50%); color: #9aa8b6; font-size: 12px; pointer-events: none;
+            transform: translateY(-50%); color: #9aa8b6; font-size: 0.75rem; pointer-events: none;
         }
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
             border: 1px solid #d9e2ef; border-radius: .25rem; padding: .375rem 32px .375rem .75rem;

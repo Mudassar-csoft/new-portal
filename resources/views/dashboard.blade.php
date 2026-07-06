@@ -300,7 +300,7 @@
 					</div>
 				</header>
 				<div class="box-typical-body panel-body">
-					<div id="lead-chart" style="font-size:12px !important;"></div>
+					<div id="lead-chart" style="font-size:0.75rem !important;"></div>
 				</div>
 			</section>
 		</div>
@@ -720,7 +720,7 @@
 		.chart-statistic-box .income-axis-right .income-axis-label {
 			transform: translateY(-50%);
 			text-align: right;
-			font-size: 11px !important;
+			font-size: 0.6875rem !important;
 			right: 12px;
 			left: auto;
 			max-width: calc(100% - 24px);
@@ -847,7 +847,7 @@
 		}
 
 		.admission-insight-title {
-			font-size: 20px !important;
+			font-size: 1.25rem !important;
 			font-weight: var(--typo-dashboard-font-weight-9);
 			color: #243746;
 			text-align: left;
@@ -899,14 +899,14 @@
 		}
 
 		.admission-insight-total-value {
-			font-size: 54px !important;
+			font-size: 3.375rem !important;
 			font-weight: var(--typo-dashboard-font-weight-12);
 			line-height: var(--typo-dashboard-line-height-6);
 			color: var(--color-dashboard-1);
 		}
 
 		.admission-insight-total-note {
-			font-size: 16px !important;
+			font-size: 1rem !important;
 			color: var(--color-dashboard-4);
 			margin-top: var(--space-dashboard-8);
 		}
@@ -935,7 +935,7 @@
 		}
 
 		.admission-insight-footer-value {
-			font-size: 34px !important;
+			font-size: 2.125rem !important;
 			font-weight: var(--typo-dashboard-font-weight-12);
 			line-height: var(--typo-dashboard-line-height-6);
 			color: var(--color-dashboard-1);
@@ -1075,14 +1075,14 @@
 
 .statistic-box .number,
 .statistic-box .caption{
-    font-size:26px !important;
+    font-size:1.625rem !important;
 
 }
 *{
 	font: size 15px ;
 }
 .text{
-	font-size:14px;
+	font-size:0.875rem;
 }
 
 
@@ -1354,7 +1354,7 @@
             width: var(--dimension-dashboard-2);
             overflow: hidden;
 
-			font-size:10px;
+			font-size:0.625rem;
 			margin: 1%;
         }
 
@@ -1387,7 +1387,7 @@
             animation: bounce 0.9s ease-in-out infinite;
         }
 		text{
-			font-size:8px !important;
+			font-size:0.5rem !important;
 
 		}
         .dashboard-spinner .dot:nth-child(2) {

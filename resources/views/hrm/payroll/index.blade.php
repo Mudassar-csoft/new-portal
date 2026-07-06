@@ -266,8 +266,8 @@
             box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
             min-height: 86px;
         }
-        .payroll-label { font-size: 14px; margin-top: 1rem; text-transform: uppercase; opacity: .88; font-weight: 600; }
-        .payroll-value { margin-top: 30px; font-size: 18px; font-weight: 700; }
+        .payroll-label { font-size: 0.875rem; margin-top: 1rem; text-transform: uppercase; opacity: .88; font-weight: 600; }
+        .payroll-value { margin-top: 30px; font-size: 1.125rem; font-weight: 700; }
         .tone-bank { background: #f35f62; }
         .tone-cash { background: #fdc518; }
         .tone-cheque { background: #a2cf37 }

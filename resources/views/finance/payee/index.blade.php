@@ -204,9 +204,8 @@
 .finance-shell {
     padding: 0px 0 10px !important;
 }
-        .finance-shell { padding: 8px 0 16px; }
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .section-title { font-weight: 400;  color: #343434; margin-bottom: 0px; text-transform: uppercase;font-size:14px; }
+        .section-title { font-weight: 400;  color: #343434; margin-bottom: 0px; text-transform: uppercase;font-size:0.875rem; }
         .required::after { content: ' *'; color: #e53935; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }
 

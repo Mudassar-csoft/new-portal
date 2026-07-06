@@ -152,7 +152,7 @@
             min-height: 86px;
         }
         .expense-label {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             opacity: .88;
@@ -161,7 +161,7 @@
         }
         .expense-value {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 1.125rem;
             text-align: center;
             font-weight: var(--typo-finance-expense-details-font-weight-1);
         }

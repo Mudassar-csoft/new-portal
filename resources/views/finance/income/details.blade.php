@@ -307,7 +307,7 @@
             min-height: 86px;
         }
         .income-summary-card .summary-label {
-           font-size: 14px;
+           font-size: 0.875rem;
            font-weight:600;
     text-transform: uppercase;
     opacity: .88;
@@ -317,7 +317,7 @@
 
         .income-summary-card .summary-value {
             margin-top: 30px;
-    font-size: 18px;
+    font-size: 1.125rem;
     text-align: center;
     font-weight: var(--typo-finance-income-details-font-weight-1);
         }

@@ -17,14 +17,8 @@
         }
 
         :root {
-            --dimension-lead-partials-probability-slider-assets-1: 100%;
-            --dimension-lead-partials-probability-slider-assets-2: 14px;
-            --dimension-lead-partials-probability-slider-assets-3: 18px;
-            --dimension-lead-partials-probability-slider-assets-4: 22px;
-            --dimension-lead-partials-probability-slider-assets-5: 8px;
-            --space-lead-partials-probability-slider-assets-1: 0 !important;
             --typo-lead-partials-probability-slider-assets-font-weight-1: 600;
-        }0___
+        }
 
     .probability-field {
         --probability-accent: #00a8ff;
@@ -45,12 +39,14 @@
     .probability-field .probability-input {
         -webkit-appearance: none;
         appearance: none;
+        display: block;
         width: var(--dimension-lead-partials-probability-slider-assets-1);
-        height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
-        min-height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+        min-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
         padding: var(--space-lead-partials-probability-slider-assets-1);
         margin: 0;
         border: 0 !important;
+        line-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
         outline: 0;
         cursor: pointer;
         background: transparent;
@@ -58,14 +54,16 @@
 
     .lead-form .probability-field input.probability-input,
     .probability-field input.probability-input {
-        height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
-        min-height: var(--dimension-lead-partials-probability-slider-assets-3) !important;
+        height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+        min-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
         padding: var(--space-lead-partials-probability-slider-assets-1);
+        line-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
         border: 0 !important;
         background-color: transparent !important;
     }
 
     .probability-field .probability-input::-webkit-slider-runnable-track {
+        display: block;
         height: var(--dimension-lead-partials-probability-slider-assets-5);
         border-radius: 999px;
         background: linear-gradient(
@@ -158,7 +156,7 @@
         width: var(--dimension-lead-partials-probability-slider-assets-1);
         margin-top: 5px;
         color: var(--color-lead-partials-probability-slider-assets-1);
-        font-size: 10px;
+        font-size: 0.625rem;
         font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1;
     }
@@ -166,7 +164,7 @@
     .probability-scale span {
         flex: 1 1 0;
         text-align: center;
-        font-size: 11px !important;
+        font-size: 0.6875rem !important;
         white-space: nowrap;
     }
 
@@ -188,7 +186,7 @@
         border-radius: 999px;
         background: rgba(0, 168, 255, 0.08);
         color: var(--color-lead-partials-probability-slider-assets-1);
-        font-size: 13px;
+        font-size: 0.8125rem;
         font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1.1;
     }
@@ -212,7 +210,7 @@
         }
 
         .probability-scale {
-            font-size: 9px;
+            font-size: 0.5625rem;
         }
     }
 </style>

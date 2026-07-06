@@ -17,8 +17,8 @@
         body { font-family: Arial, sans-serif; margin: var(--space-coworking-registration-voucher-1); color: #1f2937; }
         .sheet { border: 1px solid #cbd5e1; border-radius: 12px; padding: var(--space-coworking-registration-voucher-1); max-width: 920px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-        .header h1 { margin: 0; font-size: 24px; }
-        .subtle { color: #64748b; font-size: 13px; }
+        .header h1 { margin: 0; font-size: 1.5rem; }
+        .subtle { color: #64748b; font-size: 0.8125rem; }
         table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         th, td { border: 1px solid #dbe4ee; padding: 10px 12px; text-align: left; vertical-align: top; }
         th { background: #f8fafc; width: 24%; }

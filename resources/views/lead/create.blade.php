@@ -137,8 +137,7 @@
             --space-lead-create-5: 6px;
             --space-lead-create-6: 8px 10px;
             --typo-lead-create-font-weight-1: 600;
-        }0___
-
+        }
 		.lead-shell {
 			font-family: 'Proxima Nova', sans-serif;
 			position: relative;
@@ -188,14 +187,14 @@
 		}
 
 		.lead-title {
-			font-size: 18px;
+			font-size: 1.125rem;
 			font-weight: 500;
 			color: #25364a;
 			margin: 0;
 		}
 
 		.lead-title > span {
-			font-size: 14px;
+			font-size: 0.875rem;
 			font-weight: 400;
 			color: var(--color-lead-create-4);
 		}
@@ -321,7 +320,7 @@
 
 		.lead-form-shell .field-error {
 			margin-top: var(--space-lead-create-5);
-			font-size: 12px;
+			font-size: 0.75rem;
 			color: #dc3545;
 		}
 

@@ -126,14 +126,14 @@
         .lead-body { padding: 10px 10px 5px; overflow: visible !important; }
 
         .lead-title {
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: 500;
             color: var(--color-batch-edit-2);
             line-height: 1.4;
         }
 
         .lead-title span {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 400;
             color: var(--color-batch-edit-2);
         }
