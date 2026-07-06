@@ -62,7 +62,7 @@
         }
 
         .page {
-            width: 297mm;
+            width: 300mm;
             height: 210mm;
             margin: 0 auto;
             overflow: hidden;
@@ -200,49 +200,67 @@
             text-align: center;
         }
 
-.certificate-watermark{
+        .certificate-watermark {
+            background: url('{{ $certificateBackground }}') center center no-repeat;
+            background-size: 45%;
+        }
 
-            html, body {
-                width: 100% !important;
-                min-height: 0 !important;
+        @page {
+            size: 300mm 210mm;
+            margin: 0;
+        }
+
+        @media print {
+            html,
+            body {
+                width: 300mm !important;
+                min-height: 210mm !important;
                 height: auto !important;
                 overflow: visible !important;
+                background: #fff !important;
             }
 
             body {
-                background: #fff;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
-    background:url('{{ $certificateBackground }}') center center no-repeat;
-    background-size:45%;
+            .preview-toolbar {
+                display: none !important;
+            }
 
             .page-stack {
-                padding: 0;
-                margin: 0;
-                width: 100%;
-                min-width: 0;
-                max-width: none;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 300mm !important;
+                min-width: 300mm !important;
+                max-width: 300mm !important;
+                overflow: visible !important;
             }
 
             .page {
-                width: 297mm;
-                min-width: 297mm;
-                max-width: 297mm;
-                height: 210mm;
-                min-height: 210mm;
-                max-height: 210mm;
-                margin: 0 auto;
-                box-shadow: none;
+                width: 300mm !important;
+                min-width: 300mm !important;
+                max-width: 300mm !important;
+                height: 210mm !important;
+                min-height: 210mm !important;
+                max-height: 210mm !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                box-shadow: none !important;
                 page-break-inside: avoid;
                 break-inside: avoid;
+                page-break-after: always;
+                break-after: page;
             }
 
             .page + .page {
                 margin-top: 0 !important;
-                page-break-before: always;
-                break-before: page;
+            }
+
+            .page:last-child {
+                page-break-after: auto;
+                break-after: auto;
             }
         }
 

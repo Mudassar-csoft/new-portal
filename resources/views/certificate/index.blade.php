@@ -194,8 +194,8 @@
                                 </span>
                             </div>
                             <div class="certificate-bulk-toolbar__right">
-                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-approve-button" disabled>
-                                    Approve Selected
+                                <button type="submit" class="btn btn-primary-outline" id="certificate-bulk-action-button" disabled>
+                                    {{ $bulkActionConfig['button'] }}
                                 </button>
                             </div>
                         </form>
