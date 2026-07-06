@@ -149,7 +149,7 @@ class CertificateController extends Controller
         ]);
 
         $admission->update([
-            'remarks' => $validated['remarks'] ?? null,
+            'remarks' => $this->normalizeCertificateRemarkInput($validated['remarks'] ?? null),
         ]);
 
         return redirect()->route('certificate.index')
@@ -575,13 +575,13 @@ class CertificateController extends Controller
         );
     }
 
-    private function mergeCertificateRemarks(?string $currentRemarks, ?string $newRemarks): ?string
+    private function mergeCertificateRemarks(?string $currentRemarks, ?string $newRemarks): string
     {
         $current = trim((string) $currentRemarks);
         $incoming = trim((string) $newRemarks);
 
         if ($incoming === '') {
-            return $current !== '' ? $current : null;
+            return $current;
         }
 
         if ($current === '') {
@@ -589,6 +589,11 @@ class CertificateController extends Controller
         }
 
         return $current . PHP_EOL . $incoming;
+    }
+
+    private function normalizeCertificateRemarkInput(?string $remarks): string
+    {
+        return trim((string) $remarks);
     }
 
     private function buildCertificateDeliveryNotes(
