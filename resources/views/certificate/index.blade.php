@@ -96,6 +96,12 @@
 
     <div class="lead-status-shell">
         @include('partials.status-loader', ['id' => 'certificate-status-loader', 'message' => 'Loading certificates...'])
+        <div id="certificate-page-loader" class="certificate-page-loader" aria-hidden="true">
+            <div class="loader-dots">
+                <span></span><span></span><span></span>
+            </div>
+            <p>Loading certificates...</p>
+        </div>
 
         <div id="certificate-status-content" class="follow-content">
             @include('partials.session-status-alert-spaced')
@@ -140,14 +146,6 @@
                             <div class="follow-search">
                                 <input type="text" name="search" id="certificate-status-search" class="form-control form-control-sm certificate-search-input"
                                        placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
-                                <span class="certificate-search-shell" id="certificate-search-shell" aria-hidden="true">
-                                    <span class="certificate-search-icon"><i class="fa fa-search"></i></span>
-                                    <span class="certificate-search-loader" id="certificate-search-loader">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </span>
-                                </span>
                             </div>
                         </div>
 
@@ -345,56 +343,54 @@
             padding-right: 58px !important;
             border-radius: 999px !important;
         }
-        .certificate-search-shell {
+        .certificate-page-loader {
             position: absolute;
             top: 50%;
-            right: 18px;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none;
-            z-index: 2;
-        }
-        .certificate-search-icon {
-            color: #50697d;
-            font-size: 1.125rem;
-            transition: opacity 0.2s ease;
-        }
-        .certificate-search-loader {
-            position: absolute;
-            inset: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
+            flex-direction: column;
+            gap: 8px;
+            padding: 14px 18px;
+            min-width: 150px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 20;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-        .certificate-search-loader span {
-            width: 5px;
-            height: 5px;
+        .certificate-page-loader.is-active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .certificate-page-loader .loader-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .certificate-page-loader .loader-dots span {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: #169de8;
             animation: certificate-search-pulse 1s ease-in-out infinite;
         }
-        .certificate-search-loader span:nth-child(2) {
+        .certificate-page-loader .loader-dots span:nth-child(2) {
             animation-delay: 0.16s;
         }
-        .certificate-search-loader span:nth-child(3) {
+        .certificate-page-loader .loader-dots span:nth-child(3) {
             animation-delay: 0.32s;
         }
-        .certificate-search-shell.is-loading .certificate-search-icon {
-            opacity: 0;
-        }
-        .certificate-search-shell.is-loading .certificate-search-loader {
-            opacity: 1;
-        }
-        .certificate-search-input.is-loading {
-            border-color: #19a6f0 !important;
-            box-shadow: 0 0 0 3px rgba(25, 166, 240, 0.12);
+        .certificate-page-loader p {
+            margin: 0;
+            color: #50697d;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
         @keyframes certificate-search-pulse {
             0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
@@ -428,8 +424,7 @@
             function setLoadingState(isLoading) {
                 var content = document.getElementById('certificate-status-content');
                 var pageLoader = document.getElementById('certificate-status-loader');
-                var searchShell = document.getElementById('certificate-search-shell');
-                var searchInput = document.getElementById('certificate-status-search');
+                var centeredLoader = document.getElementById('certificate-page-loader');
 
                 if (!content) {
                     return;
@@ -441,12 +436,8 @@
 
                 content.style.pointerEvents = isLoading ? 'none' : '';
 
-                if (searchShell) {
-                    searchShell.classList.toggle('is-loading', !!isLoading);
-                }
-
-                if (searchInput) {
-                    searchInput.classList.toggle('is-loading', !!isLoading);
+                if (centeredLoader) {
+                    centeredLoader.classList.toggle('is-active', !!isLoading);
                 }
             }
 
@@ -833,6 +824,7 @@
             document.addEventListener('DOMContentLoaded', function () {
                 reveal();
                 initializeCertificatePage();
+                setLoadingState(false);
             });
         })();
     </script>

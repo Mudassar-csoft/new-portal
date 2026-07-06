@@ -1131,8 +1131,8 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table td > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu.dropdown-menu-upward {
-top: 23px !important;
-bottom: auto !important;
+top: auto !important;
+bottom: 0 !important;
 left: auto !important;
 right: 100% !important;
 margin: 0 !important;
@@ -2275,18 +2275,93 @@ margin-left: 0;
 					toggleText === 'actions';
 			}
 
+			function clearActionDropdownScrollSpace() {
+				$('.js-action-dropdown-scroll-space').each(function () {
+					var $target = $(this);
+					var originalPadding = $target.data('actionDropdownOriginalPadding');
+
+					if (originalPadding === undefined) {
+						$target.css('padding-bottom', '');
+					} else {
+						$target.css('padding-bottom', originalPadding);
+					}
+
+					$target.removeClass('js-action-dropdown-scroll-space')
+						.removeData('actionDropdownOriginalPadding');
+				});
+			}
+
+			function actionDropdownScrollTarget($dropdown) {
+				var $target = $dropdown.closest('.page-content');
+
+				if (!$target.length) {
+					$target = $('body');
+				}
+
+				return $target;
+			}
+
+			function ensureActionDropdownFits($dropdown, $menu) {
+				var dropdownEl = $dropdown.get(0);
+				var menuEl = $menu.get(0);
+
+				if (!dropdownEl || !menuEl) {
+					return;
+				}
+
+				$menu.removeClass('dropdown-menu-upward');
+
+				var dropdownRect = dropdownEl.getBoundingClientRect();
+				var menuHeight = $menu.outerHeight() || menuEl.scrollHeight || 180;
+				var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+				var spaceBelow = viewportHeight - dropdownRect.top;
+				var spaceAbove = dropdownRect.bottom;
+
+				if (spaceBelow < (menuHeight + 12) && spaceAbove >= (menuHeight + 12)) {
+					$menu.addClass('dropdown-menu-upward');
+					return;
+				}
+
+				window.setTimeout(function () {
+					var menuRect = menuEl.getBoundingClientRect();
+					var overflowBottom = menuRect.bottom - viewportHeight + 16;
+
+					if (overflowBottom <= 0) {
+						return;
+					}
+
+					var $target = actionDropdownScrollTarget($dropdown);
+					var originalPadding = $target.css('padding-bottom');
+					var currentPadding = parseFloat(originalPadding) || 0;
+
+					if (!$target.hasClass('js-action-dropdown-scroll-space')) {
+						$target.data('actionDropdownOriginalPadding', originalPadding);
+					}
+
+					$target.addClass('js-action-dropdown-scroll-space')
+						.css('padding-bottom', (currentPadding + overflowBottom) + 'px');
+
+					window.scrollBy({
+						top: overflowBottom,
+						left: 0,
+						behavior: 'smooth'
+					});
+				}, 0);
+			}
+
 			$(document).on('shown.bs.dropdown', '.dropdown', function () {
 				var $dropdown = $(this);
 				var $menu = $dropdown.find('.dropdown-menu').first();
 				if (!$menu.length) return;
 				var actionDropdown = isActionDropdown($dropdown, $menu);
 
+				clearActionDropdownScrollSpace();
 				$menu.removeClass('dropdown-menu-upward');
 				$dropdown.removeClass('dropup');
 				$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
 
 				if (actionDropdown) {
-					$menu.addClass('dropdown-menu-upward');
+					ensureActionDropdownFits($dropdown, $menu);
 					return;
 				}
 
@@ -2304,6 +2379,7 @@ margin-left: 0;
 			});
 
 			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
+				clearActionDropdownScrollSpace();
 				$(this).removeClass('dropup dropdown-action-menu');
 				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
 			});

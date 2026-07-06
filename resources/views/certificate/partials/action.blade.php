@@ -155,7 +155,7 @@
                 <input type="hidden" name="delivered_at" value="">
                 <input type="hidden" name="remarks" value="">
                 <button type="submit" class="dropdown-item lead-action-item">
-                    <span class="lead-action-icon lead-icon-green"><i class="fa fa-handshake-o"></i></span>
+                    <span class="lead-action-icon lead-icon-green"><i class="fa fa-hand-o-right"></i></span>
                     <span class="lead-action-label">Mark Delivered</span>
                 </button>
             </form>
