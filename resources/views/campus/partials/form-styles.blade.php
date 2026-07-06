@@ -76,7 +76,7 @@
     .lead-body { padding: 10px 10px 5px; overflow: visible !important; }
 
     .lead-title {
-        font-size: 18px;
+        font-size: 1.125rem;
         font-weight: 500;
         color: var(--color-campus-partials-form-styles-2);
         line-height: 1.4;

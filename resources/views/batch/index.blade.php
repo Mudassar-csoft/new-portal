@@ -289,7 +289,7 @@
         }
 
         .program-filter-field .form-label {
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: var(--typo-batch-index-font-weight-1);
             color: var(--color-batch-index-1);
             margin-bottom: 4px;

@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ProgramSeeder::class,
             BatchSeeder::class,
             DemoAcademicSeeder::class,
+            CertificateSeeder::class,
             FinanceSetupSeeder::class,
             WebLeadSeeder::class,
             DashboardModuleSeeder::class,

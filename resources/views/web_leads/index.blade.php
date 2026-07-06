@@ -136,13 +136,13 @@
 
 		* {
 			font-family: var(--typo-web-leads-index-font-family-1);
-			font-size: 12px;
+			font-size: 0.75rem;
 			margin: 0;
 			padding: 0;
 		}
 
 		.form-label {
-			font-size: 11px;
+			font-size: 0.6875rem;
 			font-weight: var(--typo-web-leads-index-font-weight-2);
 			color: var(--color-web-leads-index-1);
 			text-transform: uppercase;
@@ -277,7 +277,7 @@
 		}
 
 		.follow-action-dropdown .dropdown-menu {
-			font-size: 12px !important;
+			font-size: 0.75rem !important;
 			min-width: 180px;
 			position: absolute !important;
 			top: 0 !important;

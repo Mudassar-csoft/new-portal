@@ -240,7 +240,7 @@
             /* background: #f8fbff; */
         }
         .form-label-role{
-            font-size: 14px !important;
+            font-size: 0.875rem !important;
             margin-bottom: var(--space-user-create-6);
             margin-top: var(--space-user-create-6);
             
@@ -272,7 +272,7 @@
             background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98));
         }
         .user-create-page .user-card .panel-title {
-            font-size: 32px !important;
+            font-size: 2rem !important;
             line-height: 1.15;
             font-weight: 400 !important;
             color: #1d2f40;
@@ -369,7 +369,7 @@
             border-radius: 0 5px 5px 0;
             background: #eef4fb;
             color: #4e6278;
-            font-size: 17px;
+            font-size: 1.0625rem;
             font-weight: var(--typo-user-create-font-weight-1);
             white-space: nowrap;
         }
@@ -429,7 +429,7 @@
         }
         .user-create-page .field-error {
             margin-top: var(--space-user-create-7);
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: var(--typo-user-create-font-weight-1);
             color: var(--color-user-create-5);
         }
@@ -482,7 +482,7 @@
         .user-create-page .account-activation-title {
             margin: 0 0 11px;
             color: var(--color-user-create-2);
-            font-size: 19px;
+            font-size: 1.1875rem;
             font-weight: var(--typo-user-create-font-weight-3);
             text-transform: uppercase;
         }
@@ -501,7 +501,7 @@
         }
         .user-create-page .account-activation-note i {
             color: #0d73da;
-            font-size: 21px;
+            font-size: 1.3125rem;
             flex: 0 0 auto;
         }
         .user-create-page .user-actions {
@@ -567,11 +567,11 @@
                 padding-right: var(--space-user-create-4);
             }
             .user-create-page .user-card .panel-title {
-                font-size: 26px !important;
+                font-size: 1.625rem !important;
             }
             .user-create-page .account-activation-note {
                 align-items: flex-start;
-                font-size: 16px;
+                font-size: 1rem;
             }
             .user-create-page .user-actions {
                 flex-direction: column;

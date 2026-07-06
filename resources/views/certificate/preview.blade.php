@@ -86,7 +86,7 @@
             margin-top: 7mm;
             margin-left: 5px;
             font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
-            font-size: 60px;
+            font-size: 3.75rem;
             font-weight: 400;
             letter-spacing: 2px;
             line-height: 1;
@@ -94,7 +94,7 @@
 
         .c_title h1 {
             font-family: 'Cloister Black', 'Old English Text MT', 'UnifrakturCook', serif;
-            font-size: 60px;
+            font-size: 3.75rem;
             font-weight: 400;
             margin-right: 40px !important;
             margin-left: 5px;
@@ -112,7 +112,7 @@
 
         .pre p {
             margin-top: 0.5in;
-            font-size: 16px;
+            font-size: 1rem;
         }
 
         .s_name {
@@ -129,7 +129,7 @@
             margin-top: 0.2in;
             padding: 0 8px 8px;
             border-bottom: 2px solid #000;
-            font-size: 25px;
+            font-size: 1.5625rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: -1px;
@@ -148,7 +148,7 @@
 
         .t_line p {
             margin-top: 0.2in;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 400;
             text-align: center;
         }
@@ -168,7 +168,7 @@
             margin-left: 5px;
             padding: 0 8px 8px;
             border-bottom: 2px solid #000;
-            font-size: 25px;
+            font-size: 1.5625rem;
             font-weight: 800;
             letter-spacing: -1px;
             line-height: 1.15;
@@ -184,7 +184,7 @@
             margin-left: 20px;
             margin-right: 50px;
             font-family: sans-serif;
-            font-size: 12px;
+            font-size: 0.75rem;
             gap: 28px;
         }
 

@@ -64,8 +64,8 @@
   margin: 0;
   padding: 0;
 }
-h1 { font-size: 30px !important; }
-h2 { font-size: 26px!important; }
+h1 { font-size: 1.875rem !important; }
+h2 { font-size: 1.625rem!important; }
 h3 { font-size: var(--typo-layouts-theme-font-size-2) !important; }
 h4 { font-size: var(--typo-layouts-theme-font-size-3) !important; }
 h5 { font-size: var(--typo-layouts-theme-font-size-4) !important; }
@@ -136,7 +136,7 @@ font-family: "Font Awesome 6 Free" !important;
 font-family: FontAwesome !important;
 }
 .box-typical .panel-title{
-	font-size: 26px !important;
+	font-size: 1.625rem !important;
   font-weight: 500 !important;
       text-wrap: auto;
 }
@@ -291,7 +291,7 @@ margin-bottom: 0 !important;
 }
 
 .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input{
-    font-size:13px !important
+    font-size:0.8125rem !important
 }
 /* .site-header .site-header-collapsed .site-header-collapsed-in {
 margin-right: 132px !important;
@@ -863,7 +863,7 @@ margin: 0 !important;
 .form-label{
     margin-bottom: 6px;
     margin-top: 6px;
-    font-size: 12.8px !important;
+    font-size: 0.8rem !important;
     color: #343a40 !important;
     text-transform: uppercase;
     font-weight: var(--typo-layouts-theme-font-weight-15);
@@ -1163,7 +1163,7 @@ z-index: 1070 !important;
 height: 22px !important;
 padding: 1px 8px !important;
 min-width: 68px !important;
-font-size: 13px !important;
+font-size: 0.8125rem !important;
 line-height: var(--typo-layouts-theme-line-height-9) !important;
 text-align: center !important;
 z-index: auto !important;
@@ -1327,7 +1327,7 @@ select {
 		.follow-tab .badge {
 			padding:4px 8px;
 			border-radius: 999px;
-			font-size: 11px;
+			font-size: 0.6875rem;
 			line-height: var(--typo-layouts-theme-line-height-13);
 		}
 
@@ -1864,7 +1864,7 @@ margin-top:10px;
 text
 }
 .font-icon-menu-addl{
-	font-size: 24px !important;
+	font-size: 1.5rem !important;
 }
  .site-header .site-header-collapsed {
 

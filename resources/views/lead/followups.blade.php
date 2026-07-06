@@ -255,7 +255,7 @@
         }
 
         .lead-modal .modal-title {
-            font-size: 26px !important;
+            font-size: 1.625rem !important;
             font-weight: 500 !important;
             text-wrap: auto;
         }
@@ -263,7 +263,7 @@
         .lead-modal .modal-close {
             border: 0;
             background: transparent;
-            font-size: 28px;
+            font-size: 1.75rem;
             line-height: var(--typo-lead-followups-line-height-1);
             color: #5b6b80;
             cursor: pointer;

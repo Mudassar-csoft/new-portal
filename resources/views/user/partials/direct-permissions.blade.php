@@ -77,7 +77,7 @@
 
             .permission-helper {
                 margin-bottom: 10px;
-                font-size: 13px;
+                font-size: 0.8125rem;
             }
             .permission-wrapper {
                 max-height: 300px;
@@ -89,7 +89,7 @@
                 background: #fff;
             }
             .form-label{
-                font-size: 16px !important;
+                font-size: clamp(0.8rem, 1.5vw, 1rem) !important;
             }
             .permission-grid {
                 display: grid;
@@ -115,7 +115,7 @@
             }
             .perm-subheading {
                 margin-bottom: 6px;
-                font-size: 12px;
+                font-size: 0.75rem;
                 font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.08em;
                 /* text-transform: uppercase; */
@@ -149,7 +149,7 @@
                 border-radius: 999px;
                 background: #e6eef9;
                 color: #47627f;
-                font-size: 11px;
+                font-size: 0.6875rem;
                 font-weight: var(--typo-user-partials-direct-permissions-font-weight-1);
                 letter-spacing: 0.04em;
                 text-transform: uppercase;

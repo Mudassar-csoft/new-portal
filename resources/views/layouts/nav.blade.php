@@ -577,7 +577,7 @@
 <style>
     .label.label-pill.label-custom {
         padding: 5px 7px !important;
-        font-size: 13px !important;
+        font-size: 0.8125rem !important;
         width: auto !important;
         margin-right: 5px;
     }

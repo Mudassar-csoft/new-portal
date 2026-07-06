@@ -226,7 +226,7 @@
         }
 
         .stat-value {
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: var(--typo-student-portal-font-weight-3);
             color: var(--color-student-portal-2);
         }
@@ -283,7 +283,7 @@
             color: var(--color-student-portal-7);
             border: 0;
             font-weight: var(--typo-student-portal-font-weight-3);
-            font-size: 13px;
+            font-size: 0.8125rem;
             text-transform: uppercase;
         }
 

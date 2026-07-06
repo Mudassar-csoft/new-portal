@@ -170,7 +170,7 @@
         .finance-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .required::after { content: ' *'; color: #343434; }
         .finance-table thead th { background: #1ea7ff; color: #fff; }
-        .field-error { margin-top: 6px; font-size: 12px; color: #dc3545; }
+        .field-error { margin-top: 6px; font-size: 0.75rem; color: #dc3545; }
     </style>
 @endpush
 

@@ -48,7 +48,7 @@
         .coming-soon-copy h1 {
             margin: 0 0 10px;
             color: #14324a;
-            font-size: 38px !important;
+            font-size: clamp(1.875rem, 4vw, 2.375rem) !important;
             font-weight: 700;
             line-height: 1.1;
         }
@@ -56,7 +56,7 @@
         .coming-soon-copy p {
             margin: 0;
             color: #587084;
-            font-size: 18px !important;
+            font-size: 1.125rem !important;
         }
 
         @media (max-width: 767px) {
@@ -65,11 +65,11 @@
             }
 
             .coming-soon-copy h1 {
-                font-size: 30px !important;
+                font-size: clamp(1.875rem, 4vw, 2.375rem) !important;
             }
 
             .coming-soon-copy p {
-                font-size: 16px !important;
+                font-size: 1rem !important;
             }
         }
     </style>

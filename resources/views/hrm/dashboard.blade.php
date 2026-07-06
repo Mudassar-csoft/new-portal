@@ -77,7 +77,7 @@
             min-height: 86px;
         }
         .hrm-stat .stat-label {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             opacity: .88;
@@ -86,7 +86,7 @@
         }
         .hrm-stat .stat-value {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 1.125rem;
             color: white;
             text-align: center;
             font-weight: 700;

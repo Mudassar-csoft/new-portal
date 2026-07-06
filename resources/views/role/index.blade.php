@@ -104,7 +104,7 @@
 
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
         .dataTables_wrapper .follow-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-role-index-1); }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-role-index-1); font-size: 13px; }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-role-index-1); font-size: 0.8125rem; }
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate {
             margin: 0; padding: 0; float: none !important;

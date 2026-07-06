@@ -107,7 +107,7 @@
         }
 
         .voucher-meta-line {
-            font-size: 13px;
+            font-size: 0.8125rem;
         }
 
         table {
@@ -170,13 +170,13 @@
             justify-content: space-between;
             gap: var(--space-coworking-registration-receipt-voucher-1);
             margin-top: var(--space-coworking-registration-receipt-voucher-3);
-            font-size: 11px;
+            font-size: 0.6875rem;
             color: #8a8a8a;
         }
 
         .voucher-footer {
             margin-top: var(--space-coworking-registration-receipt-voucher-2);
-            font-size: 12px;
+            font-size: 0.75rem;
             line-height: 1.25;
         }
 

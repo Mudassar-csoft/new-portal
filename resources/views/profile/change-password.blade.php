@@ -92,11 +92,11 @@
         .lead-create-card { overflow: visible !important; max-height: none !important; }
         .lead-create-card .panel-heading { padding: 10px 20px; }
         .lead-body { padding: 14px 18px; overflow: visible !important; }
-        .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
+        .lead-title { font-size: 1.125rem; font-weight: 500; color: #1f2937; line-height: 1.4; }
         .lead-create-card .form-row { padding: 3px 10px; }
         .lead-create-card .form-group { margin-bottom: var(--space-profile-change-password-2); }
-        .lead-create-card label, .lead-create-card .form-label { color: var(--color-profile-change-password-1); font-size: 12px; font-weight: var(--typo-profile-change-password-font-weight-1); line-height: 1.2; margin-bottom: 6px; }
-        .lead-create-card .form-control { font-size: 13px; height: var(--dimension-profile-change-password-3) !important; min-height: var(--dimension-profile-change-password-3) !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: var(--color-profile-change-password-1); }
+        .lead-create-card label, .lead-create-card .form-label { color: var(--color-profile-change-password-1); font-size: 0.75rem; font-weight: var(--typo-profile-change-password-font-weight-1); line-height: 1.2; margin-bottom: 6px; }
+        .lead-create-card .form-control { font-size: 0.8125rem; height: var(--dimension-profile-change-password-3) !important; min-height: var(--dimension-profile-change-password-3) !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: var(--color-profile-change-password-1); }
         .required::after { content: '*'; color: #e53935; margin-left: 4px; }
 
         .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-profile-change-password-1); }

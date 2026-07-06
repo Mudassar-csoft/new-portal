@@ -8057,7 +8057,7 @@ hr.margin-4 {
     transition: all .2s ease-in-out;
     cursor: pointer;
     position: relative;
-    font-size: 15px
+    font-size: 0.9375rem
 }
 
 .dropdown.dropdown-typical .dropdown-more .dropdown-more-caption:before {
@@ -8946,7 +8946,7 @@ a.label-light-grey:hover {
 
 .bootstrap-table .fixed-table-toolbar .btn.remove .font-icon {
     line-height: var(--typo-theme-css-main-line-height-30);
-    font-size: 12px;
+    font-size: 0.75rem;
     vertical-align: top;
     margin: 0 3px 0 0;
     position: relative;
@@ -12269,12 +12269,12 @@ body.modal-open {
 }
 
 .pie_progress__number {
-    font-size: 15px
+    font-size: 0.9375rem
 }
 
 .pie_progress__label {
     margin-top: 32px;
-    font-size: 12px
+    font-size: 0.75rem
 }
 
 .pie_progress__svg {
@@ -13885,7 +13885,7 @@ body {
 }
 
 .site-header .dropdown.dropdown-typical .lbl {
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 16px
 }
 
@@ -13907,7 +13907,7 @@ body {
 }
 
 .site-header .dropdown .dropdown-item {
-    font-size: 15px
+    font-size: 0.9375rem
 }
 
 .site-header .dropdown .btn.dropdown-toggle {

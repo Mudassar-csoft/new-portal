@@ -158,7 +158,7 @@
         width: var(--dimension-lead-partials-probability-slider-assets-1);
         margin-top: 5px;
         color: var(--color-lead-partials-probability-slider-assets-1);
-        font-size: 10px;
+        font-size: 0.625rem;
         font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1;
     }
@@ -166,7 +166,7 @@
     .probability-scale span {
         flex: 1 1 0;
         text-align: center;
-        font-size: 11px !important;
+        font-size: 0.6875rem !important;
         white-space: nowrap;
     }
 
@@ -188,7 +188,7 @@
         border-radius: 999px;
         background: rgba(0, 168, 255, 0.08);
         color: var(--color-lead-partials-probability-slider-assets-1);
-        font-size: 13px;
+        font-size: 0.8125rem;
         font-weight: var(--typo-lead-partials-probability-slider-assets-font-weight-1);
         line-height: 1.1;
     }
@@ -212,7 +212,7 @@
         }
 
         .probability-scale {
-            font-size: 9px;
+            font-size: 0.5625rem;
         }
     }
 </style>

@@ -308,14 +308,14 @@
 		}
 
 		.registration-title {
-			font-size: 18px;
+			font-size: 1.125rem;
 			font-weight: 500;
 			color: #25364a;
 			margin: 0;
 		}
 
 		.registration-title > span {
-			font-size: 14px;
+			font-size: 0.875rem;
 			font-weight: 400;
 			color: var(--color-registration-create-3);
 		}
@@ -399,7 +399,7 @@
 
 		.registration-form .field-error {
 			margin-top: var(--space-registration-create-5);
-			font-size: 12px;
+			font-size: 0.75rem;
 			color: var(--color-registration-create-4);
 		}
 
@@ -459,7 +459,7 @@
 		}
 
 		.registration-gender-title {
-			font-size: 15px;
+			font-size: 0.9375rem;
 			font-weight: var(--typo-registration-create-font-weight-1);
 			margin-bottom: var(--space-registration-create-1);
 		}
@@ -512,7 +512,7 @@
 		}
 
 		.registration-gender-group .form-check-label {
-			font-size: 15px !important;
+			font-size: clamp(0.7375rem, 1.3vw, 0.9375rem) !important;
 			margin-bottom: 0;
 			cursor: pointer;
 			font-weight: var(--typo-registration-create-font-weight-1);

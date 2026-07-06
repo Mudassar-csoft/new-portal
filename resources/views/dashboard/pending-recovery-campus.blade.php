@@ -323,7 +323,7 @@
         }
 
         .campus-recovery-campus-name {
-            font-size: 32px;
+            font-size: 2rem;
             line-height: 1.15;
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-pending-recovery-campus-2);
@@ -420,7 +420,7 @@
         }
 
         .campus-recovery-course-title {
-            font-size: 24px;
+            font-size: 1.5rem;
             line-height: var(--campus-report-line-tight);
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-pending-recovery-campus-3);
@@ -511,7 +511,7 @@
             padding: 28px;
             text-align: center;
             color: #6b7280;
-            font-size: 16px;
+            font-size: 1rem;
             /* box-shadow: 0 18px 44px var(--color-dashboard-pending-recovery-campus-6); */
         }
 
@@ -522,7 +522,7 @@
         }
 
         .campus-recovery-summary-title {
-            font-size: 22px;
+            font-size: 1.375rem;
             line-height: var(--campus-report-line-tight);
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-pending-recovery-campus-3);
@@ -600,7 +600,7 @@
             }
 
             .campus-recovery-report-title {
-                font-size: 17px;
+                font-size: 1.0625rem;
             }
 
             .campus-recovery-course-title {
@@ -609,7 +609,7 @@
 
             .campus-recovery-table th,
             .campus-recovery-table td {
-                font-size: 10.5px;
+                font-size: 0.65625rem;
                 padding: 6px 5px;
             }
 

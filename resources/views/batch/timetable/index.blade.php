@@ -343,7 +343,7 @@
         }
 
         .lead-title {
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: var(--typo-batch-timetable-index-font-weight-2);
             color: #1f2937;
             line-height: 1.4;
@@ -372,7 +372,7 @@
         }
 
         .program-filter-field .form-label {
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: var(--typo-batch-timetable-index-font-weight-1);
             color: var(--color-batch-timetable-index-1);
             margin-bottom: var(--space-batch-timetable-index-5);
@@ -403,7 +403,7 @@
 
         .batch-subtitle {
             margin-bottom: var(--space-batch-timetable-index-3);
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 700;
             color: #334155;
         }

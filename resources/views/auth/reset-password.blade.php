@@ -22,7 +22,7 @@
         .container { width: 460px; max-width: var(--dimension-auth-reset-password-1); background: linear-gradient(135deg, #00b894, #00cec9); color: var(--color-auth-reset-password-1); padding: 32px 36px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
         .logo { display: flex; justify-content: center; margin-bottom: var(--space-auth-reset-password-1); }
         .logo img { height: 58px; max-width: var(--dimension-auth-reset-password-1); object-fit: contain; }
-        h2 { text-align: center; font-size: 22px; margin: 8px 0 18px; }
+        h2 { text-align: center; font-size: 1.375rem; margin: 8px 0 18px; }
         p.subtitle { text-align: center; font-size: var(--typo-auth-reset-password-font-size-1); margin-bottom: 22px; opacity: 0.9; }
         .input-group { margin-bottom: var(--space-auth-reset-password-2); }
         .input-group label { display: block; font-size: var(--typo-auth-reset-password-font-size-1); margin-bottom: var(--space-auth-reset-password-3); }
@@ -32,7 +32,7 @@
         .flash { padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.18); margin-bottom: var(--space-auth-reset-password-2); font-size: var(--typo-auth-reset-password-font-size-1); }
         button[type="submit"] { width: var(--dimension-auth-reset-password-1); padding: var(--space-auth-reset-password-1); border: 0; border-radius: 8px; background: #009e60; color: var(--color-auth-reset-password-1); font-weight: var(--typo-auth-reset-password-font-weight-3); cursor: pointer; transition: 0.3s; }
         button[type="submit"]:hover { background: #007f4f; }
-        .otp-input input { letter-spacing: 14px; text-align: center; font-size: 20px; font-weight: var(--typo-auth-reset-password-font-weight-3); }
+        .otp-input input { letter-spacing: 14px; text-align: center; font-size: 1.25rem; font-weight: var(--typo-auth-reset-password-font-weight-3); }
         .footer-links { text-align: center; margin-top: var(--space-auth-reset-password-2); font-size: var(--typo-auth-reset-password-font-size-2); }
         .footer-links a { color: var(--color-auth-reset-password-1); text-decoration: none; }
         .footer-links a:hover { text-decoration: underline; }

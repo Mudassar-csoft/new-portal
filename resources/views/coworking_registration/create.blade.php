@@ -340,14 +340,14 @@
         }
 
         .registration-title {
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: 500;
             color: #25364a;
             margin: 0;
         }
 
         .registration-title > span {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 400;
             color: var(--color-coworking-registration-create-3);
         }
@@ -421,7 +421,7 @@
 
         .registration-form .field-error {
             margin-top: 6px;
-            font-size: 12px;
+            font-size: 0.75rem;
             color: #dc3545;
         }
 
@@ -458,7 +458,7 @@
         }
 
         .registration-gender-title {
-            font-size: 15px;
+            font-size: 0.9375rem;
             font-weight: var(--typo-coworking-registration-create-font-weight-1);
             margin-bottom: var(--space-coworking-registration-create-2);
         }
@@ -516,7 +516,7 @@
         }
 
         .registration-gender-group .form-check-label {
-            font-size: 15px !important;
+            font-size: clamp(0.7375rem, 1.3vw, 0.9375rem) !important;
             margin: var(--space-coworking-registration-create-1);
             cursor: pointer;
             font-weight: var(--typo-coworking-registration-create-font-weight-1);

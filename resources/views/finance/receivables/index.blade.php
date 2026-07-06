@@ -397,13 +397,13 @@
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
         .invoice-summary-card .summary-value {
-            font-size: 22px;
+            font-size: 1.375rem;
             font-weight: 700;
             margin-top: 20px;
             text-align: center;
         }
         .invoice-summary-card .summary-label {
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: 600;
             text-transform: uppercase;
             text-align: center;
@@ -437,7 +437,7 @@
             min-width: 220px;
         }
         @media (max-width: 760px) {
-            .invoice-summary-card .summary-value { margin-top: 8px; font-size: 18px; }
+            .invoice-summary-card .summary-value { margin-top: 8px; font-size: 1.125rem; }
             .invoice-total-strip { width: 100%; margin-top: var(--space-finance-receivables-index-1); }
             .receivables-list-table-wrap {
                 overflow-x: auto;

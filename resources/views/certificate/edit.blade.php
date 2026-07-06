@@ -94,7 +94,7 @@
         .lead-create-card { overflow: visible !important; max-height: none !important; }
         .lead-create-card .panel-heading { padding: 10px 20px; }
         .lead-body { padding: 14px 18px; overflow: visible !important; }
-        .lead-title { font-size: 18px; font-weight: 500; color: #1f2937; line-height: 1.4; }
+        .lead-title { font-size: 1.125rem; font-weight: 500; color: #1f2937; line-height: 1.4; }
 
         .cert-summary {
             display: grid;
@@ -105,7 +105,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             background: #f8fbff;
-            font-size: 13px;
+            font-size: 0.8125rem;
         }
         .label-mute { color: var(--color-certificate-edit-1); font-weight: var(--typo-certificate-edit-font-weight-1); margin-right: 4px; }
         .tbl-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-certificate-edit-1); }

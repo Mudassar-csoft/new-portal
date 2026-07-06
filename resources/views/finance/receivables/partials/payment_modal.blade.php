@@ -167,7 +167,7 @@
                 margin-bottom: 18px;
             }
             .invoice-payment-modal-summary .summary-kicker {
-                font-size: 12px;
+                font-size: 0.75rem;
                 font-weight: 700;
                 letter-spacing: .08em;
                 text-transform: uppercase;

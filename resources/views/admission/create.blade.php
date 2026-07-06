@@ -491,14 +491,14 @@
 
 		.adm-title {
 			margin: 0 0 24px;
-			font-size: 33px;
+			font-size: 2.0625rem;
 			font-weight: 800;
 			line-height: 1.15;
 			color: #183b68;
 		}
 
 		.adm-title small {
-			font-size: 18px;
+			font-size: 1.125rem;
 			font-weight: 500;
 			color: #70839a !important;
 		}
@@ -777,7 +777,7 @@
 
 		.installments-summary {
 			margin-top: var(--space-admission-create-1);
-			font-size: 13px;
+			font-size: 0.8125rem;
 			color: var(--color-admission-create-3);
 		}
 
@@ -803,7 +803,7 @@
 
 		@media (max-width: 991px) {
 			.adm-title {
-				font-size: 28px;
+				font-size: 1.75rem;
 			}
 
 			.adm-title small {

@@ -678,7 +678,7 @@
         }0___
 
         .ci-muted-meta {
-            font-size: 14px !important;
+            font-size: 0.875rem !important;
             font-weight: 400 !important;
         }
 
@@ -696,7 +696,7 @@
 
         .student-detail-header .panel-title {
             margin: 0;
-            font-size: 18px !important;
+            font-size: 1.125rem !important;
             font-weight: 600 !important;
         }
 
@@ -788,7 +788,7 @@
 
         .profile-campus {
             color: var(--color-coworking-registration-show-2);
-            font-size: 15px;
+            font-size: 0.9375rem;
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
             margin-bottom: var(--space-coworking-registration-show-4);
         }
@@ -1013,7 +1013,7 @@
 
         .fee-status-cell .label {
             padding: var(--space-coworking-registration-show-7);
-            font-size: 11px;
+            font-size: 0.6875rem;
             font-weight: var(--typo-coworking-registration-show-font-weight-2);
         }
 
@@ -1146,7 +1146,7 @@
             background: transparent;
             border: 0;
             color: var(--color-coworking-registration-show-9);
-            font-size: 24px;
+            font-size: 1.5rem;
             line-height: 1;
             cursor: pointer;
             padding: 0;

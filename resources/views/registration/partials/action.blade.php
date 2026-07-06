@@ -55,7 +55,7 @@
 				width: var(--dimension-registration-partials-action-2);
 				min-width: var(--dimension-registration-partials-action-2);
 				height: var(--dimension-registration-partials-action-2);
-				font-size: 18px !important;
+				font-size: 1.125rem !important;
 				line-height: 1;
 				margin-right: var(--space-registration-partials-action-1);
 				padding: var(--space-registration-partials-action-1);

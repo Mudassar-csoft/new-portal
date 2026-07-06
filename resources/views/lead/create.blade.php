@@ -187,14 +187,14 @@
 		}
 
 		.lead-title {
-			font-size: 18px;
+			font-size: 1.125rem;
 			font-weight: 500;
 			color: #25364a;
 			margin: 0;
 		}
 
 		.lead-title > span {
-			font-size: 14px;
+			font-size: 0.875rem;
 			font-weight: 400;
 			color: var(--color-lead-create-4);
 		}
@@ -320,7 +320,7 @@
 
 		.lead-form-shell .field-error {
 			margin-top: var(--space-lead-create-5);
-			font-size: 12px;
+			font-size: 0.75rem;
 			color: #dc3545;
 		}
 

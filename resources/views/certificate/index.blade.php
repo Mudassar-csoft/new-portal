@@ -348,7 +348,7 @@
         }
         .certificate-search-icon {
             color: #50697d;
-            font-size: 18px;
+            font-size: 1.125rem;
             transition: opacity 0.2s ease;
         }
         .certificate-search-loader {
@@ -391,7 +391,7 @@
 
         .program-filter-row { display: flex; gap: var(--space-certificate-index-2); flex-wrap: wrap; align-items: end; margin-bottom: var(--space-certificate-index-2); }
         .program-filter-field { flex: 1 1 200px; min-width: 180px; }
-        .program-filter-field .form-label { font-size: 13px; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
+        .program-filter-field .form-label { font-size: 0.8125rem; font-weight: var(--typo-certificate-index-font-weight-1); color: var(--color-certificate-index-1); margin-bottom: 4px; }
         .program-filter-actions { display: flex; gap: var(--space-certificate-index-3); margin-left: auto; align-items: center; }
 
         .user-mgmt-header { display: flex; align-items: stretch; justify-content: space-between; gap: var(--space-certificate-index-1); flex-wrap: wrap; }

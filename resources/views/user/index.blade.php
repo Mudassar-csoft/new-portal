@@ -116,7 +116,7 @@
         .dataTables_wrapper .follow-footer {
             display: flex; align-items: center; justify-content: space-between; gap: var(--space-user-index-1);
         }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-user-index-1); font-size: 13px; }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-user-index-1); font-size: 0.8125rem; }
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info,
@@ -124,7 +124,7 @@
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label { position: relative; margin: 0; font-size: 0; }
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter label::after {
             content: "\f002"; font-family: FontAwesome; position: absolute; right: 10px; top: 50%;
-            transform: translateY(-50%); color: #9aa8b6; font-size: 12px; pointer-events: none;
+            transform: translateY(-50%); color: #9aa8b6; font-size: 0.75rem; pointer-events: none;
         }
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar) .dataTables_filter input {
             border: 1px solid #d9e2ef; border-radius: .25rem; padding: .375rem 32px .375rem .75rem;
