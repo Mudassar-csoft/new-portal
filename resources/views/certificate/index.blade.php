@@ -10,13 +10,10 @@
         $currentUser = auth()->user();
         $campusOptionCount = $campuses->count();
         $canBulkApprove = $activeScope === 'requested'
-            && ($currentUser?->isAdmin() ?? false)
             && ($currentUser?->hasAnyPermission(['certificate.approve']) ?? false);
         $canBulkSendToPrinting = $activeScope === 'approved'
-            && ($currentUser?->isAdmin() ?? false)
             && ($currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false);
         $canBulkMarkReady = $activeScope === 'printing'
-            && ($currentUser?->isAdmin() ?? false)
             && ($currentUser?->hasAnyPermission(['certificate.mark-ready']) ?? false);
         $canBulkPreview = $activeScope === 'ready'
             && ($currentUser?->hasAnyPermission(['certificate.view']) ?? false);

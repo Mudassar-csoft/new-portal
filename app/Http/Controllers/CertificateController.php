@@ -200,8 +200,6 @@ class CertificateController extends Controller
 
     public function bulkApprove(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         $validated = $request->validate([
             'admission_ids' => ['required', 'array', 'min:1'],
             'admission_ids.*' => ['integer', 'distinct', 'exists:admissions,id'],
@@ -248,8 +246,6 @@ class CertificateController extends Controller
 
     public function bulkSendToPrinting(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         return $this->performBulkWorkflowTransition(
             $request,
             Admission::CERTIFICATE_STATUS_APPROVED,
@@ -262,8 +258,6 @@ class CertificateController extends Controller
 
     public function bulkMarkReady(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         return $this->performBulkWorkflowTransition(
             $request,
             Admission::CERTIFICATE_STATUS_PRINTING,
