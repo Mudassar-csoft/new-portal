@@ -176,7 +176,7 @@
         .form-label {
                 margin-bottom: var(--space-lead-transfer-6);
                 margin-top: var(--space-lead-transfer-6);
-                font-size: 13.8px !important;
+                font-size: 0.8625rem !important;
                 color: #343a40 !important;
                 text-transform: uppercase;
                 font-weight: var(--typo-lead-transfer-font-weight-1);
@@ -231,14 +231,14 @@
         }
 
         .lead-title {
-            font-size: 28px;
+            font-size: 1.75rem;
             font-weight: 800;
             line-height: 1.2;
             color: #183b68;
         }
 
         .lead-title small {
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: var(--typo-lead-transfer-font-weight-1);
             color: #70839a !important;
         }
@@ -251,7 +251,7 @@
 
         .field-error {
             color: var(--color-lead-transfer-2);
-            font-size: 12px;
+            font-size: 0.75rem;
             margin-top: var(--space-lead-transfer-5);
         }
 
@@ -355,7 +355,7 @@
             }
 
             .lead-title {
-                font-size: 24px;
+                font-size: 1.5rem;
             }
 
             .lead-title small {

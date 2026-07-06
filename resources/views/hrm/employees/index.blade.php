@@ -434,7 +434,7 @@
     <style>
         .required::after { content: ' *'; color: #dc2626; }
         .hrm-table thead th { background: #0ea5e9; color: #fff; }
-        .employee-section-title { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+        .employee-section-title { margin: 0 0 12px; font-size: 1rem; font-weight: 600; }
         .dropdown-item-button {
             width: 100%;
             border: 0;

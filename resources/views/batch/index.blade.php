@@ -75,17 +75,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="program-filter-field">
-                                <label class="form-label">Programme</label>
-                                <select class="form-control form-control-sm" name="program_id">
-                                    <option value="">All Programmes</option>
-                                    @foreach($programs as $program)
-                                        <option value="{{ $program->id }}" @selected(($filters['program_id'] ?? null) == $program->id)>
-                                            {{ $program->code }} - {{ $program->title ?? $program->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            @include('partials.filter-program-select')
                             <div class="program-filter-field">
                                 <label class="form-label">Session</label>
                                 <select class="form-control form-control-sm" name="session">
@@ -299,7 +289,7 @@
         }
 
         .program-filter-field .form-label {
-            font-size: 13px;
+            font-size: 0.8125rem;
             font-weight: var(--typo-batch-index-font-weight-1);
             color: var(--color-batch-index-1);
             margin-bottom: 4px;

@@ -58,7 +58,7 @@
                 width: var(--dimension-program-partials-action-1);
                 min-width: var(--dimension-program-partials-action-1);
                 height: var(--dimension-program-partials-action-1);
-                font-size: 18px !important;
+                font-size: 1.125rem !important;
                 line-height: 1;
                 text-align: center;
                 margin-right: var(--space-program-partials-action-1);

@@ -28,7 +28,7 @@
                   <i class="font-icon-alarm"></i>
                   @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0))
                   @if($notificationTotal > 0)
-                    <span class="notification-total-badge" style="font-size:10px !important;">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
+                    <span class="notification-total-badge" style="font-size:0.625rem !important;">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
                   @endif
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">
@@ -753,7 +753,7 @@
 	margin:0 auto;
 }
 /* .font-icon-search{
-	    font-size: 18px !important;
+	    font-size: 1.125rem !important;
 		line-height: var(--typo-layouts-header-line-height-5) !important;
 
 } */
@@ -1275,7 +1275,7 @@ border:2px solid #ddd;
 }
 .campus-dropdown-caption{
 	border-bottom: 1px solid #eef2f5;
-	font-size: 12px !important;
+	font-size: 0.75rem !important;
 	margin-bottom: 4px;
 }
 .campus-dropdown-menu{
@@ -1397,7 +1397,7 @@ border:2px solid #ddd;
 }
 .site-header .header-alarm i,
 .site-header .dropdown-campus .dropdown-toggle i{
-    font-size: 22px !important;
+    font-size: 1.375rem !important;
 }
 .site-header .user-menu.dropdown .dropdown-toggle img{
     width: 32px;

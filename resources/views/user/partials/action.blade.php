@@ -70,7 +70,7 @@
                 height: var(--dimension-user-partials-action-1);
                 line-height: var(--typo-user-partials-action-line-height-3);
                 color: var(--color-user-partials-action-1);
-                font-size: 21px;
+                font-size: 1.3125rem;
             }
 
             .user-action-dropdown .lead-action-label {

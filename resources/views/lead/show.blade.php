@@ -54,7 +54,7 @@
 	<div class="lead-show-shell">
 		<div class="lead-header">
 			<div>
-				<h2 class="lead-name form-label " style="font-size:14px !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
+				<h2 class="lead-name form-label " style="font-size:0.875rem !important; color:black;">{{ $lead->name ?? 'Lead' }}</h2>
 				<div class="lead-sub">
 					<span>{{ $interestValue }}</span>
 					@if($leadLocationDisplay !== 'N/A')
@@ -591,12 +591,12 @@
 		}
 
 		.form-check-label {
-			font-size: 14px;
+			font-size: clamp(0.675rem, 1.2vw, 0.875rem);
 			margin-bottom: 0;
 			cursor: pointer;
 		}
 		/* .form-label{
-			font-size: 11px;
+			font-size: 0.6875rem;
 			font-weight: var(--typo-lead-show-font-weight-4);
 			color: var(--color-lead-show-6);
 			text-transform: uppercase;
@@ -640,7 +640,7 @@
 		}
 
 		.lead-name {
-			font-size: 32px;
+			font-size: 2rem;
 			font-weight: var(--typo-lead-show-font-weight-5);
 			margin: 0;
 			color: #2f3b52;
@@ -804,7 +804,7 @@
 		.followup-closed-banner {
 			max-width: 460px;
 			text-align: left;
-			font-size: 13px;
+			font-size: 0.8125rem;
 		}
 
 		.followup-extra-fields {
@@ -832,7 +832,7 @@
 			margin-top: var(--space-lead-show-7);
 			color: var(--color-lead-show-11);
 			font-weight: var(--typo-lead-show-font-weight-4);
-			font-size: 11px !important;
+			font-size: 0.6875rem !important;
 		}
 
 		.field-error.has-error {
@@ -965,7 +965,7 @@
 		}
 
 		.lead-modal .modal-title {
-		font-size: 26px !important;
+		font-size: 1.625rem !important;
   font-weight: 500 !important;
       text-wrap: auto;
 		}
@@ -973,7 +973,7 @@
 		.lead-modal .modal-close {
 			border: 0;
 			background: transparent;
-			font-size: 28px;
+			font-size: 1.75rem;
 			line-height: 1;
 			color: #5b6b80;
 			cursor: pointer;
@@ -995,8 +995,9 @@
 		}
 
 		#probability-wrap .probability-field .probability-input {
-			height: var(--dimension-lead-show-5) !important;
-			min-height: var(--dimension-lead-show-5) !important;
+			height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+			min-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+			line-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
 		}
 
 		#probability-wrap .probability-field .probability-input::-webkit-slider-runnable-track {
@@ -1006,7 +1007,7 @@
 		#probability-wrap .probability-field .probability-input::-webkit-slider-thumb {
 			width: var(--dimension-lead-show-6);
 			height: var(--dimension-lead-show-6);
-			margin-top: -6.5px;
+			margin-top: -6px;
 			border-width: var(--dimension-lead-show-8);
 		}
 
@@ -1036,7 +1037,7 @@
 
 		#probability-wrap .probability-scale {
 			margin-top: var(--space-lead-show-7);
-			font-size: 8px;
+			font-size: 0.5rem;
 			font-weight: var(--typo-lead-show-font-weight-4);
 			letter-spacing: -0.15px;
 		}
@@ -1044,7 +1045,7 @@
 		#probability-wrap .probability-display {
 			margin-top: var(--space-lead-show-9);
 			padding: 3px 8px;
-			font-size: 9px;
+			font-size: 0.5625rem;
 		}
 
 		@media (max-width: 991px) {

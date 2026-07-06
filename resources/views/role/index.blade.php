@@ -90,15 +90,6 @@
             flex-wrap: wrap;
         }
         .user-mgmt-header .follow-tab-bar { flex: 1 1 auto; }
-        .create-action-btn {
-            align-self: center;
-            padding: 0.5rem 1rem !important;
-            white-space: nowrap;
-            margin: 8px 12px 8px 0;
-        }
-        @media (max-width: 767px) {
-            .create-action-btn { margin: 0 12px 8px; width: calc(100% - 24px); text-align: center; }
-        }
         #roles-table { margin-top: var(--space-role-index-2); }
         #roles-table th, #roles-table td { padding: 6px 10px; vertical-align: middle; }
         #roles-table tbody tr:nth-of-type(odd) { background-color: #f9fbfd; }
@@ -113,7 +104,7 @@
 
         .dataTables_wrapper .follow-controls:not(.follow-controls--toolbar),
         .dataTables_wrapper .follow-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-role-index-1); }
-        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-role-index-1); font-size: 13px; }
+        .dataTables_wrapper .follow-footer { margin-top: 10px; color: var(--color-role-index-1); font-size: 0.8125rem; }
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate {
             margin: 0; padding: 0; float: none !important;

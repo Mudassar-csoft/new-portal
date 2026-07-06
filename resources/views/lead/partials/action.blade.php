@@ -87,7 +87,7 @@
 				width: var(--dimension-lead-partials-action-2);
 				min-width: var(--dimension-lead-partials-action-2);
 				height: var(--dimension-lead-partials-action-2);
-				font-size: 18px !important;
+				font-size: 1.125rem !important;
 				line-height: 1;
 				text-align: center;
 				margin-right: var(--space-lead-partials-action-1);
@@ -258,6 +258,6 @@
         }
 
 	.bi-hourglass-split{
-		font-size:20px !important;
+		font-size:1.25rem !important;
 	}
 </style>

@@ -362,7 +362,7 @@
         }
 
         .collection-campus-name {
-            font-size: 32px;
+            font-size: 2rem;
             line-height: 1.15;
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-collection-campus-2);
@@ -459,7 +459,7 @@
         }
 
         .collection-section-title {
-            font-size: 24px;
+            font-size: 1.5rem;
             line-height: var(--campus-report-line-tight);
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-collection-campus-3);
@@ -542,7 +542,7 @@
             padding: 28px;
             text-align: center;
             color: #6b7280;
-            font-size: 16px;
+            font-size: 1rem;
             /* box-shadow: 0 18px 44px var(--color-dashboard-collection-campus-6); */
         }
 
@@ -553,7 +553,7 @@
         }
 
         .collection-summary-title {
-            font-size: 22px;
+            font-size: 1.375rem;
             line-height: var(--campus-report-line-tight);
             font-weight: var(--campus-report-weight-bold);
             color: var(--color-dashboard-collection-campus-3);
@@ -627,7 +627,7 @@
             }
 
             .collection-report-title {
-                font-size: 17px;
+                font-size: 1.0625rem;
             }
 
             .collection-section-title {
@@ -636,7 +636,7 @@
 
             .collection-detail-table th,
             .collection-detail-table td {
-                font-size: 10.5px;
+                font-size: 0.65625rem;
                 padding: 6px 5px;
             }
 
@@ -657,7 +657,7 @@
             .collection-section-head {
                 /* flex-direction: column;
                 align-items: stretch; */
-                font-size:15px;
+                font-size:0.9375rem;
             }
 
             .collection-brand {

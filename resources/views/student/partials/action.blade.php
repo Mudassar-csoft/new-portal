@@ -119,7 +119,7 @@
             }
             .follow-action-dropdown .lead-action-label {
                 display: inline-block;
-                font-size: 18px !important;
+                font-size: 1.125rem !important;
                 font-weight: var(--typo-student-partials-action-font-weight-2);
                 letter-spacing: 0.01em;
             }

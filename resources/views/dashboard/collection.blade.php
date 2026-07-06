@@ -152,7 +152,7 @@
         }
 
         .collection-heading {
-            font-size: var(--collection-font-xxl);
+            font-size: clamp(1.125rem, 2.5vw, 1.375rem);
             font-weight: var(--collection-weight-medium);
             color: #2d2d2d;
             margin-bottom: 6px;
@@ -161,7 +161,7 @@
 
         .collection-campus {
             color: var(--color-dashboard-collection-3);
-            font-size: 14px;
+            font-size: 0.875rem;
             margin-bottom: var(--space-dashboard-collection-2);
             padding: var(--space-dashboard-collection-1);
         }
@@ -179,7 +179,7 @@
 
         .collection-label {
             color: #2d3748;
-            font-size: var(--collection-font-md);
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
             font-weight: var(--collection-weight-medium);
             margin-bottom: 8px;
         }
@@ -260,7 +260,7 @@
             vertical-align: middle;
             border-color: #d6dbe7;
             padding: var(--space-dashboard-collection-3);
-            font-size: 15px;
+            font-size: 0.9375rem;
             color: #2f3b52;
             white-space: nowrap;
             word-break: normal;
@@ -310,7 +310,7 @@
 
         @media (max-width: 767px) {
             .collection-heading {
-                font-size: var(--collection-font-lg);
+                font-size: clamp(1.125rem, 2.5vw, 1.375rem);
             }
 
             .collection-button {

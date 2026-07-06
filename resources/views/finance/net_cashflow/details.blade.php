@@ -165,7 +165,7 @@
             min-height: 86px;
         }
         .cash-label {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             opacity: 0.88;
@@ -173,7 +173,7 @@
         }
         .cash-value {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: var(--typo-finance-net-cashflow-details-font-weight-1);
         }
         .tone-income { background:  #f35f62}

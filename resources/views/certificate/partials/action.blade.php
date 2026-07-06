@@ -47,7 +47,7 @@
             .follow-action-dropdown form button.dropdown-item.lead-action-item {
                 display: flex !important; align-items: center; gap: 8px; width: 100%;
                 text-align: left !important; padding: 6px 18px !important;
-                color: var(--color-certificate-partials-action-1) !important; font-size: 15px !important; font-weight: 500;
+                color: var(--color-certificate-partials-action-1) !important; font-size: 0.9375rem !important; font-weight: 500;
                 background: transparent !important; border: 0; transition: background-color 0.18s ease;
             }
             .follow-action-dropdown .dropdown-item.lead-action-item:hover,
@@ -69,7 +69,7 @@
                 padding: 10px 12px;
                 border: 1px solid #d0d7de;
                 border-radius: 6px;
-                font-size: 14px;
+                font-size: 0.875rem;
                 color: #1f2937;
                 background: #fff;
             }

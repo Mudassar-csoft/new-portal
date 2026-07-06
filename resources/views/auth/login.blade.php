@@ -76,7 +76,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 		.left h2 {
 			margin: 17px 0;
-			font-size: 22px;
+			font-size: 1.375rem;
 			text-align: center;
 		}
 
@@ -85,7 +85,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 		}
 
 		.input-group label {
-			font-size: 13px;
+			font-size: 0.8125rem;
 			display: block;
 			margin-bottom: 5px;
 		}
@@ -185,7 +185,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
 		.hero-title {
 			margin: 0;
-			font-size: 32px;
+			font-size: clamp(1.5rem, 4vw, 2rem);
 			font-weight: 800;
 			line-height: 1.05;
 			letter-spacing: -0.04em;
@@ -260,7 +260,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			transform: translateY(-50%);
 			cursor: pointer;
 			color: gray;
-			font-size: 14px;
+			font-size: 0.875rem;
 		}
 
 		@media (max-width: 768px) {
@@ -288,7 +288,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 			}
 
 			.hero-title {
-				font-size: 24px;
+				font-size: clamp(1.5rem, 4vw, 2rem);
 			}
 
 			.illustration img {
@@ -425,9 +425,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 	</script>
 </body>
 </html>
-
-
-
 
 
 

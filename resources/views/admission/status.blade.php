@@ -499,7 +499,7 @@
         }
 
         .follow-status-copy {
-            font-size: 15px;
+            font-size: 0.9375rem;
             font-weight: var(--typo-admission-status-font-weight-1);
             color: var(--color-admission-status-3);
         }
@@ -585,7 +585,7 @@
 
         .admission-modal__title {
             margin: 0;
-            font-size: 17px;
+            font-size: 1.0625rem;
             font-weight: var(--typo-admission-status-font-weight-1);
         }
 
@@ -593,7 +593,7 @@
             border: 0;
             background: transparent;
             color: var(--color-admission-status-10);
-            font-size: 30px !important;
+            font-size: 1.875rem !important;
             line-height: var(--typo-admission-status-line-height-2);
             cursor: pointer;
             padding: 0;
@@ -607,7 +607,7 @@
 
         .admission-modal__student {
             margin: 0 0 16px;
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: var(--typo-admission-status-font-weight-1);
             color: #1f2937;
         }
@@ -616,7 +616,7 @@
             margin-bottom: 5px;
         }
     .alert{
-        font-size:12px !important;
+        font-size:0.75rem !important;
     }
         .admission-upload-tools {
             display: flex;

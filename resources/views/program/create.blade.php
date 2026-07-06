@@ -177,7 +177,7 @@
         }
 
         .lead-title {
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: var(--typo-program-create-font-weight-2);
             color: var(--color-program-create-2);
             line-height: 1.4;
@@ -328,7 +328,7 @@
             border-radius: 999px;
             background: rgba(0, 168, 255, 0.12);
             color: var(--color-program-create-1);
-            font-size: 13px;
+            font-size: 0.8125rem;
         }
 
         .program-upload-copy {
@@ -351,7 +351,7 @@
         .program-upload-hint {
             margin-top: 2px;
             color: #8a99a8;
-            font-size: 9px;
+            font-size: 0.5625rem;
             font-weight: var(--typo-program-create-font-weight-2);
         }
 

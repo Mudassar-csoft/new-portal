@@ -281,7 +281,10 @@ class CertificateController extends Controller
                 'campus:id,code,name,title,city',
             ])
             ->whereIn('id', $ids->all())
-            ->where('student_status', Admission::CERTIFICATE_STATUS_READY)
+            ->whereIn('student_status', [
+                Admission::CERTIFICATE_STATUS_PRINTING,
+                Admission::CERTIFICATE_STATUS_READY,
+            ])
             ->orderByRaw('COALESCE(student_name, registration_number, roll_number)')
             ->get();
 
@@ -289,7 +292,7 @@ class CertificateController extends Controller
 
         return view('certificate.preview', [
             'previewItems' => $admissions->map(fn (Admission $admission) => $this->buildCertificatePreviewItem($admission)),
-            'backUrl' => $this->resolvePreviewBackUrl($request, 'ready'),
+            'backUrl' => $this->resolvePreviewBackUrl($request, 'printing'),
         ]);
     }
 

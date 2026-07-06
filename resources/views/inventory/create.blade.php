@@ -237,7 +237,7 @@
         }
         .inventory-muted {
             color: #6c7a89;
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
         .inventory-table thead th {

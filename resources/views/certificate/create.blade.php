@@ -96,13 +96,13 @@
         .lead-create-card { overflow: visible !important; max-height: none !important; }
         .lead-create-card .panel-heading { padding: 10px 20px; }
         .lead-body { padding: 10px 10px 5px; overflow: visible !important; }
-        .lead-title { font-size: 18px; font-weight: 500; color: var(--color-certificate-create-1); line-height: 1.4; }
-        .lead-title span { font-size: 14px; font-weight: 400; color: var(--color-certificate-create-1); }
+        .lead-title { font-size: 1.125rem; font-weight: 500; color: var(--color-certificate-create-1); line-height: 1.4; }
+        .lead-title span { font-size: 0.875rem; font-weight: 400; color: var(--color-certificate-create-1); }
 
         .lead-create-card .form-row { padding: 3px 10px; }
         .lead-create-card .form-group { margin-bottom: var(--space-certificate-create-1); }
-        .lead-create-card label, .lead-create-card .form-label { color: var(--color-certificate-create-2); font-size: 14px !important; font-weight: var(--typo-certificate-create-font-weight-1); line-height: 1.2; margin-bottom: 6px; }
-        .lead-create-card .form-control { font-size: 12px; min-height: 37px !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: var(--color-certificate-create-2); }
+        .lead-create-card label, .lead-create-card .form-label { color: var(--color-certificate-create-2); font-size: 0.875rem !important; font-weight: var(--typo-certificate-create-font-weight-1); line-height: 1.2; margin-bottom: 6px; }
+        .lead-create-card .form-control { font-size: 0.75rem; min-height: 37px !important; padding: 0.375rem 0.625rem !important; border: 1px solid #ccc; border-radius: 0.25rem; color: var(--color-certificate-create-2); }
         .lead-create-card textarea.form-control { min-height: 82px !important; resize: vertical; }
         .required::after { content: '*'; color: #e53935; margin-left: 4px; }
     </style>

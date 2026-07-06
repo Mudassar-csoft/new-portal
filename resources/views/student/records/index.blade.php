@@ -287,7 +287,7 @@
             margin-top: 10px;
             margin-bottom: 0;
             color: var(--color-student-records-index-1);
-            font-size: 13px;
+            font-size: 0.8125rem;
         }
 
         .student-records-note {

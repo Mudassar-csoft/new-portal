@@ -87,7 +87,7 @@ div.dataTables_scrollBody{
                 width: var(--dimension-admission-partials-action-2);
                 min-width: var(--dimension-admission-partials-action-2);
                 height: var(--dimension-admission-partials-action-2);
-                font-size: 18px !important;
+                font-size: 1.125rem !important;
                 line-height: 1;
                 margin-right: var(--space-admission-partials-action-1);
                 padding: var(--space-admission-partials-action-1);
@@ -127,7 +127,7 @@ div.dataTables_scrollBody{
                 max-width: 250px;
                 white-space: normal;
                 text-align: right;
-                font-size: 12px;
+                font-size: 0.75rem;
                 line-height: 1.4;
                 color: #64748b;
             }

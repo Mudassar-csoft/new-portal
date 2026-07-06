@@ -140,7 +140,7 @@
             min-height: 86px;
         }
         .payable-label {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             opacity: .88;
@@ -149,7 +149,7 @@
         }
         .payable-value {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 1.125rem;
             text-align: center;
             font-weight: var(--typo-finance-payables-details-font-weight-1);
         }

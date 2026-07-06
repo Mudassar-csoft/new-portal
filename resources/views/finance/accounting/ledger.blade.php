@@ -206,8 +206,8 @@
             margin-bottom: var(--space-finance-accounting-ledger-1);
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
-        .ledger-summary-card .summary-value { font-size: 20px; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }
-        .ledger-summary-card .summary-label { margin-top: 8px; font-size: 13px; text-transform: uppercase; opacity: 0.92; }
+        .ledger-summary-card .summary-value { font-size: 1.25rem; font-weight: var(--typo-finance-accounting-ledger-font-weight-1); }
+        .ledger-summary-card .summary-label { margin-top: 8px; font-size: 0.8125rem; text-transform: uppercase; opacity: 0.92; }
         .tone-slate { background: #475569; }
         .tone-green { background: #16a34a; }
         .tone-red { background: #dc2626; }

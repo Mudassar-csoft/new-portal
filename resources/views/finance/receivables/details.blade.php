@@ -176,7 +176,7 @@
             min-height: 86px;
         }
         .receivable-label {
-            font-size: 14px;
+            font-size: 0.875rem;
             font-weight: 600;
             text-transform: uppercase;
             opacity: .88;
@@ -185,7 +185,7 @@
         }
         .receivable-value {
             margin-top: 30px;
-            font-size: 18px;
+            font-size: 1.125rem;
             text-align: center;
             font-weight: var(--typo-finance-receivables-details-font-weight-1);
         }

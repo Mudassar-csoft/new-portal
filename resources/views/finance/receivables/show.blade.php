@@ -291,7 +291,7 @@
             margin-bottom: var(--space-finance-receivables-show-3);
         }
         .invoice-title {
-            font-size: 28px;
+            font-size: 1.75rem;
             margin: 0 0 10px;
             color: var(--color-finance-receivables-show-1);
         }
@@ -319,7 +319,7 @@
         }
         .invoice-campus-box .value,
         .invoice-party-name {
-            font-size: 20px;
+            font-size: 1.25rem;
             font-weight: var(--typo-finance-receivable-show-font-weight-1);
             color: var(--color-finance-receivables-show-1);
         }
@@ -335,7 +335,7 @@
             border-bottom: 0;
             padding-top: var(--space-finance-receivables-show-2);
             margin-top: 4px;
-            font-size: 16px;
+            font-size: 1rem;
         }
         .invoice-lines-table thead th,
         .finance-table thead th {

@@ -408,7 +408,7 @@
         }
         .finance-title { 
             margin: 0 0 4px;  
-               font-size: 22px !important;
+               font-size: 1.375rem !important;
     font-weight: 500 !important; }
         .finance-subtitle { margin: 0; color: var(--color-finance-partials-dashboard-content-2); }
         .finance-filter-summary-wrap {
@@ -457,7 +457,7 @@
         }
         .finance-filter-dialog-header h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 1.125rem;
             font-weight: var(--typo-finance-partials-dashboard-content-font-weight-3);
             color: #2f3b52;
         }
@@ -545,7 +545,7 @@
             filter: brightness(1.02);
         }
         .finance-stat-card .number {
-            font-size: 26px;
+            font-size: 1.625rem;
             line-height: 1.15;
             word-break: break-word;
             min-height: 44px;
@@ -574,7 +574,7 @@
         }
         .month-chart-header-title {
             margin: 0;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: var(--typo-finance-partials-dashboard-content-font-weight-3);
         }
         .month-chart-header-label {
