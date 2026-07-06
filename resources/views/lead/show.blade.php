@@ -995,8 +995,9 @@
 		}
 
 		#probability-wrap .probability-field .probability-input {
-			height: var(--dimension-lead-show-5) !important;
-			min-height: var(--dimension-lead-show-5) !important;
+			height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+			min-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
+			line-height: var(--dimension-lead-partials-probability-slider-assets-4) !important;
 		}
 
 		#probability-wrap .probability-field .probability-input::-webkit-slider-runnable-track {
@@ -1006,7 +1007,7 @@
 		#probability-wrap .probability-field .probability-input::-webkit-slider-thumb {
 			width: var(--dimension-lead-show-6);
 			height: var(--dimension-lead-show-6);
-			margin-top: -6.5px;
+			margin-top: -6px;
 			border-width: var(--dimension-lead-show-8);
 		}
 
