@@ -64,7 +64,8 @@
 
 
             <div class="box-typical-body panel-body follow-body">
-<form method="GET" action="{{ route('registration.status') }}" class="follow-controls">
+                <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+                    <input type="hidden" name="scope" value="{{ $activeScope }}">
 					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
 					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>

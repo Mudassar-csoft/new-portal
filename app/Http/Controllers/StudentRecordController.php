@@ -7,6 +7,7 @@ use App\Models\FeeCollection;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +90,13 @@ class StudentRecordController extends Controller
                     'admission' => $admission,
                     'statusOptions' => self::STATUS_OPTIONS,
                 ])->render())
+                ->filter(function (Builder $query) use ($request): void {
+                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
+
+                    if ($keyword !== '') {
+                        $this->applyStudentRecordSearch($query, $keyword);
+                    }
+                })
                 ->filterColumn('campus_code', function ($query, $keyword) {
                     $query->whereHas('campus', function ($campusQuery) use ($keyword) {
                         $campusQuery
@@ -363,6 +371,54 @@ class StudentRecordController extends Controller
 
         $status = $scope === 'active' ? 'enrolled' : $scope;
         $query->where('student_status', $status);
+    }
+
+    private function applyStudentRecordSearch(Builder $query, string $keyword): void
+    {
+        $like = $this->toSqlLikePattern($keyword);
+
+        $query->where(function (Builder $searchQuery) use ($like): void {
+            $searchQuery
+                ->where('student_name', 'like', $like)
+                ->orWhere('roll_number', 'like', $like)
+                ->orWhere('registration_number', 'like', $like)
+                ->orWhere('phone', 'like', $like)
+                ->orWhere('guardian_name', 'like', $like)
+                ->orWhere('guardian_phone', 'like', $like)
+                ->orWhere('cnic', 'like', $like)
+                ->orWhere('passport_number', 'like', $like)
+                ->orWhere('email', 'like', $like)
+                ->orWhere('city', 'like', $like)
+                ->orWhere('area', 'like', $like)
+                ->orWhere('student_status', 'like', $like)
+                ->orWhereHas('registration', function (Builder $registrationQuery) use ($like): void {
+                    $registrationQuery
+                        ->where('registration_number', 'like', $like)
+                        ->orWhere('student_name', 'like', $like)
+                        ->orWhere('phone', 'like', $like);
+                })
+                ->orWhereHas('campus', function (Builder $campusQuery) use ($like): void {
+                    $campusQuery
+                        ->where('code', 'like', $like)
+                        ->orWhere('name', 'like', $like);
+                })
+                ->orWhereHas('program', function (Builder $programQuery) use ($like): void {
+                    $programQuery
+                        ->where('title', 'like', $like)
+                        ->orWhere('name', 'like', $like)
+                        ->orWhere('code', 'like', $like);
+                })
+                ->orWhereHas('batch', function (Builder $batchQuery) use ($like): void {
+                    $batchQuery
+                        ->where('code', 'like', $like)
+                        ->orWhere('name', 'like', $like);
+                });
+        });
+    }
+
+    private function toSqlLikePattern(string $value): string
+    {
+        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value) . '%';
     }
 
     private function resolveScope(string $scope): array

@@ -2496,8 +2496,95 @@ margin-left: 0;
 				updateManualFilterCount($controls, context, visibleRows, $rows.length, !!query);
 			}
 
+			function getServerSearchForm($controls, context, $searchInput) {
+				if (!$searchInput.length || !$searchInput.attr('name')) {
+					return $();
+				}
+
+				var $form = $controls.is('form') ? $controls : $controls.closest('form');
+				if (!$form.length || String($form.attr('method') || 'get').toLowerCase() !== 'get') {
+					return $();
+				}
+
+				if (context.api) {
+					return $();
+				}
+
+				var $scope = context.$wrapper && context.$wrapper.length
+					? context.$wrapper
+					: $controls.closest('.follow-body, .panel-body, .box-typical-body, .card-body, .follow-shell');
+
+				return $scope.find('.follow-footer .pagination, .pagination').length ? $form : $();
+			}
+
+			function bindServerPaginatedSearch($controls, context, $searchInput) {
+				var $form = getServerSearchForm($controls, context, $searchInput);
+
+				if (!$form.length || $searchInput.data('followServerSearchReady')) {
+					return false;
+				}
+
+				var submitTimer = null;
+				var lastSubmittedValue = String($searchInput.val() || '');
+
+				function submitServerSearch() {
+					var value = $.trim(String($searchInput.val() || ''));
+
+					if (value === lastSubmittedValue) {
+						return;
+					}
+
+					if (value.length > 0 && value.length < 2) {
+						return;
+					}
+
+					lastSubmittedValue = value;
+					$form.find('input[name="page"]').remove();
+					$form.trigger('submit');
+				}
+
+				$searchInput.on('input.followServerSearch', function () {
+					clearTimeout(submitTimer);
+					submitTimer = setTimeout(submitServerSearch, 800);
+				});
+
+				$searchInput.on('keydown.followServerSearch', function (event) {
+					if (event.key !== 'Enter') {
+						return;
+					}
+
+					event.preventDefault();
+					clearTimeout(submitTimer);
+					lastSubmittedValue = '__force_submit__';
+					submitServerSearch();
+				});
+
+				$searchInput.data('followServerSearchReady', true);
+				return true;
+			}
+
+			$(document).off('change.followPerPage', '.follow-controls select[name="per_page"]')
+				.on('change.followPerPage', '.follow-controls select[name="per_page"]', function () {
+					if (!this.form) {
+						return;
+					}
+
+					$(this.form).find('input[name="page"]').remove();
+
+					if (this.form.requestSubmit) {
+						this.form.requestSubmit();
+						return;
+					}
+
+					this.form.submit();
+				});
+
 			function bindManualFollowSearch($controls, context, $searchInput) {
 				if (context.api || !$searchInput.length || $searchInput.data('followManualSearchReady')) {
+					return;
+				}
+
+				if (bindServerPaginatedSearch($controls, context, $searchInput)) {
 					return;
 				}
 

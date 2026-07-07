@@ -319,6 +319,7 @@
             $('#student-records-table').DataTable({
                 processing: true,
                 serverSide: true,
+                searchDelay: 700,
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('student.records.index', ['scope' => $scope]) }}",
