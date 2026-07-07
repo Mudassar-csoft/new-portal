@@ -149,7 +149,7 @@ class CertificateController extends Controller
         ]);
 
         $admission->update([
-            'remarks' => $validated['remarks'] ?? null,
+            'remarks' => $this->normalizeCertificateRemarkInput($validated['remarks'] ?? null),
         ]);
 
         return redirect()->route('certificate.index')
@@ -200,8 +200,6 @@ class CertificateController extends Controller
 
     public function bulkApprove(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         $validated = $request->validate([
             'admission_ids' => ['required', 'array', 'min:1'],
             'admission_ids.*' => ['integer', 'distinct', 'exists:admissions,id'],
@@ -248,8 +246,6 @@ class CertificateController extends Controller
 
     public function bulkSendToPrinting(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         return $this->performBulkWorkflowTransition(
             $request,
             Admission::CERTIFICATE_STATUS_APPROVED,
@@ -262,8 +258,6 @@ class CertificateController extends Controller
 
     public function bulkMarkReady(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
-
         return $this->performBulkWorkflowTransition(
             $request,
             Admission::CERTIFICATE_STATUS_PRINTING,
@@ -581,13 +575,13 @@ class CertificateController extends Controller
         );
     }
 
-    private function mergeCertificateRemarks(?string $currentRemarks, ?string $newRemarks): ?string
+    private function mergeCertificateRemarks(?string $currentRemarks, ?string $newRemarks): string
     {
         $current = trim((string) $currentRemarks);
         $incoming = trim((string) $newRemarks);
 
         if ($incoming === '') {
-            return $current !== '' ? $current : null;
+            return $current;
         }
 
         if ($current === '') {
@@ -595,6 +589,11 @@ class CertificateController extends Controller
         }
 
         return $current . PHP_EOL . $incoming;
+    }
+
+    private function normalizeCertificateRemarkInput(?string $remarks): string
+    {
+        return trim((string) $remarks);
     }
 
     private function buildCertificateDeliveryNotes(
