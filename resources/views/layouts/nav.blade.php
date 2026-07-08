@@ -369,7 +369,7 @@
         @endif
 
         @if($showNewsModule)
-            <li class="blue with-sub">
+            <!-- <li class="blue with-sub">
                 <span>
                     <img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp" alt="News">
                     <span class="lbl">News Management</span>
@@ -384,7 +384,7 @@
                         <li><a href="{{ route('news.index') }}" class="stage-link"><span class="lbl">All News</span></a></li>
                     @endif
                 </ul>
-            </li>
+            </li> -->
         @endif
 
         @if($showHrmModule)
