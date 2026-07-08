@@ -7,6 +7,7 @@
         $activeScope = $activeScope ?? 'all';
         $scopeCards = $scopeCards ?? [];
         $filters = $filters ?? ['scope' => 'all', 'campus_id' => null, 'program_id' => null, 'search' => null];
+        $perPage = (int) ($filters['per_page'] ?? 25);
         $currentUser = auth()->user();
         $campusOptionCount = $campuses->count();
         $canBulkApprove = $activeScope === 'requested'
@@ -133,10 +134,10 @@
                         <div class="follow-controls">
                             <div class="d-flex ci-inline-gap-05-center">
                                 <label>Show</label>
-                                <select class="form-select form-select-sm">
-                                    <option>10</option>
-                                    <option>25</option>
-                                    <option>50</option>
+                                <select class="form-select form-select-sm" name="per_page">
+                                    @foreach([10, 25, 50, 100] as $option)
+                                        <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
+                                    @endforeach
                                 </select>
                                 <label>Entries</label>
                             </div>

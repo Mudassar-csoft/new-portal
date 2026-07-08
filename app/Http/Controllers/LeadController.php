@@ -1997,7 +1997,7 @@ class LeadController extends Controller
             'details' => [
                 'country' => $webLead->country ?: 'Pakistan',
                 'area' => $webLead->area,
-                'teaching_method' => $this->normalizeWebLeadTeachingMethod($webLead->teaching_method) ?: 'online',
+                'teaching_method' => 'campus',
                 'gender' => $webLead->gender ?: 'male',
                 'remarks' => implode(PHP_EOL, $remarks),
             ],

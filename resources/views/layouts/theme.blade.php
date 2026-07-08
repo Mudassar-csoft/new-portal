@@ -985,9 +985,8 @@ form .select2-container--white .select2-selection--single .select2-selection__ar
   height: 37px !important;
 }
 
-form .select2-container--default .select2-selection--multiple .select2-selection__rendered,
-form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
-  /* padding: 0.25rem var(--lead-form-control-padding-x) !important; */
+form .select2-container--default .select2-selection--multiple .select2-selection__rendered,form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
+  /* padding: 0.35rem var(--lead-form-control-padding-x) !important; */
 }
 
 form .embed-actions,
@@ -1012,8 +1011,8 @@ form label.required::after,
 	flex: 0 0 auto;
 }
 .select2-container--arrow, .select2-selection__rendered{
-	/* border: solid 1px #d8e2e7; */
-border-radius: .25rem;
+	 border: solid 1px #d8e2e7; 
+/* border-radius: .25rem; */
 font-size: var(--typo-layouts-theme-font-size-4) !important;
 /* font-weight: var(--typo-layouts-theme-font-weight-15); */
 line-height: var(--typo-layouts-theme-line-height-17) !important;
