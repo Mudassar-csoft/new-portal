@@ -5,11 +5,12 @@
 
 <a
     class="dropdown-item text-primary"
+    style="padding: 6px !important;"
     href="#{{ $modalId }}"
     data-toggle="modal"
     data-target="#{{ $modalId }}"
 >
-    Pay Now
+   💳 Pay Now
 </a>
 
 @push('modals')

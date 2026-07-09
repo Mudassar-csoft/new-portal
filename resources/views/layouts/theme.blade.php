@@ -2354,39 +2354,33 @@ margin-left: 0;
 				if (!$menu.length) return;
 				var actionDropdown = isActionDropdown($dropdown, $menu);
 
-				clearActionDropdownScrollSpace();
-				$menu.removeClass('dropdown-menu-upward');
-				$dropdown.removeClass('dropup');
-				$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
+			clearActionDropdownScrollSpace();
+			$menu.removeClass('dropdown-menu-upward');
+			$dropdown.removeClass('dropup');
+			$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
 
-				if (actionDropdown) {
-					ensureActionDropdownFits($dropdown, $menu);
-					return;
+			if (actionDropdown) {
+				ensureActionDropdownFits($dropdown, $menu);
+				return;
+			}
+
+			var rect = this.getBoundingClientRect();
+			var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
+			var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
+
+			if (needsUpward) {
+				if ($menu.hasClass('action-key')) {
+					$menu.addClass('dropdown-menu-upward');
+				} else {
+					$dropdown.addClass('dropup');
 				}
+			}
+		});
 
-				var rect = this.getBoundingClientRect();
-				var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
-				var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
-
-				if (needsUpward) {
-					if ($menu.hasClass('action-key')) {
-						$menu.addClass('dropdown-menu-upward');
-					} else {
-						$dropdown.addClass('dropup');
-					}
-				}
-			});
-
-			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
-				clearActionDropdownScrollSpace();
-				$(this).removeClass('dropup dropdown-action-menu');
-				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
-			});
-
-			function getFollowTableContext($controls) {
-				var $wrapper = $controls.closest('.dataTables_wrapper');
-				var $table = $();
-				var api = null;
+		$(document).on('hidden.bs.dropdown', '.dropdown', function () {
+			clearActionDropdownScrollSpace();
+			$(this).removeClass('dropup dropdown-action-menu');
+			$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
 
 				if ($wrapper.length) {
 					$table = $wrapper.find('table').first();
@@ -3109,7 +3103,6 @@ $(document).ready(function () {
     });
 
 });
-
 
 
 </script>
