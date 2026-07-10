@@ -115,6 +115,9 @@ Route::middleware('auth')->group(function () {
     // News routes
     require __DIR__ . '/news.php';
 
+    // Review routes
+    require __DIR__ . '/review.php';
+
     // Voucher routes
     require __DIR__ . '/voucher.php';
 

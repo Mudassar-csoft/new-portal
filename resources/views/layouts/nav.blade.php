@@ -57,6 +57,10 @@
     $canNewsView = $can('news.view');
     $showNewsModule = $canNewsCreate || $canNewsView;
 
+    $canReviewCreate = $can('review.create');
+    $canReviewView = $can('review.view');
+    $showReviewModule = $canReviewCreate || $canReviewView;
+
     $canHrmDashboard = $can('hrm_dashboard.view', 'hrm.dashboard.view');
     $canHrmEmployees = $can('hrm_employee.view', 'hrm_employee.create', 'hrm_employee.update', 'hrm_employee.manage_status', 'hrm.employee.view', 'hrm.employee.create', 'hrm.employee.update');
     $canHrmMasters = $can('hrm_department.view', 'hrm_department.create', 'hrm_designation.create', 'hrm_leave.manage_type', 'hrm_holiday.view', 'hrm_holiday.manage', 'hrm.master.view', 'hrm.master.create', 'hrm.master.update');
@@ -385,6 +389,26 @@
                     @endif
                 </ul>
             </li> -->
+        @endif
+
+        @if($showReviewModule)
+            <li class="blue with-sub">
+                <span>
+                    <img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp" alt="Reviews">
+                    <span class="lbl">Reviews Management</span>
+                </span>
+                <ul>
+                    @if($canReviewCreate)
+                        <li><a href="{{ route('reviews.create') }}" class="stage-link"><span class="lbl">Create Review</span></a></li>
+                    @endif
+                    @if($canReviewView)
+                        <li><a href="{{ route('reviews.index', ['scope' => 'active']) }}" class="stage-link"><span class="lbl">Active Reviews</span></a></li>
+                        <li><a href="{{ route('reviews.index', ['scope' => 'inactive']) }}" class="stage-link"><span class="lbl">Inactive Reviews</span></a></li>
+                        <li><a href="{{ route('reviews.index', ['scope' => 'featured']) }}" class="stage-link"><span class="lbl">Featured Reviews</span></a></li>
+                        <li><a href="{{ route('reviews.index', ['scope' => 'all']) }}" class="stage-link"><span class="lbl">All Reviews</span></a></li>
+                    @endif
+                </ul>
+            </li>
         @endif
 
         @if($showHrmModule)
