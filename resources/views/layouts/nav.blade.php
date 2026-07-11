@@ -34,8 +34,9 @@
     $showRegistrationModule = $canRegistrationView || $canRegistrationCreate;
 
     $canAdmissionView = $can('admission.view');
+    $canAdmissionReview = $can('admission.review');
     $canAdmissionCreate = $can('admission.create');
-    $showAdmissionModule = $canAdmissionView || $canAdmissionCreate;
+    $showAdmissionModule = $canAdmissionView || $canAdmissionCreate || $canAdmissionReview;
 
     $canStudentView = $can('student.view');
     $showStudentModule = $canStudentView;
@@ -271,6 +272,8 @@
                         <li><a href="{{ route('admission.status', ['scope' => 'pending']) }}" class="stage-link"><span class="lbl">Pending</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['admission_pending'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('admission.status', ['scope' => 'requested']) }}" class="stage-link"><span class="lbl">Request for Approval</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['admission_requested'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('admission.status', ['scope' => 'approved']) }}" class="stage-link"><span class="lbl">Approved Admission</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['admission_approved'] ?? 0)) }}</span></a></li>
+                    @elseif($canAdmissionReview)
+                        <li><a href="{{ route('admission.status', ['scope' => 'requested']) }}" class="stage-link"><span class="lbl">Request for Approval</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['admission_requested'] ?? 0)) }}</span></a></li>
                     @endif
                 </ul>
             </li>

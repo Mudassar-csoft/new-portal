@@ -212,6 +212,61 @@ class AdmissionApprovalWorkflowTest extends TestCase
             ->assertHeader('content-disposition', 'inline; filename="preview.jpg"');
     }
 
+    public function test_non_admin_reviewer_can_access_requested_admissions_and_review_across_campuses(): void
+    {
+        Storage::fake('public');
+
+        $admissionReview = $this->createPermission('admission', 'review', 'admission.review');
+
+        $reviewerCampus = $this->createCampus('Reviewer Campus', 'RVC');
+        $requestedCampus = $this->createCampus('Requested Campus', 'REQ');
+        $program = $this->createProgram('TRN906', 'Reviewer Program');
+        $reviewerBatch = $this->createBatch($reviewerCampus, $program, 'RVC-B1');
+        $requestedBatch = $this->createBatch($requestedCampus, $program, 'REQ-B1');
+        $requestedRegistration = $this->createRegistration($requestedCampus, $program, 'Cross Campus Student', '03200000997');
+
+        Storage::disk('public')->put('admissions/99/review-doc.jpg', 'review-file-body');
+
+        $requestedAdmission = $this->createAdmission($requestedCampus, $program, $requestedBatch, $requestedRegistration, 'Cross Campus Student', '03200000997', [
+            'approval_status' => Admission::APPROVAL_STATUS_REQUESTED,
+            'document_cnic_front_path' => 'admissions/99/review-doc.jpg',
+        ]);
+
+        $localRegistration = $this->createRegistration($reviewerCampus, $program, 'Reviewer Local Student', '03200000998');
+        $this->createAdmission($reviewerCampus, $program, $reviewerBatch, $localRegistration, 'Reviewer Local Student', '03200000998', [
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $reviewer = $this->createScopedUser($reviewerCampus, [$admissionReview]);
+
+        $this->actingAs($reviewer)
+            ->get(route('admission.status'))
+            ->assertOk()
+            ->assertSee('Cross Campus Student')
+            ->assertSee('Request for Approval')
+            ->assertDontSee('All Admissions')
+            ->assertDontSee('Reviewer Local Student');
+
+        $this->actingAs($reviewer)
+            ->get(route('admission.documents.view', ['admission' => $requestedAdmission->id, 'document' => 'cnic-front']))
+            ->assertOk()
+            ->assertHeader('content-disposition', 'inline; filename="review-doc.jpg"');
+
+        $this->actingAs($reviewer)
+            ->post(route('admission.review', $requestedAdmission), [
+                'review_action' => 'approve',
+                'approval_remarks' => 'Reviewed by assigned reviewer.',
+            ])
+            ->assertRedirect();
+
+        $requestedAdmission->refresh();
+
+        $this->assertSame(Admission::APPROVAL_STATUS_APPROVED, $requestedAdmission->approval_status);
+        $this->assertSame('Reviewed by assigned reviewer.', $requestedAdmission->approval_remarks);
+        $this->assertSame($reviewer->id, $requestedAdmission->approval_reviewed_by);
+        $this->assertNotNull($requestedAdmission->approval_reviewed_at);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([

@@ -3,6 +3,7 @@
     $admission = $admission ?? null;
     $registrationId = $admission->registration_id ?? null;
     $canAdminEdit = auth()->user()?->isAdmin() ?? false;
+    $canReviewAdmission = auth()->user()?->hasAnyPermission(['admission.review']) ?? false;
     $canViewStudent = auth()->user()?->hasAnyPermission(['student.view']) ?? false;
     $canAdmissionUpload = auth()->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
     $showCollectFeeInstallment = $admission && $registrationId && $canViewStudent && (int) ($admission->pending_admission_fee_count ?? 0) > 0;
@@ -187,36 +188,36 @@ div.dataTables_scrollBody{
     </div>
 @elseif($approvalStatus === \App\Models\Admission::APPROVAL_STATUS_REQUESTED)
     <div class="admission-action-state admission-action-dropdown">
-        @if($canAdminEdit)
+        @if($canReviewAdmission)
           <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Actions
         </button> 
          <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-            @if($showCollectFeeInstallment)
-                <a class="dropdown-item lead-action-item" href="{{ route('student.show', $registrationId) }}">
-                    @include('partials.action-collect-fee-content')
+            @if($canAdminEdit)
+                @if($showCollectFeeInstallment)
+                    <a class="dropdown-item lead-action-item" href="{{ route('student.show', $registrationId) }}">
+                        @include('partials.action-collect-fee-content')
+                    </a>
+                @endif
+
+                <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_admission_id' => $admission?->id, 'source_registration_id' => $registrationId]) }}">
+                    @include('partials.action-enroll-course-content')
+                </a>
+
+                <a class="dropdown-item lead-action-item" href="#">
+                    @include('partials.action-send-sms-content')
+                </a>
+
+                <a class="dropdown-item lead-action-item" href="#">
+                    @include('partials.action-send-email-content')
+                </a>
+
+                <a class="dropdown-item lead-action-item" href="#">
+                    @include('partials.action-whatsapp-content')
                 </a>
             @endif
 
-            <a class="dropdown-item lead-action-item" href="{{ route('admission.create', ['source_admission_id' => $admission?->id, 'source_registration_id' => $registrationId]) }}">
-                @include('partials.action-enroll-course-content')
-            </a>
-
-            <a class="dropdown-item lead-action-item" href="#">
-                @include('partials.action-send-sms-content')
-            </a>
-
-            <a class="dropdown-item lead-action-item" href="#">
-                @include('partials.action-send-email-content')
-            </a>
-
-            <a class="dropdown-item lead-action-item" href="#">
-                @include('partials.action-whatsapp-content')
-            </a>
-
-            @if($canAdminEdit)
-                
-             <button
+            <button
                 type="button"
                 class="dropdown-item lead-action-item
                  js-open-review-admission"
@@ -238,9 +239,11 @@ div.dataTables_scrollBody{
                     Review
                 </span>
             </button>
-            <a class="dropdown-item lead-action-item" href="#">
-                    @include('partials.action-edit-black-content')
-                </a>
+
+            @if($canAdminEdit)
+                <a class="dropdown-item lead-action-item" href="#">
+                        @include('partials.action-edit-black-content')
+                    </a>
             @endif
         </div>
        

@@ -410,9 +410,10 @@ class AppServiceProvider extends ServiceProvider
                 )->count();
             }
 
-            if (($can('admission.view') || $can('student.view')) && Schema::hasTable('admissions')) {
+            if (($can('admission.view') || $can('admission.review') || $can('student.view')) && Schema::hasTable('admissions')) {
                 $hasApprovalStatus = Schema::hasColumn('admissions', 'approval_status');
                 $admissionBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), $user);
+                $admissionReviewBaseQuery = $this->scopeAdmissionReviewQuery(Admission::query(), $user);
 
                 if ($can('admission.view') && $hasApprovalStatus) {
                     $approvalCounts = (clone $admissionBaseQuery)
@@ -423,6 +424,12 @@ class AppServiceProvider extends ServiceProvider
                     $sidebarCounts['admission_pending'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_PENDING] ?? 0);
                     $sidebarCounts['admission_requested'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_REQUESTED] ?? 0);
                     $sidebarCounts['admission_approved'] = (int) ($approvalCounts[Admission::APPROVAL_STATUS_APPROVED] ?? 0);
+                }
+
+                if ($can('admission.review') && $hasApprovalStatus) {
+                    $sidebarCounts['admission_requested'] = (int) (clone $admissionReviewBaseQuery)
+                        ->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)
+                        ->count();
                 }
 
                 if ($can('admission.view')) {
@@ -618,5 +625,19 @@ class AppServiceProvider extends ServiceProvider
         $campusId = (int) ($user->campus_id ?? 0);
 
         return $campusId > 0 ? $campusId : null;
+    }
+
+    private function canReviewAdmissions(?User $user): bool
+    {
+        return $user?->hasAnyPermission(['admission.review']) ?? false;
+    }
+
+    private function scopeAdmissionReviewQuery(Builder $query, ?User $user): Builder
+    {
+        if ($this->canReviewAdmissions($user)) {
+            return $query;
+        }
+
+        return $this->scopeQueryToUserCampus($query, $user);
     }
 }

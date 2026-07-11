@@ -8,7 +8,7 @@ Route::get('/admission/preview-numbers', [AdmissionController::class, 'previewNu
 Route::post('/admission', [AdmissionController::class, 'store'])->middleware('permission:admission.create')->name('admission.store');
 Route::get('/admission/{admission}/voucher', [AdmissionController::class, 'voucher'])->middleware('permission:admission.view')->name('admission.voucher');
 
-Route::get('/admission/status', [AdmissionController::class, 'status'])->middleware('permission:admission.view')->name('admission.status');
+Route::get('/admission/status', [AdmissionController::class, 'status'])->middleware('permission:admission.view,admission.review')->name('admission.status');
 Route::post('/admission/{admission}/documents', [AdmissionController::class, 'uploadDocuments'])->middleware('permission:admission.create,admission.update')->name('admission.documents.upload');
-Route::post('/admission/{admission}/review', [AdmissionController::class, 'reviewApproval'])->middleware(['permission:admission.update,admission.view', 'admin'])->name('admission.review');
-Route::get('/admission/{admission}/documents/{document}', [AdmissionController::class, 'viewDocument'])->middleware('permission:admission.view')->name('admission.documents.view');
+Route::post('/admission/{admission}/review', [AdmissionController::class, 'reviewApproval'])->middleware('permission:admission.review')->name('admission.review');
+Route::get('/admission/{admission}/documents/{document}', [AdmissionController::class, 'viewDocument'])->middleware('permission:admission.view,admission.review')->name('admission.documents.view');

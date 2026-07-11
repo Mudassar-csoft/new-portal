@@ -178,6 +178,7 @@ class PermissionCatalog
 
             ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'All Admissions', 'slugs' => ['admission.view']],
             ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'Create Admission', 'slugs' => ['admission.create']],
+            ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 30, 'label' => 'Review Admission Requests', 'slugs' => ['admission.review']],
 
             ['moduleKey' => 'student-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Student Records', 'slugs' => ['student.view']],
 
@@ -255,6 +256,7 @@ class PermissionCatalog
 
             'admission.create' => self::meta('admission-management', null, 'Create Admission', 10, 10),
             'admission.view' => self::meta('admission-management', null, 'All Admissions', 10, 20),
+            'admission.review' => self::meta('admission-management', null, 'Review Admission Requests', 10, 25),
             'admission.update' => self::meta('admission-management', null, 'Update Admission', 10, 30),
             'admission.delete' => self::meta('admission-management', null, 'Delete Admission', 10, 40),
 

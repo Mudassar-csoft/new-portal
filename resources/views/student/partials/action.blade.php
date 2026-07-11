@@ -2,6 +2,7 @@
     $actionId = $actionId ?? ('student-action-' . $admission->id);
     $registrationId = $admission->registration_id ?? optional($admission->registration)->id;
     $canAdminEdit = auth()->user()?->isAdmin();
+    $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
     $statusActions = [
         [
             'key' => 'frozen',
@@ -152,7 +153,13 @@
             </form>
         @endforeach
 
-        <button type="button" class="dropdown-item lead-action-item" disabled>
+        <button
+            type="button"
+            class="dropdown-item lead-action-item js-student-transfer"
+            data-transfer-meta-url="{{ route('student.records.transfer.meta', $admission) }}"
+            data-transfer-store-url="{{ route('student.records.transfer.store', $admission) }}"
+            @disabled(!$canUpdateStudent)
+        >
             <span class="lead-action-icon lead-icon-blue text-info" aria-hidden="true">
                 <i class="fa fa-map-o"></i>
             </span>

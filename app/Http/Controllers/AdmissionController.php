@@ -11,9 +11,11 @@ use App\Models\LeadFollowup;
 use App\Models\Program;
 use App\Models\ProgramCampusDiscount;
 use App\Models\Registration;
+use App\Models\User;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -688,9 +690,18 @@ class AdmissionController extends Controller
 
     public function status(Request $request): View
     {
+        $user = $request->user();
+        $canAdmissionView = $user?->hasAnyPermission(['admission.view']) ?? false;
+        $canReviewApproval = $this->canReviewAdmissions($user);
+        $reviewerOnly = $canReviewApproval && ! $canAdmissionView;
+
         $activeScope = (string) $request->query('scope', 'pending');
         if (!in_array($activeScope, ['all', 'pending', 'requested', 'approved'], true)) {
-            $activeScope = 'pending';
+            $activeScope = $reviewerOnly ? 'requested' : 'pending';
+        }
+
+        if ($reviewerOnly && $activeScope !== 'requested') {
+            $activeScope = 'requested';
         }
 
         $activePeriod = $activeScope === 'all'
@@ -706,9 +717,10 @@ class AdmissionController extends Controller
             $perPage = 25;
         }
 
-        $countBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), auth()->user());
+        $countBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), $user);
+        $requestedCountBaseQuery = $this->scopeAdmissionStatusQuery(Admission::query(), $user, 'requested');
 
-        $baseQuery = $this->scopeQueryToUserCampus(Admission::query(), auth()->user())
+        $baseQuery = $this->scopeAdmissionStatusQuery(Admission::query(), $user, $activeScope)
             ->with([
                 'program:id,code,title,name',
                 'campus:id,code,name',
@@ -720,17 +732,19 @@ class AdmissionController extends Controller
             ]);
 
         $scopeCounts = [
-            'all' => (clone $countBaseQuery)->count(),
-            'pending' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_PENDING)->count(),
-            'requested' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)->count(),
-            'approved' => (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_APPROVED)->count(),
+            'all' => $canAdmissionView ? (clone $countBaseQuery)->count() : 0,
+            'pending' => $canAdmissionView ? (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_PENDING)->count() : 0,
+            'requested' => ($canAdmissionView || $canReviewApproval)
+                ? (clone $requestedCountBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_REQUESTED)->count()
+                : 0,
+            'approved' => $canAdmissionView ? (clone $countBaseQuery)->where('approval_status', Admission::APPROVAL_STATUS_APPROVED)->count() : 0,
         ];
 
         $periodCounts = [
             'all' => $scopeCounts['all'],
-            'today' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'today')->count(),
-            'month' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'month')->count(),
-            'year' => $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'year')->count(),
+            'today' => $canAdmissionView ? $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'today')->count() : 0,
+            'month' => $canAdmissionView ? $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'month')->count() : 0,
+            'year' => $canAdmissionView ? $this->applyAdmissionPeriodFilter(clone $countBaseQuery, 'year')->count() : 0,
         ];
 
         $admissions = (clone $baseQuery)
@@ -832,8 +846,7 @@ class AdmissionController extends Controller
 
     public function reviewApproval(Request $request, Admission $admission): RedirectResponse
     {
-        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to review admissions from another campus.');
-        abort_unless($request->user()?->isAdmin() ?? false, 403);
+        abort_unless($this->canReviewAdmissions($request->user()), 403);
 
         if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_REQUESTED) {
             return back()->with('error', 'Only admissions waiting for approval can be reviewed.');
@@ -865,7 +878,9 @@ class AdmissionController extends Controller
 
     public function viewDocument(Request $request, Admission $admission, string $document): BinaryFileResponse
     {
-        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to access admissions from another campus.');
+        if (! $this->canReviewAdmissions($request->user())) {
+            $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to access admissions from another campus.');
+        }
 
         $relativePath = match ($document) {
             'cnic-front' => $admission->document_cnic_front_path,
@@ -1350,6 +1365,20 @@ class AdmissionController extends Controller
         }
 
         return null;
+    }
+
+    private function canReviewAdmissions(?User $user): bool
+    {
+        return $user?->hasAnyPermission(['admission.review']) ?? false;
+    }
+
+    private function scopeAdmissionStatusQuery(Builder $query, ?User $user, string $scope): Builder
+    {
+        if ($scope === 'requested' && $this->canReviewAdmissions($user)) {
+            return $query;
+        }
+
+        return $this->scopeQueryToUserCampus($query, $user);
     }
 
     private function applyAdmissionPeriodFilter($query, string $period)

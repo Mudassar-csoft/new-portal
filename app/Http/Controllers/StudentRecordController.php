@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admission;
+use App\Models\Batch;
+use App\Models\Campus;
 use App\Models\FeeCollection;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -346,6 +349,149 @@ class StudentRecordController extends Controller
         return back()->with('status', 'Certificate marked as delivered.');
     }
 
+    public function transferMeta(Request $request, Admission $admission): JsonResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        $admission->loadMissing([
+            'campus:id,code,name',
+            'program:id,code,title,name',
+            'batch:id,program_id,campus_id,code,name,status,start_time,end_time',
+            'batch.timetables:id,batch_id,day_of_week,start_time,end_time,status',
+        ]);
+
+        $campuses = Campus::query()
+            ->orderByRaw("CASE WHEN COALESCE(code, '') = '' THEN 1 ELSE 0 END")
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
+        $batches = Batch::query()
+            ->with([
+                'campus:id,code,name',
+                'timetables:id,batch_id,day_of_week,start_time,end_time,status',
+            ])
+            ->where('program_id', $admission->program_id)
+            ->when($admission->batch_id, fn ($query, $batchId) => $query->whereKeyNot($batchId))
+            ->where(function ($query) {
+                $query
+                    ->whereNull('status')
+                    ->orWhereNotIn('status', ['completed', 'cancelled']);
+            })
+            ->orderBy('campus_id')
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'program_id', 'campus_id', 'code', 'name', 'status', 'start_time', 'end_time']);
+
+        return response()->json([
+            'admission' => [
+                'id' => $admission->id,
+                'student_name' => $admission->student_name ?: 'N/A',
+                'current_campus_id' => (int) ($admission->campus_id ?? 0),
+                'current_campus' => $this->formatCampusLabel($admission->campus),
+                'program' => $this->formatProgramLabel($admission->program),
+                'current_batch' => $this->formatBatchLabel($admission->batch),
+                'current_timing' => $this->formatBatchTiming($admission->batch),
+            ],
+            'campuses' => $campuses
+                ->map(fn (Campus $campus) => [
+                    'id' => $campus->id,
+                    'label' => $this->formatCampusLabel($campus),
+                ])
+                ->values(),
+            'batches' => $batches
+                ->map(fn (Batch $batch) => [
+                    'id' => $batch->id,
+                    'campus_id' => (int) $batch->campus_id,
+                    'label' => $this->formatBatchLabel($batch),
+                    'timing' => $this->formatBatchTiming($batch),
+                    'status' => (string) ($batch->status ?? 'active'),
+                ])
+                ->values(),
+        ]);
+    }
+
+    public function transfer(Request $request, Admission $admission): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        $validated = $request->validate([
+            'campus_id' => ['required', 'integer', 'exists:campuses,id'],
+            'batch_id' => ['required', 'integer', 'exists:batches,id'],
+            'remarks' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $targetCampus = Campus::query()->findOrFail($validated['campus_id']);
+        $targetBatch = Batch::query()
+            ->with(['campus:id,code,name', 'program:id,code,title,name'])
+            ->findOrFail($validated['batch_id']);
+
+        if ((int) $targetBatch->campus_id !== (int) $targetCampus->id) {
+            return back()->with('error', 'Selected batch does not belong to the selected campus.');
+        }
+
+        if ((int) ($admission->program_id ?? 0) > 0 && (int) $targetBatch->program_id !== (int) $admission->program_id) {
+            return back()->with('error', 'Selected batch does not match the student program.');
+        }
+
+        if (in_array((string) ($targetBatch->status ?? 'active'), ['completed', 'cancelled'], true)) {
+            return back()->with('error', 'Selected batch is not available for transfer.');
+        }
+
+        if ((int) ($admission->campus_id ?? 0) === (int) $targetCampus->id && (int) ($admission->batch_id ?? 0) === (int) $targetBatch->id) {
+            return back()->with('error', 'Please choose a different campus or batch.');
+        }
+
+        DB::transaction(function () use ($admission, $request, $targetCampus, $targetBatch, $validated) {
+            $lockedAdmission = Admission::query()
+                ->with([
+                    'campus:id,code,name',
+                    'batch:id,code,name',
+                ])
+                ->lockForUpdate()
+                ->findOrFail($admission->id);
+
+            $fromCampusLabel = $this->formatCampusLabel($lockedAdmission->campus);
+            $fromBatchLabel = $this->formatBatchLabel($lockedAdmission->batch);
+            $toCampusLabel = $this->formatCampusLabel($targetCampus);
+            $toBatchLabel = $this->formatBatchLabel($targetBatch);
+
+            $lockedAdmission->update([
+                'campus_id' => $targetCampus->id,
+                'batch_id' => $targetBatch->id,
+                'remarks' => $this->appendAdmissionRemark(
+                    $lockedAdmission->remarks,
+                    $this->buildTransferRemark(
+                        $request->user()?->name,
+                        $fromCampusLabel,
+                        $fromBatchLabel,
+                        $toCampusLabel,
+                        $toBatchLabel,
+                        $validated['remarks'] ?? null
+                    )
+                ),
+            ]);
+
+            FeeCollection::query()
+                ->where('admission_id', $lockedAdmission->id)
+                ->whereNull('paid_at')
+                ->where(function ($query) {
+                    $query
+                        ->whereNull('status')
+                        ->orWhere('status', '!=', 'paid');
+                })
+                ->update([
+                    'campus_id' => $targetCampus->id,
+                    'program_id' => $targetBatch->program_id,
+                ]);
+        });
+
+        return back()->with(
+            'status',
+            'Student transferred to ' . $this->formatCampusLabel($targetCampus) . ' / ' . $this->formatBatchLabel($targetBatch) . '. Paid fee stays on the previous campus and pending fee moves to the new campus.'
+        );
+    }
+
     private function applyScope($query, string $scope): void
     {
         if ($scope === 'all_students') {
@@ -549,5 +695,177 @@ class StudentRecordController extends Controller
         }
 
         return ['Pending', 'label-default'];
+    }
+
+    private function formatCampusLabel(?Campus $campus): string
+    {
+        if (! $campus instanceof Campus) {
+            return 'N/A';
+        }
+
+        $code = trim((string) ($campus->code ?? ''));
+        $name = trim((string) ($campus->name ?? ''));
+
+        if ($code !== '' && $name !== '') {
+            return $code . ' - ' . $name;
+        }
+
+        return $code !== '' ? $code : ($name !== '' ? $name : 'N/A');
+    }
+
+    private function formatProgramLabel($program): string
+    {
+        if (! $program) {
+            return 'N/A';
+        }
+
+        $title = trim((string) ($program->title ?? ''));
+        $name = trim((string) ($program->name ?? ''));
+        $code = trim((string) ($program->code ?? ''));
+        $label = $title !== '' ? $title : ($name !== '' ? $name : 'N/A');
+
+        if ($code !== '' && $label !== 'N/A') {
+            return $label . ' (' . $code . ')';
+        }
+
+        return $label;
+    }
+
+    private function formatBatchLabel(?Batch $batch): string
+    {
+        if (! $batch instanceof Batch) {
+            return 'N/A';
+        }
+
+        $code = trim((string) ($batch->code ?? ''));
+        $name = trim((string) ($batch->name ?? ''));
+
+        if ($code !== '' && $name !== '' && strcasecmp($code, $name) !== 0) {
+            return $code . ' - ' . $name;
+        }
+
+        return $code !== '' ? $code : ($name !== '' ? $name : ('Batch #' . $batch->id));
+    }
+
+    private function formatBatchTiming(?Batch $batch): string
+    {
+        if (! $batch instanceof Batch) {
+            return 'Timing not set';
+        }
+
+        $slots = collect($batch->relationLoaded('timetables') ? $batch->timetables : [])
+            ->filter(function ($slot) {
+                $status = strtolower((string) ($slot->status ?? 'active'));
+
+                return $status === '' || $status === 'active';
+            })
+            ->sortBy(function ($slot) {
+                return sprintf(
+                    '%02d-%s',
+                    $this->daySortOrder((string) ($slot->day_of_week ?? '')),
+                    (string) ($slot->start_time ?? '')
+                );
+            })
+            ->values();
+
+        if ($slots->isNotEmpty()) {
+            return $slots
+                ->map(function ($slot) {
+                    $day = $this->formatDayLabel((string) ($slot->day_of_week ?? ''));
+                    $start = $slot->start_time ? Carbon::parse($slot->start_time)->format('h:i A') : null;
+                    $end = $slot->end_time ? Carbon::parse($slot->end_time)->format('h:i A') : null;
+
+                    if ($start && $end) {
+                        return $day . ' ' . $start . ' - ' . $end;
+                    }
+
+                    return $day;
+                })
+                ->implode(', ');
+        }
+
+        if ($batch->start_time && $batch->end_time) {
+            return Carbon::parse($batch->start_time)->format('h:i A') . ' - ' . Carbon::parse($batch->end_time)->format('h:i A');
+        }
+
+        return 'Timing not set';
+    }
+
+    private function formatDayLabel(string $day): string
+    {
+        $normalized = strtolower(trim($day));
+
+        return match ($normalized) {
+            'monday' => 'Mon',
+            'tuesday' => 'Tue',
+            'wednesday' => 'Wed',
+            'thursday' => 'Thu',
+            'friday' => 'Fri',
+            'saturday' => 'Sat',
+            'sunday' => 'Sun',
+            default => $day !== '' ? ucfirst($day) : 'Day',
+        };
+    }
+
+    private function daySortOrder(string $day): int
+    {
+        return match (strtolower(trim($day))) {
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+            'sunday' => 7,
+            default => 99,
+        };
+    }
+
+    private function appendAdmissionRemark(?string $currentRemarks, string $newRemark): string
+    {
+        $current = trim((string) $currentRemarks);
+        $remark = trim($newRemark);
+
+        if ($current === '') {
+            return $remark;
+        }
+
+        if ($remark === '') {
+            return $current;
+        }
+
+        return $current . PHP_EOL . $remark;
+    }
+
+    private function buildTransferRemark(
+        ?string $userName,
+        string $fromCampus,
+        string $fromBatch,
+        string $toCampus,
+        string $toBatch,
+        ?string $remarks
+    ): string {
+        $message = sprintf(
+            '[%s] Admission transferred from %s / %s to %s / %s',
+            now()->format('d-M-Y h:i A'),
+            $fromCampus,
+            $fromBatch,
+            $toCampus,
+            $toBatch
+        );
+
+        if ($userName) {
+            $message .= ' by ' . $userName;
+        }
+
+        $remarks = trim((string) $remarks);
+
+        if ($remarks !== '') {
+            $message .= '. Remarks: ' . $remarks;
+        } else {
+            $message .= '.';
+        }
+
+        return $message;
     }
 }
