@@ -127,7 +127,7 @@
                                 <tr data-entry-row="1">
                                     <td class="text-center">{{ ($admissions->firstItem() ?? 1) + $idx }}</td>
                                     <td>
-                                        @if($row->registration_id && $canStudentView)
+                                        @if($row->registration_id && ($canStudentView || $canReviewApproval))
                                             <a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
                                                 {{ $row->student_name }}
                                             </a>

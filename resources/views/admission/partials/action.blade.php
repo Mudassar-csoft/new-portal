@@ -217,6 +217,17 @@ div.dataTables_scrollBody{
                 </a>
             @endif
 
+            @if($registrationId)
+                <a class="dropdown-item lead-action-item" href="{{ route('student.show', $registrationId) }}">
+                    <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-cyan" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2.5A2.5 2.5 0 1 0 12 9a2.5 2.5 0 0 0 0 5z"/>
+                        </svg>
+                    </span>
+                    <span class="lead-action-label">Verify Documents</span>
+                </a>
+            @endif
+
             <button
                 type="button"
                 class="dropdown-item lead-action-item

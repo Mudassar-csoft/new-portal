@@ -253,6 +253,13 @@ class AdmissionApprovalWorkflowTest extends TestCase
             ->assertHeader('content-disposition', 'inline; filename="review-doc.jpg"');
 
         $this->actingAs($reviewer)
+            ->get(route('student.show', $requestedRegistration))
+            ->assertOk()
+            ->assertSee('Document Verification')
+            ->assertSee('CNIC Front Side')
+            ->assertSee('Paid Slip');
+
+        $this->actingAs($reviewer)
             ->post(route('admission.review', $requestedAdmission), [
                 'review_action' => 'approve',
                 'approval_remarks' => 'Reviewed by assigned reviewer.',

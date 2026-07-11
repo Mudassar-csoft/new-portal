@@ -12,6 +12,7 @@
         $studentEmailUrl = $studentEmail !== '' ? 'mailto:' . $studentEmail : null;
         $studentWhatsappUrl = $studentPhone !== '' ? 'https://wa.me/' . $studentPhone : null;
         $canAdminEdit = auth()->user()?->isAdmin();
+        $canAdmissionReview = $canAdmissionReview ?? (auth()->user()?->hasAnyPermission(['admission.review']) ?? false);
     @endphp
 
     <div class="student-detail-shell">
@@ -119,6 +120,11 @@
                     <li class="student-tab" data-target="#pane-admission" role="tab">
                         Admission History
                     </li>
+                    @if($canAdmissionReview)
+                        <li class="student-tab" data-target="#pane-verification" role="tab">
+                            Document Verification
+                        </li>
+                    @endif
                     <li class="student-tab active" data-target="#pane-account" role="tab">
                         Account History
                     </li>
@@ -200,6 +206,89 @@
                         </table>
                     </div>
                 </div>
+
+                @if($canAdmissionReview)
+                    <div class="student-pane" id="pane-verification">
+                        <div class="pane-card table-responsive">
+                            <table class="table table-bordered follow-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course Title</th>
+                                        <th>Campus</th>
+                                        <th>Approval Status</th>
+                                        <th>Documents</th>
+                                        <th>Uploaded / Reviewed</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($admissions as $admission)
+                                        @php
+                                            $approvalStatus = (string) ($admission->approval_status ?? \App\Models\Admission::APPROVAL_STATUS_APPROVED);
+                                            $approvalLabel = match ($approvalStatus) {
+                                                \App\Models\Admission::APPROVAL_STATUS_PENDING => 'Pending',
+                                                \App\Models\Admission::APPROVAL_STATUS_REQUESTED => 'Requested',
+                                                \App\Models\Admission::APPROVAL_STATUS_APPROVED => 'Approved',
+                                                default => ucfirst(str_replace('_', ' ', $approvalStatus)),
+                                            };
+                                            $approvalClass = match ($approvalStatus) {
+                                                \App\Models\Admission::APPROVAL_STATUS_PENDING => 'label-warning',
+                                                \App\Models\Admission::APPROVAL_STATUS_REQUESTED => 'label-info',
+                                                \App\Models\Admission::APPROVAL_STATUS_APPROVED => 'label-success',
+                                                default => 'label-default',
+                                            };
+                                            $documentLinks = [
+                                                'CNIC Front Side' => $admission->document_cnic_front_path
+                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-front'])
+                                                    : null,
+                                                'CNIC Back Side' => $admission->document_cnic_back_path
+                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back'])
+                                                    : null,
+                                                'Admission Form' => $admission->document_admission_form_path
+                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form'])
+                                                    : null,
+                                                'Paid Slip' => $admission->document_paid_slip_path
+                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'paid-slip'])
+                                                    : null,
+                                            ];
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $admission->program?->title ?? $admission->program?->name ?? '—' }}</td>
+                                            <td>{{ $admission->campus?->code ?? $admission->campus?->name ?? '—' }}</td>
+                                            <td>
+                                                <span class="label {{ $approvalClass }}">{{ $approvalLabel }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="student-doc-links">
+                                                    @foreach($documentLinks as $label => $url)
+                                                        @if($url)
+                                                            <a class="student-doc-link" href="{{ $url }}" target="_blank" rel="noopener">{{ $label }}</a>
+                                                        @else
+                                                            <span class="student-doc-link is-disabled">{{ $label }}</span>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="student-verification-meta">
+                                                    <div><strong>Uploaded:</strong> {{ optional($admission->documents_uploaded_at)->format('d-M-Y h:i A') ?? '—' }}</div>
+                                                    <div><strong>By:</strong> {{ $admission->documentsUploadedBy?->name ?? '—' }}</div>
+                                                    <div><strong>Reviewed:</strong> {{ optional($admission->approval_reviewed_at)->format('d-M-Y h:i A') ?? '—' }}</div>
+                                                    <div><strong>Reviewer:</strong> {{ $admission->approvalReviewedBy?->name ?? '—' }}</div>
+                                                </div>
+                                            </td>
+                                            <td>{{ $admission->approval_remarks ?: '—' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="empty-state">No admissions available for document verification.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
 
                 {{-- ===== ACCOUNT HISTORY ===== --}}
                 <div class="student-pane is-active" id="pane-account">
@@ -767,6 +856,44 @@
         .info-table td { color: #334155; }
         .info-table tr:last-child th,
         .info-table tr:last-child td { border-bottom: 0; }
+
+        .student-doc-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .student-doc-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #0f5ca8;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            text-decoration: none;
+        }
+        .student-doc-link:hover,
+        .student-doc-link:focus {
+            background: #e0f2fe;
+            color: #0c4a6e;
+            text-decoration: none;
+        }
+        .student-doc-link.is-disabled {
+            color: #94a3b8;
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            cursor: default;
+        }
+        .student-verification-meta {
+            display: grid;
+            gap: 4px;
+            font-size: 12px;
+            color: #475569;
+        }
 
         .student-flash {
             background: #ecfdf5;

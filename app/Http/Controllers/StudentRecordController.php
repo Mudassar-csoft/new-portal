@@ -125,9 +125,11 @@ class StudentRecordController extends Controller
         ]);
     }
 
-    public function show(\App\Models\Registration $registration): View
+    public function show(Request $request, \App\Models\Registration $registration): View
     {
-        $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), auth()->user(), 'You are not allowed to access student records from another campus.');
+        if (! $this->canReviewAdmissions($request->user())) {
+            $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), $request->user(), 'You are not allowed to access student records from another campus.');
+        }
 
         $registration->load([
             'lead',
@@ -142,6 +144,8 @@ class StudentRecordController extends Controller
                 'batch',
                 'campus',
                 'program',
+                'documentsUploadedBy',
+                'approvalReviewedBy',
                 'certificateDeliveredBy',
             ])
             ->where('registration_id', $registration->id)
@@ -181,6 +185,7 @@ class StudentRecordController extends Controller
             'feeCollections' => $feeCollections,
             'totalFee' => $totalFee,
             'pendingFee' => $pendingFee,
+            'canAdmissionReview' => $this->canReviewAdmissions($request->user()),
             'statusOptions' => self::STATUS_OPTIONS,
             'certificateStatusLabels' => array_intersect_key(
                 Admission::STUDENT_STATUS_LABELS,
@@ -867,5 +872,10 @@ class StudentRecordController extends Controller
         }
 
         return $message;
+    }
+
+    private function canReviewAdmissions($user): bool
+    {
+        return $user?->hasAnyPermission(['admission.review']) ?? false;
     }
 }
