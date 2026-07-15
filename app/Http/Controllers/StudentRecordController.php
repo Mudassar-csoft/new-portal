@@ -554,9 +554,18 @@ class StudentRecordController extends Controller
 
     private function applyStudentRecordsSearch(Builder $query, string $keyword): void
     {
-        $like = '%' . trim($keyword) . '%';
-        $normalizedKeyword = $this->normalizeSearchToken($keyword);
-        $campusCodeSearch = $this->isCampusCodeSearchIntent($keyword);
+        $trimmedKeyword = trim($keyword);
+        $like = '%' . $trimmedKeyword . '%';
+        $normalizedKeyword = $this->normalizeSearchToken($trimmedKeyword);
+        $campusCodeSearch = $this->isCampusCodeSearchIntent($trimmedKeyword);
+
+        if ($campusCodeSearch) {
+            $query->whereHas('campus', function (Builder $campusQuery) use ($trimmedKeyword) {
+                $campusQuery->whereRaw('LOWER(code) = ?', [strtolower($trimmedKeyword)]);
+            });
+
+            return;
+        }
 
         $query->where(function (Builder $builder) use ($like, $normalizedKeyword, $campusCodeSearch) {
             $builder
@@ -583,9 +592,7 @@ class StudentRecordController extends Controller
                         ->orWhere('name', 'like', $like);
                 });
 
-            if (! $campusCodeSearch) {
-                $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
-            }
+            $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
         });
     }
 
