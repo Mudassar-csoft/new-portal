@@ -16,18 +16,6 @@
             'alumni' => 'Alumni',
         ];
 
-        $studentScopeBadgeKey = [
-            'active' => 'student_active',
-            'frozen' => 'student_frozen',
-            'concluded' => 'student_concluded',
-            'incomplete' => 'student_incomplete',
-            'suspended' => 'student_suspended',
-            'admission_cancelled' => 'student_admission_cancelled',
-            'dropped' => 'student_dropped',
-            'all_students' => 'student_all',
-            'alumni' => 'student_alumni',
-        ];
-
         $studentBadgeColors = [
             'active' => 'badge-success',
             'frozen' => 'badge-info',
@@ -41,7 +29,7 @@
         ];
 
         $activeStudentScope = $scope ?? 'active';
-        $sidebarCounts = $sidebarCounts ?? [];
+        $scopeCounts = $scopeCounts ?? [];
     @endphp
 
     <div class="lead-status-shell">
@@ -60,8 +48,7 @@
                     @foreach ($studentScopeTabs as $scopeKey => $scopeLabel)
                         @php
                             $isActive = $activeStudentScope === $scopeKey;
-                            $countKey = $studentScopeBadgeKey[$scopeKey] ?? null;
-                            $count = $countKey ? ($sidebarCounts[$countKey] ?? 0) : 0;
+                            $count = $scopeCounts[$scopeKey] ?? 0;
                         @endphp
                         <a href="{{ route('student.records.index', ['scope' => $scopeKey]) }}" class="follow-tab {{ $isActive ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
                             <span class="label-text">{{ $scopeLabel }}</span>
@@ -81,7 +68,6 @@
                                     <th>Course</th>
                                     <!-- <th>Registration No</th> -->
                                     <th>Campus</th>
-                                    <th>Status</th>
                                     <th>Primary Contact</th>
                                     <!-- <th>Certificate</th> -->
                                     <th class="text-right">Actions</th>
@@ -397,7 +383,6 @@
                     { data: 'roll_number', name: 'roll_number' },
                     { data: 'program_name', name: 'program_name', orderable: false },
                     { data: 'campus_code', name: 'campus_code', orderable: false },
-                    { data: 'status_badge', name: 'student_status', orderable: false, searchable: false },
                     { data: 'phone', name: 'phone' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
                 ]

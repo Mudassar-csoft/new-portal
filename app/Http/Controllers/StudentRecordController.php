@@ -9,6 +9,7 @@ use App\Models\FeeCollection;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,9 +37,10 @@ class StudentRecordController extends Controller
     {
         $scope = $scope ?: 'all_students';
         $config = $this->resolveScope($scope);
+        $scopeCounts = $this->studentScopeCounts($request->user());
 
         if ($request->ajax()) {
-            $query = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+            $query = $this->baseStudentRecordsQuery($request->user())
                 ->with([
                     'campus:id,code,name',
                     'program:id,code,title,name',
@@ -48,6 +50,7 @@ class StudentRecordController extends Controller
                 ->select('admissions.*');
 
             $this->applyScope($query, $config['scope']);
+            $searchValue = trim((string) $request->input('search.value', ''));
 
             return DataTables::eloquent($query)
                 ->addIndexColumn()
@@ -72,12 +75,6 @@ class StudentRecordController extends Controller
                 ->addColumn('campus_code', fn (Admission $admission) => e(optional($admission->campus)->code ?? optional($admission->campus)->name ?? 'N/A'))
                 ->addColumn('program_name', fn (Admission $admission) => e(optional($admission->program)->title ?? optional($admission->program)->name ?? 'N/A'))
                 ->addColumn('batch_name', fn (Admission $admission) => e(optional($admission->batch)->code ?? optional($admission->batch)->name ?? 'N/A'))
-                ->addColumn('status_badge', function (Admission $admission) {
-                    $label = $this->studentStatusLabel($admission->student_status);
-                    $class = $this->studentStatusClass($admission->student_status);
-
-                    return '<span class="label ' . $class . '">' . e($label) . '</span>';
-                })
                 ->addColumn('certificate_status', function (Admission $admission) {
                     [$label, $class] = $this->certificateStatusMeta($admission);
                     $details = '';
@@ -92,6 +89,13 @@ class StudentRecordController extends Controller
                     'admission' => $admission,
                     'statusOptions' => self::STATUS_OPTIONS,
                 ])->render())
+                ->filter(function (Builder $query) use ($searchValue) {
+                    if ($searchValue === '') {
+                        return;
+                    }
+
+                    $this->applyStudentRecordsSearch($query, $searchValue);
+                })
                 ->filterColumn('campus_code', function ($query, $keyword) {
                     $query->whereHas('campus', function ($campusQuery) use ($keyword) {
                         $campusQuery
@@ -114,12 +118,13 @@ class StudentRecordController extends Controller
                             ->orWhere('name', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['student_name', 'status_badge', 'certificate_status', 'actions'])
+                ->rawColumns(['student_name', 'certificate_status', 'actions'])
                 ->make(true);
         }
 
         return view('student.records.index', [
             'scope' => $config['scope'],
+            'scopeCounts' => $scopeCounts,
             'pageTitle' => $config['title'],
             'pageDescription' => $config['description'],
         ]);
@@ -514,6 +519,69 @@ class StudentRecordController extends Controller
 
         $status = $scope === 'active' ? 'enrolled' : $scope;
         $query->where('student_status', $status);
+    }
+
+    private function baseStudentRecordsQuery($user): Builder
+    {
+        return $this->scopeQueryToUserCampus(
+            Admission::query()->approved(),
+            $user
+        );
+    }
+
+    private function studentScopeCounts($user): array
+    {
+        $baseQuery = $this->baseStudentRecordsQuery($user);
+
+        return [
+            'active' => (clone $baseQuery)->where('student_status', 'enrolled')->count(),
+            'frozen' => (clone $baseQuery)->where('student_status', 'frozen')->count(),
+            'concluded' => (clone $baseQuery)->where('student_status', 'concluded')->count(),
+            'incomplete' => (clone $baseQuery)->where('student_status', 'incomplete')->count(),
+            'suspended' => (clone $baseQuery)->where('student_status', 'suspended')->count(),
+            'admission_cancelled' => (clone $baseQuery)->where('student_status', 'admission_cancelled')->count(),
+            'dropped' => (clone $baseQuery)->where('student_status', 'dropped')->count(),
+            'all_students' => (clone $baseQuery)->count(),
+            'alumni' => (clone $baseQuery)
+                ->where(function (Builder $query) {
+                    $query
+                        ->where('student_status', Admission::CERTIFICATE_STATUS_DELIVERED)
+                        ->orWhereNotNull('certificate_delivered_at');
+                })
+                ->count(),
+        ];
+    }
+
+    private function applyStudentRecordsSearch(Builder $query, string $keyword): void
+    {
+        $like = '%' . trim($keyword) . '%';
+
+        $query->where(function (Builder $builder) use ($like) {
+            $builder
+                ->where('student_name', 'like', $like)
+                ->orWhere('roll_number', 'like', $like)
+                ->orWhere('phone', 'like', $like)
+                ->orWhere('registration_number', 'like', $like)
+                ->orWhereHas('registration', function (Builder $registrationQuery) use ($like) {
+                    $registrationQuery->where('registration_number', 'like', $like);
+                })
+                ->orWhereHas('campus', function (Builder $campusQuery) use ($like) {
+                    $campusQuery
+                        ->where('code', 'like', $like)
+                        ->orWhere('name', 'like', $like);
+                })
+                ->orWhereHas('program', function (Builder $programQuery) use ($like) {
+                    $programQuery
+                        ->where('title', 'like', $like)
+                        ->orWhere('name', 'like', $like)
+                        ->orWhere('code', 'like', $like);
+                })
+                ->orWhereHas('batch', function (Builder $batchQuery) use ($like) {
+                    $batchQuery
+                        ->where('code', 'like', $like)
+                        ->orWhere('name', 'like', $like);
+                });
+        });
     }
 
     private function resolveScope(string $scope): array
