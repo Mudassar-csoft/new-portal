@@ -524,7 +524,7 @@ class StudentRecordController extends Controller
     private function baseStudentRecordsQuery($user): Builder
     {
         return $this->scopeQueryToUserCampus(
-            Admission::query()->approved(),
+            Admission::query(),
             $user
         );
     }

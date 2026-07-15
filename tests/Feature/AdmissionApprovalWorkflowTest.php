@@ -125,7 +125,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
             ->assertSee('CNIC Back Side');
     }
 
-    public function test_student_records_only_return_approved_admissions(): void
+    public function test_student_records_return_students_even_when_admission_approval_is_pending(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');
 
@@ -162,7 +162,7 @@ class AdmissionApprovalWorkflowTest extends TestCase
         $studentNames = collect($response->json('data'))->pluck('student_name')->all();
 
         $this->assertContains('Approved Student', $studentNames);
-        $this->assertNotContains('Pending Student', $studentNames);
+        $this->assertContains('Pending Student', $studentNames);
     }
 
     public function test_registration_detail_treats_pending_admission_as_not_yet_enrolled(): void

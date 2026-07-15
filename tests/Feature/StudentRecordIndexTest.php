@@ -85,7 +85,7 @@ class StudentRecordIndexTest extends TestCase
         $this->assertArrayNotHasKey('status_badge', $row);
     }
 
-    public function test_student_records_page_scope_counts_follow_approved_student_data(): void
+    public function test_student_records_page_scope_counts_follow_all_student_status_data(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');
         $campus = $this->createCampus('Alpha Campus', 'ALP');
@@ -123,10 +123,10 @@ class StudentRecordIndexTest extends TestCase
             ->get(route('student.records.index', ['scope' => 'active']))
             ->assertOk()
             ->assertViewHas('scopeCounts', function (array $counts): bool {
-                return ($counts['active'] ?? null) === 1
+                return ($counts['active'] ?? null) === 2
                     && ($counts['frozen'] ?? null) === 1
                     && ($counts['concluded'] ?? null) === 1
-                    && ($counts['all_students'] ?? null) === 3;
+                    && ($counts['all_students'] ?? null) === 4;
             });
     }
 
