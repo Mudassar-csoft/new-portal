@@ -555,11 +555,11 @@ class StudentRecordController extends Controller
     private function applyStudentRecordsSearch(Builder $query, string $keyword): void
     {
         $like = '%' . trim($keyword) . '%';
+        $normalizedKeyword = $this->normalizeSearchToken($keyword);
 
-        $query->where(function (Builder $builder) use ($like) {
+        $query->where(function (Builder $builder) use ($like, $normalizedKeyword) {
             $builder
                 ->where('student_name', 'like', $like)
-                ->orWhere('roll_number', 'like', $like)
                 ->orWhere('phone', 'like', $like)
                 ->orWhere('registration_number', 'like', $like)
                 ->orWhereHas('registration', function (Builder $registrationQuery) use ($like) {
@@ -581,7 +581,30 @@ class StudentRecordController extends Controller
                         ->where('code', 'like', $like)
                         ->orWhere('name', 'like', $like);
                 });
+
+            $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
         });
+    }
+
+    private function applyRollNumberSearch(Builder $query, string $like, string $normalizedKeyword): void
+    {
+        $query->orWhere('roll_number', 'like', $like);
+
+        if ($normalizedKeyword === '') {
+            return;
+        }
+
+        $query->orWhereRaw(
+            "REPLACE(REPLACE(REPLACE(LOWER(COALESCE(roll_number, '')), '-', ''), '/', ''), ' ', '') like ?",
+            ['%' . $normalizedKeyword . '%']
+        );
+    }
+
+    private function normalizeSearchToken(string $value): string
+    {
+        $normalized = preg_replace('/[^a-z0-9]/i', '', strtolower(trim($value)));
+
+        return is_string($normalized) ? $normalized : '';
     }
 
     private function resolveScope(string $scope): array

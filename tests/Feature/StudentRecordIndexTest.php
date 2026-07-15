@@ -169,6 +169,46 @@ class StudentRecordIndexTest extends TestCase
         $this->assertSame('ALP', $response->json('data.0.campus_code'));
     }
 
+    public function test_student_records_global_search_matches_roll_number_without_separators(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('SE101', 'Software Engineering');
+        $batch = $this->createBatch($campus, $program, 'ALP-B5');
+        $registration = $this->createRegistration($campus, $program, 'Roll Search Student', '03000000998');
+
+        $admission = $this->createAdmission($campus, $program, $batch, $registration, 'Roll Search Student', '03000000998', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-ALP-B5-018',
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([$studentView->id]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'active',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+                'search' => [
+                    'value' => 'ALPALPB5018',
+                    'regex' => 'false',
+                ],
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame($admission->roll_number, $response->json('data.0.roll_number'));
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([
