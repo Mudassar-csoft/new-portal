@@ -359,6 +359,8 @@
                                             style="border:0;cursor:pointer;">
                                             Pending
                                              </button>
+                                             @elseif($fee->status === 'baddebt')
+                                             <span class="label label-danger p-2 fee-status-control fee-status-control--text">Bad Debt</span>
                                              @else
                                              <span class="label label-default">{{ ucfirst($fee->status ?? '—') }}</span>
                                              @endif

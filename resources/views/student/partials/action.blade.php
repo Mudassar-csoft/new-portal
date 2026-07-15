@@ -3,6 +3,7 @@
     $registrationId = $admission->registration_id ?? optional($admission->registration)->id;
     $canAdminEdit = auth()->user()?->isAdmin();
     $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
+    $canDropStudent = auth()->user()?->hasAnyPermission(['student.drop']) ?? false;
     $statusActions = [
         [
             'key' => 'frozen',
@@ -41,6 +42,10 @@
             'icon_class' => 'lead-icon-red',
         ],
     ];
+    $statusActions = array_values(array_filter($statusActions, static function (array $item) use ($canUpdateStudent, $canDropStudent): bool {
+        return $item['key'] === 'dropped' ? $canDropStudent : $canUpdateStudent;
+    }));
+    $hasActionItems = !empty($statusActions) || $canUpdateStudent || $canAdminEdit;
 @endphp
 
 @once
@@ -136,22 +141,41 @@
 @endonce
 
 <div class="dropdown follow-action-dropdown student-action-dropdown">
-    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false" @disabled(!$hasActionItems)>
         Actions
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-        @foreach($statusActions as $item)
-            <form method="POST" action="{{ route('student.records.status', $admission) }}">
-                @csrf
-                <input type="hidden" name="status" value="{{ $item['key'] }}">
-                <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
-                    <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
-                        <i class="fa {{ $item['icon'] }}"></i>
-                    </span>
-                    <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
-                </button>
-            </form>
-        @endforeach
+        @forelse($statusActions as $item)
+            @if($item['key'] === 'dropped')
+                <form method="POST" action="{{ route('student.records.drop', $admission) }}" class="js-student-drop-form" data-student-name="{{ $admission->student_name ?: 'Student' }}">
+                    @csrf
+                    <input type="hidden" name="drop_reason" value="">
+                    <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
+                        <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
+                            <i class="fa {{ $item['icon'] }}"></i>
+                        </span>
+                        <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
+                    </button>
+                </form>
+            @else
+                <form method="POST" action="{{ route('student.records.status', $admission) }}">
+                    @csrf
+                    <input type="hidden" name="status" value="{{ $item['key'] }}">
+                    <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
+                        <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
+                            <i class="fa {{ $item['icon'] }}"></i>
+                        </span>
+                        <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
+                    </button>
+                </form>
+            @endif
+        @empty
+            @if(!$canUpdateStudent && !$canAdminEdit)
+                <span class="dropdown-item lead-action-item text-muted" aria-disabled="true">
+                    <span class="lead-action-label">No actions available</span>
+                </span>
+            @endif
+        @endforelse
 
         <button
             type="button"

@@ -26,7 +26,7 @@ class AccessMap
             'web-leads' => $crud('web-lead'),
             'registration-management' => $crud('registration'),
             'admission-management' => array_merge($crud('admission'), ['admission.review']),
-            'student-management' => $crud('student'),
+            'student-management' => array_merge($crud('student'), ['student.drop']),
             'inventory-management' => $crud('inventory'),
             'batch-management' => array_merge($crud('batch'), $crud('batch-timetable')),
             'programme-management' => $crud('program'),

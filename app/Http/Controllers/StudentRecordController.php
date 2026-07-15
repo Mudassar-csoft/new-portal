@@ -181,7 +181,7 @@ class StudentRecordController extends Controller
             ->get();
 
         $totalFee = $feeCollections->sum('net_amount');
-        $pendingFee = $feeCollections->where('status', '!=', 'paid')->sum('net_amount');
+        $pendingFee = $feeCollections->where('status', 'pending')->sum('net_amount');
 
         return view('student.show', [
             'registration' => $registration,
@@ -261,6 +261,12 @@ class StudentRecordController extends Controller
                     return;
                 }
 
+                if (strtolower(trim((string) ($lockedFee->status ?? 'pending'))) !== 'pending') {
+                    throw ValidationException::withMessages([
+                        'paid_amount' => ['Only pending installments can be collected.'],
+                    ]);
+                }
+
                 $original = round((float) $lockedFee->net_amount, 2);
                 $diff = round($original - $paid, 2);
                 $nextPending = $this->nextPendingAdmissionInstallmentsQuery($lockedFee)
@@ -324,8 +330,10 @@ class StudentRecordController extends Controller
             return back()->with('error', 'Student status can only be updated after admission approval.');
         }
 
+        $statusOptions = array_diff_key(self::STATUS_OPTIONS, ['dropped' => true]);
+
         $validated = $request->validate([
-            'status' => ['required', Rule::in(array_keys(self::STATUS_OPTIONS))],
+            'status' => ['required', Rule::in(array_keys($statusOptions))],
         ]);
 
         $admission->update([
@@ -334,6 +342,58 @@ class StudentRecordController extends Controller
         ]);
 
         return back()->with('status', 'Student status updated.');
+    }
+
+    public function dropStudent(Request $request, Admission $admission): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_APPROVED) {
+            return back()->with('error', 'Student can only be dropped after admission approval.');
+        }
+
+        $validated = $request->validate([
+            'drop_reason' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $dropReason = trim((string) $validated['drop_reason']);
+
+        DB::transaction(function () use ($admission, $request, $dropReason): void {
+            $lockedAdmission = Admission::query()
+                ->lockForUpdate()
+                ->findOrFail($admission->id);
+
+            $lockedAdmission->update([
+                'student_status' => 'dropped',
+                'status_updated_at' => now(),
+                'remarks' => $this->appendAdmissionRemark(
+                    $lockedAdmission->remarks,
+                    $this->buildDropRemark($request->user()?->name, $dropReason)
+                ),
+            ]);
+
+            FeeCollection::query()
+                ->where('admission_id', $lockedAdmission->id)
+                ->whereNull('paid_at')
+                ->where(function (Builder $query) {
+                    $query
+                        ->whereNull('status')
+                        ->orWhere('status', 'pending');
+                })
+                ->lockForUpdate()
+                ->get()
+                ->each(function (FeeCollection $feeCollection) use ($request, $dropReason): void {
+                    $feeCollection->update([
+                        'status' => 'baddebt',
+                        'notes' => $this->appendFeeNote(
+                            $feeCollection->notes,
+                            $this->buildBadDebtFeeNote($request->user()?->name, $dropReason)
+                        ),
+                    ]);
+                });
+        });
+
+        return back()->with('status', 'Student dropped and pending fee moved to bad debt.');
     }
 
     public function markCertificateDelivered(Request $request, Admission $admission): RedirectResponse
@@ -956,6 +1016,22 @@ class StudentRecordController extends Controller
         return $current . PHP_EOL . $remark;
     }
 
+    private function appendFeeNote(?string $currentNotes, string $newNote): string
+    {
+        $current = trim((string) $currentNotes);
+        $note = trim($newNote);
+
+        if ($current === '') {
+            return $note;
+        }
+
+        if ($note === '') {
+            return $current;
+        }
+
+        return $current . PHP_EOL . $note;
+    }
+
     private function buildTransferRemark(
         ?string $userName,
         string $fromCampus,
@@ -986,6 +1062,34 @@ class StudentRecordController extends Controller
         }
 
         return $message;
+    }
+
+    private function buildDropRemark(?string $userName, string $dropReason): string
+    {
+        $message = sprintf(
+            '[%s] Admission dropped',
+            now()->format('d-M-Y h:i A')
+        );
+
+        if ($userName) {
+            $message .= ' by ' . $userName;
+        }
+
+        return $message . '. Reason: ' . trim($dropReason);
+    }
+
+    private function buildBadDebtFeeNote(?string $userName, string $dropReason): string
+    {
+        $message = sprintf(
+            '[%s] Fee marked as bad debt because the student admission was dropped',
+            now()->format('d-M-Y h:i A')
+        );
+
+        if ($userName) {
+            $message .= ' by ' . $userName;
+        }
+
+        return $message . '. Reason: ' . trim($dropReason);
     }
 
     private function canReviewAdmissions($user): bool

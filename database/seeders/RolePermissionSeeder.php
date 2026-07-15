@@ -109,6 +109,7 @@ class RolePermissionSeeder extends Seeder
 
         // Admission workflow transitions
         $catalog[] = ['resource' => 'admission', 'action' => 'review'];
+        $catalog[] = ['resource' => 'student', 'action' => 'drop'];
 
         // Role / Permission management
         $catalog[] = ['resource' => 'role', 'action' => 'manage'];

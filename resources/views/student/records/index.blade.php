@@ -688,6 +688,47 @@
                     });
             });
 
+            $(document).on('submit.studentDrop', '.js-student-drop-form', function (event) {
+                event.preventDefault();
+
+                var form = this;
+                var hiddenReasonInput = form.querySelector('input[name="drop_reason"]');
+
+                if (!hiddenReasonInput) {
+                    form.submit();
+                    return;
+                }
+
+                closeAllStudentDropdowns();
+
+                swal({
+                    title: 'Drop Student',
+                    text:
+                        '<div class="swal-transfer-grid">' +
+                            '<label class="swal-transfer-label" for="swal-drop-reason">Reason for dropping ' + escapeHtml($(form).data('student-name') || 'this student') + '</label>' +
+                            '<textarea id="swal-drop-reason" class="swal-transfer-textarea" placeholder="Enter drop reason"></textarea>' +
+                        '</div>',
+                    html: true,
+                    type: 'warning',
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: 'Drop Student',
+                    cancelButtonText: 'Cancel'
+                }, function () {
+                    var reasonField = document.getElementById('swal-drop-reason');
+                    var reason = reasonField ? reasonField.value.trim() : '';
+
+                    if (!reason) {
+                        swal.showInputError('Please enter the drop reason.');
+                        return false;
+                    }
+
+                    hiddenReasonInput.value = reason;
+                    swal.close();
+                    form.submit();
+                });
+            });
+
             var statusMessage = @json(session('status'));
             if (statusMessage) {
                 swal({
