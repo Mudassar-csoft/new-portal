@@ -209,6 +209,58 @@ class StudentRecordIndexTest extends TestCase
         $this->assertSame($admission->roll_number, $response->json('data.0.roll_number'));
     }
 
+    public function test_student_records_campus_code_search_does_not_match_only_by_roll_number_prefix(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = $this->createProgram('AR101', 'Architecture');
+        $alphaBatch = $this->createBatch($alphaCampus, $program, 'ALP-B6');
+        $betaBatch = $this->createBatch($betaCampus, $program, 'BET-B6');
+
+        $alphaRegistration = $this->createRegistration($alphaCampus, $program, 'Alpha Campus Student', '03000000999');
+        $betaRegistration = $this->createRegistration($betaCampus, $program, 'Transferred Student', '03000001000');
+
+        $this->createAdmission($alphaCampus, $program, $alphaBatch, $alphaRegistration, 'Alpha Campus Student', '03000000999', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-ALP-B6-019',
+        ]);
+
+        $this->createAdmission($betaCampus, $program, $betaBatch, $betaRegistration, 'Transferred Student', '03000001000', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-BET-B6-020',
+        ]);
+
+        $user = User::factory()->create();
+        $user->permissions()->sync([$studentView->id]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'active',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+                'search' => [
+                    'value' => 'ALP',
+                    'regex' => 'false',
+                ],
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+
+        $studentNames = collect($response->json('data'))->pluck('student_name')->all();
+
+        $this->assertContains('Alpha Campus Student', $studentNames);
+        $this->assertNotContains('Transferred Student', $studentNames);
+    }
+
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
         return Permission::query()->create([

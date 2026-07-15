@@ -556,8 +556,9 @@ class StudentRecordController extends Controller
     {
         $like = '%' . trim($keyword) . '%';
         $normalizedKeyword = $this->normalizeSearchToken($keyword);
+        $campusCodeSearch = $this->isCampusCodeSearchIntent($keyword);
 
-        $query->where(function (Builder $builder) use ($like, $normalizedKeyword) {
+        $query->where(function (Builder $builder) use ($like, $normalizedKeyword, $campusCodeSearch) {
             $builder
                 ->where('student_name', 'like', $like)
                 ->orWhere('phone', 'like', $like)
@@ -582,7 +583,9 @@ class StudentRecordController extends Controller
                         ->orWhere('name', 'like', $like);
                 });
 
-            $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
+            if (! $campusCodeSearch) {
+                $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
+            }
         });
     }
 
@@ -605,6 +608,19 @@ class StudentRecordController extends Controller
         $normalized = preg_replace('/[^a-z0-9]/i', '', strtolower(trim($value)));
 
         return is_string($normalized) ? $normalized : '';
+    }
+
+    private function isCampusCodeSearchIntent(string $keyword): bool
+    {
+        $candidate = strtolower(trim($keyword));
+
+        if ($candidate === '' || preg_match('/[\s\-\/]/', $candidate)) {
+            return false;
+        }
+
+        return Campus::query()
+            ->whereRaw('LOWER(code) = ?', [$candidate])
+            ->exists();
     }
 
     private function resolveScope(string $scope): array
