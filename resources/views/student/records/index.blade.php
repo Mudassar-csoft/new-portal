@@ -29,6 +29,8 @@
         ];
 
         $activeStudentScope = $scope ?? 'active';
+        $campusFilters = $campusFilters ?? [];
+        $programFilters = $programFilters ?? [];
         $scopeCounts = $scopeCounts ?? [];
     @endphp
 
@@ -58,6 +60,28 @@
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
+                    <div class="student-records-filter-bar">
+                        <div class="student-records-filter-field">
+                            <label class="student-records-filter-label" for="student-records-campus-filter">Campus</label>
+                            <select id="student-records-campus-filter" class="form-control">
+                                <option value="">All Campuses</option>
+                                @foreach ($campusFilters as $campusFilter)
+                                    <option value="{{ $campusFilter['id'] }}">{{ $campusFilter['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="student-records-filter-field">
+                            <label class="student-records-filter-label" for="student-records-program-filter">Program</label>
+                            <select id="student-records-program-filter" class="form-control">
+                                <option value="">All Programs</option>
+                                @foreach ($programFilters as $programFilter)
+                                    <option value="{{ $programFilter['id'] }}">{{ $programFilter['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-bordered follow-table" id="student-records-table">
                             <thead>
@@ -164,6 +188,38 @@
 
         .student-directory .box-typical-body { overflow: visible; }
         .student-directory .table-responsive { overflow-x: visible; overflow-y: visible; }
+
+        .student-records-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .student-records-filter-field {
+            flex: 1 1 240px;
+            max-width: 320px;
+        }
+
+        .student-records-filter-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4f5d73;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .student-records-filter-field .form-control {
+            height: 36px;
+            border: 1px solid #d7e5f1;
+            border-radius: 10px;
+            box-shadow: none;
+            color: #425466;
+            background: #fff;
+        }
 
         .with-side-menu .page-content,
         .with-side-menu .page-content > .container-fluid,
@@ -347,6 +403,12 @@
             line-height: 1.5;
             color: #66788a;
         }
+
+        @media (max-width: 767px) {
+            .student-records-filter-field {
+                max-width: none;
+            }
+        }
     </style>
 @endpush
 
@@ -369,13 +431,22 @@
 
         $(function () {
             var transferForm = document.getElementById('student-transfer-form');
+            var $campusFilter = $('#student-records-campus-filter');
+            var $programFilter = $('#student-records-program-filter');
+            var studentRecordsUrl = @json(route('student.records.index', ['scope' => $scope]));
 
-            $('#student-records-table').DataTable({
+            var recordsTable = $('#student-records-table').DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
-                ajax: "{{ route('student.records.index', ['scope' => $scope]) }}",
+                ajax: {
+                    url: studentRecordsUrl,
+                    data: function (data) {
+                        data.campus_id = $campusFilter.val() || '';
+                        data.program_id = $programFilter.val() || '';
+                    }
+                },
                 order: [],
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
@@ -386,6 +457,14 @@
                     { data: 'phone', name: 'phone' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
                 ]
+            });
+
+            $campusFilter.on('change', function () {
+                recordsTable.ajax.reload();
+            });
+
+            $programFilter.on('change', function () {
+                recordsTable.ajax.reload();
             });
 
             // Dropdown opens directly below the button using exact pixel coordinates

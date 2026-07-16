@@ -6,6 +6,7 @@ use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\Campus;
 use App\Models\FeeCollection;
+use App\Models\Program;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
@@ -40,6 +41,8 @@ class StudentRecordController extends Controller
         $scopeCounts = $this->studentScopeCounts($request->user());
 
         if ($request->ajax()) {
+            $campusFilterId = (int) $request->input('campus_id', 0);
+            $programFilterId = (int) $request->input('program_id', 0);
             $query = $this->baseStudentRecordsQuery($request->user())
                 ->with([
                     'campus:id,code,name',
@@ -89,12 +92,12 @@ class StudentRecordController extends Controller
                     'admission' => $admission,
                     'statusOptions' => self::STATUS_OPTIONS,
                 ])->render())
-                ->filter(function (Builder $query) use ($searchValue) {
-                    if ($searchValue === '') {
-                        return;
-                    }
+                ->filter(function (Builder $query) use ($searchValue, $campusFilterId, $programFilterId) {
+                    $this->applyStudentRecordFilters($query, $campusFilterId, $programFilterId);
 
-                    $this->applyStudentRecordsSearch($query, $searchValue);
+                    if ($searchValue !== '') {
+                        $this->applyStudentRecordsSearch($query, $searchValue);
+                    }
                 })
                 ->filterColumn('campus_code', function ($query, $keyword) {
                     $query->whereHas('campus', function ($campusQuery) use ($keyword) {
@@ -122,11 +125,16 @@ class StudentRecordController extends Controller
                 ->make(true);
         }
 
+        $campusFilters = $this->studentRecordCampusFilters($request->user(), $config['scope']);
+        $programFilters = $this->studentRecordProgramFilters($request->user(), $config['scope']);
+
         return view('student.records.index', [
             'scope' => $config['scope'],
             'scopeCounts' => $scopeCounts,
+            'campusFilters' => $campusFilters,
             'pageTitle' => $config['title'],
             'pageDescription' => $config['description'],
+            'programFilters' => $programFilters,
         ]);
     }
 
@@ -668,6 +676,85 @@ class StudentRecordController extends Controller
             "REPLACE(REPLACE(REPLACE(LOWER(COALESCE(roll_number, '')), '-', ''), '/', ''), ' ', '') like ?",
             ['%' . $normalizedKeyword . '%']
         );
+    }
+
+    private function applyStudentRecordFilters(Builder $query, int $campusFilterId, int $programFilterId): void
+    {
+        if ($campusFilterId > 0) {
+            $query->where('campus_id', $campusFilterId);
+        }
+
+        if ($programFilterId > 0) {
+            $query->where('program_id', $programFilterId);
+        }
+    }
+
+    private function studentRecordCampusFilters($user, string $scope): array
+    {
+        $campusIds = $this->studentRecordFilterBaseQuery($user, $scope)
+            ->whereNotNull('campus_id')
+            ->distinct()
+            ->pluck('campus_id')
+            ->filter()
+            ->map(fn ($campusId) => (int) $campusId)
+            ->values()
+            ->all();
+
+        if ($campusIds === []) {
+            return [];
+        }
+
+        return Campus::query()
+            ->whereKey($campusIds)
+            ->orderByRaw("CASE WHEN COALESCE(code, '') = '' THEN 1 ELSE 0 END")
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name'])
+            ->map(fn (Campus $campus) => [
+                'id' => $campus->id,
+                'label' => $this->formatCampusLabel($campus),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function studentRecordProgramFilters($user, string $scope): array
+    {
+        $programIds = $this->studentRecordFilterBaseQuery($user, $scope)
+            ->whereNotNull('program_id')
+            ->distinct()
+            ->pluck('program_id')
+            ->filter()
+            ->map(fn ($programId) => (int) $programId)
+            ->values()
+            ->all();
+
+        if ($programIds === []) {
+            return [];
+        }
+
+        return Program::query()
+            ->whereKey($programIds)
+            ->orderByRaw("CASE WHEN COALESCE(title, '') = '' THEN 1 ELSE 0 END")
+            ->orderBy('title')
+            ->orderBy('name')
+            ->orderBy('code')
+            ->get(['id', 'code', 'title', 'name'])
+            ->map(fn (Program $program) => [
+                'id' => $program->id,
+                'label' => $this->formatProgramLabel($program),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function studentRecordFilterBaseQuery($user, string $scope): Builder
+    {
+        $query = $this->baseStudentRecordsQuery($user)->select('admissions.*');
+
+        $this->applyScope($query, $scope);
+
+        return $query;
     }
 
     private function normalizeSearchToken(string $value): string
