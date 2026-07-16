@@ -138,9 +138,11 @@
                                 style="width: 100%;"
                                 data-placeholder="- Select Campus -"
                             >
-                                <option value="">- Select Campus -</option>
+                                <option value="">All Campuses</option>
                                 @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>{{ $campus->code ?: $campus->name }}</option>
+                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>
+                                        {{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('campus_id')

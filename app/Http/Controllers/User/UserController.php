@@ -130,6 +130,7 @@ class UserController extends Controller
                 'required',
                 Rule::exists('hr_employees', 'id')->where(fn ($query) => $query->where('portal_user', true)->whereNull('user_id')),
             ],
+            'campus_id' => ['nullable', 'exists:campuses,id'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
             'roles' => ['sometimes', 'array', 'max:1'],
@@ -147,7 +148,7 @@ class UserController extends Controller
 
         $resolvedName = $employee->full_name;
         $resolvedEmail = trim((string) $employee->email);
-        $resolvedCampusId = $employee->campus_id;
+        $resolvedCampusId = $validated['campus_id'] ?? null;
 
         if ($resolvedEmail === '' || !filter_var($resolvedEmail, FILTER_VALIDATE_EMAIL)) {
             return redirect()->back()
