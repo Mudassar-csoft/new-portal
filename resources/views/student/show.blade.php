@@ -141,7 +141,7 @@
                                 <tr>
                                     <th>Course Title</th>
                                     <th>Roll Number</th>
-                                    <th>Fee Status</th>
+                                    <th>Student Status</th>
                                     <th>Total Fee</th>
                                     <th>Batch History</th>
                                     <th>Campus History</th>
@@ -152,9 +152,9 @@
                                 @if($admissions->isNotEmpty())
                                     @foreach($admissions as $admission)
                                         @php
-                                        $admissionFees = $feeCollections->where('admission_id', $admission->id);
-                                        $admissionTotal = $admissionFees->sum('net_amount');
-                                        $admissionPaid = $admissionFees->where('status', 'paid')->sum('net_amount');
+                                        $studentStatus = (string) ($admission->student_status ?? '');
+                                        $admissionTotal = 0;
+                                        $admissionPaid = 0;
                                         $feeStatus = $admissionPaid >= $admissionTotal && $admissionTotal > 0 ? 'Paid' : ($admissionTotal > 0 ? 'Pending' : '—');
                                         $certificateStatus = (string) ($admission->student_status ?? '');
                                         $canRequestCertificate = auth()->user()?->hasAnyPermission('certificate.create') ?? false;
@@ -165,10 +165,10 @@
                                         <td>{{ $admission->program?->title ?? $admission->program?->name ?? '—' }}</td>
                                         <td>{{ $admission->roll_number ?? '—' }}</td>
                                         <td>
-                                            @if($feeStatus === 'Paid')
-                                                <span class="label label-primary">Paid</span>
-                                            @elseif($feeStatus === 'Pending')
-                                                <span class="label label-warning">Pending</span>
+                                            @if($studentStatus !== '')
+                                                <span class="label {{ $studentStatusClasses[$studentStatus] ?? 'label-default' }}">
+                                                    {{ $studentStatusLabels[$studentStatus] ?? ucfirst(str_replace('_', ' ', $studentStatus)) }}
+                                                </span>
                                             @else
                                                 —
                                             @endif

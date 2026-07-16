@@ -204,6 +204,8 @@ class StudentRecordController extends Controller
             'pendingFee' => $pendingFee,
             'canAdmissionReview' => $this->canReviewAdmissions($request->user()),
             'statusOptions' => self::STATUS_OPTIONS,
+            'studentStatusLabels' => Admission::STUDENT_STATUS_LABELS,
+            'studentStatusClasses' => Admission::STUDENT_STATUS_BADGE_CLASSES,
             'certificateStatusLabels' => array_intersect_key(
                 Admission::STUDENT_STATUS_LABELS,
                 array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
