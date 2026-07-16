@@ -11,6 +11,8 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::get('/records/{scope?}', [StudentRecordController::class, 'index'])->middleware('permission:student.view')->name('records.index');
     Route::post('/records/{admission}/status', [StudentRecordController::class, 'updateStatus'])->middleware('permission:student.update')->name('records.status');
     Route::post('/records/{admission}/drop', [StudentRecordController::class, 'dropStudent'])->middleware('permission:student.drop')->name('records.drop');
+    Route::get('/records/{admission}/reenroll', [StudentRecordController::class, 'reEnrollMeta'])->middleware('permission:student.update')->name('records.reenroll.meta');
+    Route::post('/records/{admission}/reenroll', [StudentRecordController::class, 'reEnroll'])->middleware('permission:student.update')->name('records.reenroll.store');
     Route::get('/records/{admission}/transfer', [StudentRecordController::class, 'transferMeta'])->middleware('permission:student.update')->name('records.transfer.meta');
     Route::post('/records/{admission}/transfer', [StudentRecordController::class, 'transfer'])->middleware('permission:student.update')->name('records.transfer.store');
     Route::post('/records/{admission}/certificate-delivered', [StudentRecordController::class, 'markCertificateDelivered'])->middleware('permission:student.update')->name('records.certificate-delivered');

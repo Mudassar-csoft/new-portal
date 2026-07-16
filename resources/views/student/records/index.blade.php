@@ -726,6 +726,139 @@
                 }, 0);
             }
 
+            function openStudentReenrollModal(meta, storeUrl) {
+                var admission = meta && meta.admission ? meta.admission : {};
+                var campuses = Array.isArray(meta && meta.campuses) ? meta.campuses : [];
+                var batches = Array.isArray(meta && meta.batches) ? meta.batches : [];
+
+                if (!batches.length) {
+                    swal({
+                        title: 'No Batch Found',
+                        text: 'No batch is available for this student program right now.',
+                        type: 'warning'
+                    });
+
+                    return;
+                }
+
+                var currentCampusId = String(admission.current_campus_id || '');
+                var currentBatchId = String(admission.current_batch_id || '');
+                var currentCampusHasBatch = batches.some(function (batch) {
+                    return String(batch.campus_id) === currentCampusId;
+                });
+                var defaultCampusId = currentCampusHasBatch
+                    ? currentCampusId
+                    : String((batches[0] && batches[0].campus_id) || '');
+
+                var campusOptions = ['<option value="">Select campus</option>'];
+                campuses.forEach(function (campus) {
+                    campusOptions.push(
+                        '<option value="' + escapeHtml(campus.id) + '"' + (String(campus.id) === defaultCampusId ? ' selected' : '') + '>' +
+                        escapeHtml(campus.label || ('Campus #' + campus.id)) +
+                        '</option>'
+                    );
+                });
+
+                swal({
+                    title: 'Enroll Now',
+                    text:
+                        '<div class="swal-transfer-grid">' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Student Name</label>' +
+                                    '<input id="swal-reenroll-student" class="swal-transfer-input" value="' + escapeHtml(admission.student_name || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Campus</label>' +
+                                    '<input id="swal-reenroll-campus-label" class="swal-transfer-input" value="' + escapeHtml(admission.current_campus || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Program</label>' +
+                                    '<input id="swal-reenroll-program" class="swal-transfer-input" value="' + escapeHtml(admission.program || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Batch</label>' +
+                                    '<input id="swal-reenroll-batch-label" class="swal-transfer-input" value="' + escapeHtml(admission.current_batch || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Select Campus</label>' +
+                                    '<select id="swal-reenroll-campus" class="swal-transfer-select">' + campusOptions.join('') + '</select>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Batch Code</label>' +
+                                    '<select id="swal-reenroll-batch" class="swal-transfer-select"></select>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Batch Timing</label>' +
+                                    '<input id="swal-reenroll-timing" class="swal-transfer-input" value="' + escapeHtml(admission.current_timing || 'Timing not set') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<p class="swal-transfer-note">Any fee marked as bad debt will be moved back to pending after enrollment.</p>' +
+                        '</div>',
+                    html: true,
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: 'Enroll Now',
+                    cancelButtonText: 'Cancel'
+                }, function () {
+                    var campusId = $('#swal-reenroll-campus').val();
+                    var batchId = $('#swal-reenroll-batch').val();
+
+                    if (!campusId) {
+                        swal.showInputError('Please select a campus.');
+                        return false;
+                    }
+
+                    if (!batchId) {
+                        swal.showInputError('Please select a batch code.');
+                        return false;
+                    }
+
+                    if (!transferForm) {
+                        swal.close();
+                        return false;
+                    }
+
+                    transferForm.setAttribute('action', storeUrl);
+                    transferForm.querySelector('input[name="campus_id"]').value = campusId;
+                    transferForm.querySelector('input[name="batch_id"]').value = batchId;
+                    transferForm.querySelector('input[name="remarks"]').value = '';
+
+                    swal.close();
+                    transferForm.submit();
+                });
+
+                setTimeout(function () {
+                    var campusSelect = document.getElementById('swal-reenroll-campus');
+                    var batchSelect = document.getElementById('swal-reenroll-batch');
+
+                    if (!campusSelect || !batchSelect) {
+                        return;
+                    }
+
+                    populateTransferBatchSelect(batches, campusSelect.value, currentBatchId);
+
+                    campusSelect.addEventListener('change', function () {
+                        populateTransferBatchSelect(batches, campusSelect.value, '');
+                    });
+
+                    batchSelect.addEventListener('change', function () {
+                        var timingInput = document.getElementById('swal-reenroll-timing');
+                        var selectedBatch = findBatchById(batches, batchSelect.value);
+
+                        if (timingInput) {
+                            timingInput.value = selectedBatch ? (selectedBatch.timing || 'Timing not set') : 'Timing not set';
+                        }
+                    });
+                }, 0);
+            }
+
             $(document).on('click.studentTransfer', '.js-student-transfer:not([disabled])', function (event) {
                 event.preventDefault();
 
@@ -754,6 +887,47 @@
                         swal.close();
 
                         var message = 'Unable to load transfer details right now.';
+
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        swal({
+                            title: 'Error',
+                            text: message,
+                            type: 'error'
+                        });
+                    });
+            });
+
+            $(document).on('click.studentReenroll', '.js-student-reenroll:not([disabled])', function (event) {
+                event.preventDefault();
+
+                var metaUrl = $(this).data('reenroll-meta-url');
+                var storeUrl = $(this).data('reenroll-store-url');
+
+                if (!metaUrl || !storeUrl) {
+                    return;
+                }
+
+                closeAllStudentDropdowns();
+
+                swal({
+                    title: 'Loading enrollment details...',
+                    text: 'Please wait.',
+                    type: 'info',
+                    showConfirmButton: false
+                });
+
+                $.getJSON(metaUrl)
+                    .done(function (response) {
+                        swal.close();
+                        openStudentReenrollModal(response, storeUrl);
+                    })
+                    .fail(function (xhr) {
+                        swal.close();
+
+                        var message = 'Unable to load enrollment details right now.';
 
                         if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;

@@ -441,62 +441,20 @@ class StudentRecordController extends Controller
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
 
-        $admission->loadMissing([
-            'campus:id,code,name',
-            'program:id,code,title,name',
-            'batch:id,program_id,campus_id,code,name,status,start_time,end_time',
-            'batch.timetables:id,batch_id,day_of_week,start_time,end_time,status',
-        ]);
+        return response()->json($this->campusBatchMetaPayload($admission, true));
+    }
 
-        $campuses = Campus::query()
-            ->orderByRaw("CASE WHEN COALESCE(code, '') = '' THEN 1 ELSE 0 END")
-            ->orderBy('code')
-            ->orderBy('name')
-            ->get(['id', 'code', 'name']);
+    public function reEnrollMeta(Request $request, Admission $admission): JsonResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
 
-        $batches = Batch::query()
-            ->with([
-                'campus:id,code,name',
-                'timetables:id,batch_id,day_of_week,start_time,end_time,status',
-            ])
-            ->where('program_id', $admission->program_id)
-            ->when($admission->batch_id, fn ($query, $batchId) => $query->whereKeyNot($batchId))
-            ->where(function ($query) {
-                $query
-                    ->whereNull('status')
-                    ->orWhereNotIn('status', ['completed', 'cancelled']);
-            })
-            ->orderBy('campus_id')
-            ->orderBy('code')
-            ->orderBy('name')
-            ->get(['id', 'program_id', 'campus_id', 'code', 'name', 'status', 'start_time', 'end_time']);
+        if (($admission->student_status ?? null) !== 'dropped') {
+            return response()->json([
+                'message' => 'Only dropped students can be enrolled again.',
+            ], 422);
+        }
 
-        return response()->json([
-            'admission' => [
-                'id' => $admission->id,
-                'student_name' => $admission->student_name ?: 'N/A',
-                'current_campus_id' => (int) ($admission->campus_id ?? 0),
-                'current_campus' => $this->formatCampusLabel($admission->campus),
-                'program' => $this->formatProgramLabel($admission->program),
-                'current_batch' => $this->formatBatchLabel($admission->batch),
-                'current_timing' => $this->formatBatchTiming($admission->batch),
-            ],
-            'campuses' => $campuses
-                ->map(fn (Campus $campus) => [
-                    'id' => $campus->id,
-                    'label' => $this->formatCampusLabel($campus),
-                ])
-                ->values(),
-            'batches' => $batches
-                ->map(fn (Batch $batch) => [
-                    'id' => $batch->id,
-                    'campus_id' => (int) $batch->campus_id,
-                    'label' => $this->formatBatchLabel($batch),
-                    'timing' => $this->formatBatchTiming($batch),
-                    'status' => (string) ($batch->status ?? 'active'),
-                ])
-                ->values(),
-        ]);
+        return response()->json($this->campusBatchMetaPayload($admission, false));
     }
 
     public function transfer(Request $request, Admission $admission): RedirectResponse
@@ -578,6 +536,173 @@ class StudentRecordController extends Controller
             'status',
             'Student transferred to ' . $this->formatCampusLabel($targetCampus) . ' / ' . $this->formatBatchLabel($targetBatch) . '. Paid fee stays on the previous campus and pending fee moves to the new campus.'
         );
+    }
+
+    public function reEnroll(Request $request, Admission $admission): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_APPROVED) {
+            return back()->with('error', 'Student can only be enrolled again after admission approval.');
+        }
+
+        if (($admission->student_status ?? null) !== 'dropped') {
+            return back()->with('error', 'Only dropped students can be enrolled again.');
+        }
+
+        $validated = $request->validate([
+            'campus_id' => ['required', 'integer', 'exists:campuses,id'],
+            'batch_id' => ['required', 'integer', 'exists:batches,id'],
+        ]);
+
+        $targetCampus = Campus::query()->findOrFail($validated['campus_id']);
+        $targetBatch = Batch::query()
+            ->with(['campus:id,code,name', 'program:id,code,title,name'])
+            ->findOrFail($validated['batch_id']);
+
+        if ((int) $targetBatch->campus_id !== (int) $targetCampus->id) {
+            return back()->with('error', 'Selected batch does not belong to the selected campus.');
+        }
+
+        if ((int) ($admission->program_id ?? 0) > 0 && (int) $targetBatch->program_id !== (int) $admission->program_id) {
+            return back()->with('error', 'Selected batch does not match the student program.');
+        }
+
+        if (in_array((string) ($targetBatch->status ?? 'active'), ['completed', 'cancelled'], true)) {
+            return back()->with('error', 'Selected batch is not available for enrollment.');
+        }
+
+        try {
+            DB::transaction(function () use ($admission, $request, $targetCampus, $targetBatch): void {
+                $lockedAdmission = Admission::query()
+                    ->with([
+                        'campus:id,code,name',
+                        'program:id,code,title,name',
+                        'batch:id,code,name',
+                    ])
+                    ->lockForUpdate()
+                    ->findOrFail($admission->id);
+
+                $fromCampusLabel = $this->formatCampusLabel($lockedAdmission->campus);
+                $fromBatchLabel = $this->formatBatchLabel($lockedAdmission->batch);
+                $programLabel = $this->formatProgramLabel($lockedAdmission->program);
+                $toCampusLabel = $this->formatCampusLabel($targetCampus);
+                $toBatchLabel = $this->formatBatchLabel($targetBatch);
+
+                $lockedAdmission->update([
+                    'campus_id' => $targetCampus->id,
+                    'batch_id' => $targetBatch->id,
+                    'student_status' => 'enrolled',
+                    'status_updated_at' => now(),
+                    'remarks' => $this->appendAdmissionRemark(
+                        $lockedAdmission->remarks,
+                        $this->buildReEnrollRemark(
+                            $request->user()?->name,
+                            $programLabel,
+                            $fromCampusLabel,
+                            $fromBatchLabel,
+                            $toCampusLabel,
+                            $toBatchLabel
+                        )
+                    ),
+                ]);
+
+                FeeCollection::query()
+                    ->where('admission_id', $lockedAdmission->id)
+                    ->whereNull('paid_at')
+                    ->where(function (Builder $query) {
+                        $query
+                            ->whereNull('status')
+                            ->orWhereIn('status', ['pending', 'baddebt']);
+                    })
+                    ->lockForUpdate()
+                    ->get()
+                    ->each(function (FeeCollection $feeCollection) use ($request, $targetCampus, $targetBatch): void {
+                        $feeCollection->update([
+                            'campus_id' => $targetCampus->id,
+                            'program_id' => $targetBatch->program_id,
+                            'status' => 'pending',
+                            'notes' => $this->appendFeeNote(
+                                $feeCollection->notes,
+                                $this->buildReEnrollFeeNote($request->user()?->name)
+                            ),
+                        ]);
+                    });
+            });
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Unable to enroll the student right now. Please try again.');
+        }
+
+        return back()->with(
+            'status',
+            'Student enrolled to ' . $this->formatCampusLabel($targetCampus) . ' / ' . $this->formatBatchLabel($targetBatch) . '. Bad debt fee moved back to pending.'
+        );
+    }
+
+    private function campusBatchMetaPayload(Admission $admission, bool $excludeCurrentBatch): array
+    {
+        $admission->loadMissing([
+            'campus:id,code,name',
+            'program:id,code,title,name',
+            'batch:id,program_id,campus_id,code,name,status,start_time,end_time',
+            'batch.timetables:id,batch_id,day_of_week,start_time,end_time,status',
+        ]);
+
+        $campuses = Campus::query()
+            ->orderByRaw("CASE WHEN COALESCE(code, '') = '' THEN 1 ELSE 0 END")
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
+        $batches = Batch::query()
+            ->with([
+                'campus:id,code,name',
+                'timetables:id,batch_id,day_of_week,start_time,end_time,status',
+            ])
+            ->where('program_id', $admission->program_id)
+            ->when(
+                $excludeCurrentBatch && $admission->batch_id,
+                fn ($query, $batchId) => $query->whereKeyNot($batchId)
+            )
+            ->where(function ($query) {
+                $query
+                    ->whereNull('status')
+                    ->orWhereNotIn('status', ['completed', 'cancelled']);
+            })
+            ->orderBy('campus_id')
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'program_id', 'campus_id', 'code', 'name', 'status', 'start_time', 'end_time']);
+
+        return [
+            'admission' => [
+                'id' => $admission->id,
+                'student_name' => $admission->student_name ?: 'N/A',
+                'current_campus_id' => (int) ($admission->campus_id ?? 0),
+                'current_campus' => $this->formatCampusLabel($admission->campus),
+                'program' => $this->formatProgramLabel($admission->program),
+                'current_batch_id' => (int) ($admission->batch_id ?? 0),
+                'current_batch' => $this->formatBatchLabel($admission->batch),
+                'current_timing' => $this->formatBatchTiming($admission->batch),
+            ],
+            'campuses' => $campuses
+                ->map(fn (Campus $campus) => [
+                    'id' => $campus->id,
+                    'label' => $this->formatCampusLabel($campus),
+                ])
+                ->values(),
+            'batches' => $batches
+                ->map(fn (Batch $batch) => [
+                    'id' => $batch->id,
+                    'campus_id' => (int) $batch->campus_id,
+                    'label' => $this->formatBatchLabel($batch),
+                    'timing' => $this->formatBatchTiming($batch),
+                    'status' => (string) ($batch->status ?? 'active'),
+                ])
+                ->values(),
+        ];
     }
 
     private function applyScope($query, string $scope): void
@@ -1191,6 +1316,31 @@ class StudentRecordController extends Controller
         return $message;
     }
 
+    private function buildReEnrollRemark(
+        ?string $userName,
+        string $program,
+        string $fromCampus,
+        string $fromBatch,
+        string $toCampus,
+        string $toBatch
+    ): string {
+        $message = sprintf(
+            '[%s] Admission enrolled again for %s from %s / %s to %s / %s',
+            now()->format('d-M-Y h:i A'),
+            $program,
+            $fromCampus,
+            $fromBatch,
+            $toCampus,
+            $toBatch
+        );
+
+        if ($userName) {
+            $message .= ' by ' . $userName;
+        }
+
+        return $message . '.';
+    }
+
     private function buildDropRemark(?string $userName, string $dropReason): string
     {
         $message = sprintf(
@@ -1203,6 +1353,20 @@ class StudentRecordController extends Controller
         }
 
         return $message . '. Reason: ' . trim($dropReason);
+    }
+
+    private function buildReEnrollFeeNote(?string $userName): string
+    {
+        $message = sprintf(
+            '[%s] Fee restored from bad debt to pending because the student was enrolled again',
+            now()->format('d-M-Y h:i A')
+        );
+
+        if ($userName) {
+            $message .= ' by ' . $userName;
+        }
+
+        return $message . '.';
     }
 
     private function buildBadDebtFeeNote(?string $userName, string $dropReason): string
