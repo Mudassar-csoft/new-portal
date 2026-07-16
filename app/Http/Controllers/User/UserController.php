@@ -130,7 +130,7 @@ class UserController extends Controller
                 'required',
                 Rule::exists('hr_employees', 'id')->where(fn ($query) => $query->where('portal_user', true)->whereNull('user_id')),
             ],
-            'campus_id' => ['nullable', 'exists:campuses,id'],
+            'campus_id' => [$this->campusSelectionRule()],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role_id' => ['nullable', 'exists:roles,id'],
             'roles' => ['sometimes', 'array', 'max:1'],
@@ -148,7 +148,7 @@ class UserController extends Controller
 
         $resolvedName = $employee->full_name;
         $resolvedEmail = trim((string) $employee->email);
-        $resolvedCampusId = $validated['campus_id'] ?? null;
+        $resolvedCampusId = $this->resolveCampusSelection($validated['campus_id'] ?? null);
 
         if ($resolvedEmail === '' || !filter_var($resolvedEmail, FILTER_VALIDATE_EMAIL)) {
             return redirect()->back()
@@ -226,7 +226,7 @@ class UserController extends Controller
         $this->ensureAdminAccess();
 
         $validated = $request->validate([
-            'campus_id' => ['nullable', 'exists:campuses,id'],
+            'campus_id' => [$this->campusSelectionRule()],
             'name' => ['required', 'string', 'max:255'],
             'email_local' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._%+-]+$/'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
@@ -254,7 +254,7 @@ class UserController extends Controller
         }
 
         $user->fill([
-            'campus_id' => $validated['campus_id'] ?? null,
+            'campus_id' => $this->resolveCampusSelection($validated['campus_id'] ?? null),
             'name' => $validated['name'],
             'email' => $email,
         ]);
@@ -425,6 +425,28 @@ class UserController extends Controller
             ->take(1)
             ->values()
             ->all();
+    }
+
+    private function campusSelectionRule(): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail): void {
+            if ($value === null || $value === '' || $value === 'all') {
+                return;
+            }
+
+            if (!ctype_digit((string) $value) || !Campus::query()->whereKey((int) $value)->exists()) {
+                $fail('The selected campus is invalid.');
+            }
+        };
+    }
+
+    private function resolveCampusSelection(mixed $value): ?int
+    {
+        if ($value === null || $value === '' || $value === 'all') {
+            return null;
+        }
+
+        return (int) $value;
     }
 
     /**

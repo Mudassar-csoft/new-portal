@@ -113,7 +113,7 @@
                                 style="width: 100%;"
                                 data-placeholder="- Select Campus -"
                             >
-                                <option value="">All Campuses</option>
+                                <option value="all" @selected((string) $selectedCampusId === 'all')>All Campuses</option>
                                 @foreach($campuses as $campus)
                                     <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>
                                         {{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}
