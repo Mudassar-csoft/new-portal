@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
 class StudentRecordController extends Controller
@@ -33,6 +35,8 @@ class StudentRecordController extends Controller
         'admission_cancelled' => 'Cancelled',
         'dropped' => 'Dropped',
     ];
+
+    private const FEE_COLLECTION_NOTES_MAX_LENGTH = 255;
 
     public function index(Request $request, ?string $scope = null)
     {
@@ -366,40 +370,46 @@ class StudentRecordController extends Controller
 
         $dropReason = trim((string) $validated['drop_reason']);
 
-        DB::transaction(function () use ($admission, $request, $dropReason): void {
-            $lockedAdmission = Admission::query()
-                ->lockForUpdate()
-                ->findOrFail($admission->id);
+        try {
+            DB::transaction(function () use ($admission, $request, $dropReason): void {
+                $lockedAdmission = Admission::query()
+                    ->lockForUpdate()
+                    ->findOrFail($admission->id);
 
-            $lockedAdmission->update([
-                'student_status' => 'dropped',
-                'status_updated_at' => now(),
-                'remarks' => $this->appendAdmissionRemark(
-                    $lockedAdmission->remarks,
-                    $this->buildDropRemark($request->user()?->name, $dropReason)
-                ),
-            ]);
+                $lockedAdmission->update([
+                    'student_status' => 'dropped',
+                    'status_updated_at' => now(),
+                    'remarks' => $this->appendAdmissionRemark(
+                        $lockedAdmission->remarks,
+                        $this->buildDropRemark($request->user()?->name, $dropReason)
+                    ),
+                ]);
 
-            FeeCollection::query()
-                ->where('admission_id', $lockedAdmission->id)
-                ->whereNull('paid_at')
-                ->where(function (Builder $query) {
-                    $query
-                        ->whereNull('status')
-                        ->orWhere('status', 'pending');
-                })
-                ->lockForUpdate()
-                ->get()
-                ->each(function (FeeCollection $feeCollection) use ($request, $dropReason): void {
-                    $feeCollection->update([
-                        'status' => 'baddebt',
-                        'notes' => $this->appendFeeNote(
-                            $feeCollection->notes,
-                            $this->buildBadDebtFeeNote($request->user()?->name, $dropReason)
-                        ),
-                    ]);
-                });
-        });
+                FeeCollection::query()
+                    ->where('admission_id', $lockedAdmission->id)
+                    ->whereNull('paid_at')
+                    ->where(function (Builder $query) {
+                        $query
+                            ->whereNull('status')
+                            ->orWhere('status', 'pending');
+                    })
+                    ->lockForUpdate()
+                    ->get()
+                    ->each(function (FeeCollection $feeCollection) use ($request, $dropReason): void {
+                        $feeCollection->update([
+                            'status' => 'baddebt',
+                            'notes' => $this->appendFeeNote(
+                                $feeCollection->notes,
+                                $this->buildBadDebtFeeNote($request->user()?->name, $dropReason)
+                            ),
+                        ]);
+                    });
+            });
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Unable to drop the student right now. Please try again.');
+        }
 
         return back()->with('status', 'Student dropped and pending fee moved to bad debt.');
     }
@@ -1109,14 +1119,44 @@ class StudentRecordController extends Controller
         $note = trim($newNote);
 
         if ($current === '') {
-            return $note;
+            return $this->trimFeeNoteToColumnLimit($note);
         }
 
         if ($note === '') {
-            return $current;
+            return $this->trimFeeNoteToColumnLimit($current);
         }
 
-        return $current . PHP_EOL . $note;
+        $combined = $current . PHP_EOL . $note;
+
+        if (Str::length($combined) <= self::FEE_COLLECTION_NOTES_MAX_LENGTH) {
+            return $combined;
+        }
+
+        if (Str::length($note) >= self::FEE_COLLECTION_NOTES_MAX_LENGTH) {
+            return $this->trimFeeNoteToColumnLimit($note);
+        }
+
+        $separatorLength = Str::length(PHP_EOL);
+        $availableForCurrent = self::FEE_COLLECTION_NOTES_MAX_LENGTH - Str::length($note) - $separatorLength;
+
+        if ($availableForCurrent <= 0) {
+            return $this->trimFeeNoteToColumnLimit($note);
+        }
+
+        $prefix = Str::length($current) > $availableForCurrent ? '...' : '';
+        $remainingCurrentLength = max(0, $availableForCurrent - Str::length($prefix));
+        $currentTail = $remainingCurrentLength > 0
+            ? Str::substr($current, -$remainingCurrentLength)
+            : '';
+
+        return $prefix . $currentTail . PHP_EOL . $note;
+    }
+
+    private function trimFeeNoteToColumnLimit(string $note): string
+    {
+        return Str::length($note) <= self::FEE_COLLECTION_NOTES_MAX_LENGTH
+            ? $note
+            : Str::substr($note, 0, self::FEE_COLLECTION_NOTES_MAX_LENGTH);
     }
 
     private function buildTransferRemark(
