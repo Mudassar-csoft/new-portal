@@ -553,9 +553,9 @@
                 return null;
             }
 
-            function populateTransferBatchSelect(batches, campusId, selectedBatchId) {
-                var batchSelect = document.getElementById('swal-transfer-batch');
-                var timingInput = document.getElementById('swal-transfer-timing');
+            function populateTransferBatchSelect(batches, campusId, selectedBatchId, batchSelectId, timingInputId) {
+                var batchSelect = document.getElementById(batchSelectId || 'swal-transfer-batch');
+                var timingInput = document.getElementById(timingInputId || 'swal-transfer-timing');
 
                 if (!batchSelect || !timingInput) {
                     return;
@@ -587,6 +587,14 @@
 
                 var activeBatch = findBatchById(filtered, batchSelect.value);
                 timingInput.value = activeBatch ? (activeBatch.timing || 'Timing not set') : 'Timing not set';
+            }
+
+            function handoffSweetAlert(nextAction) {
+                swal.close();
+
+                window.setTimeout(function () {
+                    nextAction();
+                }, 180);
             }
 
             function openStudentTransferModal(meta, storeUrl) {
@@ -709,10 +717,10 @@
                         return;
                     }
 
-                    populateTransferBatchSelect(batches, campusSelect.value, '');
+                    populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-transfer-batch', 'swal-transfer-timing');
 
                     campusSelect.addEventListener('change', function () {
-                        populateTransferBatchSelect(batches, campusSelect.value, '');
+                        populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-transfer-batch', 'swal-transfer-timing');
                     });
 
                     batchSelect.addEventListener('change', function () {
@@ -842,10 +850,10 @@
                         return;
                     }
 
-                    populateTransferBatchSelect(batches, campusSelect.value, currentBatchId);
+                    populateTransferBatchSelect(batches, campusSelect.value, currentBatchId, 'swal-reenroll-batch', 'swal-reenroll-timing');
 
                     campusSelect.addEventListener('change', function () {
-                        populateTransferBatchSelect(batches, campusSelect.value, '');
+                        populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-reenroll-batch', 'swal-reenroll-timing');
                     });
 
                     batchSelect.addEventListener('change', function () {
@@ -880,22 +888,23 @@
 
                 $.getJSON(metaUrl)
                     .done(function (response) {
-                        swal.close();
-                        openStudentTransferModal(response, storeUrl);
+                        handoffSweetAlert(function () {
+                            openStudentTransferModal(response, storeUrl);
+                        });
                     })
                     .fail(function (xhr) {
-                        swal.close();
-
                         var message = 'Unable to load transfer details right now.';
 
                         if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;
                         }
 
-                        swal({
-                            title: 'Error',
-                            text: message,
-                            type: 'error'
+                        handoffSweetAlert(function () {
+                            swal({
+                                title: 'Error',
+                                text: message,
+                                type: 'error'
+                            });
                         });
                     });
             });
@@ -921,22 +930,23 @@
 
                 $.getJSON(metaUrl)
                     .done(function (response) {
-                        swal.close();
-                        openStudentReenrollModal(response, storeUrl);
+                        handoffSweetAlert(function () {
+                            openStudentReenrollModal(response, storeUrl);
+                        });
                     })
                     .fail(function (xhr) {
-                        swal.close();
-
                         var message = 'Unable to load enrollment details right now.';
 
                         if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;
                         }
 
-                        swal({
-                            title: 'Error',
-                            text: message,
-                            type: 'error'
+                        handoffSweetAlert(function () {
+                            swal({
+                                title: 'Error',
+                                text: message,
+                                type: 'error'
+                            });
                         });
                     });
             });
