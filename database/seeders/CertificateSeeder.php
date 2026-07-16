@@ -45,7 +45,12 @@ class CertificateSeeder extends Seeder
 
         if ($admissions->isEmpty()) {
             $admissions = Admission::query()
-                ->where('student_status', Admission::CERTIFICATE_REQUESTABLE_STATUS)
+                ->whereIn('student_status', Admission::CERTIFICATE_REQUESTABLE_STATUSES)
+                ->where(function ($query): void {
+                    $query
+                        ->whereNull('certificate_status')
+                        ->orWhere('certificate_status', '');
+                })
                 ->orderByDesc('admission_date')
                 ->orderByDesc('id')
                 ->limit(3)
@@ -90,7 +95,8 @@ class CertificateSeeder extends Seeder
                     : null;
 
                 $admission->update([
-                    'student_status' => $status,
+                    'certificate_status' => $status,
+                    'certificate_origin_status' => $admission->student_status ?: Admission::CERTIFICATE_REQUESTABLE_STATUS,
                     'status_updated_at' => $this->statusTimestamp($status, $requestedAt, $approvedAt, $printingAt, $readyAt, $deliveredAt),
                     'certificate_delivered_at' => $deliveredAt,
                     'certificate_delivered_by' => $deliveredAt ? $actorId : null,
@@ -209,6 +215,8 @@ class CertificateSeeder extends Seeder
                         'discounted_fee' => $feePackage,
                         'fee_type' => 'full',
                         'student_status' => Admission::CERTIFICATE_REQUESTABLE_STATUS,
+                        'certificate_status' => null,
+                        'certificate_origin_status' => null,
                         'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
                         'status_updated_at' => $registeredAt->copy()->addDays(2),
                         'remarks' => 'Seeded certificate student.',

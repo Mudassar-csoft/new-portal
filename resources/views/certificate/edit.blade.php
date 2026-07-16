@@ -36,7 +36,7 @@
                         <div><span class="label-mute">Roll No:</span> {{ $admission->roll_number ?? 'N/A' }}</div>
                         <div><span class="label-mute">Programme:</span> {{ $admission->program?->title ?? $admission->program?->name ?? 'N/A' }}</div>
                         <div><span class="label-mute">Campus:</span> {{ $admission->campus?->code ?? $admission->campus?->name ?? 'N/A' }}</div>
-                        <div><span class="label-mute">Status:</span> <span class="label {{ $statusClasses[$admission->student_status] ?? 'label-default' }}">{{ $statusLabels[$admission->student_status] ?? ucfirst((string) $admission->student_status) }}</span></div>
+                        <div><span class="label-mute">Status:</span> <span class="label {{ $statusClasses[$admission->certificate_status] ?? 'label-default' }}">{{ $statusLabels[$admission->certificate_status] ?? ucfirst((string) $admission->certificate_status) }}</span></div>
                         <div><span class="label-mute">Status Updated:</span> {{ optional($admission->status_updated_at)->format('d-M-Y H:i') ?? 'N/A' }}</div>
                         @if($admission->certificate_delivered_at)
                             <div><span class="label-mute">Delivered:</span> {{ $admission->certificate_delivered_at->format('d-M-Y H:i') }}</div>

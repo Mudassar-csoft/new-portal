@@ -86,7 +86,7 @@ class StudentRecordController extends Controller
                     [$label, $class] = $this->certificateStatusMeta($admission);
                     $details = '';
 
-                    if (($admission->student_status ?? null) === Admission::CERTIFICATE_STATUS_DELIVERED && $admission->certificate_delivered_at) {
+                    if (($admission->certificate_status ?? null) === Admission::CERTIFICATE_STATUS_DELIVERED && $admission->certificate_delivered_at) {
                         $details = '<div class="text-muted small mt-1">' . e($admission->certificate_delivered_at->format('d-M-Y')) . '</div>';
                     }
 
@@ -206,6 +206,7 @@ class StudentRecordController extends Controller
             'statusOptions' => self::STATUS_OPTIONS,
             'studentStatusLabels' => Admission::STUDENT_STATUS_LABELS,
             'studentStatusClasses' => Admission::STUDENT_STATUS_BADGE_CLASSES,
+            'certificateRequestableStatuses' => Admission::CERTIFICATE_REQUESTABLE_STATUSES,
             'certificateStatusLabels' => array_intersect_key(
                 Admission::STUDENT_STATUS_LABELS,
                 array_flip(Admission::CERTIFICATE_WORKFLOW_STATUSES)
@@ -429,7 +430,7 @@ class StudentRecordController extends Controller
         ]);
 
         $admission->update([
-            'student_status' => Admission::CERTIFICATE_STATUS_DELIVERED,
+            'certificate_status' => Admission::CERTIFICATE_STATUS_DELIVERED,
             'status_updated_at' => now(),
             'certificate_delivered_at' => now(),
             'certificate_delivered_by' => $request->user()?->id,
@@ -716,7 +717,7 @@ class StudentRecordController extends Controller
         if ($scope === 'alumni') {
             $query->where(function ($studentQuery) {
                 $studentQuery
-                    ->where('student_status', Admission::CERTIFICATE_STATUS_DELIVERED)
+                    ->where('certificate_status', Admission::CERTIFICATE_STATUS_DELIVERED)
                     ->orWhereNotNull('certificate_delivered_at');
             });
             return;
@@ -750,7 +751,7 @@ class StudentRecordController extends Controller
             'alumni' => (clone $baseQuery)
                 ->where(function (Builder $query) {
                     $query
-                        ->where('student_status', Admission::CERTIFICATE_STATUS_DELIVERED)
+                        ->where('certificate_status', Admission::CERTIFICATE_STATUS_DELIVERED)
                         ->orWhereNotNull('certificate_delivered_at');
                 })
                 ->count(),
@@ -1080,17 +1081,18 @@ class StudentRecordController extends Controller
      */
     private function certificateStatusMeta(Admission $admission): array
     {
-        $status = (string) ($admission->student_status ?? '');
+        $status = (string) ($admission->certificate_status ?? '');
+        $studentStatus = (string) ($admission->student_status ?? '');
 
-        if ($status === Admission::CERTIFICATE_REQUESTABLE_STATUS) {
-            return ['Pending', 'label-default'];
-        }
-
-        if (in_array($status, Admission::CERTIFICATE_WORKFLOW_STATUSES, true)) {
+        if (Admission::isCertificateWorkflowStatus($status)) {
             return [
                 $this->studentStatusLabel($status),
                 $this->studentStatusClass($status),
             ];
+        }
+
+        if (Admission::isCertificateRequestableStatus($studentStatus)) {
+            return ['Pending', 'label-default'];
         }
 
         if ($admission->certificate_delivered_at) {

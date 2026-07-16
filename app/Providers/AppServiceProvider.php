@@ -487,7 +487,7 @@ class AppServiceProvider extends ServiceProvider
                     ->selectRaw("SUM(CASE WHEN student_status = 'suspended' THEN 1 ELSE 0 END) as student_suspended")
                     ->selectRaw("SUM(CASE WHEN student_status = 'admission_cancelled' THEN 1 ELSE 0 END) as student_admission_cancelled")
                     ->selectRaw("SUM(CASE WHEN student_status = 'dropped' THEN 1 ELSE 0 END) as student_dropped")
-                    ->selectRaw("SUM(CASE WHEN student_status = 'delivered' OR certificate_delivered_at IS NOT NULL THEN 1 ELSE 0 END) as student_alumni")
+                    ->selectRaw("SUM(CASE WHEN certificate_status = 'delivered' OR certificate_delivered_at IS NOT NULL THEN 1 ELSE 0 END) as student_alumni")
                     ->first();
 
                 if ($can('admission.view')) {
@@ -578,9 +578,9 @@ class AppServiceProvider extends ServiceProvider
                     Admission::query()->certificateWorkflow(),
                     $user
                 )
-                    ->selectRaw('student_status, COUNT(*) as aggregate')
-                    ->groupBy('student_status')
-                    ->pluck('aggregate', 'student_status');
+                    ->selectRaw('certificate_status, COUNT(*) as aggregate')
+                    ->groupBy('certificate_status')
+                    ->pluck('aggregate', 'certificate_status');
 
                 $sidebarCounts['certificate_requested'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_REQUESTED] ?? 0);
                 $sidebarCounts['certificate_approved'] = (int) ($certificateCounts[Admission::CERTIFICATE_STATUS_APPROVED] ?? 0);

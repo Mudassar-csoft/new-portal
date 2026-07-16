@@ -235,7 +235,7 @@
                                 @forelse($certificates as $idx => $cert)
                                     @php
                                         $rowIndex = ($certificates->firstItem() ?? 0) + $idx;
-                                        $statusKey = $cert->student_status ?? 'requested';
+                                        $statusKey = $cert->certificate_status ?? 'requested';
                                     @endphp
                                     <tr>
                                         @if($showBulkSelection)

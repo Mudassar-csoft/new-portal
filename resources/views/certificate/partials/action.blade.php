@@ -1,6 +1,6 @@
 @php
     $actionId = $actionId ?? ('cert-action-' . $cert->id);
-    $status = $cert->student_status ?? 'requested';
+    $status = $cert->certificate_status ?? 'requested';
     $user = auth()->user();
     $requestedScopeOnly = ($activeScope ?? null) === 'requested';
     $approvedScopeOnly = ($activeScope ?? null) === 'approved';

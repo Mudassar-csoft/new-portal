@@ -156,9 +156,10 @@
                                         $admissionTotal = 0;
                                         $admissionPaid = 0;
                                         $feeStatus = $admissionPaid >= $admissionTotal && $admissionTotal > 0 ? 'Paid' : ($admissionTotal > 0 ? 'Pending' : '—');
-                                        $certificateStatus = (string) ($admission->student_status ?? '');
+                                        $certificateStatus = (string) ($admission->certificate_status ?? '');
                                         $canRequestCertificate = auth()->user()?->hasAnyPermission('certificate.create') ?? false;
-                                        $canOpenCertificateRequest = $certificateStatus === 'enrolled'
+                                        $canOpenCertificateRequest = $certificateStatus === ''
+                                            && in_array($studentStatus, $certificateRequestableStatuses ?? [], true)
                                             && $canRequestCertificate;
                                     @endphp
                                     <tr>
