@@ -686,6 +686,8 @@ class CertificateController extends Controller
             5511 => 'Course Duration 01-JULY-2019 TO 31-DEC-2019',
             5512 => 'Course Duration 02-FEB-2020 TO 31-JULY-2020',
             5568 => 'Course Duration 02-FEB-2022 TO 30-May-2022',
+            5796 => 'Course Duration 02-FEB-2020 TO 30-JULY-2020',
+            5887 => 'Course Duration 01-JUN-2023 TO 01-DEC-2023',
         ];
 
         $admissionId = (int) $admission->id;
