@@ -87,7 +87,7 @@ class RolePermissionSeeder extends Seeder
             'lead', 'web-lead', 'registration', 'admission',
             'campus', 'program', 'batch', 'batch-timetable',
             'inventory', 'student',
-            'certificate', 'news', 'review',
+            'certificate',
             'user', 'role', 'permission',
         ];
         foreach ($crudResources as $resource) {

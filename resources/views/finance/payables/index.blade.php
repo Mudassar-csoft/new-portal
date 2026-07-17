@@ -91,8 +91,8 @@
                                     <td>Rs. {{ number_format((float) $expense->amount, 0) }}</td>
                                     <td><span class="badge {{ $statusColors[$expense->status] ?? 'badge-secondary' }}">{{ ucfirst($expense->status) }}</span></td>
                                     <td>
-                                        <div class="dropdown payable-action-dropdown btn-group">
-                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
                                                 Action
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
@@ -102,12 +102,12 @@
                                                 @if($canManageExpense && $expense->status === 'pending')
                                                     <form method="POST" action="{{ route('finance.expense.approve', $expense) }}">
                                                         @csrf
-                                                        <button class="dropdown-item text-success" type="submit">✅ Approve</button>
+                                                        <button class="dropdown-item text-success" type="submit">Approve</button>
                                                     </form>
                                                     <form method="POST" action="{{ route('finance.expense.reject', $expense) }}">
                                                         @csrf
                                                         <input type="hidden" name="reason" value="Rejected by admin">
-                                                        <button class="dropdown-item text-danger" type="submit">❌  Reject</button>
+                                                        <button class="dropdown-item text-danger" type="submit">Regret / Reject</button>
                                                     </form>
                                                 @endif
                                                 @if($canManageExpense && $expense->status === 'approved')
@@ -144,96 +144,9 @@
         .finance-table thead th { background: #1ea7ff; color: #fff; }
         .dropdown-menu form { margin: 0; }
         .dropdown-menu form .dropdown-item { width: 100%; text-align: left; background: transparent; border: 0; }
-
-        .payable-action-dropdown .dropdown-menu {
-            display: none;
-        }
-
-        .payable-action-dropdown.show .dropdown-menu,
-        .payable-action-dropdown .dropdown-menu.show {
-            display: block !important;
-        }
     </style>
 @endpush
 
 @push('scripts')
-    <script>
-        $(function () {
-            function closeAllPayableDropdowns() {
-                $('.payable-action-dropdown.show').each(function () {
-                    var $d = $(this);
-                    $d.removeClass('show');
-                    $d.children('.dropdown-toggle').attr('aria-expanded', 'false');
-                    $d.children('.dropdown-menu').removeClass('show').removeAttr('style');
-                });
-            }
-
-            $(document).on('click.financePayables', '.payable-action-dropdown .dropdown-toggle', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-
-                var $toggle = $(this);
-                var $dropdown = $toggle.closest('.payable-action-dropdown');
-                var $menu = $dropdown.children('.dropdown-menu');
-
-                if (!$menu.length) {
-                    return;
-                }
-
-                var wasOpen = $dropdown.hasClass('show');
-                closeAllPayableDropdowns();
-
-                if (wasOpen) {
-                    return;
-                }
-
-                var rect = $toggle.get(0).getBoundingClientRect();
-                var menuEl = $menu.get(0);
-                var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-                var rightOffset = Math.max(0, window.innerWidth - Math.round(rect.right));
-                var menuHeight = $menu.outerHeight() || (menuEl ? menuEl.scrollHeight : 0) || 260;
-                var belowTop = Math.round(rect.bottom) + 4;
-                var aboveTop = Math.round(rect.top) - menuHeight - 4;
-                var topPos = belowTop;
-                var maxHeight = Math.max(180, viewportHeight - 24);
-
-                if ((belowTop + menuHeight) > (viewportHeight - 12)) {
-                    topPos = aboveTop >= 12 ? aboveTop : 12;
-                    maxHeight = Math.max(180, Math.min(menuHeight, viewportHeight - topPos - 12));
-                }
-
-                $menu.attr('style',
-                    'position:fixed !important;' +
-                    'top:' + (topPos -5) + 'px !important;' +
-                    'right:' + (rightOffset + 66) + 'px !important;' +
-                    'left:auto !important;' +
-                    'bottom:auto !important;' +
-                    'margin:0 !important;' +
-                    'transform:none !important;' +
-                    'min-width:220px !important;' +
-                    'max-height:' + maxHeight + 'px !important;' +
-                    'overflow-y:auto !important;' +
-                    'display:block !important;' +
-                    'z-index:99999 !important;'
-                );
-
-                $dropdown.addClass('show');
-                $menu.addClass('show');
-                $toggle.attr('aria-expanded', 'true');
-            });
-
-            $(document).on('click.financePayables', function (event) {
-                if ($(event.target).closest('.payable-action-dropdown').length) {
-                    return;
-                }
-                closeAllPayableDropdowns();
-            });
-
-            $(window).on('resize.financePayables scroll.financePayables', function () {
-                closeAllPayableDropdowns();
-            });
-        });
-    </script>
     @include('finance.partials.pay_now_modal_script')
 @endpush

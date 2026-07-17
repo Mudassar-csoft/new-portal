@@ -34,8 +34,8 @@
         <div class="collection-divider"></div>
 
         <form method="GET" action="{{ route('dashboard.collection') }}" class="collection-filter">
-            <div class="form-row collection-filter-row">
-                <div class="form-group col-md-4 collection-filter-field">
+            <div class="form-row">
+                <div class="form-group col-md-4">
                     <label class="collection-label">Select Month(s):</label>
                     <select name="months[]" class="form-control collection-month-select" multiple size="6">
                         @foreach($monthOptions as $monthNumber => $label)
@@ -45,7 +45,7 @@
                     <!-- <small class="collection-help">Select one month for week-wise view, multiple for month-wise.</small> -->
 
                 </div>
-                <div class="form-group col-md-4 collection-filter-field">
+                <div class="form-group col-md-4">
                     <label class="collection-label">Select Year:</label>
                     <select name="year" class="form-control">
                         @foreach(($yearOptions ?? []) as $yearValue)
@@ -53,7 +53,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-4 collection-action-cell">
+                <div class="form-group col-md-4 d-flex align-items-start collection-action-cell mt-4  pt-2">
                     <button type="submit" class="btn btn-primary-outline collection-button mr-2">Filter</button>
                      <a href="{{ route('dashboard.collection') }}" class="btn btn-danger-outline">Clear</a>
                 </div>
@@ -177,17 +177,7 @@
             padding: var(--space-dashboard-collection-1);
         }
 
-        .collection-filter-row {
-            align-items: flex-end;
-            row-gap: 16px;
-        }
-
-        .collection-filter-field {
-            min-width: 0;
-        }
-
         .collection-label {
-            display: block;
             color: #2d3748;
             font-size: clamp(0.8rem, 1.5vw, 1rem);
             font-weight: var(--collection-weight-medium);
@@ -198,8 +188,6 @@
             border: 1px solid #d6e0ef;
             border-radius: 6px;
             box-shadow: none;
-            width: 100%;
-            max-width: 100%;
         }
 
         .collection-filter select.form-control:not(.collection-month-select) {
@@ -207,35 +195,8 @@
         }
 
         .collection-month-select {
-            display: block;
-            height: 148px;
-            min-height: 148px;
-            max-height: 148px;
+            min-height: 170px;
             padding: 8px 10px;
-            overflow-y: auto;
-            line-height: 1.35;
-            resize: none;
-        }
-
-        .collection-month-select option {
-            padding: 7px 8px;
-            white-space: nowrap;
-        }
-
-        .collection-action-cell {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 0;
-        }
-
-        .collection-action-cell .btn {
-            min-height: var(--dimension-dashboard-collection-2);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 !important;
-            white-space: nowrap;
         }
 
         .collection-help {
@@ -327,7 +288,7 @@
         }
 
         .collection-total-row td {
-            background: var(--color-dashboard-collection-4) !important;
+            background: var(--color-dashboard-collection-4)fff !important;
             font-size: var(--collection-font-xl);
             font-weight: var(--collection-weight-bold);
             color: #12314c;
@@ -352,30 +313,12 @@
                 font-size: clamp(1.125rem, 2.5vw, 1.375rem);
             }
 
-            .collection-filter {
-                margin-bottom: 24px;
-            }
-
-            .collection-filter-row {
-                align-items: stretch;
-            }
-
-            .collection-action-cell {
-                align-items: stretch;
-            }
-
             .collection-button {
                 width: var(--dimension-dashboard-collection-1);
             }
 
-            .collection-action-cell .btn {
-                flex: 1 1 0;
-            }
-
             .collection-month-select {
-                height: 132px;
-                min-height: 132px;
-                max-height: 132px;
+                min-height: 140px;
             }
         }
     </style>

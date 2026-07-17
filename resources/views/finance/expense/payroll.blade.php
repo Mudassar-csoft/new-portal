@@ -105,12 +105,12 @@
                                                 @if($canManagePayroll && $expense->status === 'pending')
                                                     <form method="POST" action="{{ route('finance.expense.approve', $expense) }}">
                                                         @csrf
-                                                        <button class="dropdown-item text-success" type="submit"> ✅ Approve</button>
+                                                        <button class="dropdown-item text-success" type="submit">Approve</button>
                                                     </form>
                                                     <form method="POST" action="{{ route('finance.expense.reject', $expense) }}">
                                                         @csrf
                                                         <input type="hidden" name="reason" value="Payroll rejected by admin">
-                                                        <button class="dropdown-item text-danger" type="submit">❌ Reject</button>
+                                                        <button class="dropdown-item text-danger" type="submit">Regret / Reject</button>
                                                     </form>
                                                 @endif
                                                 @if($canManagePayroll && $expense->status === 'approved')

@@ -11,7 +11,6 @@ use App\Models\User\Permission;
 use App\Models\User\Role;
 use App\Support\AccessMap;
 use App\Support\PermissionCatalog;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -79,40 +78,6 @@ class UserController extends Controller
                 ->addColumn('campus_code', fn (User $user) => e(data_get($user, 'campus.code') ?: 'All Campuses'))
                 ->addColumn('date', fn (User $user) => optional($user->created_at)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('actions', fn (User $user) => view('user.partials.action', ['user' => $user])->render())
-                ->filter(function (Builder $query) use ($request): void {
-                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
-
-                    if ($keyword === '') {
-                        return;
-                    }
-
-                    $like = $this->toSqlLikePattern($keyword);
-
-                    $query->where(function (Builder $searchQuery) use ($like): void {
-                        $searchQuery
-                            ->where('name', 'like', $like)
-                            ->orWhere('email', 'like', $like)
-                            ->orWhereHas('roles', function (Builder $roleQuery) use ($like): void {
-                                $roleQuery
-                                    ->where('name', 'like', $like)
-                                    ->orWhere('slug', 'like', $like);
-                            })
-                            ->orWhereHas('campus', function (Builder $campusQuery) use ($like): void {
-                                $campusQuery
-                                    ->where('code', 'like', $like)
-                                    ->orWhere('name', 'like', $like)
-                                    ->orWhere('city', 'like', $like);
-                            });
-
-                        if (str_contains(strtolower(trim($like, '%')), 'active')) {
-                            $searchQuery->orWhereNull('at_deleted');
-                        }
-
-                        if (str_contains(strtolower(trim($like, '%')), 'deleted')) {
-                            $searchQuery->orWhereNotNull('at_deleted');
-                        }
-                    });
-                })
                 ->filterColumn('role', function ($query, $keyword) {
                     $query->whereHas('roles', function ($roleQuery) use ($keyword) {
                         $roleQuery->where('name', 'like', "%{$keyword}%");
@@ -132,11 +97,6 @@ class UserController extends Controller
         return view('user.index', [
             'activeScope' => in_array($scope, ['active', 'deleted'], true) ? $scope : 'active',
         ]);
-    }
-
-    private function toSqlLikePattern(string $value): string
-    {
-        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value) . '%';
     }
 
     public function create(): View

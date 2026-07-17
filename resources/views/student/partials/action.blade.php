@@ -69,7 +69,6 @@
                 border: 1px solid #dfe5eb;
                 border-radius: 6px;
                 background: #fff;
-                
                 box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
                 text-align: left !important;
             }

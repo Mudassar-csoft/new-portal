@@ -35,7 +35,7 @@
 						<input type="hidden" id="web-lead-tab-input" name="tab" value="{{ $activeTab !== 'all' ? $activeTab : '' }}">
 						<div class="d-flex" style="gap:0.5rem;">
 							<label>Show</label>
-							<select name="per_page" id="web-lead-per-page" class="form-control form-control-sm" style="width: 86px;">
+							<select name="per_page" id="web-lead-per-page" class="form-control form-control-sm" style="width: 86px;" onchange="this.form.submit()">
 								@foreach ([10, 25, 50, 100] as $option)
 									<option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
 								@endforeach
@@ -316,13 +316,6 @@
 
 			document.addEventListener('DOMContentLoaded', function () {
 				revealWebLeadPage();
-				var perPage = document.getElementById('web-lead-per-page');
-
-				if (perPage) {
-					perPage.addEventListener('change', function () {
-						this.form.submit();
-					});
-				}
 			});
 		})();
 	</script>
