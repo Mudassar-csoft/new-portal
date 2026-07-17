@@ -15,9 +15,8 @@ class Admission extends Model
     public const APPROVAL_STATUS_PENDING = 'pending';
     public const APPROVAL_STATUS_REQUESTED = 'approval_requested';
     public const APPROVAL_STATUS_APPROVED = 'approved';
-    public const CERTIFICATE_REQUESTABLE_STATUS = 'enrolled';
+    public const CERTIFICATE_REQUESTABLE_STATUS = 'concluded';
     public const CERTIFICATE_REQUESTABLE_STATUSES = [
-        'enrolled',
         'concluded',
         'completed',
     ];

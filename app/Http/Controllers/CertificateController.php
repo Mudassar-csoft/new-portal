@@ -68,13 +68,18 @@ class CertificateController extends Controller
         $selectedAdmission = $admissionId
             ? $this->certificateEligibleAdmissionsQuery($request->user())->with(['program', 'campus'])->find($admissionId)
             : null;
+        $admissions = $this->certificateEligibleAdmissionsQuery($request->user())
+            ->with(['program:id,code,title,name', 'campus:id,code,name'])
+            ->orderByDesc('admission_date')
+            ->limit(500)
+            ->get(['id', 'student_name', 'roll_number', 'registration_number', 'program_id', 'campus_id', 'admission_date']);
+
+        if ($selectedAdmission && ! $admissions->contains('id', $selectedAdmission->id)) {
+            $admissions->prepend($selectedAdmission);
+        }
 
         return view('certificate.create', [
-            'admissions' => $this->certificateEligibleAdmissionsQuery($request->user())
-                ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                ->orderByDesc('admission_date')
-                ->limit(500)
-                ->get(['id', 'student_name', 'roll_number', 'registration_number', 'program_id', 'campus_id', 'admission_date']),
+            'admissions' => $admissions,
             'selectedAdmission' => $selectedAdmission,
         ]);
     }
@@ -109,7 +114,7 @@ class CertificateController extends Controller
         if (! $admission) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Only enrolled, concluded, or completed students can be moved into certificate request.');
+                ->with('error', 'Only concluded or completed students can be moved into certificate request.');
         }
 
         $updates = [
