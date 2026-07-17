@@ -11,16 +11,23 @@
         $periodCounts = $periodCounts ?? [];
         $search = $search ?? '';
         $perPage = $perPage ?? 25;
-        $canStudentView = auth()->user()?->hasAnyPermission(['student.view']) ?? false;
-        $canAdmissionUpload = auth()->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
-        $canReviewApproval = auth()->user()?->isAdmin() ?? false;
+        $currentUser = auth()->user();
+        $canStudentView = $currentUser?->hasAnyPermission(['student.view']) ?? false;
+        $canAdmissionView = $currentUser?->hasAnyPermission(['admission.view']) ?? false;
+        $canAdmissionUpload = $currentUser?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
+        $canReviewApproval = $currentUser?->hasAnyPermission(['admission.review']) ?? false;
+        $reviewerOnly = $canReviewApproval && ! $canAdmissionView;
 
-        $scopes = [
-            'all' => 'All Admissions',
-            'pending' => 'Pending',
-            'requested' => 'Request for Approval',
-            'approved' => 'Approved Admission',
-        ];
+        $scopes = $reviewerOnly
+            ? [
+                'requested' => 'Request for Approval',
+            ]
+            : [
+                'all' => 'All Admissions',
+                'pending' => 'Pending',
+                'requested' => 'Request for Approval',
+                'approved' => 'Approved Admission',
+            ];
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',
@@ -64,9 +71,15 @@
 
 
             <div class="box-typical-body panel-body follow-body">
+<<<<<<< HEAD
                 <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
                     <input type="hidden" name="scope" value="{{ $activeScope }}">
 					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
+=======
+<form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+					<input type="hidden" name="scope" value="{{ $activeScope }}">
+					<input type="hidden" name="period" value="{{ $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : '' }}">
+>>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
 					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>
 						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
@@ -120,7 +133,7 @@
                                 <tr data-entry-row="1">
                                     <td class="text-center">{{ ($admissions->firstItem() ?? 1) + $idx }}</td>
                                     <td>
-                                        @if($row->registration_id && $canStudentView)
+                                        @if($row->registration_id && ($canStudentView || $canReviewApproval))
                                             <a href="{{ route('student.show', $row->registration_id) }}" class="adm-name-link" title="View student detail">
                                                 {{ $row->student_name }}
                                             </a>

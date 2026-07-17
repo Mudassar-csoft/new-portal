@@ -16,18 +16,6 @@
             'alumni' => 'Alumni',
         ];
 
-        $studentScopeBadgeKey = [
-            'active' => 'student_active',
-            'frozen' => 'student_frozen',
-            'concluded' => 'student_concluded',
-            'incomplete' => 'student_incomplete',
-            'suspended' => 'student_suspended',
-            'admission_cancelled' => 'student_admission_cancelled',
-            'dropped' => 'student_dropped',
-            'all_students' => 'student_all',
-            'alumni' => 'student_alumni',
-        ];
-
         $studentBadgeColors = [
             'active' => 'badge-success',
             'frozen' => 'badge-info',
@@ -41,7 +29,9 @@
         ];
 
         $activeStudentScope = $scope ?? 'active';
-        $sidebarCounts = $sidebarCounts ?? [];
+        $campusFilters = $campusFilters ?? [];
+        $programFilters = $programFilters ?? [];
+        $scopeCounts = $scopeCounts ?? [];
     @endphp
 
     <div class="lead-status-shell">
@@ -60,8 +50,7 @@
                     @foreach ($studentScopeTabs as $scopeKey => $scopeLabel)
                         @php
                             $isActive = $activeStudentScope === $scopeKey;
-                            $countKey = $studentScopeBadgeKey[$scopeKey] ?? null;
-                            $count = $countKey ? ($sidebarCounts[$countKey] ?? 0) : 0;
+                            $count = $scopeCounts[$scopeKey] ?? 0;
                         @endphp
                         <a href="{{ route('student.records.index', ['scope' => $scopeKey]) }}" class="follow-tab {{ $isActive ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
                             <span class="label-text">{{ $scopeLabel }}</span>
@@ -71,6 +60,28 @@
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
+                    <div class="student-records-filter-bar">
+                        <div class="student-records-filter-field">
+                            <label class="student-records-filter-label" for="student-records-campus-filter">Campus</label>
+                            <select id="student-records-campus-filter" class="form-control">
+                                <option value="">All Campuses</option>
+                                @foreach ($campusFilters as $campusFilter)
+                                    <option value="{{ $campusFilter['id'] }}">{{ $campusFilter['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="student-records-filter-field">
+                            <label class="student-records-filter-label" for="student-records-program-filter">Program</label>
+                            <select id="student-records-program-filter" class="form-control">
+                                <option value="">All Programs</option>
+                                @foreach ($programFilters as $programFilter)
+                                    <option value="{{ $programFilter['id'] }}">{{ $programFilter['label'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-bordered follow-table" id="student-records-table">
                             <thead>
@@ -81,7 +92,6 @@
                                     <th>Course</th>
                                     <!-- <th>Registration No</th> -->
                                     <th>Campus</th>
-                                    <th>Status</th>
                                     <th>Primary Contact</th>
                                     <!-- <th>Certificate</th> -->
                                     <th class="text-right">Actions</th>
@@ -93,6 +103,13 @@
             </div>
         </div>
     </div>
+
+    <form id="student-transfer-form" method="POST" style="display: none;">
+        @csrf
+        <input type="hidden" name="campus_id" value="">
+        <input type="hidden" name="batch_id" value="">
+        <input type="hidden" name="remarks" value="">
+    </form>
 @endsection
 
 @push('styles')
@@ -171,6 +188,38 @@
 
         .student-directory .box-typical-body { overflow: visible; }
         .student-directory .table-responsive { overflow-x: visible; overflow-y: visible; }
+
+        .student-records-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .student-records-filter-field {
+            flex: 1 1 240px;
+            max-width: 320px;
+        }
+
+        .student-records-filter-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4f5d73;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .student-records-filter-field .form-control {
+            height: 36px;
+            border: 1px solid #d7e5f1;
+            border-radius: 10px;
+            box-shadow: none;
+            color: #425466;
+            background: #fff;
+        }
 
         .with-side-menu .page-content,
         .with-side-menu .page-content > .container-fluid,
@@ -295,6 +344,71 @@
             color: #7b8794;
             font-size: var(--typo-student-records-index-font-size-1);
         }
+
+        .sweet-alert .swal-transfer-grid {
+            text-align: left;
+            margin-top: 14px;
+        }
+
+        .sweet-alert .swal-transfer-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .sweet-alert .swal-transfer-col {
+            flex: 1 1 240px;
+            min-width: 0;
+        }
+
+        .sweet-alert .swal-transfer-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4f5d73;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .sweet-alert .swal-transfer-input,
+        .sweet-alert .swal-transfer-select,
+        .sweet-alert .swal-transfer-textarea {
+            width: 100%;
+            border: 1px solid #d9e2ef;
+            border-radius: 6px;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #243447;
+            background: #fff;
+            box-shadow: none;
+        }
+
+        .sweet-alert .swal-transfer-input[disabled] {
+            background: #f5f8fc;
+            color: #5b6c80;
+            cursor: not-allowed;
+        }
+
+        .sweet-alert .swal-transfer-textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .sweet-alert .swal-transfer-note {
+            margin: 4px 0 0;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #66788a;
+        }
+
+        @media (max-width: 767px) {
+            .student-records-filter-field {
+                max-width: none;
+            }
+        }
     </style>
 @endpush
 
@@ -316,13 +430,24 @@
         })();
 
         $(function () {
-            $('#student-records-table').DataTable({
+            var transferForm = document.getElementById('student-transfer-form');
+            var $campusFilter = $('#student-records-campus-filter');
+            var $programFilter = $('#student-records-program-filter');
+            var studentRecordsUrl = @json(route('student.records.index', ['scope' => $scope]));
+
+            var recordsTable = $('#student-records-table').DataTable({
                 processing: true,
                 serverSide: true,
                 searchDelay: 700,
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
-                ajax: "{{ route('student.records.index', ['scope' => $scope]) }}",
+                ajax: {
+                    url: studentRecordsUrl,
+                    data: function (data) {
+                        data.campus_id = $campusFilter.val() || '';
+                        data.program_id = $programFilter.val() || '';
+                    }
+                },
                 order: [],
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
@@ -330,10 +455,17 @@
                     { data: 'roll_number', name: 'roll_number' },
                     { data: 'program_name', name: 'program_name', orderable: false },
                     { data: 'campus_code', name: 'campus_code', orderable: false },
-                    { data: 'status_badge', name: 'student_status', orderable: false, searchable: false },
                     { data: 'phone', name: 'phone' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-right actions-cell' },
                 ]
+            });
+
+            $campusFilter.on('change', function () {
+                recordsTable.ajax.reload();
+            });
+
+            $programFilter.on('change', function () {
+                recordsTable.ajax.reload();
             });
 
             // Dropdown opens directly below the button using exact pixel coordinates
@@ -419,6 +551,461 @@
                 closeAllStudentDropdowns();
             });
 
+            function escapeHtml(value) {
+                return $('<div>').text(value == null ? '' : String(value)).html();
+            }
+
+            function findBatchById(batches, id) {
+                var normalized = String(id || '');
+
+                for (var i = 0; i < batches.length; i += 1) {
+                    if (String(batches[i].id) === normalized) {
+                        return batches[i];
+                    }
+                }
+
+                return null;
+            }
+
+            function populateTransferBatchSelect(batches, campusId, selectedBatchId, batchSelectId, timingInputId) {
+                var batchSelect = document.getElementById(batchSelectId || 'swal-transfer-batch');
+                var timingInput = document.getElementById(timingInputId || 'swal-transfer-timing');
+
+                if (!batchSelect || !timingInput) {
+                    return;
+                }
+
+                var filtered = (batches || []).filter(function (batch) {
+                    return String(batch.campus_id) === String(campusId || '');
+                });
+
+                batchSelect.innerHTML = '';
+
+                var placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = filtered.length ? 'Select batch' : 'No batch available for this campus';
+                batchSelect.appendChild(placeholder);
+
+                filtered.forEach(function (batch) {
+                    var option = document.createElement('option');
+                    option.value = batch.id;
+                    option.textContent = batch.label || ('Batch #' + batch.id);
+                    batchSelect.appendChild(option);
+                });
+
+                if (selectedBatchId && findBatchById(filtered, selectedBatchId)) {
+                    batchSelect.value = String(selectedBatchId);
+                } else if (filtered.length) {
+                    batchSelect.value = String(filtered[0].id);
+                }
+
+                var activeBatch = findBatchById(filtered, batchSelect.value);
+                timingInput.value = activeBatch ? (activeBatch.timing || 'Timing not set') : 'Timing not set';
+            }
+
+            function handoffSweetAlert(nextAction) {
+                swal.close();
+
+                window.setTimeout(function () {
+                    nextAction();
+                }, 180);
+            }
+
+            function openStudentTransferModal(meta, storeUrl) {
+                var admission = meta && meta.admission ? meta.admission : {};
+                var campuses = Array.isArray(meta && meta.campuses) ? meta.campuses : [];
+                var batches = Array.isArray(meta && meta.batches) ? meta.batches : [];
+
+                if (!batches.length) {
+                    swal({
+                        title: 'No Batch Found',
+                        text: 'No transfer batch is available for this student program.',
+                        type: 'warning'
+                    });
+
+                    return;
+                }
+
+                var currentCampusId = String(admission.current_campus_id || '');
+                var currentCampusHasBatch = batches.some(function (batch) {
+                    return String(batch.campus_id) === currentCampusId;
+                });
+                var defaultCampusId = currentCampusHasBatch
+                    ? currentCampusId
+                    : String((batches[0] && batches[0].campus_id) || '');
+
+                var campusOptions = ['<option value="">Select campus</option>'];
+                campuses.forEach(function (campus) {
+                    campusOptions.push(
+                        '<option value="' + escapeHtml(campus.id) + '"' + (String(campus.id) === defaultCampusId ? ' selected' : '') + '>' +
+                        escapeHtml(campus.label || ('Campus #' + campus.id)) +
+                        '</option>'
+                    );
+                });
+
+                swal({
+                    title: 'Transfer Campus & Batch',
+                    text:
+                        '<div class="swal-transfer-grid">' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Student Name</label>' +
+                                    '<input id="swal-transfer-student" class="swal-transfer-input" value="' + escapeHtml(admission.student_name || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Current Campus</label>' +
+                                    '<input id="swal-transfer-current-campus" class="swal-transfer-input" value="' + escapeHtml(admission.current_campus || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Program</label>' +
+                                    '<input id="swal-transfer-program" class="swal-transfer-input" value="' + escapeHtml(admission.program || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Current Batch Code</label>' +
+                                    '<input id="swal-transfer-current-batch" class="swal-transfer-input" value="' + escapeHtml(admission.current_batch || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Transfer Campus</label>' +
+                                    '<select id="swal-transfer-campus" class="swal-transfer-select">' + campusOptions.join('') + '</select>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Batch Code</label>' +
+                                    '<select id="swal-transfer-batch" class="swal-transfer-select"></select>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Timing</label>' +
+                                    '<input id="swal-transfer-timing" class="swal-transfer-input" value="' + escapeHtml(admission.current_timing || 'Timing not set') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Remarks</label>' +
+                                    '<textarea id="swal-transfer-remarks" class="swal-transfer-textarea" placeholder="Enter transfer remarks"></textarea>' +
+                                '</div>' +
+                            '</div>' +
+                            '<p class="swal-transfer-note">Paid fee stays on the previous campus. Only pending fee moves to the selected campus.</p>' +
+                        '</div>',
+                    html: true,
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: 'Transfer',
+                    cancelButtonText: 'Cancel'
+                }, function () {
+                    var campusId = $('#swal-transfer-campus').val();
+                    var batchId = $('#swal-transfer-batch').val();
+                    var remarks = ($('#swal-transfer-remarks').val() || '').trim();
+
+                    if (!campusId) {
+                        swal.showInputError('Please select a transfer campus.');
+                        return false;
+                    }
+
+                    if (!batchId) {
+                        swal.showInputError('Please select a batch code.');
+                        return false;
+                    }
+
+                    if (!transferForm) {
+                        swal.close();
+                        return false;
+                    }
+
+                    transferForm.setAttribute('action', storeUrl);
+                    transferForm.querySelector('input[name="campus_id"]').value = campusId;
+                    transferForm.querySelector('input[name="batch_id"]').value = batchId;
+                    transferForm.querySelector('input[name="remarks"]').value = remarks;
+
+                    swal.close();
+                    transferForm.submit();
+                });
+
+                setTimeout(function () {
+                    var campusSelect = document.getElementById('swal-transfer-campus');
+                    var batchSelect = document.getElementById('swal-transfer-batch');
+
+                    if (!campusSelect || !batchSelect) {
+                        return;
+                    }
+
+                    populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-transfer-batch', 'swal-transfer-timing');
+
+                    campusSelect.addEventListener('change', function () {
+                        populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-transfer-batch', 'swal-transfer-timing');
+                    });
+
+                    batchSelect.addEventListener('change', function () {
+                        var timingInput = document.getElementById('swal-transfer-timing');
+                        var selectedBatch = findBatchById(batches, batchSelect.value);
+
+                        if (timingInput) {
+                            timingInput.value = selectedBatch ? (selectedBatch.timing || 'Timing not set') : 'Timing not set';
+                        }
+                    });
+                }, 0);
+            }
+
+            function openStudentReenrollModal(meta, storeUrl) {
+                var admission = meta && meta.admission ? meta.admission : {};
+                var campuses = Array.isArray(meta && meta.campuses) ? meta.campuses : [];
+                var batches = Array.isArray(meta && meta.batches) ? meta.batches : [];
+
+                if (!batches.length) {
+                    swal({
+                        title: 'No Batch Found',
+                        text: 'No batch is available for this student program right now.',
+                        type: 'warning'
+                    });
+
+                    return;
+                }
+
+                var currentCampusId = String(admission.current_campus_id || '');
+                var currentBatchId = String(admission.current_batch_id || '');
+                var currentCampusHasBatch = batches.some(function (batch) {
+                    return String(batch.campus_id) === currentCampusId;
+                });
+                var defaultCampusId = currentCampusHasBatch
+                    ? currentCampusId
+                    : String((batches[0] && batches[0].campus_id) || '');
+
+                var campusOptions = ['<option value="">Select campus</option>'];
+                campuses.forEach(function (campus) {
+                    campusOptions.push(
+                        '<option value="' + escapeHtml(campus.id) + '"' + (String(campus.id) === defaultCampusId ? ' selected' : '') + '>' +
+                        escapeHtml(campus.label || ('Campus #' + campus.id)) +
+                        '</option>'
+                    );
+                });
+
+                swal({
+                    title: 'Enroll Now',
+                    text:
+                        '<div class="swal-transfer-grid">' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Student Name</label>' +
+                                    '<input id="swal-reenroll-student" class="swal-transfer-input" value="' + escapeHtml(admission.student_name || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Campus</label>' +
+                                    '<input id="swal-reenroll-campus-label" class="swal-transfer-input" value="' + escapeHtml(admission.current_campus || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Program</label>' +
+                                    '<input id="swal-reenroll-program" class="swal-transfer-input" value="' + escapeHtml(admission.program || 'N/A') + '" disabled>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Previous Batch</label>' +
+                                    '<input id="swal-reenroll-batch-label" class="swal-transfer-input" value="' + escapeHtml(admission.current_batch || 'N/A') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Select Campus</label>' +
+                                    '<select id="swal-reenroll-campus" class="swal-transfer-select">' + campusOptions.join('') + '</select>' +
+                                '</div>' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Batch Code</label>' +
+                                    '<select id="swal-reenroll-batch" class="swal-transfer-select"></select>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="swal-transfer-row">' +
+                                '<div class="swal-transfer-col">' +
+                                    '<label class="swal-transfer-label">Batch Timing</label>' +
+                                    '<input id="swal-reenroll-timing" class="swal-transfer-input" value="' + escapeHtml(admission.current_timing || 'Timing not set') + '" disabled>' +
+                                '</div>' +
+                            '</div>' +
+                            '<p class="swal-transfer-note">Any fee marked as bad debt will be moved back to pending after enrollment.</p>' +
+                        '</div>',
+                    html: true,
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: 'Enroll Now',
+                    cancelButtonText: 'Cancel'
+                }, function () {
+                    var campusId = $('#swal-reenroll-campus').val();
+                    var batchId = $('#swal-reenroll-batch').val();
+
+                    if (!campusId) {
+                        swal.showInputError('Please select a campus.');
+                        return false;
+                    }
+
+                    if (!batchId) {
+                        swal.showInputError('Please select a batch code.');
+                        return false;
+                    }
+
+                    if (!transferForm) {
+                        swal.close();
+                        return false;
+                    }
+
+                    transferForm.setAttribute('action', storeUrl);
+                    transferForm.querySelector('input[name="campus_id"]').value = campusId;
+                    transferForm.querySelector('input[name="batch_id"]').value = batchId;
+                    transferForm.querySelector('input[name="remarks"]').value = '';
+
+                    swal.close();
+                    transferForm.submit();
+                });
+
+                setTimeout(function () {
+                    var campusSelect = document.getElementById('swal-reenroll-campus');
+                    var batchSelect = document.getElementById('swal-reenroll-batch');
+
+                    if (!campusSelect || !batchSelect) {
+                        return;
+                    }
+
+                    populateTransferBatchSelect(batches, campusSelect.value, currentBatchId, 'swal-reenroll-batch', 'swal-reenroll-timing');
+
+                    campusSelect.addEventListener('change', function () {
+                        populateTransferBatchSelect(batches, campusSelect.value, '', 'swal-reenroll-batch', 'swal-reenroll-timing');
+                    });
+
+                    batchSelect.addEventListener('change', function () {
+                        var timingInput = document.getElementById('swal-reenroll-timing');
+                        var selectedBatch = findBatchById(batches, batchSelect.value);
+
+                        if (timingInput) {
+                            timingInput.value = selectedBatch ? (selectedBatch.timing || 'Timing not set') : 'Timing not set';
+                        }
+                    });
+                }, 0);
+            }
+
+            $(document).on('click.studentTransfer', '.js-student-transfer:not([disabled])', function (event) {
+                event.preventDefault();
+
+                var metaUrl = $(this).data('transfer-meta-url');
+                var storeUrl = $(this).data('transfer-store-url');
+
+                if (!metaUrl || !storeUrl) {
+                    return;
+                }
+
+                closeAllStudentDropdowns();
+
+                swal({
+                    title: 'Loading transfer details...',
+                    text: 'Please wait.',
+                    type: 'info',
+                    showConfirmButton: false
+                });
+
+                $.getJSON(metaUrl)
+                    .done(function (response) {
+                        handoffSweetAlert(function () {
+                            openStudentTransferModal(response, storeUrl);
+                        });
+                    })
+                    .fail(function (xhr) {
+                        var message = 'Unable to load transfer details right now.';
+
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        handoffSweetAlert(function () {
+                            swal({
+                                title: 'Error',
+                                text: message,
+                                type: 'error'
+                            });
+                        });
+                    });
+            });
+
+            $(document).on('click.studentReenroll', '.js-student-reenroll:not([disabled])', function (event) {
+                event.preventDefault();
+
+                var metaUrl = $(this).data('reenroll-meta-url');
+                var storeUrl = $(this).data('reenroll-store-url');
+
+                if (!metaUrl || !storeUrl) {
+                    return;
+                }
+
+                closeAllStudentDropdowns();
+
+                swal({
+                    title: 'Loading enrollment details...',
+                    text: 'Please wait.',
+                    type: 'info',
+                    showConfirmButton: false
+                });
+
+                $.getJSON(metaUrl)
+                    .done(function (response) {
+                        handoffSweetAlert(function () {
+                            openStudentReenrollModal(response, storeUrl);
+                        });
+                    })
+                    .fail(function (xhr) {
+                        var message = 'Unable to load enrollment details right now.';
+
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        handoffSweetAlert(function () {
+                            swal({
+                                title: 'Error',
+                                text: message,
+                                type: 'error'
+                            });
+                        });
+                    });
+            });
+
+            $(document).on('submit.studentDrop', '.js-student-drop-form', function (event) {
+                event.preventDefault();
+
+                var form = this;
+                var hiddenReasonInput = form.querySelector('input[name="drop_reason"]');
+
+                if (!hiddenReasonInput) {
+                    form.submit();
+                    return;
+                }
+
+                closeAllStudentDropdowns();
+
+                swal({
+                    title: 'Drop Student',
+                    text:
+                        '<div class="swal-transfer-grid">' +
+                            '<label class="swal-transfer-label" for="swal-drop-reason">Reason for dropping ' + escapeHtml($(form).data('student-name') || 'this student') + '</label>' +
+                            '<textarea id="swal-drop-reason" class="swal-transfer-textarea" placeholder="Enter drop reason"></textarea>' +
+                        '</div>',
+                    html: true,
+                    type: 'warning',
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    confirmButtonText: 'Drop Student',
+                    cancelButtonText: 'Cancel'
+                }, function () {
+                    var reasonField = document.getElementById('swal-drop-reason');
+                    var reason = reasonField ? reasonField.value.trim() : '';
+
+                    if (!reason) {
+                        swal.showInputError('Please enter the drop reason.');
+                        return false;
+                    }
+
+                    hiddenReasonInput.value = reason;
+                    swal.close();
+                    form.submit();
+                });
+            });
+
             var statusMessage = @json(session('status'));
             if (statusMessage) {
                 swal({
@@ -427,6 +1014,15 @@
                     type: 'success',
                     timer: 1800,
                     showConfirmButton: false
+                });
+            }
+
+            var errorMessage = @json(session('error') ?: ($errors->any() ? $errors->first() : null));
+            if (errorMessage) {
+                swal({
+                    title: 'Error',
+                    text: errorMessage,
+                    type: 'error'
                 });
             }
         });

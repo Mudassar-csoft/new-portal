@@ -2,6 +2,9 @@
     $actionId = $actionId ?? ('student-action-' . $admission->id);
     $registrationId = $admission->registration_id ?? optional($admission->registration)->id;
     $canAdminEdit = auth()->user()?->isAdmin();
+    $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
+    $canDropStudent = auth()->user()?->hasAnyPermission(['student.drop']) ?? false;
+    $isDroppedStudent = (string) ($admission->student_status ?? '') === 'dropped';
     $statusActions = [
         [
             'key' => 'frozen',
@@ -40,6 +43,12 @@
             'icon_class' => 'lead-icon-red',
         ],
     ];
+    $statusActions = $isDroppedStudent ? [] : array_values(array_filter($statusActions, static function (array $item) use ($canUpdateStudent, $canDropStudent): bool {
+        return $item['key'] === 'dropped' ? $canDropStudent : $canUpdateStudent;
+    }));
+    $hasActionItems = $isDroppedStudent
+        ? $canUpdateStudent
+        : (!empty($statusActions) || $canUpdateStudent || $canAdminEdit);
 @endphp
 
 @once
@@ -136,9 +145,10 @@
 @endonce
 
 <div class="dropdown follow-action-dropdown student-action-dropdown">
-    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false" @disabled(!$hasActionItems)>
         Actions
     </button>
+<<<<<<< HEAD
     <div class="dropdown-menu dropdown-menu-right lead-action-menu " aria-labelledby="{{ $actionId }}">
         @foreach($statusActions as $item)
             <form method="POST" action="{{ route('student.records.status', $admission) }}">
@@ -147,26 +157,81 @@
                 <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
                     <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
                         <i class="fa {{ $item['icon'] }}"></i>
+=======
+    <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
+        @if($isDroppedStudent)
+            @if($canUpdateStudent)
+                <button
+                    type="button"
+                    class="dropdown-item lead-action-item js-student-reenroll"
+                    data-reenroll-meta-url="{{ route('student.records.reenroll.meta', $admission) }}"
+                    data-reenroll-store-url="{{ route('student.records.reenroll.store', $admission) }}"
+                >
+                    <span class="lead-action-icon lead-icon-green" aria-hidden="true">
+                        <i class="fa fa-repeat"></i>
+>>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     </span>
-                    <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
+                    <span class="lead-action-label">Enroll Now</span>
                 </button>
-            </form>
-        @endforeach
-
-        <button type="button" class="dropdown-item lead-action-item" disabled>
-            <span class="lead-action-icon lead-icon-blue text-info" aria-hidden="true">
-                <i class="fa fa-map-o"></i>
-            </span>
-            <span class="lead-action-label">Transfer Campus &amp; Batch</span>
-        </button>
-
-        @if($canAdminEdit)
-            <a class="dropdown-item lead-action-item {{ $registrationId ? '' : 'disabled' }}" href="{{ $registrationId ? route('student.show', $registrationId) : '#' }}" @if(!$registrationId) aria-disabled="true" tabindex="-1" @endif>
-                <span class="lead-action-icon lead-icon-black" aria-hidden="true">
-                    <i class="fa fa-pencil-square-o"></i>
+            @else
+                <span class="dropdown-item lead-action-item text-muted" aria-disabled="true">
+                    <span class="lead-action-label">No actions available</span>
                 </span>
-                <span class="lead-action-label">Edit</span>
-            </a>
+            @endif
+        @else
+            @forelse($statusActions as $item)
+                @if($item['key'] === 'dropped')
+                    <form method="POST" action="{{ route('student.records.drop', $admission) }}" class="js-student-drop-form" data-student-name="{{ $admission->student_name ?: 'Student' }}">
+                        @csrf
+                        <input type="hidden" name="drop_reason" value="">
+                        <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
+                            <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
+                                <i class="fa {{ $item['icon'] }}"></i>
+                            </span>
+                            <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
+                        </button>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('student.records.status', $admission) }}">
+                        @csrf
+                        <input type="hidden" name="status" value="{{ $item['key'] }}">
+                        <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
+                            <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
+                                <i class="fa {{ $item['icon'] }}"></i>
+                            </span>
+                            <span class="lead-action-label" style = "font-size: var(--typo-student-partials-action-font-size-1) !important;">{{ $item['label'] }}</span>
+                        </button>
+                    </form>
+                @endif
+            @empty
+                @if(!$canUpdateStudent && !$canAdminEdit)
+                    <span class="dropdown-item lead-action-item text-muted" aria-disabled="true">
+                        <span class="lead-action-label">No actions available</span>
+                    </span>
+                @endif
+            @endforelse
+
+            <button
+                type="button"
+                class="dropdown-item lead-action-item js-student-transfer"
+                data-transfer-meta-url="{{ route('student.records.transfer.meta', $admission) }}"
+                data-transfer-store-url="{{ route('student.records.transfer.store', $admission) }}"
+                @disabled(!$canUpdateStudent)
+            >
+                <span class="lead-action-icon lead-icon-blue text-info" aria-hidden="true">
+                    <i class="fa fa-map-o"></i>
+                </span>
+                <span class="lead-action-label">Transfer Campus &amp; Batch</span>
+            </button>
+
+            @if($canAdminEdit)
+                <a class="dropdown-item lead-action-item {{ $registrationId ? '' : 'disabled' }}" href="{{ $registrationId ? route('student.show', $registrationId) : '#' }}" @if(!$registrationId) aria-disabled="true" tabindex="-1" @endif>
+                    <span class="lead-action-icon lead-icon-black" aria-hidden="true">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </span>
+                    <span class="lead-action-label">Edit</span>
+                </a>
+            @endif
         @endif
     </div>
 </div>

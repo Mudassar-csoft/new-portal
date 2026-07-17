@@ -178,8 +178,10 @@ class PermissionCatalog
 
             ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'All Admissions', 'slugs' => ['admission.view']],
             ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'Create Admission', 'slugs' => ['admission.create']],
+            ['moduleKey' => 'admission-management', 'section' => null, 'sectionOrder' => 10, 'order' => 30, 'label' => 'Review Admission Requests', 'slugs' => ['admission.review']],
 
             ['moduleKey' => 'student-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Student Records', 'slugs' => ['student.view']],
+            ['moduleKey' => 'student-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'Drop Student', 'slugs' => ['student.drop']],
 
             ['moduleKey' => 'batch-management', 'section' => 'Batches', 'sectionOrder' => 10, 'order' => 10, 'label' => 'Create Batch', 'slugs' => ['batch.create']],
             ['moduleKey' => 'batch-management', 'section' => 'Batches', 'sectionOrder' => 10, 'order' => 20, 'label' => 'All Batches', 'slugs' => ['batch.view']],
@@ -261,11 +263,13 @@ class PermissionCatalog
 
             'admission.create' => self::meta('admission-management', null, 'Create Admission', 10, 10),
             'admission.view' => self::meta('admission-management', null, 'All Admissions', 10, 20),
+            'admission.review' => self::meta('admission-management', null, 'Review Admission Requests', 10, 25),
             'admission.update' => self::meta('admission-management', null, 'Update Admission', 10, 30),
             'admission.delete' => self::meta('admission-management', null, 'Delete Admission', 10, 40),
 
             'student.view' => self::meta('student-management', null, 'Student Records', 10, 10),
             'student.create' => self::meta('student-management', null, 'Create Student Record', 10, 20),
+            'student.drop' => self::meta('student-management', null, 'Drop Student', 10, 25),
             'student.update' => self::meta('student-management', null, 'Update Student Record', 10, 30),
             'student.delete' => self::meta('student-management', null, 'Delete Student Record', 10, 40),
 

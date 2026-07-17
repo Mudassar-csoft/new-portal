@@ -34,17 +34,17 @@ class StudentRecordIndexTest extends TestCase
             ->get(route('student.records.index', ['scope' => 'active']))
             ->assertOk()
             ->assertSee('Course')
-            ->assertSee('Status')
+            ->assertDontSee('Status')
             ->assertSee('Primary Contact')
             ->assertSee("data: 'program_name'", false)
-            ->assertSee("data: 'status_badge'", false)
+            ->assertDontSee("data: 'status_badge'", false)
             ->assertSee("data: 'phone'", false)
             ->assertDontSee("data: 'registration_number'", false)
             ->assertDontSee("data: 'admission_date'", false)
             ->assertDontSee("data: 'certificate_status'", false);
     }
 
-    public function test_active_student_records_ajax_returns_course_status_and_primary_contact_fields(): void
+    public function test_active_student_records_ajax_returns_course_and_primary_contact_fields(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');
         $campus = $this->createCampus('Alpha Campus', 'ALP');
@@ -82,7 +82,183 @@ class StudentRecordIndexTest extends TestCase
         $this->assertSame('Digital Marketing Pro', $row['program_name']);
         $this->assertSame('ALP', $row['campus_code']);
         $this->assertSame('03000000992', $row['phone']);
-        $this->assertStringContainsString('Enrolled', $row['status_badge']);
+        $this->assertArrayNotHasKey('status_badge', $row);
+    }
+
+    public function test_student_records_page_scope_counts_follow_all_student_status_data(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('WD101', 'Web Development');
+        $batch = $this->createBatch($campus, $program, 'ALP-B3');
+
+        $activeRegistration = $this->createRegistration($campus, $program, 'Active Student', '03000000993');
+        $frozenRegistration = $this->createRegistration($campus, $program, 'Frozen Student', '03000000994');
+        $concludedRegistration = $this->createRegistration($campus, $program, 'Concluded Student', '03000000995');
+        $pendingRegistration = $this->createRegistration($campus, $program, 'Pending Approval Student', '03000000996');
+
+        $this->createAdmission($campus, $program, $batch, $activeRegistration, 'Active Student', '03000000993', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+        ]);
+        $this->createAdmission($campus, $program, $batch, $frozenRegistration, 'Frozen Student', '03000000994', [
+            'student_status' => 'frozen',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+        ]);
+        $this->createAdmission($campus, $program, $batch, $concludedRegistration, 'Concluded Student', '03000000995', [
+            'student_status' => 'concluded',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+        ]);
+        $this->createAdmission($campus, $program, $batch, $pendingRegistration, 'Pending Approval Student', '03000000996', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([$studentView->id]);
+
+        $this->actingAs($user)
+            ->get(route('student.records.index', ['scope' => 'active']))
+            ->assertOk()
+            ->assertViewHas('scopeCounts', function (array $counts): bool {
+                return ($counts['active'] ?? null) === 2
+                    && ($counts['frozen'] ?? null) === 1
+                    && ($counts['concluded'] ?? null) === 1
+                    && ($counts['all_students'] ?? null) === 4;
+            });
+    }
+
+    public function test_student_records_global_search_matches_campus_code(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('GD101', 'Graphic Design');
+        $batch = $this->createBatch($campus, $program, 'ALP-B4');
+        $registration = $this->createRegistration($campus, $program, 'Campus Search Student', '03000000997');
+
+        $this->createAdmission($campus, $program, $batch, $registration, 'Campus Search Student', '03000000997', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([$studentView->id]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'active',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+                'search' => [
+                    'value' => 'ALP',
+                    'regex' => 'false',
+                ],
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame('ALP', $response->json('data.0.campus_code'));
+    }
+
+    public function test_student_records_global_search_matches_roll_number_without_separators(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('SE101', 'Software Engineering');
+        $batch = $this->createBatch($campus, $program, 'ALP-B5');
+        $registration = $this->createRegistration($campus, $program, 'Roll Search Student', '03000000998');
+
+        $admission = $this->createAdmission($campus, $program, $batch, $registration, 'Roll Search Student', '03000000998', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-ALP-B5-018',
+        ]);
+
+        $user = User::factory()->create([
+            'campus_id' => $campus->id,
+        ]);
+        $user->permissions()->sync([$studentView->id]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'active',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+                'search' => [
+                    'value' => 'ALPALPB5018',
+                    'regex' => 'false',
+                ],
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame($admission->roll_number, $response->json('data.0.roll_number'));
+    }
+
+    public function test_student_records_campus_code_search_does_not_match_only_by_roll_number_prefix(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+
+        $alphaCampus = $this->createCampus('Alpha Campus', 'ALP');
+        $betaCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = $this->createProgram('AR101', 'Architecture');
+        $alphaBatch = $this->createBatch($alphaCampus, $program, 'ALP-B6');
+        $betaBatch = $this->createBatch($betaCampus, $program, 'BET-B6');
+
+        $alphaRegistration = $this->createRegistration($alphaCampus, $program, 'Alpha Campus Student', '03000000999');
+        $betaRegistration = $this->createRegistration($betaCampus, $program, 'Transferred Student', '03000001000');
+
+        $this->createAdmission($alphaCampus, $program, $alphaBatch, $alphaRegistration, 'Alpha Campus Student', '03000000999', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-ALP-B6-019',
+        ]);
+
+        $this->createAdmission($betaCampus, $program, $betaBatch, $betaRegistration, 'Transferred Student', '03000001000', [
+            'student_status' => 'enrolled',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'roll_number' => 'ALP-BET-B6-020',
+        ]);
+
+        $user = User::factory()->create();
+        $user->permissions()->sync([$studentView->id]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'active',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+                'search' => [
+                    'value' => 'ALP',
+                    'regex' => 'false',
+                ],
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+
+        $studentNames = collect($response->json('data'))->pluck('student_name')->all();
+
+        $this->assertContains('Alpha Campus Student', $studentNames);
+        $this->assertNotContains('Transferred Student', $studentNames);
     }
 
     private function createPermission(string $resource, string $action, string $slug): Permission

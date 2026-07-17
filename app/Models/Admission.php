@@ -16,6 +16,11 @@ class Admission extends Model
     public const APPROVAL_STATUS_REQUESTED = 'approval_requested';
     public const APPROVAL_STATUS_APPROVED = 'approved';
     public const CERTIFICATE_REQUESTABLE_STATUS = 'enrolled';
+    public const CERTIFICATE_REQUESTABLE_STATUSES = [
+        'enrolled',
+        'concluded',
+        'completed',
+    ];
     public const CERTIFICATE_STATUS_REQUESTED = 'requested';
     public const CERTIFICATE_STATUS_APPROVED = 'approved';
     public const CERTIFICATE_STATUS_PRINTING = 'printing';
@@ -25,6 +30,7 @@ class Admission extends Model
     public const STUDENT_STATUS_LABELS = [
         'enrolled' => 'Enrolled',
         'concluded' => 'Concluded',
+        'completed' => 'Completed',
         'frozen' => 'Frozen',
         'incomplete' => 'Incomplete',
         'suspended' => 'Suspended',
@@ -40,6 +46,7 @@ class Admission extends Model
     public const STUDENT_STATUS_BADGE_CLASSES = [
         'enrolled' => 'label-success',
         'concluded' => 'label-primary',
+        'completed' => 'label-primary',
         'frozen' => 'label-warning',
         'incomplete' => 'label-default',
         'suspended' => 'label-info',
@@ -88,6 +95,8 @@ class Admission extends Model
         'discounted_fee',
         'fee_type',
         'student_status',
+        'certificate_status',
+        'certificate_origin_status',
         'approval_status',
         'status_updated_at',
         'document_cnic_front_path',
@@ -167,6 +176,33 @@ class Admission extends Model
 
     public function scopeCertificateWorkflow(Builder $query): Builder
     {
-        return $query->whereIn('student_status', self::CERTIFICATE_WORKFLOW_STATUSES);
+        return $query->whereIn('certificate_status', self::CERTIFICATE_WORKFLOW_STATUSES);
+    }
+
+    public static function isCertificateRequestableStatus(?string $status): bool
+    {
+        return in_array((string) $status, self::CERTIFICATE_REQUESTABLE_STATUSES, true);
+    }
+
+    public static function isCertificateWorkflowStatus(?string $status): bool
+    {
+        return in_array((string) $status, self::CERTIFICATE_WORKFLOW_STATUSES, true);
+    }
+
+    public function resolveCertificateOriginStatus(): string
+    {
+        $originStatus = (string) ($this->certificate_origin_status ?? '');
+
+        if (self::isCertificateRequestableStatus($originStatus)) {
+            return $originStatus;
+        }
+
+        $currentStatus = (string) ($this->student_status ?? '');
+
+        if (self::isCertificateRequestableStatus($currentStatus)) {
+            return $currentStatus;
+        }
+
+        return self::CERTIFICATE_REQUESTABLE_STATUS;
     }
 }

@@ -6,6 +6,10 @@
 @section('content')
     @php
         $selectedEmployeeId = old('employee_id');
+        $selectedCampusId = old('campus_id');
+        if ($selectedCampusId === null) {
+            $selectedCampusId = optional($campuses->first())->id;
+        }
         $selectedRoleId = old('role_id');
         if ($selectedRoleId === null) {
             $selectedRoleId = collect(old('roles', []))->filter()->first();
@@ -84,7 +88,7 @@
                     </div>
                     <div class="user-form-row">
                         <div class="user-form-label">
-                            <label for="employee_campus" class="form-label-role">Campus</label>
+                            <label for="employee_campus" class="form-label-role">Employee Campus</label>
                         </div>
                         <div class="user-form-field">
                             <input
@@ -95,6 +99,30 @@
                                 value=""
                                 readonly
                             >
+                        </div>
+                    </div>
+                    <div class="user-form-row">
+                        <div class="user-form-label">
+                            <label for="campus_id" class="form-label-role">Campus</label>
+                        </div>
+                        <div class="user-form-field">
+                            <select
+                                name="campus_id"
+                                id="campus_id"
+                                class="form-control select2 @error('campus_id') is-invalid @enderror"
+                                style="width: 100%;"
+                                data-placeholder="- Select Campus -"
+                            >
+                                <option value="all" @selected((string) $selectedCampusId === 'all')>All Campuses</option>
+                                @foreach($campuses as $campus)
+                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>
+                                        {{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('campus_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="user-form-row">
@@ -670,6 +698,13 @@
                     });
 
                     $employeeSelect.on('change select2:select select2:clear', syncEmployeeSelection);
+
+                    $('#campus_id').select2({
+                        width: '100%',
+                        dropdownParent: $('.user-card'),
+                        dropdownAutoWidth: false,
+                        minimumResultsForSearch: 0,
+                    });
 
                     $('#role_id').select2({
                         width: '100%',

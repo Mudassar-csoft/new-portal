@@ -10,7 +10,7 @@
             $selectedRoleId = collect(old('roles', $user->roles->modelKeys()))->filter()->first();
         }
         $selectedPermissionIds = collect(old('permissions', $user->permissions->modelKeys()))->map(fn ($id) => (int) $id);
-        $selectedCampusId = old('campus_id', $user->campus_id);
+        $selectedCampusId = old('campus_id', $user->campus_id === null ? 'all' : (string) $user->campus_id);
         $selectedRole = $roles->first(fn ($role) => (string) $role->id === (string) $selectedRoleId);
         $rolePermissionIds = collect($selectedRole?->permissions?->modelKeys() ?? [])->map(fn ($id) => (int) $id);
     @endphp
@@ -138,9 +138,11 @@
                                 style="width: 100%;"
                                 data-placeholder="- Select Campus -"
                             >
-                                <option value="">- Select Campus -</option>
+                                <option value="all" @selected((string) $selectedCampusId === 'all')>All Campuses</option>
                                 @foreach($campuses as $campus)
-                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>{{ $campus->code ?: $campus->name }}</option>
+                                    <option value="{{ $campus->id }}" @selected((string) $selectedCampusId === (string) $campus->id)>
+                                        {{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('campus_id')

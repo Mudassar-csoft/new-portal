@@ -42,6 +42,14 @@
                   @php($hasFollowupNotifications = (bool) ($canViewFollowupNotifications ?? false))
                   @php($hasInvoiceNotifications = (bool) ($canViewInvoiceNotifications ?? false))
                   @php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications)
+                  @php($notificationMoreLinks = [
+                    'follow_up' => route('leads.followups'),
+                    'quick_lead' => route('web-leads.index', ['tab' => 'quick_lead']),
+                    'website_enrollment' => route('web-leads.index', ['tab' => 'website_enrollment']),
+                    'website_admission' => route('web-leads.index', ['tab' => 'website_admission']),
+                    'brochure_download' => route('web-leads.index', ['tab' => 'brochure_download']),
+                    'overdue_invoices' => route('finance.receivables', ['status' => 'overdue']),
+                  ])
 
                   @if(!$hasVisibleNotificationPanels)
                     <div class="text-center p-4 text-muted">No notifications available.</div>
@@ -68,7 +76,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($followupItems as $followup)
+                                @foreach ($followupItems->take(3) as $followup)
                                   @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
                                   <tr>
                                     <td>
@@ -87,6 +95,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['follow_up'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
                     @endif
@@ -111,7 +122,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($quickLeads as $webLead)
+                                @foreach ($quickLeads->take(3) as $webLead)
                                   <tr>
                                     <td>
                                       @if(!empty($webLead->is_placeholder))
@@ -129,6 +140,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['quick_lead'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
 
@@ -151,7 +165,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($websiteEnrollments as $webLead)
+                                @foreach ($websiteEnrollments->take(3) as $webLead)
                                   <tr>
                                     <td>
                                       @if(!empty($webLead->is_placeholder))
@@ -169,6 +183,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['website_enrollment'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
 
@@ -191,7 +208,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($websiteAdmissions as $webLead)
+                                @foreach ($websiteAdmissions->take(3) as $webLead)
                                   <tr>
                                     <td>
                                       @if(!empty($webLead->is_placeholder))
@@ -209,6 +226,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['website_admission'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
 
@@ -231,7 +251,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($brochureDownloads as $webLead)
+                                @foreach ($brochureDownloads->take(3) as $webLead)
                                   <tr>
                                     <td>
                                       @if(!empty($webLead->is_placeholder))
@@ -249,6 +269,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['brochure_download'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
                     @endif
@@ -273,7 +296,7 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                @foreach ($overdueInvoices as $invoice)
+                                @foreach ($overdueInvoices->take(3) as $invoice)
                                   <tr>
                                     <td>
                                       @if(!empty($invoice->is_placeholder))
@@ -293,6 +316,9 @@
                             </table>
                           </div>
                         @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['overdue_invoices'] }}">See More</a>
+                        </div>
                       </div>
                     </div>
                     @endif
@@ -300,11 +326,6 @@
                   </div>
                   @endif
 
-                  @if($hasWebLeadNotifications)
-                  <div class="dropdown-menu-notif-more">
-                    <a href="{{ route('web-leads.index') }}">See more</a>
-                  </div>
-                  @endif
                 </div>
 						</div>
 
@@ -1003,11 +1024,13 @@ display: flex;
 	width: 720px;
 	max-width: calc(100vw - 32px);
 	font-size: var(--typo-layouts-header-font-size-1);
-	overflow: hidden;
+	max-height: calc(100vh - 96px);
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 .notif-accordion{
-	max-height: 400px;
-	overflow-y: hidden;
+	max-height: calc(100vh - 120px);
+	overflow-y: auto;
 	padding: 12px;
 	background: #f7f9fc;
 }
@@ -1079,18 +1102,34 @@ display: flex;
 	display: block;
 }
 .notif-accordion-panel .table-responsive{
-	max-height: 310px;
-
-	overflow-y: hidden !important;
+	max-height: none;
+	overflow-y: visible !important;
+	overflow-x: auto;
 }
 .notif-accordion-panel .notification-table{
 	margin-bottom: 0;
+	table-layout: fixed;
 }
 .notif-accordion-panel .notification-table thead th{
 	position: sticky;
 	top: 0;
 	background: #f9fbfd;
 	z-index: 1;
+}
+.notification-see-more{
+	padding: 9px 12px 10px;
+	text-align: center;
+	border-top: 1px solid #edf2f7;
+	background: #fff;
+}
+.notification-see-more a{
+	color: #0099f8;
+	font-size: var(--typo-layouts-header-font-size-9);
+	font-weight: var(--typo-layouts-header-font-weight-2);
+	text-decoration: none !important;
+}
+.notification-see-more a:hover{
+	color: #007ed0;
 }
 /* .site-logo img{
     transition:0.3s;
@@ -1105,6 +1144,10 @@ display: flex;
   padding: 8px 3px !important;
   text-wrap: nowrap !important;
   max-width:100px;
+  height: 34px;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .lead-tabs {
   display: flex;
