@@ -480,7 +480,7 @@ class AppServiceProvider extends ServiceProvider
 
                 $admissionSummary = $studentAdmissionQuery
                     ->selectRaw('COUNT(*) as total')
-                    ->selectRaw("SUM(CASE WHEN student_status = 'enrolled' THEN 1 ELSE 0 END) as student_active")
+                    ->selectRaw("SUM(CASE WHEN student_status = 'enrolled' AND (certificate_status IS NULL OR certificate_status = '') AND certificate_delivered_at IS NULL THEN 1 ELSE 0 END) as student_active")
                     ->selectRaw("SUM(CASE WHEN student_status = 'frozen' THEN 1 ELSE 0 END) as student_frozen")
                     ->selectRaw("SUM(CASE WHEN student_status = 'concluded' THEN 1 ELSE 0 END) as student_concluded")
                     ->selectRaw("SUM(CASE WHEN student_status = 'incomplete' THEN 1 ELSE 0 END) as student_incomplete")

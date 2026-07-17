@@ -11,10 +11,7 @@ use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-<<<<<<< HEAD
-=======
 use Illuminate\Http\JsonResponse;
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -99,19 +96,11 @@ class StudentRecordController extends Controller
                     'admission' => $admission,
                     'statusOptions' => self::STATUS_OPTIONS,
                 ])->render())
-<<<<<<< HEAD
-                ->filter(function (Builder $query) use ($request): void {
-                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
-
-                    if ($keyword !== '') {
-                        $this->applyStudentRecordSearch($query, $keyword);
-=======
                 ->filter(function (Builder $query) use ($searchValue, $campusFilterId, $programFilterId) {
                     $this->applyStudentRecordFilters($query, $campusFilterId, $programFilterId);
 
                     if ($searchValue !== '') {
                         $this->applyStudentRecordsSearch($query, $searchValue);
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     }
                 })
                 ->filterColumn('campus_code', function ($query, $keyword) {
@@ -734,37 +723,15 @@ class StudentRecordController extends Controller
             return;
         }
 
-        $status = $scope === 'active' ? 'enrolled' : $scope;
-        $query->where('student_status', $status);
+        if ($scope === 'active') {
+            $query->currentStudents();
+
+            return;
+        }
+
+        $query->where('student_status', $scope);
     }
 
-<<<<<<< HEAD
-    private function applyStudentRecordSearch(Builder $query, string $keyword): void
-    {
-        $like = $this->toSqlLikePattern($keyword);
-
-        $query->where(function (Builder $searchQuery) use ($like): void {
-            $searchQuery
-                ->where('student_name', 'like', $like)
-                ->orWhere('roll_number', 'like', $like)
-                ->orWhere('registration_number', 'like', $like)
-                ->orWhere('phone', 'like', $like)
-                ->orWhere('guardian_name', 'like', $like)
-                ->orWhere('guardian_phone', 'like', $like)
-                ->orWhere('cnic', 'like', $like)
-                ->orWhere('passport_number', 'like', $like)
-                ->orWhere('email', 'like', $like)
-                ->orWhere('city', 'like', $like)
-                ->orWhere('area', 'like', $like)
-                ->orWhere('student_status', 'like', $like)
-                ->orWhereHas('registration', function (Builder $registrationQuery) use ($like): void {
-                    $registrationQuery
-                        ->where('registration_number', 'like', $like)
-                        ->orWhere('student_name', 'like', $like)
-                        ->orWhere('phone', 'like', $like);
-                })
-                ->orWhereHas('campus', function (Builder $campusQuery) use ($like): void {
-=======
     private function baseStudentRecordsQuery($user): Builder
     {
         return $this->scopeQueryToUserCampus(
@@ -778,7 +745,7 @@ class StudentRecordController extends Controller
         $baseQuery = $this->baseStudentRecordsQuery($user);
 
         return [
-            'active' => (clone $baseQuery)->where('student_status', 'enrolled')->count(),
+            'active' => (clone $baseQuery)->currentStudents()->count(),
             'frozen' => (clone $baseQuery)->where('student_status', 'frozen')->count(),
             'concluded' => (clone $baseQuery)->where('student_status', 'concluded')->count(),
             'incomplete' => (clone $baseQuery)->where('student_status', 'incomplete')->count(),
@@ -811,7 +778,7 @@ class StudentRecordController extends Controller
             return;
         }
 
-        $query->where(function (Builder $builder) use ($like, $normalizedKeyword, $campusCodeSearch) {
+        $query->where(function (Builder $builder) use ($like, $normalizedKeyword) {
             $builder
                 ->where('student_name', 'like', $like)
                 ->orWhere('phone', 'like', $like)
@@ -820,38 +787,21 @@ class StudentRecordController extends Controller
                     $registrationQuery->where('registration_number', 'like', $like);
                 })
                 ->orWhereHas('campus', function (Builder $campusQuery) use ($like) {
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     $campusQuery
                         ->where('code', 'like', $like)
                         ->orWhere('name', 'like', $like);
                 })
-<<<<<<< HEAD
-                ->orWhereHas('program', function (Builder $programQuery) use ($like): void {
-=======
                 ->orWhereHas('program', function (Builder $programQuery) use ($like) {
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     $programQuery
                         ->where('title', 'like', $like)
                         ->orWhere('name', 'like', $like)
                         ->orWhere('code', 'like', $like);
                 })
-<<<<<<< HEAD
-                ->orWhereHas('batch', function (Builder $batchQuery) use ($like): void {
-=======
                 ->orWhereHas('batch', function (Builder $batchQuery) use ($like) {
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     $batchQuery
                         ->where('code', 'like', $like)
                         ->orWhere('name', 'like', $like);
                 });
-<<<<<<< HEAD
-        });
-    }
-
-    private function toSqlLikePattern(string $value): string
-    {
-        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value) . '%';
-=======
 
             $this->applyRollNumberSearch($builder, $like, $normalizedKeyword);
         });
@@ -968,7 +918,6 @@ class StudentRecordController extends Controller
         return Campus::query()
             ->whereRaw('LOWER(code) = ?', [$candidate])
             ->exists();
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
     }
 
     private function resolveScope(string $scope): array
@@ -976,8 +925,8 @@ class StudentRecordController extends Controller
         return match ($scope) {
             'active' => [
                 'scope' => 'active',
-                'title' => 'Active Students',
-                'description' => 'All students currently in enrolled status.',
+                'title' => 'Current Students',
+                'description' => 'Students currently enrolled and still pending certificate processing.',
             ],
             'concluded' => [
                 'scope' => 'concluded',

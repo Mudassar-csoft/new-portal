@@ -178,6 +178,18 @@ class Admission extends Model
         return $query->whereIn('certificate_status', self::CERTIFICATE_WORKFLOW_STATUSES);
     }
 
+    public function scopeCurrentStudents(Builder $query): Builder
+    {
+        return $query
+            ->where('student_status', 'enrolled')
+            ->where(function (Builder $builder): void {
+                $builder
+                    ->whereNull('certificate_status')
+                    ->orWhere('certificate_status', '');
+            })
+            ->whereNull('certificate_delivered_at');
+    }
+
     public static function isCertificateRequestableStatus(?string $status): bool
     {
         return in_array((string) $status, self::CERTIFICATE_REQUESTABLE_STATUSES, true);

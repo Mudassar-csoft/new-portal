@@ -301,7 +301,7 @@ class DashboardController extends Controller
             ->when($campusId, fn (Builder $query, int $id) => $query->where('campus_id', $id));
 
         $currentStudents = (int) (clone $admissionStatsQuery)
-            ->where('student_status', 'enrolled')
+            ->currentStudents()
             ->count();
         $currentStudents = $canViewAdmissions ? $currentStudents : 0;
 
