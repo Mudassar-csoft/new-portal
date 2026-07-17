@@ -193,12 +193,6 @@ class PermissionCatalog
             ['moduleKey' => 'campus-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Create Campus / Franchise', 'slugs' => ['campus.create']],
             ['moduleKey' => 'campus-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'All Campuses / Franchise', 'slugs' => ['campus.view']],
 
-            ['moduleKey' => 'news-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Create News', 'slugs' => ['news.create']],
-            ['moduleKey' => 'news-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'All News', 'slugs' => ['news.view']],
-
-            ['moduleKey' => 'review-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Create Review', 'slugs' => ['review.create']],
-            ['moduleKey' => 'review-management', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'All Reviews', 'slugs' => ['review.view']],
-
             ['moduleKey' => 'human-resources', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'HRM Dashboard', 'slugs' => ['hrm_dashboard.view', 'hrm.dashboard.view']],
             ['moduleKey' => 'human-resources', 'section' => null, 'sectionOrder' => 10, 'order' => 20, 'label' => 'Employee Master / Profile', 'slugs' => ['hrm_employee.view', 'hrm.employee.view']],
             ['moduleKey' => 'human-resources', 'section' => null, 'sectionOrder' => 10, 'order' => 30, 'label' => 'Departments / Designations / Holidays', 'slugs' => ['hrm_department.view', 'hrm.master.view']],
@@ -291,16 +285,6 @@ class PermissionCatalog
             'campus.view' => self::meta('campus-management', null, 'Campus / Franchise Lists', 10, 20),
             'campus.update' => self::meta('campus-management', null, 'Update Campus / Franchise', 10, 30),
             'campus.delete' => self::meta('campus-management', null, 'Delete Campus / Franchise', 10, 40),
-
-            'news.create' => self::meta('news-management', null, 'Create News', 10, 10),
-            'news.view' => self::meta('news-management', null, 'News Lists', 10, 20),
-            'news.update' => self::meta('news-management', null, 'Update News', 10, 30),
-            'news.delete' => self::meta('news-management', null, 'Delete News', 10, 40),
-
-            'review.create' => self::meta('review-management', null, 'Create Review', 10, 10),
-            'review.view' => self::meta('review-management', null, 'Review Lists', 10, 20),
-            'review.update' => self::meta('review-management', null, 'Update Review', 10, 30),
-            'review.delete' => self::meta('review-management', null, 'Delete Review', 10, 40),
 
             'inventory.create' => self::meta('inventory-management', null, 'Feed Campus Inventory', 10, 10),
             'inventory.view' => self::meta('inventory-management', null, 'Campus Stock Register', 10, 20),
@@ -538,14 +522,12 @@ class PermissionCatalog
             'batch-management' => 60,
             'programme-management' => 70,
             'campus-management' => 80,
-            'news-management' => 90,
-            'review-management' => 100,
-            'human-resources' => 110,
-            'finance-management' => 120,
-            'inventory-management' => 130,
-            'certificate-management' => 140,
-            'user-management' => 150,
-            'reports' => 160,
+            'human-resources' => 90,
+            'finance-management' => 100,
+            'inventory-management' => 110,
+            'certificate-management' => 120,
+            'user-management' => 130,
+            'reports' => 140,
         ][$moduleKey] ?? 900;
     }
 
@@ -586,8 +568,6 @@ class PermissionCatalog
             $permission->resource === 'batch' || $permission->resource === 'batch-timetable' => 'batch-management',
             $permission->resource === 'program' => 'programme-management',
             $permission->resource === 'campus' => 'campus-management',
-            $permission->resource === 'news' => 'news-management',
-            $permission->resource === 'review' => 'review-management',
             $permission->resource === 'certificate' => 'certificate-management',
             $permission->resource === 'user' || $permission->resource === 'role' || $permission->resource === 'permission' => 'user-management',
             $permission->resource === 'report' => 'reports',
@@ -609,8 +589,6 @@ class PermissionCatalog
             'batch-management' => 'Batches & Time Table',
             'programme-management' => 'Programmes',
             'campus-management' => 'Campuses / Franchise',
-            'news-management' => 'News Management',
-            'review-management' => 'Reviews Management',
             'certificate-management' => 'Certificate Management',
             'user-management' => 'User Management',
             'reports' => 'Reports',
@@ -670,8 +648,6 @@ class PermissionCatalog
             'batch-timetable' => 'Batch Timetable',
             'program' => 'Program',
             'campus' => 'Campus',
-            'news' => 'News',
-            'review' => 'Review',
             'certificate' => 'Certificate',
             'user' => 'User',
             'role' => 'Role',

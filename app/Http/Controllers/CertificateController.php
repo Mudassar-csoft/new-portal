@@ -28,7 +28,6 @@ class CertificateController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
-        $perPage = $this->resolvePerPage($request);
         if (! in_array($scope, self::ALLOWED_SCOPES, true)) {
             $scope = 'all';
         }
@@ -42,7 +41,7 @@ class CertificateController extends Controller
         $certificates = $query
             ->orderByDesc('status_updated_at')
             ->orderByDesc('id')
-            ->paginate($perPage)
+            ->paginate(15)
             ->withQueryString();
 
         return view('certificate.index', [
@@ -56,7 +55,6 @@ class CertificateController extends Controller
                 'campus_id' => $request->integer('campus_id') ?: null,
                 'program_id' => $request->integer('program_id') ?: null,
                 'search' => $request->input('search'),
-                'per_page' => $perPage,
             ],
             'pageTitle' => $this->resolvePageTitle($scope),
             'statusLabels' => $this->certificateStatusLabels(),
@@ -410,13 +408,6 @@ class CertificateController extends Controller
         if ($scope !== 'all' && in_array($scope, self::ALLOWED_SCOPES, true)) {
             $query->where('certificate_status', $scope);
         }
-    }
-
-    private function resolvePerPage(Request $request): int
-    {
-        $perPage = (int) $request->query('per_page', 25);
-
-        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
     }
 
     private function applyFilters(Builder $query, Request $request): void

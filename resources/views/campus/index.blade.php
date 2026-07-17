@@ -7,7 +7,6 @@
         $filters = $filters ?? ['scope' => 'all', 'campus_type' => null, 'status' => null, 'country' => null, 'city' => null, 'search' => null];
         $scopeCards = $scopeCards ?? [];
         $activeScope = $activeScope ?? 'all';
-        $perPage = (int) ($filters['per_page'] ?? 25);
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',
@@ -54,10 +53,10 @@
                         <div class="follow-controls">
                             <div class="d-flex ci-inline-gap-05-center">
                                 <label class="">Show</label>
-                                <select class="form-select form-select-sm" name="per_page">
-                                    @foreach([10, 25, 50, 100] as $option)
-                                        <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
-                                    @endforeach
+                                <select class="form-select form-select-sm">
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
                                 </select>
                                 <label class="">Entries</label>
                             </div>

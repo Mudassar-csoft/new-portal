@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Campus;
 use App\Models\FinancePayee;
 use App\Models\FinancePayeeBankAccount;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -85,29 +84,6 @@ class PayeeController extends Controller
         }
 
         return back()->with('status', 'Supplier/Payee saved successfully.');
-    }
-
-    public function quickStore(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'type' => ['required', Rule::in(['supplier', 'payee', 'employee'])],
-            'full_name' => ['required', 'string', 'max:200'],
-        ]);
-
-        $payee = FinancePayee::create([
-            'type' => $validated['type'],
-            'full_name' => $validated['full_name'],
-            'status' => 'active',
-        ]);
-
-        return response()->json([
-            'message' => 'Payee added.',
-            'payee' => [
-                'id' => $payee->id,
-                'full_name' => $payee->full_name,
-                'type' => $payee->type,
-            ],
-        ]);
     }
 
     private function canCreatePayees(Request $request): bool

@@ -53,9 +53,4 @@ class Campus extends Model
     {
         return $this->hasMany(ProgramCampusDiscount::class);
     }
-
-    public function news(): HasMany
-    {
-        return $this->hasMany(News::class);
-    }
 }

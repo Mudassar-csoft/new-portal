@@ -69,7 +69,6 @@
                 border: 1px solid #dfe5eb;
                 border-radius: 6px;
                 background: #fff;
-                
                 box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
                 text-align: left !important;
             }
@@ -148,16 +147,6 @@
     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="{{ $actionId }}" aria-haspopup="true" aria-expanded="false" @disabled(!$hasActionItems)>
         Actions
     </button>
-<<<<<<< HEAD
-    <div class="dropdown-menu dropdown-menu-right lead-action-menu " aria-labelledby="{{ $actionId }}">
-        @foreach($statusActions as $item)
-            <form method="POST" action="{{ route('student.records.status', $admission) }}">
-                @csrf
-                <input type="hidden" name="status" value="{{ $item['key'] }}">
-                <button type="submit" class="dropdown-item lead-action-item {{ $admission->student_status === $item['key'] ? 'is-current' : '' }}" @disabled($admission->student_status === $item['key'])>
-                    <span class="lead-action-icon {{ $item['icon_class'] }}" aria-hidden="true">
-                        <i class="fa {{ $item['icon'] }}"></i>
-=======
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
         @if($isDroppedStudent)
             @if($canUpdateStudent)
@@ -169,7 +158,6 @@
                 >
                     <span class="lead-action-icon lead-icon-green" aria-hidden="true">
                         <i class="fa fa-repeat"></i>
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
                     </span>
                     <span class="lead-action-label">Enroll Now</span>
                 </button>
