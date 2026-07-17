@@ -228,7 +228,19 @@ return new class extends Migration
         }));
 
         if ($validRows === []) {
-            throw new RuntimeException('Legacy batch import aborted because none of the dump rows reference existing programs and campuses in the current database.');
+            $parts = [
+                'No legacy batch rows were imported because none of the dump rows reference existing programs and campuses in the current database.',
+            ];
+
+            if ($missingPrograms !== []) {
+                $parts[] = 'missing program ids: ' . implode(', ', $missingPrograms);
+            }
+
+            if ($missingCampuses !== []) {
+                $parts[] = 'missing campus ids: ' . implode(', ', $missingCampuses);
+            }
+
+            return [[], implode(' ', $parts)];
         }
 
         if ($missingPrograms === [] && $missingCampuses === []) {

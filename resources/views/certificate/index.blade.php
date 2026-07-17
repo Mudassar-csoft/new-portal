@@ -139,11 +139,6 @@
                                        placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
                                 <span class="certificate-search-shell" id="certificate-search-shell" aria-hidden="true">
                                     <span class="certificate-search-icon"><i class="fa fa-search"></i></span>
-                                    <span class="certificate-search-loader" id="certificate-search-loader">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </span>
                                 </span>
                             </div>
                         </div>
@@ -359,35 +354,6 @@
             color: #50697d;
             font-size: 1.125rem;
             transition: opacity 0.2s ease;
-        }
-        .certificate-search-loader {
-            position: absolute;
-            inset: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-        .certificate-search-loader span {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #169de8;
-            animation: certificate-search-pulse 1s ease-in-out infinite;
-        }
-        .certificate-search-loader span:nth-child(2) {
-            animation-delay: 0.16s;
-        }
-        .certificate-search-loader span:nth-child(3) {
-            animation-delay: 0.32s;
-        }
-        .certificate-search-shell.is-loading .certificate-search-icon {
-            opacity: 0;
-        }
-        .certificate-search-shell.is-loading .certificate-search-loader {
-            opacity: 1;
         }
         .certificate-search-input.is-loading {
             border-color: #19a6f0 !important;

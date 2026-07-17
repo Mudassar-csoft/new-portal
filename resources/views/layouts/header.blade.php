@@ -644,7 +644,6 @@
                               <button class="btn btn-rounded dropdown-toggle" id="dd-header-add" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	                                Add New
 	                            </button>
-
                              <div class="dropdown-menu p-2" style="background-color:#f7f9fc"; aria-labelledby="dd-header-add">
 
                     <!-- <input type="text" class="form-control mb-2" id="leadSearch" placeholder="Select Lead"> -->

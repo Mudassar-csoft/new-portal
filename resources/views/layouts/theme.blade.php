@@ -2242,6 +2242,11 @@ margin-left: 0;
 			font-weight: 600;
 			font-size: 0.875rem;
 		}
+		.dataTables_processing,
+		body.filter-request-page .follow-loader,
+		body.filter-request-page .dashboard-loader {
+			display: none !important;
+		}
 		@keyframes app-global-loader-pulse {
 			0%, 80%, 100% {
 				opacity: 0.35;
@@ -2258,8 +2263,25 @@ margin-left: 0;
 @php
 	$isMainDashboardPage = request()->routeIs('dashboard') && in_array(optional(request()->route())->uri(), ['', '/'], true);
 	$hideSidebarForPage = request()->routeIs('profile.*');
+	$isFilterRequestPage = request()->hasAny([
+		'search',
+		'q',
+		'campus_id',
+		'program_id',
+		'batch_id',
+		'category',
+		'status',
+		'period',
+		'per_page',
+		'created_from',
+		'created_to',
+		'from',
+		'to',
+		'day_of_week',
+		'attendance_date',
+	]);
 @endphp
-<body class="{{ $hideSidebarForPage ? 'profile-no-sidebar' : 'with-side-menu' }} control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }} {{ trim($__env->yieldContent('body_class')) }}">
+<body class="{{ $hideSidebarForPage ? 'profile-no-sidebar' : 'with-side-menu' }} control-panel control-panel-compact {{ $isMainDashboardPage ? 'dashboard-page' : '' }} {{ $isFilterRequestPage ? 'filter-request-page' : '' }} {{ trim($__env->yieldContent('body_class')) }}">
 	<div id="app-global-loader" class="app-global-loader" role="status" aria-live="polite" aria-hidden="true">
 		<div class="app-global-loader-card">
 			<div class="follow-spinner" aria-hidden="true">
@@ -2315,6 +2337,7 @@ margin-left: 0;
 					label.textContent = message || 'Loading...';
 				}
 
+				$('.follow-loader, .dashboard-loader, .dataTables_processing').hide();
 				loader.classList.add('is-visible');
 				loader.setAttribute('aria-hidden', 'false');
 			}
