@@ -43,6 +43,8 @@ class CertificateVerificationController extends Controller
         5511 => '01-JULY-2019 TO 31-DEC-2019',
         5512 => '02-FEB-2020 TO 31-JULY-2020',
         5568 => '02-FEB-2022 TO 30-May-2022',
+        5796 =>'02-FEB-2020 TO 30-JULY-2020',
+        5887 => '01-Jun-2023 TO 01-DEC-2023',
     ];
 
     /**
