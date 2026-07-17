@@ -91,7 +91,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-md-6 col-lg-3">
+                            <div class="form-group col-a-6 col-lg-3">
                                 <label class="form-label required">Student / Customer / Source</label>
                                 <input type="text" name="student_name" class="form-control" value="{{ old('student_name') }}" required>
                             </div>
@@ -305,16 +305,16 @@
                                             <span class="badge {{ $statusColors[$charge->status] ?? 'badge-secondary' }}">{{ ucfirst($charge->status) }}</span>
                                         </td>
                                         <td>
-                                            <div class="dropdown invoice-action-dropdown">
-                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                                            <div class="dropdown invoice-action-dropdown btn-group">
+                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     @if($invoiceSchemaReady ?? true)
-                                                        <a class="dropdown-item" href="{{ route('finance.receivables.show', $charge) }}">View Invoice</a>
+                                                        <a class="dropdown-item" href="{{ route('finance.receivables.show', $charge) }}"><i class="fa-solid fa-eye"></i> View Invoice</a>
                                                     @endif
                                                     @if(($invoiceSchemaReady ?? true) && $charge->latestPayment?->attachment_path)
-                                                        <a class="dropdown-item" href="{{ asset('storage/' . $charge->latestPayment->attachment_path) }}" target="_blank">View Latest Proof</a>
+                                                        <a class="dropdown-item" href="{{ asset('storage/' . $charge->latestPayment->attachment_path) }}" target="_blank"><i class="fa-solid fa-eye"></i> View Latest Proof</a>
                                                     @endif
                                                     @if(($invoiceSchemaReady ?? true) && $canUpdateReceivables && (float) $charge->balance_amount > 0)
                                                         <button
@@ -328,7 +328,7 @@
                                                             data-balance-amount="{{ number_format((float) $charge->balance_amount, 2, '.', '') }}"
                                                             data-payment-ref-preview="{{ $paymentRefPreview }}"
                                                         >
-                                                            Pay Now
+                                                          💳 Pay Now
                                                         </button>
                                                     @endif
                                                 </div>
@@ -421,6 +421,15 @@
         .receivables-list-table-wrap .dropdown-menu {
             z-index: 1050;
         }
+        .invoice-action-dropdown .dropdown-menu {
+            display: none;
+        }
+
+        .invoice-action-dropdown.show .dropdown-menu,
+        .invoice-action-dropdown .dropdown-menu.show {
+            display: block !important;
+        }
+
         .invoice-floating-menu {
             position: fixed !important;
             z-index: 99999 !important;
@@ -443,6 +452,13 @@
                 overflow-x: auto;
             }
         }
+        .receivables-list-table-wrap {
+    overflow-x: auto;
+    overflow-y: visible !important;
+}
+.table-responsive.receivables-list-table-wrap {
+    overflow: visible !important;
+}t
     </style>
 @endpush
 
@@ -589,128 +605,83 @@
             }
 
             recalculateTotals();
+        });
 
-            var activeInvoiceMenu = null;
-            var activeInvoiceButton = null;
-
-            function restoreInvoiceMenu() {
-                if (!activeInvoiceMenu) {
-                    return;
-                }
-
-                var parent = activeInvoiceMenu.__invoiceDropdownParent;
-                if (parent) {
-                    parent.appendChild(activeInvoiceMenu);
-                }
-
-                activeInvoiceMenu.classList.remove('invoice-floating-menu', 'show');
-                activeInvoiceMenu.removeAttribute('style');
-
-                if (activeInvoiceButton) {
-                    activeInvoiceButton.setAttribute('aria-expanded', 'false');
-                    var dropdown = activeInvoiceButton.closest('.invoice-action-dropdown');
-                    if (dropdown) {
-                        dropdown.classList.remove('show', 'open');
-                    }
-                }
-
-                activeInvoiceMenu = null;
-                activeInvoiceButton = null;
+        $(function () {
+            function closeAllInvoiceDropdowns() {
+                $('.invoice-action-dropdown.show').each(function () {
+                    var $d = $(this);
+                    $d.removeClass('show');
+                    $d.children('.dropdown-toggle').attr('aria-expanded', 'false');
+                    $d.children('.dropdown-menu').removeClass('show').removeAttr('style');
+                });
             }
 
-            function positionInvoiceMenu(menu, button) {
-                var rect = button.getBoundingClientRect();
-                var menuWidth = menu.offsetWidth || 180;
-                var menuHeight = menu.offsetHeight || 120;
-                var left = Math.max(8, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8));
-                var top = rect.bottom + 4;
+            $(document).on('click.financeReceivables', '.invoice-action-dropdown .dropdown-toggle', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
 
-                if (top + menuHeight > window.innerHeight - 8) {
-                    top = Math.max(8, rect.top - menuHeight - 4);
-                }
+                var $toggle = $(this);
+                var $dropdown = $toggle.closest('.invoice-action-dropdown');
+                var $menu = $dropdown.children('.dropdown-menu');
 
-                menu.style.top = top + 'px';
-                menu.style.left = left + 'px';
-                menu.style.right = 'auto';
-                menu.style.transform = 'none';
-            }
-
-            function floatInvoiceMenu(button) {
-                var dropdown = button.closest('.invoice-action-dropdown');
-                var menu = dropdown ? dropdown.querySelector('.dropdown-menu') : null;
-
-                if (!dropdown || !menu) {
+                if (!$menu.length) {
                     return;
                 }
 
-                if (activeInvoiceMenu && activeInvoiceMenu !== menu) {
-                    restoreInvoiceMenu();
+                var wasOpen = $dropdown.hasClass('show');
+                closeAllInvoiceDropdowns();
+
+                if (wasOpen) {
+                    return;
                 }
 
-                menu.__invoiceDropdownParent = dropdown;
-                activeInvoiceMenu = menu;
-                activeInvoiceButton = button;
+                var rect = $toggle.get(0).getBoundingClientRect();
+                var menuEl = $menu.get(0);
+                var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+                var rightOffset = Math.max(0, window.innerWidth - Math.round(rect.right));
+                var menuHeight = $menu.outerHeight() || (menuEl ? menuEl.scrollHeight : 0) || 260;
+                var belowTop = Math.round(rect.bottom) + 4;
+                var aboveTop = Math.round(rect.top) - menuHeight - 4;
+                var topPos = belowTop;
+                var maxHeight = Math.max(180, viewportHeight - 24);
 
-                document.body.appendChild(menu);
-                menu.classList.add('invoice-floating-menu', 'show');
-                button.setAttribute('aria-expanded', 'true');
-                dropdown.classList.add('show');
-                positionInvoiceMenu(menu, button);
-            }
+                if ((belowTop + menuHeight) > (viewportHeight - 12)) {
+                    topPos = aboveTop >= 12 ? aboveTop : 12;
+                    maxHeight = Math.max(180, Math.min(menuHeight, viewportHeight - topPos - 12));
+                }
 
-            document.querySelectorAll('.invoice-action-dropdown .dropdown-toggle').forEach(function (button) {
-                button.addEventListener('click', function (event) {
-                    if (activeInvoiceButton === this && activeInvoiceMenu) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        restoreInvoiceMenu();
-                        return;
-                    }
+                $menu.attr('style',
+                    'position:fixed !important;' +
+                    'top:' + topPos + 'px !important;' +
+                    'right:' + (rightOffset + 59) + 'px !important;' +
+                    'left:auto !important;' +
+                    'bottom:auto !important;' +
+                    'margin:0 !important;' +
+                    'transform:none !important;' +
+                    'min-width:220px !important;' +
+                    'max-height:' + maxHeight + 'px !important;' +
+                    'overflow-y:auto !important;' +
+                    'display:block !important;' +
+                    'z-index:99999 !important;'
+                );
 
-                    var clickedButton = this;
-
-                    setTimeout(function () {
-                        var dropdown = clickedButton.closest('.invoice-action-dropdown');
-                        var menu = dropdown ? dropdown.querySelector('.dropdown-menu') : activeInvoiceMenu;
-
-                        if (!menu || (activeInvoiceMenu === menu && !menu.classList.contains('show'))) {
-                            restoreInvoiceMenu();
-                            return;
-                        }
-
-                        floatInvoiceMenu(clickedButton);
-                    }, 0);
-                }, true);
+                $dropdown.addClass('show');
+                $menu.addClass('show');
+                $toggle.attr('aria-expanded', 'true');
             });
 
-            document.addEventListener('click', function (event) {
-                if (!activeInvoiceMenu) {
+            $(document).on('click.financeReceivables', function (event) {
+                if ($(event.target).closest('.invoice-action-dropdown').length) {
                     return;
                 }
-
-                if (activeInvoiceMenu.contains(event.target) && event.target.closest('.dropdown-item')) {
-                    setTimeout(restoreInvoiceMenu, 0);
-                    return;
-                }
-
-                if (activeInvoiceMenu.contains(event.target) || (activeInvoiceButton && activeInvoiceButton.contains(event.target))) {
-                    return;
-                }
-
-                restoreInvoiceMenu();
+                closeAllInvoiceDropdowns();
             });
 
-            window.addEventListener('resize', function () {
-                if (activeInvoiceMenu && activeInvoiceButton) {
-                    positionInvoiceMenu(activeInvoiceMenu, activeInvoiceButton);
-                }
+            $(window).on('resize.financeReceivables scroll.financeReceivables', function () {
+                closeAllInvoiceDropdowns();
             });
-
-            window.addEventListener('scroll', function () {
-                if (activeInvoiceMenu && activeInvoiceButton) {
-                    positionInvoiceMenu(activeInvoiceMenu, activeInvoiceButton);
-                }
-            }, true);
         });
     </script>
 @endpush

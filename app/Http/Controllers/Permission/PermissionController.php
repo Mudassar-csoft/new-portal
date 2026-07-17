@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Permission;
 
 use App\Http\Controllers\Controller;
 use App\Models\User\Permission;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -34,6 +35,23 @@ class PermissionController extends Controller
                 ->editColumn('slug', fn (Permission $permission) => e($permission->slug))
                 ->addColumn('date', fn (Permission $permission) => optional($permission->created_at)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('actions', fn (Permission $permission) => view('permission.partials.action', ['permission' => $permission])->render())
+                ->filter(function (Builder $query) use ($request): void {
+                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
+
+                    if ($keyword === '') {
+                        return;
+                    }
+
+                    $like = $this->toSqlLikePattern($keyword);
+
+                    $query->where(function (Builder $searchQuery) use ($like): void {
+                        $searchQuery
+                            ->where('resource', 'like', $like)
+                            ->orWhere('action', 'like', $like)
+                            ->orWhere('slug', 'like', $like)
+                            ->orWhere('description', 'like', $like);
+                    });
+                })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
@@ -43,6 +61,11 @@ class PermissionController extends Controller
         return view('permission.index', [
             'activeScope' => in_array($scope, ['active', 'deleted'], true) ? $scope : 'active',
         ]);
+    }
+
+    private function toSqlLikePattern(string $value): string
+    {
+        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value) . '%';
     }
 
     public function create(): View

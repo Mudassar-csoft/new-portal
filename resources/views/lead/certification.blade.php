@@ -1,7 +1,9 @@
 @php
-    $certificationGender = ($selectedLeadType ?? 'training') === 'certification'
+    $certificationGender = ($selectedLeadType ?? 'certification') === 'certification'
         ? old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))
         : null;
+
+    $defaultTeachingMethod = old('details.teaching_method') ?: 'campus';
 @endphp
 
 <div id="lead-form-certification" class="lead-form active" data-type="certification">
@@ -55,9 +57,9 @@
             <label class="form-label required">Teaching Method</label>
             <select name="details[teaching_method]" class="form-control @error('details.teaching_method') is-invalid @enderror">
                 <option value="">- Select -</option>
-                <option value="campus" @selected(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'campus')>Campus</option>
-                <option value="online" @selected(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'online')>Online</option>
-                <option value="hybrid" @selected(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>Hybrid</option>
+                <option value="campus" @selected($defaultTeachingMethod === 'campus')>Campus</option>
+                <option value="online" @selected($defaultTeachingMethod === 'online')>Online</option>
+                <option value="hybrid" @selected($defaultTeachingMethod === 'hybrid')>Hybrid</option>
             </select>
             @error('details.teaching_method')
                 <div class="field-error">{{ $message }}</div>

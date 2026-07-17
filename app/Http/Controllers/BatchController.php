@@ -18,6 +18,7 @@ class BatchController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
+        $perPage = $this->resolvePerPage($request);
         $today = now()->startOfDay();
         $recentWindow = $today->copy()->subDays(30);
 
@@ -31,7 +32,7 @@ class BatchController extends Controller
         $batches = $batches
             ->orderByDesc('start_date')
             ->orderByDesc('created_at')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         return view('batch.index', [
@@ -45,6 +46,7 @@ class BatchController extends Controller
                 'session' => $request->input('session'),
                 'status' => $request->input('status'),
                 'search' => $request->input('search'),
+                'per_page' => $perPage,
             ],
             'scopeCards' => $this->buildScopeCards($request, $today, $recentWindow),
             'pageTitle' => $this->resolvePageTitle($scope),
@@ -189,6 +191,13 @@ class BatchController extends Controller
                         });
                 });
             });
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->query('per_page', 25);
+
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
     }
 
     private function applyScope(Builder $query, string $scope, Carbon $today, Carbon $recentWindow): void

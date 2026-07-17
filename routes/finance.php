@@ -57,6 +57,7 @@ Route::prefix('finance')->name('finance.')->group(function () {
 
     Route::get('/payees', [PayeeController::class, 'index'])->middleware('permission:finance.payee.view,finance.payee.create')->name('payees');
     Route::post('/payees', [PayeeController::class, 'store'])->middleware('permission:finance.payee.create')->name('payees.store');
+    Route::post('/payees/quick', [PayeeController::class, 'quickStore'])->middleware('permission:finance.payee.create')->name('payees.quickStore');
     Route::get('/payables', [ExpenseController::class, 'payables'])->middleware('permission:finance.payable.view')->name('payables');
     Route::get('/receivables', [ReceivableController::class, 'index'])->middleware('permission:finance.receivable.view,finance.receivable.create,finance.receivable.update')->name('receivables');
     Route::post('/receivables/manual-invoice', [ReceivableController::class, 'store'])->middleware('permission:finance.receivable.create')->name('receivables.store');

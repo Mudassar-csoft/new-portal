@@ -173,7 +173,7 @@
         .journal-entry-title { font-size: 1rem; font-weight: var(--typo-finance-accounting-journal-font-weight-1); color: #1e293b; }
         .journal-entry-meta { margin-top: 4px; color: #64748b; font-size: 0.75rem; }
         .journal-entry-ref { color: var(--color-finance-accounting-journal-1); font-size: var(--typo-finance-accounting-journal-font-size-2); }
-        .journal-entry-description { margin-bottom: var(--space-finance-accounting-journal-1); color: var(--color-finance-accounting-journal-1); }
+        .journal-entry-description { margin-bottom: var(--space-finance-accounting-journal-1); color: var(--color-finance-accounting-journal-1);padding-left: 10px; }
         .meta-dot { margin: 0 6px; }
         .finance-table thead th { background: #eef2f7; color: var(--color-finance-accounting-journal-1); font-weight: var(--typo-finance-accounting-journal-font-weight-1); }
     </style>
