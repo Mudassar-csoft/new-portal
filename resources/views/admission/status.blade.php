@@ -68,18 +68,10 @@
                 @endforeach
             </div>
 
-
-
             <div class="box-typical-body panel-body follow-body">
-<<<<<<< HEAD
                 <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
                     <input type="hidden" name="scope" value="{{ $activeScope }}">
-					<input type="hidden" name="period" value="{{ $activePeriod !== 'all' ? $activePeriod : '' }}">
-=======
-<form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
-					<input type="hidden" name="scope" value="{{ $activeScope }}">
 					<input type="hidden" name="period" value="{{ $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : '' }}">
->>>>>>> 939b1e57f56d2809c21abad128e8ae44288804bf
 					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
 						<label class="mr-2 mb-0">Show</label>
 						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
