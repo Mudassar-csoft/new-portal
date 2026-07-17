@@ -152,6 +152,7 @@
 			$('#login-logs-table').DataTable({
 				processing: true,
 				serverSide: true,
+				searchDelay: 700,
 				autoWidth: false,
 				dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
 				ajax: "{{ route('login-logs.index') }}",

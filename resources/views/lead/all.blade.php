@@ -76,6 +76,10 @@
 							</select>
 							<label class="">Entries</label>
 						</div>
+						<div class="follow-search">
+							<input type="text" name="search" id="lead-status-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
+							<i class="fa fa-search"></i>
+						</div>
 
 						<div class="lead-filter-row">
 							@if($showCampusFilter)

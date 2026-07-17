@@ -985,9 +985,8 @@ form .select2-container--white .select2-selection--single .select2-selection__ar
   height: 37px !important;
 }
 
-form .select2-container--default .select2-selection--multiple .select2-selection__rendered,
-form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
-  /* padding: 0.25rem var(--lead-form-control-padding-x) !important; */
+form .select2-container--default .select2-selection--multiple .select2-selection__rendered,form .select2-container--white .select2-selection--multiple .select2-selection__rendered {
+  /* padding: 0.35rem var(--lead-form-control-padding-x) !important; */
 }
 
 form .embed-actions,
@@ -1012,8 +1011,8 @@ form label.required::after,
 	flex: 0 0 auto;
 }
 .select2-container--arrow, .select2-selection__rendered{
-	/* border: solid 1px #d8e2e7; */
-border-radius: .25rem;
+	 border: solid 1px #d8e2e7; 
+/* border-radius: .25rem; */
 font-size: var(--typo-layouts-theme-font-size-4) !important;
 /* font-weight: var(--typo-layouts-theme-font-weight-15); */
 line-height: var(--typo-layouts-theme-line-height-17) !important;
@@ -1131,8 +1130,8 @@ z-index: 1060 !important;
 .table td.actions-cell > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table td > .dropdown.dropdown-action-menu > .dropdown-menu.dropdown-menu-upward,
 .table [class*="-action-dropdown"].dropdown-action-menu > .dropdown-menu.dropdown-menu-upward {
-top: 23px !important;
-bottom: auto !important;
+top: auto !important;
+bottom: 0 !important;
 left: auto !important;
 right: 100% !important;
 margin: 0 !important;
@@ -2275,43 +2274,113 @@ margin-left: 0;
 					toggleText === 'actions';
 			}
 
+			function clearActionDropdownScrollSpace() {
+				$('.js-action-dropdown-scroll-space').each(function () {
+					var $target = $(this);
+					var originalPadding = $target.data('actionDropdownOriginalPadding');
+
+					if (originalPadding === undefined) {
+						$target.css('padding-bottom', '');
+					} else {
+						$target.css('padding-bottom', originalPadding);
+					}
+
+					$target.removeClass('js-action-dropdown-scroll-space')
+						.removeData('actionDropdownOriginalPadding');
+				});
+			}
+
+			function actionDropdownScrollTarget($dropdown) {
+				var $target = $dropdown.closest('.page-content');
+
+				if (!$target.length) {
+					$target = $('body');
+				}
+
+				return $target;
+			}
+
+			function ensureActionDropdownFits($dropdown, $menu) {
+				var dropdownEl = $dropdown.get(0);
+				var menuEl = $menu.get(0);
+
+				if (!dropdownEl || !menuEl) {
+					return;
+				}
+
+				$menu.removeClass('dropdown-menu-upward');
+
+				var dropdownRect = dropdownEl.getBoundingClientRect();
+				var menuHeight = $menu.outerHeight() || menuEl.scrollHeight || 180;
+				var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+				var spaceBelow = viewportHeight - dropdownRect.top;
+				var spaceAbove = dropdownRect.bottom;
+
+				if (spaceBelow < (menuHeight + 12) && spaceAbove >= (menuHeight + 12)) {
+					$menu.addClass('dropdown-menu-upward');
+					return;
+				}
+
+				window.setTimeout(function () {
+					var menuRect = menuEl.getBoundingClientRect();
+					var overflowBottom = menuRect.bottom - viewportHeight + 16;
+
+					if (overflowBottom <= 0) {
+						return;
+					}
+
+					var $target = actionDropdownScrollTarget($dropdown);
+					var originalPadding = $target.css('padding-bottom');
+					var currentPadding = parseFloat(originalPadding) || 0;
+
+					if (!$target.hasClass('js-action-dropdown-scroll-space')) {
+						$target.data('actionDropdownOriginalPadding', originalPadding);
+					}
+
+					$target.addClass('js-action-dropdown-scroll-space')
+						.css('padding-bottom', (currentPadding + overflowBottom) + 'px');
+
+					window.scrollBy({
+						top: overflowBottom,
+						left: 0,
+						behavior: 'smooth'
+					});
+				}, 0);
+			}
+
 			$(document).on('shown.bs.dropdown', '.dropdown', function () {
 				var $dropdown = $(this);
 				var $menu = $dropdown.find('.dropdown-menu').first();
 				if (!$menu.length) return;
 				var actionDropdown = isActionDropdown($dropdown, $menu);
 
-				$menu.removeClass('dropdown-menu-upward');
-				$dropdown.removeClass('dropup');
-				$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
+			clearActionDropdownScrollSpace();
+			$menu.removeClass('dropdown-menu-upward');
+			$dropdown.removeClass('dropup');
+			$dropdown.toggleClass('dropdown-action-menu', actionDropdown);
 
-				if (actionDropdown) {
+			if (actionDropdown) {
+				ensureActionDropdownFits($dropdown, $menu);
+				return;
+			}
+
+			var rect = this.getBoundingClientRect();
+			var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
+			var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
+
+			if (needsUpward) {
+				if ($menu.hasClass('action-key')) {
 					$menu.addClass('dropdown-menu-upward');
-					return;
+				} else {
+					$dropdown.addClass('dropup');
 				}
+			}
+		});
 
-				var rect = this.getBoundingClientRect();
-				var menuHeight = $menu.outerHeight() || $menu.get(0).scrollHeight || 180;
-				var needsUpward = (window.innerHeight - rect.bottom) < (menuHeight + 8);
-
-				if (needsUpward) {
-					if ($menu.hasClass('action-key')) {
-						$menu.addClass('dropdown-menu-upward');
-					} else {
-						$dropdown.addClass('dropup');
-					}
-				}
-			});
-
-			$(document).on('hidden.bs.dropdown', '.dropdown', function () {
-				$(this).removeClass('dropup dropdown-action-menu');
-				$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
-			});
-
-			function getFollowTableContext($controls) {
-				var $wrapper = $controls.closest('.dataTables_wrapper');
-				var $table = $();
-				var api = null;
+		$(document).on('hidden.bs.dropdown', '.dropdown', function () {
+			clearActionDropdownScrollSpace();
+			$(this).removeClass('dropup dropdown-action-menu');
+			$(this).find('.dropdown-menu').removeClass('dropdown-menu-upward');
 
 				if ($wrapper.length) {
 					$table = $wrapper.find('table').first();
@@ -2420,8 +2489,95 @@ margin-left: 0;
 				updateManualFilterCount($controls, context, visibleRows, $rows.length, !!query);
 			}
 
+			function getServerSearchForm($controls, context, $searchInput) {
+				if (!$searchInput.length || !$searchInput.attr('name')) {
+					return $();
+				}
+
+				var $form = $controls.is('form') ? $controls : $controls.closest('form');
+				if (!$form.length || String($form.attr('method') || 'get').toLowerCase() !== 'get') {
+					return $();
+				}
+
+				if (context.api) {
+					return $();
+				}
+
+				var $scope = context.$wrapper && context.$wrapper.length
+					? context.$wrapper
+					: $controls.closest('.follow-body, .panel-body, .box-typical-body, .card-body, .follow-shell');
+
+				return $scope.find('.follow-footer .pagination, .pagination').length ? $form : $();
+			}
+
+			function bindServerPaginatedSearch($controls, context, $searchInput) {
+				var $form = getServerSearchForm($controls, context, $searchInput);
+
+				if (!$form.length || $searchInput.data('followServerSearchReady')) {
+					return false;
+				}
+
+				var submitTimer = null;
+				var lastSubmittedValue = String($searchInput.val() || '');
+
+				function submitServerSearch() {
+					var value = $.trim(String($searchInput.val() || ''));
+
+					if (value === lastSubmittedValue) {
+						return;
+					}
+
+					if (value.length > 0 && value.length < 2) {
+						return;
+					}
+
+					lastSubmittedValue = value;
+					$form.find('input[name="page"]').remove();
+					$form.trigger('submit');
+				}
+
+				$searchInput.on('input.followServerSearch', function () {
+					clearTimeout(submitTimer);
+					submitTimer = setTimeout(submitServerSearch, 800);
+				});
+
+				$searchInput.on('keydown.followServerSearch', function (event) {
+					if (event.key !== 'Enter') {
+						return;
+					}
+
+					event.preventDefault();
+					clearTimeout(submitTimer);
+					lastSubmittedValue = '__force_submit__';
+					submitServerSearch();
+				});
+
+				$searchInput.data('followServerSearchReady', true);
+				return true;
+			}
+
+			$(document).off('change.followPerPage', '.follow-controls select[name="per_page"]')
+				.on('change.followPerPage', '.follow-controls select[name="per_page"]', function () {
+					if (!this.form) {
+						return;
+					}
+
+					$(this.form).find('input[name="page"]').remove();
+
+					if (this.form.requestSubmit) {
+						this.form.requestSubmit();
+						return;
+					}
+
+					this.form.submit();
+				});
+
 			function bindManualFollowSearch($controls, context, $searchInput) {
 				if (context.api || !$searchInput.length || $searchInput.data('followManualSearchReady')) {
+					return;
+				}
+
+				if (bindServerPaginatedSearch($controls, context, $searchInput)) {
 					return;
 				}
 
@@ -2947,7 +3103,6 @@ $(document).ready(function () {
     });
 
 });
-
 
 
 </script>

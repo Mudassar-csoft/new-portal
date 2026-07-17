@@ -662,6 +662,44 @@ class LeadController extends Controller
                 ->addColumn('approved_at', fn (LeadTransfer $transfer) => optional($transfer->approved_at)->format('d-M-Y H:i') ?? 'N/A')
                 ->editColumn('reason', fn (LeadTransfer $transfer) => e($transfer->reason ?? 'N/A'))
                 ->addColumn('actions', fn (LeadTransfer $transfer) => view('lead.partials.transfer-grid-action', ['transfer' => $transfer])->render())
+                ->filter(function (Builder $query) use ($request): void {
+                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
+
+                    if ($keyword === '') {
+                        return;
+                    }
+
+                    $like = $this->toSqlLikePattern($keyword);
+
+                    $query->where(function (Builder $searchQuery) use ($like): void {
+                        $searchQuery
+                            ->where('status', 'like', $like)
+                            ->orWhere('reason', 'like', $like)
+                            ->orWhereHas('lead', function (Builder $leadQuery) use ($like): void {
+                                $leadQuery
+                                    ->where('name', 'like', $like)
+                                    ->orWhere('phone', 'like', $like)
+                                    ->orWhereHas('program', function (Builder $programQuery) use ($like): void {
+                                        $programQuery
+                                            ->where('title', 'like', $like)
+                                            ->orWhere('name', 'like', $like)
+                                            ->orWhere('code', 'like', $like);
+                                    });
+                            })
+                            ->orWhereHas('fromCampus', function (Builder $campusQuery) use ($like): void {
+                                $campusQuery
+                                    ->where('name', 'like', $like)
+                                    ->orWhere('code', 'like', $like);
+                            })
+                            ->orWhereHas('toCampus', function (Builder $campusQuery) use ($like): void {
+                                $campusQuery
+                                    ->where('name', 'like', $like)
+                                    ->orWhere('code', 'like', $like);
+                            })
+                            ->orWhereHas('requester', fn (Builder $userQuery) => $userQuery->where('name', 'like', $like))
+                            ->orWhereHas('approver', fn (Builder $userQuery) => $userQuery->where('name', 'like', $like));
+                    });
+                })
                 ->filterColumn('lead_name', function ($query, $keyword) {
                     $query->whereHas('lead', function ($leadQuery) use ($keyword) {
                         $leadQuery->where('name', 'like', "%{$keyword}%");
@@ -978,6 +1016,7 @@ class LeadController extends Controller
         $status = $this->normalizeLeadStatusFilter($request->query('status'), $type);
         $perPage = $this->resolvePerPage($request);
         $filters = $this->resolveLeadIndexFilters($request);
+        $filters['type'] = $type;
         $campuses = $this->leadIndexCampusOptions();
         $programs = $this->leadIndexProgramOptions($type, $filters['program_id'], $filters['campus_id']);
 
@@ -1051,7 +1090,7 @@ class LeadController extends Controller
     }
 
     /**
-     * @return array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}
+     * @return array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string, search: ?string}
      */
     private function resolveLeadIndexFilters(Request $request): array
     {
@@ -1064,6 +1103,7 @@ class LeadController extends Controller
 
         $createdFrom = $this->normalizeLeadIndexDate($request->query('created_from'));
         $createdTo = $this->normalizeLeadIndexDate($request->query('created_to'));
+        $search = $this->normalizeSearchTerm((string) $request->query('search', ''));
 
         if ($createdFrom !== null && $createdTo !== null && $createdFrom > $createdTo) {
             [$createdFrom, $createdTo] = [$createdTo, $createdFrom];
@@ -1074,6 +1114,7 @@ class LeadController extends Controller
             'program_id' => $programId,
             'created_from' => $createdFrom,
             'created_to' => $createdTo,
+            'search' => $search,
         ];
     }
 
@@ -1093,7 +1134,7 @@ class LeadController extends Controller
     }
 
     /**
-     * @param  array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}  $filters
+     * @param  array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string, search: ?string, type?: string}  $filters
      */
     private function applyLeadIndexFilters(Builder $query, array $filters): Builder
     {
@@ -1113,6 +1154,10 @@ class LeadController extends Controller
             ->when(
                 $filters['created_to'],
                 fn (Builder $builder, string $createdTo) => $builder->whereDate('created_at', '<=', $createdTo)
+            )
+            ->when(
+                $filters['search'],
+                fn (Builder $builder, string $search) => $this->applyLeadIndexSearch($builder, $search, (string) ($filters['type'] ?? 'training'))
             );
     }
 
@@ -1952,7 +1997,7 @@ class LeadController extends Controller
             'details' => [
                 'country' => $webLead->country ?: 'Pakistan',
                 'area' => $webLead->area,
-                'teaching_method' => $this->normalizeWebLeadTeachingMethod($webLead->teaching_method) ?: 'online',
+                'teaching_method' => 'campus',
                 'gender' => $webLead->gender ?: 'male',
                 'remarks' => implode(PHP_EOL, $remarks),
             ],

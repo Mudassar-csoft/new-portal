@@ -438,6 +438,7 @@
             var recordsTable = $('#student-records-table').DataTable({
                 processing: true,
                 serverSide: true,
+                searchDelay: 700,
                 autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: {
@@ -500,19 +501,32 @@
 
                 // Compute button position in viewport coordinates
                 var rect = $toggle.get(0).getBoundingClientRect();
+                var menuEl = $menu.get(0);
+                var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
                 var rightOffset = Math.max(0, window.innerWidth - Math.round(rect.right));
-                var topPos = Math.round(rect.bottom) + 4;
+                var menuHeight = $menu.outerHeight() || (menuEl ? menuEl.scrollHeight : 0) || 260;
+                var belowTop = Math.round(rect.bottom) + 4;
+                var aboveTop = Math.round(rect.top) - menuHeight - 4;
+                var topPos = belowTop;
+                var maxHeight = Math.max(180, viewportHeight - 24);
+
+                if ((belowTop + menuHeight) > (viewportHeight - 12)) {
+                    topPos = aboveTop >= 12 ? aboveTop : 12;
+                    maxHeight = Math.max(180, Math.min(menuHeight, viewportHeight - topPos - 12));
+                }
 
                 // Apply inline styles — highest specificity, can't be overridden
                 $menu.attr('style',
                     'position:fixed !important;' +
-                    'top:' + topPos + 'px !important;' +
-                    'right:' + rightOffset + 'px !important;' +
+                    'top:' + (topPos - 5) + 'px !important;' +
+                    'right:' + (rightOffset +59) + 'px !important;' +
                     'left:auto !important;' +
                     'bottom:auto !important;' +
                     'margin:0 !important;' +
                     'transform:none !important;' +
                     'min-width:220px !important;' +
+                    'max-height:' + maxHeight + 'px !important;' +
+                    'overflow-y:auto !important;' +
                     'display:block !important;' +
                     'z-index:99999 !important;'
                 );

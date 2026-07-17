@@ -17,6 +17,7 @@ class CampusController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
+        $perPage = $this->resolvePerPage($request);
         $allowedScopes = ['all', 'campuses', 'franchise', 'suspended_campuses', 'suspended_franchise'];
         if (!in_array($scope, $allowedScopes, true)) {
             $scope = 'all';
@@ -37,7 +38,7 @@ class CampusController extends Controller
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByRaw("CASE WHEN campus_type = 'company' THEN 0 ELSE 1 END")
             ->orderBy('name')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         return view('campus.index', [
@@ -53,6 +54,7 @@ class CampusController extends Controller
                 'country' => $request->input('country'),
                 'city' => $request->input('city'),
                 'search' => $request->input('search'),
+                'per_page' => $perPage,
             ],
         ]);
     }
@@ -228,6 +230,13 @@ class CampusController extends Controller
                         ->orWhere('remarks', 'like', '%' . $keyword . '%');
                 });
             });
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->query('per_page', 25);
+
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
     }
 
     private function applyScope(Builder $query, string $scope): void

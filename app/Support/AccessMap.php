@@ -31,6 +31,8 @@ class AccessMap
             'batch-management' => array_merge($crud('batch'), $crud('batch-timetable')),
             'programme-management' => $crud('program'),
             'campus-management' => $crud('campus'),
+            'news-management' => $crud('news'),
+            'review-management' => $crud('review'),
             'certificate-management' => array_merge($crud('certificate'), [
                 'certificate.approve',
                 'certificate.reject',
@@ -156,6 +158,8 @@ class AccessMap
             ['route' => 'batch.index', 'permissions' => ['batch.view']],
             ['route' => 'program.index', 'permissions' => ['program.view']],
             ['route' => 'campus.index', 'permissions' => ['campus.view']],
+            ['route' => 'news.index', 'permissions' => ['news.view']],
+            ['route' => 'reviews.index', 'permissions' => ['review.view']],
             ['route' => 'hrm.dashboard', 'permissions' => ['hrm_dashboard.view', 'hrm.dashboard.view']],
             ['route' => 'finance.dashboard', 'permissions' => ['finance.dashboard.view']],
             ['route' => 'inventory.index', 'permissions' => ['inventory.view']],

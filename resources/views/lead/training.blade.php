@@ -1,8 +1,11 @@
 
 @php
+
     $trainingGender = ($selectedLeadType ?? 'training') === 'training'
         ? old('details.gender', data_get($leadPrefill, 'details.gender', 'male'))
         : null;
+
+    $defaultTeachingMethod = old('details.teaching_method') ?: 'campus';
 @endphp
 <div id="lead-form-training" class="lead-form active fs-6" data-type="training">
 <div class="container-fluid ">
@@ -71,7 +74,7 @@
                             id="teaching-method-campus"
                             name="details[teaching_method]"
                             value="campus"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'campus')>
+                            @checked($defaultTeachingMethod === 'campus')>
                         <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-campus">
                             Campus
@@ -85,7 +88,7 @@
                             id="teaching-method-online"
                             name="details[teaching_method]"
                             value="online"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method', 'campus')) === 'online')>
+                            @checked($defaultTeachingMethod === 'online')>
                         <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-online">
                             Online
@@ -99,7 +102,8 @@
                             id="teaching-method-hybrid"
                             name="details[teaching_method]"
                             value="hybrid"
-                            @checked(old('details.teaching_method', data_get($leadPrefill, 'details.teaching_method')) === 'hybrid')>
+                            @checked($defaultTeachingMethod === 'hybrid')
+                            >
                         <label class="form-check-label  mb-0 mt-1"
                             for="teaching-method-hybrid">
                             Hybird

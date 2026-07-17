@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Role;
 use App\Http\Controllers\Controller;
 use App\Models\User\Role;
 use App\Support\PermissionCatalog;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -46,6 +47,37 @@ class RoleController extends Controller
                     : '<span class="label label-default">Custom</span>')
                 ->addColumn('date', fn (Role $role) => optional($role->created_at)->format('d-M-Y') ?? 'N/A')
                 ->addColumn('actions', fn (Role $role) => view('role.partials.action', ['role' => $role])->render())
+                ->filter(function (Builder $query) use ($request): void {
+                    $keyword = trim((string) data_get($request->input('search', []), 'value', ''));
+
+                    if ($keyword === '') {
+                        return;
+                    }
+
+                    $like = $this->toSqlLikePattern($keyword);
+                    $normalized = strtolower($keyword);
+
+                    $query->where(function (Builder $searchQuery) use ($like, $normalized): void {
+                        $searchQuery
+                            ->where('name', 'like', $like)
+                            ->orWhere('slug', 'like', $like)
+                            ->orWhere('description', 'like', $like)
+                            ->orWhereHas('permissions', function (Builder $permissionQuery) use ($like): void {
+                                $permissionQuery
+                                    ->where('resource', 'like', $like)
+                                    ->orWhere('action', 'like', $like)
+                                    ->orWhere('slug', 'like', $like);
+                            });
+
+                        if (str_contains($normalized, 'system')) {
+                            $searchQuery->orWhere('is_system', true);
+                        }
+
+                        if (str_contains($normalized, 'custom')) {
+                            $searchQuery->orWhere('is_system', false);
+                        }
+                    });
+                })
                 ->rawColumns(['name', 'is_system', 'actions'])
                 ->make(true);
         }
@@ -55,6 +87,11 @@ class RoleController extends Controller
         return view('role.index', [
             'activeScope' => in_array($scope, ['active', 'deleted'], true) ? $scope : 'active',
         ]);
+    }
+
+    private function toSqlLikePattern(string $value): string
+    {
+        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value) . '%';
     }
 
     public function create(): View

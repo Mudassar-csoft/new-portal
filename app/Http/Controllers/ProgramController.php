@@ -19,6 +19,7 @@ class ProgramController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
+        $perPage = $this->resolvePerPage($request);
 
         $programs = Program::query()
             ->with(['campusDiscounts.campus'])
@@ -35,7 +36,7 @@ class ProgramController extends Controller
         $programs = $programs
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByRaw('COALESCE(title, name)')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         return view('program.index', [
@@ -48,6 +49,7 @@ class ProgramController extends Controller
                 'status' => $request->input('status'),
                 'campus_id' => $request->integer('campus_id') ?: null,
                 'search' => $request->input('search'),
+                'per_page' => $perPage,
             ],
             'scopeCards' => $this->buildScopeCards($request),
             'pageTitle' => $this->resolvePageTitle($scope),
@@ -359,6 +361,13 @@ class ProgramController extends Controller
                         });
                 });
             });
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->query('per_page', 25);
+
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
     }
 
     private function applyScope(Builder $query, string $scope): void
