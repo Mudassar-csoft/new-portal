@@ -723,8 +723,13 @@ class StudentRecordController extends Controller
             return;
         }
 
-        $status = $scope === 'active' ? 'enrolled' : $scope;
-        $query->where('student_status', $status);
+        if ($scope === 'active') {
+            $query->currentStudents();
+
+            return;
+        }
+
+        $query->where('student_status', $scope);
     }
 
     private function baseStudentRecordsQuery($user): Builder
@@ -740,7 +745,7 @@ class StudentRecordController extends Controller
         $baseQuery = $this->baseStudentRecordsQuery($user);
 
         return [
-            'active' => (clone $baseQuery)->where('student_status', 'enrolled')->count(),
+            'active' => (clone $baseQuery)->currentStudents()->count(),
             'frozen' => (clone $baseQuery)->where('student_status', 'frozen')->count(),
             'concluded' => (clone $baseQuery)->where('student_status', 'concluded')->count(),
             'incomplete' => (clone $baseQuery)->where('student_status', 'incomplete')->count(),
@@ -773,7 +778,7 @@ class StudentRecordController extends Controller
             return;
         }
 
-        $query->where(function (Builder $builder) use ($like, $normalizedKeyword, $campusCodeSearch) {
+        $query->where(function (Builder $builder) use ($like, $normalizedKeyword) {
             $builder
                 ->where('student_name', 'like', $like)
                 ->orWhere('phone', 'like', $like)
@@ -920,8 +925,8 @@ class StudentRecordController extends Controller
         return match ($scope) {
             'active' => [
                 'scope' => 'active',
-                'title' => 'Active Students',
-                'description' => 'All students currently in enrolled status.',
+                'title' => 'Current Students',
+                'description' => 'Students currently enrolled and still pending certificate processing.',
             ],
             'concluded' => [
                 'scope' => 'concluded',

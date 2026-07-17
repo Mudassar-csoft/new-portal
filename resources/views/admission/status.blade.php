@@ -68,8 +68,6 @@
                 @endforeach
             </div>
 
-
-
             <div class="box-typical-body panel-body follow-body">
 <form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
 					<input type="hidden" name="scope" value="{{ $activeScope }}">

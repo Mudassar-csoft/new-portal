@@ -297,24 +297,21 @@ class DashboardController extends Controller
         $previousMonthStart = $monthStart->copy()->subMonth()->startOfMonth();
         $previousMonthEnd = $previousMonthStart->copy()->endOfMonth();
 
-        $currentStudents = (int) DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->when($campusId, fn ($query, $id) => $query->where('registrations.campus_id', $id))
-            ->where('admissions.student_status', 'enrolled')
+        $admissionStatsQuery = Admission::query()
+            ->when($campusId, fn (Builder $query, int $id) => $query->where('campus_id', $id));
+
+        $currentStudents = (int) (clone $admissionStatsQuery)
+            ->currentStudents()
             ->count();
         $currentStudents = $canViewAdmissions ? $currentStudents : 0;
 
-        $currentMonthAdmissions = (int) DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
-            ->whereBetween('admissions.admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+        $currentMonthAdmissions = (int) (clone $admissionStatsQuery)
+            ->whereBetween('admission_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->count();
         $currentMonthAdmissions = $canViewAdmissions ? $currentMonthAdmissions : 0;
 
-        $previousMonthAdmissions = (int) DB::table('admissions')
-            ->join('registrations', 'registrations.id', '=', 'admissions.registration_id')
-            ->when($campusId, fn ($q, $id) => $q->where('registrations.campus_id', $id))
-            ->whereBetween('admissions.admission_date', [$previousMonthStart->toDateString(), $previousMonthEnd->toDateString()])
+        $previousMonthAdmissions = (int) (clone $admissionStatsQuery)
+            ->whereBetween('admission_date', [$previousMonthStart->toDateString(), $previousMonthEnd->toDateString()])
             ->count();
         $previousMonthAdmissions = $canViewAdmissions ? $previousMonthAdmissions : 0;
 

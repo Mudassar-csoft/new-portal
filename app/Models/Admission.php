@@ -15,9 +15,8 @@ class Admission extends Model
     public const APPROVAL_STATUS_PENDING = 'pending';
     public const APPROVAL_STATUS_REQUESTED = 'approval_requested';
     public const APPROVAL_STATUS_APPROVED = 'approved';
-    public const CERTIFICATE_REQUESTABLE_STATUS = 'enrolled';
+    public const CERTIFICATE_REQUESTABLE_STATUS = 'concluded';
     public const CERTIFICATE_REQUESTABLE_STATUSES = [
-        'enrolled',
         'concluded',
         'completed',
     ];
@@ -177,6 +176,18 @@ class Admission extends Model
     public function scopeCertificateWorkflow(Builder $query): Builder
     {
         return $query->whereIn('certificate_status', self::CERTIFICATE_WORKFLOW_STATUSES);
+    }
+
+    public function scopeCurrentStudents(Builder $query): Builder
+    {
+        return $query
+            ->where('student_status', 'enrolled')
+            ->where(function (Builder $builder): void {
+                $builder
+                    ->whereNull('certificate_status')
+                    ->orWhere('certificate_status', '');
+            })
+            ->whereNull('certificate_delivered_at');
     }
 
     public static function isCertificateRequestableStatus(?string $status): bool
