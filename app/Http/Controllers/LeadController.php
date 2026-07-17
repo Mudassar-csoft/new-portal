@@ -1050,9 +1050,6 @@ class LeadController extends Controller
         ]);
     }
 
-    /**
-     * @return array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}
-     */
     private function resolveLeadIndexFilters(Request $request): array
     {
         $campusScopeId = $this->currentUserCampusScopeId();
@@ -1064,6 +1061,7 @@ class LeadController extends Controller
 
         $createdFrom = $this->normalizeLeadIndexDate($request->query('created_from'));
         $createdTo = $this->normalizeLeadIndexDate($request->query('created_to'));
+        $search = trim((string) $request->query('search', ''));
 
         if ($createdFrom !== null && $createdTo !== null && $createdFrom > $createdTo) {
             [$createdFrom, $createdTo] = [$createdTo, $createdFrom];
@@ -1074,6 +1072,7 @@ class LeadController extends Controller
             'program_id' => $programId,
             'created_from' => $createdFrom,
             'created_to' => $createdTo,
+            'search' => $search,
         ];
     }
 
@@ -1092,9 +1091,6 @@ class LeadController extends Controller
         }
     }
 
-    /**
-     * @param  array{campus_id: ?int, program_id: ?int, created_from: ?string, created_to: ?string}  $filters
-     */
     private function applyLeadIndexFilters(Builder $query, array $filters): Builder
     {
         return $query
@@ -1113,6 +1109,40 @@ class LeadController extends Controller
             ->when(
                 $filters['created_to'],
                 fn (Builder $builder, string $createdTo) => $builder->whereDate('created_at', '<=', $createdTo)
+            )
+            ->when(
+                $filters['search'] ?? '',
+                function (Builder $builder, string $search): void {
+                    $like = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $search) . '%';
+
+                    $builder->where(function (Builder $inner) use ($like): void {
+                        $inner
+                            ->where('name', 'like', $like)
+                            ->orWhere('phone', 'like', $like)
+                            ->orWhere('email', 'like', $like)
+                            ->orWhere('city', 'like', $like)
+                            ->orWhere('marketing_source', 'like', $like)
+                            ->orWhere('origin', 'like', $like)
+                            ->orWhere('status', 'like', $like)
+                            ->orWhere('details', 'like', $like)
+                            ->orWhereHas('program', function (Builder $programQuery) use ($like): void {
+                                $programQuery
+                                    ->where('title', 'like', $like)
+                                    ->orWhere('name', 'like', $like)
+                                    ->orWhere('code', 'like', $like);
+                            })
+                            ->orWhereHas('campus', function (Builder $campusQuery) use ($like): void {
+                                $campusQuery
+                                    ->where('code', 'like', $like)
+                                    ->orWhere('name', 'like', $like)
+                                    ->orWhere('title', 'like', $like)
+                                    ->orWhere('city', 'like', $like);
+                            })
+                            ->orWhereHas('createdBy', function (Builder $userQuery) use ($like): void {
+                                $userQuery->where('name', 'like', $like);
+                            });
+                    });
+                }
             );
     }
 

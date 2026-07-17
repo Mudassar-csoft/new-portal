@@ -2374,7 +2374,7 @@ margin-left: 0;
 				$('form[method="GET"], form[method="get"]').each(function () {
 					var form = this;
 					var $form = $(form);
-					var $search = $form.find('input[name="search"]').filter('input[type="search"], input[type="text"], input:not([type])').first();
+					var $search = $form.find('input[name="search"], input[name="q"]').filter('input[type="search"], input[type="text"], input:not([type])').first();
 
 					if (!$search.length || $search.data('liveSearchReady') || $form.is('[data-live-search="custom"]') || $search.is('[data-live-search="off"]')) {
 						return;
@@ -2405,13 +2405,13 @@ margin-left: 0;
 
 			function focusActiveSearchInput() {
 				var params = new URLSearchParams(window.location.search || '');
-				var hasSearch = params.has('search');
+				var hasSearch = params.has('search') || params.has('q');
 
 				if (!hasSearch) {
 					return;
 				}
 
-				var $search = $('input[name="search"]:visible').filter('input[type="search"], input[type="text"], input:not([type])').first();
+				var $search = $('input[name="search"]:visible, input[name="q"]:visible').filter('input[type="search"], input[type="text"], input:not([type])').first();
 
 				if (!$search.length) {
 					return;
@@ -3167,7 +3167,7 @@ margin-left: 0;
 				}
 			});
 			$(document).on('submit', 'form[method="GET"], form[method="get"]', function () {
-				if ($(this).find('input[name="search"]').length) {
+				if ($(this).find('input[name="search"], input[name="q"]').length) {
 					showGlobalLoader('Loading results...');
 				}
 			});
