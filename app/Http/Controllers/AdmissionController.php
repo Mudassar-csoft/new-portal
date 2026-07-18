@@ -807,11 +807,30 @@ class AdmissionController extends Controller
             return back()->with('error', 'Only pending admissions can upload documents for approval.');
         }
 
+        $identityDocumentType = Admission::normalizeIdentityDocumentType(
+            (string) $request->input('identity_document_type')
+        );
+
         $validated = $request->validate([
+            'identity_document_type' => [
+                'required',
+                Rule::in([
+                    Admission::IDENTITY_DOCUMENT_TYPE_CNIC,
+                    Admission::IDENTITY_DOCUMENT_TYPE_B_FORM,
+                ]),
+            ],
             'document_cnic_front' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'document_cnic_back' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_cnic_back' => Admission::requiresIdentityDocumentBack($identityDocumentType)
+                ? ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120']
+                : ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'document_admission_form' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'document_paid_slip' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ], [], [
+            'identity_document_type' => 'identity document type',
+            'document_cnic_front' => Admission::identityDocumentPrimaryLabelFor($identityDocumentType),
+            'document_cnic_back' => 'CNIC back side',
+            'document_admission_form' => 'admission form',
+            'document_paid_slip' => 'paid slip with authorized stamp',
         ]);
 
         $directory = 'admissions/' . $admission->id;
@@ -823,8 +842,11 @@ class AdmissionController extends Controller
         ]);
 
         $newPaths = [
+            'identity_document_type' => $validated['identity_document_type'],
             'document_cnic_front_path' => $validated['document_cnic_front']->store($directory, 'public'),
-            'document_cnic_back_path' => $validated['document_cnic_back']->store($directory, 'public'),
+            'document_cnic_back_path' => Admission::requiresIdentityDocumentBack($validated['identity_document_type'])
+                ? $validated['document_cnic_back']->store($directory, 'public')
+                : null,
             'document_admission_form_path' => $validated['document_admission_form']->store($directory, 'public'),
             'document_paid_slip_path' => $validated['document_paid_slip']->store($directory, 'public'),
         ];

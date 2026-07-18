@@ -238,20 +238,25 @@
                                                 \App\Models\Admission::APPROVAL_STATUS_APPROVED => 'label-success',
                                                 default => 'label-default',
                                             };
+                                            $identityDocumentType = $admission->resolveIdentityDocumentType();
                                             $documentLinks = [
-                                                'CNIC Front Side' => $admission->document_cnic_front_path
+                                                \App\Models\Admission::identityDocumentPrimaryLabelFor($identityDocumentType) => $admission->document_cnic_front_path
                                                     ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-front'])
                                                     : null,
-                                                'CNIC Back Side' => $admission->document_cnic_back_path
-                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back'])
-                                                    : null,
-                                                'Admission Form' => $admission->document_admission_form_path
-                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form'])
-                                                    : null,
-                                                'Paid Slip' => $admission->document_paid_slip_path
-                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'paid-slip'])
-                                                    : null,
                                             ];
+
+                                            if (\App\Models\Admission::requiresIdentityDocumentBack($identityDocumentType)) {
+                                                $documentLinks['CNIC Back Side'] = $admission->document_cnic_back_path
+                                                    ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back'])
+                                                    : null;
+                                            }
+
+                                            $documentLinks['Admission Form'] = $admission->document_admission_form_path
+                                                ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form'])
+                                                : null;
+                                            $documentLinks['Paid Slip'] = $admission->document_paid_slip_path
+                                                ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'paid-slip'])
+                                                : null;
                                         @endphp
                                         <tr>
                                             <td>{{ $admission->program?->title ?? $admission->program?->name ?? '—' }}</td>

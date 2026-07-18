@@ -176,14 +176,29 @@
                         <div class="alert alert-warning admission-modal__notice" id="uploadDocumentsRemark" style="display:none;"></div>
                         <div class="alert alert-info admission-modal__notice" id="uploadDocumentsScannerNotice" style="display:none;"></div>
 
-                      <!-- CNIC Front Side -->
+                        <div class="form-group">
+                            <label>Identity Document Type <span class="text-danger">*</span></label>
+                            <div class="d-flex flex-wrap" style="gap: 1rem;">
+                                <label class="mb-0">
+                                    <input type="radio" name="identity_document_type" value="cnic" checked>
+                                    CNIC
+                                </label>
+                                <label class="mb-0">
+                                    <input type="radio" name="identity_document_type" value="b_form">
+                                    B-Form
+                                </label>
+                            </div>
+                        </div>
+
+                      <!-- Primary Identity Document -->
 <div class="form-group">
-    <label>CNIC Front Side <span class="text-danger">*</span></label>
+    <label><span id="identityDocumentPrimaryLabelText">CNIC Front Side</span> <span class="text-danger">*</span></label>
 
     <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-front">
             <div class="admission-upload-tools">
                 <button type="button"
+                        id="identityDocumentPrimaryScanButton"
                         class="btn btn-default btn-sm js-admission-scan mt-0"
                         data-input-name="document_cnic_front"
                         data-document-label="CNIC Front Side">
@@ -210,13 +225,14 @@
 </div>
 
 <!-- CNIC Back Side -->
-<div class="form-group">
+<div class="form-group" id="identityDocumentBackGroup">
     <label>CNIC Back Side <span class="text-danger">*</span></label>
 
     <div class="admission-doc-upload-row">
         <div class="admission-preview-card is-empty" id="preview-cnic-back">
             <div class="admission-upload-tools">
                 <button type="button"
+                        id="identityDocumentBackScanButton"
                         class="btn btn-default btn-sm js-admission-scan mt-0"
                         data-input-name="document_cnic_back"
                         data-document-label="CNIC Back Side">
@@ -329,10 +345,24 @@
                     @csrf
                     <div class="admission-modal__body">
                         <p class="admission-modal__student" id="reviewAdmissionStudent"></p>
+                        <div class="alert alert-secondary admission-modal__notice" id="reviewAdmissionIdentityType">
+                            Identity Document Type: <strong id="reviewAdmissionIdentityTypeValue">CNIC</strong>
+                        </div>
 
                         <div class="admission-doc-list">
-                        <span class="admission-doc-link">CNIC Front Side<a href="#" id="reviewDocCnic" class="eye-span js-review-doc-preview" data-doc-title="CNIC Front Side"><i class="fa fa-eye"></i></a></span>
-                            <div class="admission-doc-link"> CNIC Back Side<span class="text-right eye-span"><a href="#" id="reviewDocCnicBack" class="js-review-doc-preview" data-doc-title="CNIC Back Side"><i class="fa fa-eye"></i></a></span></div>
+                            <div class="admission-doc-link" id="reviewIdentityPrimaryRow">
+                                <span id="reviewIdentityPrimaryLabel">CNIC Front Side</span>
+                                <span class="text-right eye-span">
+                                    <a href="#" id="reviewDocCnic" class="js-review-doc-preview" data-doc-title="CNIC Front Side"><i class="fa fa-eye"></i></a>
+                                </span>
+                            </div>
+
+                            <div class="admission-doc-link" id="reviewIdentityBackRow">
+                                <span id="reviewIdentityBackLabel">CNIC Back Side</span>
+                                <span class="text-right eye-span">
+                                    <a href="#" id="reviewDocCnicBack" class="js-review-doc-preview" data-doc-title="CNIC Back Side"><i class="fa fa-eye"></i></a>
+                                </span>
+                            </div>
 
                             <div class="admission-doc-link">
                                 Admission Form
@@ -810,6 +840,12 @@
                 var scannerNotice = document.getElementById('uploadDocumentsScannerNotice');
                 var uploadBase = @json(url('/admission'));
                 var scannerHelperBases = ['http://127.0.0.1:18777', 'http://localhost:18777'];
+                var identityDocumentTypeRadios = Array.prototype.slice.call(form.querySelectorAll('input[name="identity_document_type"]'));
+                var identityDocumentPrimaryLabel = document.getElementById('identityDocumentPrimaryLabelText');
+                var identityDocumentPrimaryScanButton = document.getElementById('identityDocumentPrimaryScanButton');
+                var identityDocumentBackGroup = document.getElementById('identityDocumentBackGroup');
+                var identityDocumentBackInput = form.querySelector('[name="document_cnic_back"]');
+                var identityDocumentBackScanButton = document.getElementById('identityDocumentBackScanButton');
                 var docInputs = [];
                 var scanButtons = [];
                 var activeHttpScannerBase = null;
@@ -857,6 +893,42 @@
 
                 function findInputByName(inputName) {
                     return form.querySelector('[name="' + inputName + '"]');
+                }
+
+                function applyIdentityDocumentType(type) {
+                    var normalizedType = type === 'b_form' ? 'b_form' : 'cnic';
+                    var primaryLabel = normalizedType === 'b_form' ? 'B-Form Copy' : 'CNIC Front Side';
+                    var requiresBackDocument = normalizedType === 'cnic';
+
+                    identityDocumentTypeRadios.forEach(function (radio) {
+                        radio.checked = radio.value === normalizedType;
+                    });
+
+                    if (identityDocumentPrimaryLabel) {
+                        identityDocumentPrimaryLabel.textContent = primaryLabel;
+                    }
+
+                    if (identityDocumentPrimaryScanButton) {
+                        identityDocumentPrimaryScanButton.setAttribute('data-document-label', primaryLabel);
+                    }
+
+                    if (identityDocumentBackGroup) {
+                        identityDocumentBackGroup.style.display = requiresBackDocument ? '' : 'none';
+                    }
+
+                    if (identityDocumentBackInput) {
+                        if (!requiresBackDocument) {
+                            identityDocumentBackInput.value = '';
+                            updatePreview(identityDocumentBackInput);
+                        }
+
+                        identityDocumentBackInput.disabled = !requiresBackDocument;
+                        identityDocumentBackInput.required = requiresBackDocument;
+                    }
+
+                    if (identityDocumentBackScanButton) {
+                        identityDocumentBackScanButton.disabled = !requiresBackDocument;
+                    }
                 }
 
                 function guessExtension(type) {
@@ -1203,11 +1275,13 @@
                 function openModal(button) {
                     var admissionId = button.getAttribute('data-admission-id');
                     var studentName = button.getAttribute('data-student-name') || 'Admission';
+                    var identityDocumentType = button.getAttribute('data-identity-document-type') || 'cnic';
                     var remark = button.getAttribute('data-approval-remarks') || '';
 
                     form.action = uploadBase + '/' + admissionId + '/documents';
                     form.reset();
                     resetAllPreviews();
+                    applyIdentityDocumentType(identityDocumentType);
                     hideScannerNotice();
                     studentLabel.textContent = studentName;
 
@@ -1227,10 +1301,18 @@
                 function closeModal() {
                     form.reset();
                     resetAllPreviews();
+                    applyIdentityDocumentType('cnic');
                     hideScannerNotice();
                     modal.classList.remove('is-open');
                     modal.setAttribute('aria-hidden', 'true');
                 }
+
+                identityDocumentTypeRadios.forEach(function (radio) {
+                    radio.addEventListener('change', function () {
+                        applyIdentityDocumentType(this.value);
+                        hideScannerNotice();
+                    });
+                });
 
                 docInputs.forEach(function (input) {
                     input.addEventListener('change', function () {
@@ -1275,6 +1357,9 @@
                 var documentModal = document.getElementById('reviewDocumentPreviewModal');
                 var documentFrame = document.getElementById('reviewDocumentPreviewFrame');
                 var documentTitle = document.getElementById('reviewDocumentPreviewTitle');
+                var reviewIdentityTypeValue = document.getElementById('reviewAdmissionIdentityTypeValue');
+                var reviewIdentityPrimaryLabel = document.getElementById('reviewIdentityPrimaryLabel');
+                var reviewIdentityBackRow = document.getElementById('reviewIdentityBackRow');
                 var reviewBase = @json(url('/admission'));
 
                 if (!modal || !form) {
@@ -1362,14 +1447,39 @@
                     documentFrame.src = 'about:blank';
                 }
 
+                function applyReviewIdentityDocumentType(type) {
+                    var normalizedType = type === 'b_form' ? 'b_form' : 'cnic';
+                    var primaryLabel = normalizedType === 'b_form' ? 'B-Form Copy' : 'CNIC Front Side';
+                    var primaryLink = document.getElementById('reviewDocCnic');
+                    var identityTypeLabel = normalizedType === 'b_form' ? 'B-Form' : 'CNIC';
+
+                    if (reviewIdentityTypeValue) {
+                        reviewIdentityTypeValue.textContent = identityTypeLabel;
+                    }
+
+                    if (reviewIdentityPrimaryLabel) {
+                        reviewIdentityPrimaryLabel.textContent = primaryLabel;
+                    }
+
+                    if (primaryLink) {
+                        primaryLink.setAttribute('data-doc-title', primaryLabel);
+                    }
+
+                    if (reviewIdentityBackRow) {
+                        reviewIdentityBackRow.style.display = normalizedType === 'b_form' ? 'none' : '';
+                    }
+                }
+
                 function openModal(button) {
                     var admissionId = button.getAttribute('data-admission-id');
                     var studentName = button.getAttribute('data-student-name') || 'Admission';
+                    var identityDocumentType = button.getAttribute('data-identity-document-type') || 'cnic';
                     var remark = button.getAttribute('data-approval-remarks') || '';
 
                     form.action = reviewBase + '/' + admissionId + '/review';
                     studentLabel.textContent = studentName;
                     remarksInput.value = '';
+                    applyReviewIdentityDocumentType(identityDocumentType);
 
                     bindDocLink('reviewDocCnic', button.getAttribute('data-doc-cnic'));
                     bindDocLink('reviewDocCnicBack', button.getAttribute('data-doc-cnic-back'));

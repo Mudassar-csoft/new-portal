@@ -15,6 +15,8 @@ class Admission extends Model
     public const APPROVAL_STATUS_PENDING = 'pending';
     public const APPROVAL_STATUS_REQUESTED = 'approval_requested';
     public const APPROVAL_STATUS_APPROVED = 'approved';
+    public const IDENTITY_DOCUMENT_TYPE_CNIC = 'cnic';
+    public const IDENTITY_DOCUMENT_TYPE_B_FORM = 'b_form';
     public const CERTIFICATE_REQUESTABLE_STATUS = 'concluded';
     public const CERTIFICATE_REQUESTABLE_STATUSES = [
         'concluded',
@@ -97,6 +99,7 @@ class Admission extends Model
         'certificate_status',
         'certificate_origin_status',
         'approval_status',
+        'identity_document_type',
         'status_updated_at',
         'document_cnic_front_path',
         'document_cnic_back_path',
@@ -188,6 +191,33 @@ class Admission extends Model
                     ->orWhere('certificate_status', '');
             })
             ->whereNull('certificate_delivered_at');
+    }
+
+    public static function normalizeIdentityDocumentType(?string $type): string
+    {
+        return in_array((string) $type, [
+            self::IDENTITY_DOCUMENT_TYPE_CNIC,
+            self::IDENTITY_DOCUMENT_TYPE_B_FORM,
+        ], true)
+            ? (string) $type
+            : self::IDENTITY_DOCUMENT_TYPE_CNIC;
+    }
+
+    public static function requiresIdentityDocumentBack(?string $type): bool
+    {
+        return self::normalizeIdentityDocumentType($type) === self::IDENTITY_DOCUMENT_TYPE_CNIC;
+    }
+
+    public static function identityDocumentPrimaryLabelFor(?string $type): string
+    {
+        return self::normalizeIdentityDocumentType($type) === self::IDENTITY_DOCUMENT_TYPE_B_FORM
+            ? 'B-Form Copy'
+            : 'CNIC Front Side';
+    }
+
+    public function resolveIdentityDocumentType(): string
+    {
+        return self::normalizeIdentityDocumentType($this->identity_document_type);
     }
 
     public static function isCertificateRequestableStatus(?string $status): bool

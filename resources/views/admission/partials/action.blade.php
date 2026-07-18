@@ -8,6 +8,7 @@
     $canAdmissionUpload = auth()->user()?->hasAnyPermission(['admission.create', 'admission.update']) ?? false;
     $showCollectFeeInstallment = $admission && $registrationId && $canViewStudent && (int) ($admission->pending_admission_fee_count ?? 0) > 0;
     $approvalStatus = $admission->approval_status ?? \App\Models\Admission::APPROVAL_STATUS_APPROVED;
+    $identityDocumentType = $admission?->resolveIdentityDocumentType() ?? \App\Models\Admission::IDENTITY_DOCUMENT_TYPE_CNIC;
     $docCnicUrl = $admission?->document_cnic_front_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-front']) : null;
     $docCnicBackUrl = $admission?->document_cnic_back_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back']) : null;
     $docFormUrl = $admission?->document_admission_form_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form']) : null;
@@ -157,10 +158,11 @@ div.dataTables_scrollBody{
             <a class="dropdown-item lead-action-item" href="#">
                 @include('partials.action-whatsapp-content')
             </a>
-            <button type="button"
+<button type="button"
     class="dropdown-item lead-action-item js-open-upload-admission"
     data-admission-id="{{ $admission->id }}"
     data-student-name="{{ $admission->student_name }}"
+    data-identity-document-type="{{ $identityDocumentType }}"
     data-approval-remarks="{{ $admission->approval_remarks ?? '' }}">
 
    <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
@@ -238,6 +240,7 @@ div.dataTables_scrollBody{
                 data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
                 data-doc-form="{{ $docFormUrl ?? '' }}"
                 data-doc-slip="{{ $docSlipUrl ?? '' }}"
+                data-identity-document-type="{{ $identityDocumentType }}"
                 data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
             >
 
