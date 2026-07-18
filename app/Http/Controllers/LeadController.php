@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admission;
 use App\Models\Campus;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
 use App\Models\Program;
+use App\Models\Registration;
 use App\Models\User;
 use App\Models\WebLead;
 use Illuminate\Support\Carbon;
@@ -234,20 +236,28 @@ class LeadController extends Controller
         );
 
         $mergedDetails = $this->mergeLeadDetails($lead->details, $validated['details'] ?? []);
+        $updatedLeadName = trim((string) ($validated['name'] ?? ''));
+        $leadNameChanged = $updatedLeadName !== '' && $updatedLeadName !== trim((string) ($lead->name ?? ''));
 
-        $lead->update([
-            'campus_id' => $validated['campus_id'] ?? null,
-            'program_id' => $validated['program_id'] ?? null,
-            'assigned_user_id' => $validated['assigned_user_id'] ?? $lead->assigned_user_id,
-            'type' => $lead->type,
-            'name' => $validated['name'] ?? null,
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'city' => $validated['city'] ?? null,
-            'origin' => $validated['origin'] ?? null,
-            'marketing_source' => $validated['marketing_source'] ?? null,
-            'details' => $mergedDetails,
-        ]);
+        DB::transaction(function () use ($lead, $validated, $mergedDetails, $leadNameChanged, $updatedLeadName): void {
+            $lead->update([
+                'campus_id' => $validated['campus_id'] ?? null,
+                'program_id' => $validated['program_id'] ?? null,
+                'assigned_user_id' => $validated['assigned_user_id'] ?? $lead->assigned_user_id,
+                'type' => $lead->type,
+                'name' => $validated['name'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'city' => $validated['city'] ?? null,
+                'origin' => $validated['origin'] ?? null,
+                'marketing_source' => $validated['marketing_source'] ?? null,
+                'details' => $mergedDetails,
+            ]);
+
+            if ($leadNameChanged) {
+                $this->syncLeadStudentName($lead, $updatedLeadName);
+            }
+        });
 
         return Redirect::route('leads.show', $lead)->with('status', 'Lead updated successfully.');
     }
@@ -1389,6 +1399,29 @@ class LeadController extends Controller
     private function mergeLeadDetails(?array $existingDetails, array $submittedDetails): array
     {
         return array_replace($existingDetails ?? [], $submittedDetails);
+    }
+
+    private function syncLeadStudentName(Lead $lead, string $studentName): void
+    {
+        $registrationIds = Registration::query()
+            ->where('lead_id', $lead->id)
+            ->pluck('id');
+
+        if ($registrationIds->isEmpty()) {
+            return;
+        }
+
+        Registration::query()
+            ->whereIn('id', $registrationIds)
+            ->update([
+                'student_name' => $studentName,
+            ]);
+
+        Admission::query()
+            ->whereIn('registration_id', $registrationIds)
+            ->update([
+                'student_name' => $studentName,
+            ]);
     }
 
     private function renderFollowupsModule(string $type, Request $request): View
