@@ -131,6 +131,14 @@ class StudentRecordController extends Controller
 
         $campusFilters = $this->studentRecordCampusFilters($request->user(), $config['scope']);
         $programFilters = $this->studentRecordProgramFilters($request->user(), $config['scope']);
+        $selectedCampusFilterId = $this->resolveStudentRecordSelectedFilterId(
+            (int) $request->input('campus_id', 0),
+            $campusFilters
+        );
+        $selectedProgramFilterId = $this->resolveStudentRecordSelectedFilterId(
+            (int) $request->input('program_id', 0),
+            $programFilters
+        );
 
         return view('student.records.index', [
             'scope' => $config['scope'],
@@ -139,6 +147,8 @@ class StudentRecordController extends Controller
             'pageTitle' => $config['title'],
             'pageDescription' => $config['description'],
             'programFilters' => $programFilters,
+            'selectedCampusFilterId' => $selectedCampusFilterId,
+            'selectedProgramFilterId' => $selectedProgramFilterId,
         ]);
     }
 
@@ -896,6 +906,21 @@ class StudentRecordController extends Controller
         $this->applyScope($query, $scope);
 
         return $query;
+    }
+
+    private function resolveStudentRecordSelectedFilterId(int $requestedId, array $filters): ?int
+    {
+        if ($requestedId <= 0) {
+            return null;
+        }
+
+        foreach ($filters as $filter) {
+            if ((int) ($filter['id'] ?? 0) === $requestedId) {
+                return $requestedId;
+            }
+        }
+
+        return null;
     }
 
     private function normalizeSearchToken(string $value): string

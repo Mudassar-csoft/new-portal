@@ -61,6 +61,10 @@
 		$statsColumnClass = $showIncomeChart || $showAdmissionProgressWidget ? '6' : '12';
 		$statCardColumnClass = $hasRecipientDashboardRole ? 'col-12' : 'col-md-6';
 		$activityColumnClass = $canViewLeads && $canViewAdmissions ? 'col-xl-6' : 'col-xl-12';
+		$currentStudentsUrl = route('student.records.index', array_filter([
+			'scope' => 'active',
+			'campus_id' => $selectedCampus->id ?? null,
+		], fn ($value) => filled($value)));
 	@endphp
 	<div class="dashboard-shell">
 		<div id="dashboard-loader" class="dashboard-loader">
@@ -222,10 +226,12 @@
 						<article class="statistic-box purple mr-1"  >
 							<div class="stat-inner">
 								<button class="stat-eye stat-eye-inline" data-target="stat-2" aria-label="Show current students"><i class="fa fa-eye"></i></button>
-								<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-stat-key="currentStudents" data-format="number" data-mask-mode="icon"></div>
-								<div class="caption ">
-									<div class="caption-text">Current Students</div>
-								</div>
+								<a href="{{ $currentStudentsUrl }}" class="stat-card-link" aria-label="Open current students list">
+									<div class="number stat-number" data-value="{{ number_format((int) ($stats['currentStudents'] ?? 0)) }}" data-target="stat-2" data-stat-key="currentStudents" data-format="number" data-mask-mode="icon"></div>
+									<div class="caption ">
+										<div class="caption-text">Current Students</div>
+									</div>
+								</a>
 							</div>
 						</article>
 					</div><!--.col-->

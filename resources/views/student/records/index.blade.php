@@ -32,6 +32,12 @@
         $campusFilters = $campusFilters ?? [];
         $programFilters = $programFilters ?? [];
         $scopeCounts = $scopeCounts ?? [];
+        $selectedCampusFilterId = $selectedCampusFilterId ?? null;
+        $selectedProgramFilterId = $selectedProgramFilterId ?? null;
+        $scopeLinkFilters = array_filter([
+            'campus_id' => $selectedCampusFilterId,
+            'program_id' => $selectedProgramFilterId,
+        ], fn ($value) => filled($value));
     @endphp
 
     <div class="lead-status-shell">
@@ -52,7 +58,7 @@
                             $isActive = $activeStudentScope === $scopeKey;
                             $count = $scopeCounts[$scopeKey] ?? 0;
                         @endphp
-                        <a href="{{ route('student.records.index', ['scope' => $scopeKey]) }}" class="follow-tab {{ $isActive ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
+                        <a href="{{ route('student.records.index', array_merge(['scope' => $scopeKey], $scopeLinkFilters)) }}" class="follow-tab {{ $isActive ? 'active' : '' }}" data-scope="{{ $scopeKey }}">
                             <span class="label-text">{{ $scopeLabel }}</span>
                             <span class="badge {{ $studentBadgeColors[$scopeKey] ?? 'badge-secondary' }}">{{ number_format((int) $count) }}</span>
                         </a>
@@ -66,7 +72,7 @@
                             <select id="student-records-campus-filter" class="form-control">
                                 <option value="">All Campuses</option>
                                 @foreach ($campusFilters as $campusFilter)
-                                    <option value="{{ $campusFilter['id'] }}">{{ $campusFilter['label'] }}</option>
+                                    <option value="{{ $campusFilter['id'] }}" @selected((int) $selectedCampusFilterId === (int) $campusFilter['id'])>{{ $campusFilter['label'] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -76,7 +82,7 @@
                             <select id="student-records-program-filter" class="form-control">
                                 <option value="">All Programs</option>
                                 @foreach ($programFilters as $programFilter)
-                                    <option value="{{ $programFilter['id'] }}">{{ $programFilter['label'] }}</option>
+                                    <option value="{{ $programFilter['id'] }}" @selected((int) $selectedProgramFilterId === (int) $programFilter['id'])>{{ $programFilter['label'] }}</option>
                                 @endforeach
                             </select>
                         </div>

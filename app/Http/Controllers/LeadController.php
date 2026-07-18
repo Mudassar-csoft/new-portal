@@ -429,8 +429,7 @@ class LeadController extends Controller
         $supportsRegistration = $this->supportsRegistration($lead->type);
         $supportsAdmission = $this->supportsAdmission($lead->type);
         $stages = $this->followupStageConfig($lead->type)['stageMap'];
-        $campusScopeId = $this->currentUserCampusScopeId();
-        $campuses = $this->leadIndexCampusOptions();
+        $campuses = $this->followupCampusOptions();
         $resolvedCoworkingCampus = $isCoworkingLead
             ? $this->resolveCoworkingCampus($lead, $campuses)
             : null;
@@ -471,7 +470,7 @@ class LeadController extends Controller
         $currentStage = $this->normalizeFollowupStage($lead->type, $followups->first()->stage ?? 'new');
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
-        $previousFollowupCampusId = $campusScopeId ? null : $this->resolvePreviousFollowupCampusId($lead);
+        $previousFollowupCampusId = $this->resolvePreviousFollowupCampusId($lead);
         $defaultFollowupCampusId = $this->resolvePermittedFollowupCampusId($lead);
         $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
         $interestHeading = $this->leadInterestHeading($lead->type);
@@ -933,12 +932,6 @@ class LeadController extends Controller
 
     private function resolvePermittedFollowupCampusId(Lead $lead, mixed $requestedCampusId = null): ?int
     {
-        $campusScopeId = $this->currentUserCampusScopeId();
-
-        if ($campusScopeId) {
-            return $campusScopeId;
-        }
-
         return $this->resolveFollowupCampusId($lead, $requestedCampusId);
     }
 
@@ -1165,6 +1158,14 @@ class LeadController extends Controller
                 $this->currentUserCampusScopeId(),
                 fn ($query, int $campusId) => $query->whereKey($campusId)
             )
+            ->orderBy('code')
+            ->orderBy('name')
+            ->get(['id', 'code', 'name', 'title']);
+    }
+
+    private function followupCampusOptions(): Collection
+    {
+        return Campus::query()
             ->orderBy('code')
             ->orderBy('name')
             ->get(['id', 'code', 'name', 'title']);
