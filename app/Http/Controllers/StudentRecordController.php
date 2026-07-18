@@ -144,9 +144,7 @@ class StudentRecordController extends Controller
 
     public function show(Request $request, \App\Models\Registration $registration): View
     {
-        if (! $this->canReviewAdmissions($request->user())) {
-            $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), $request->user(), 'You are not allowed to access student records from another campus.');
-        }
+        $this->ensureStudentProfileAccess($registration, $request->user());
 
         $registration->load([
             'lead',
@@ -1395,5 +1393,33 @@ class StudentRecordController extends Controller
     private function canReviewAdmissions($user): bool
     {
         return $user?->hasAnyPermission(['admission.review']) ?? false;
+    }
+
+    private function ensureStudentProfileAccess(\App\Models\Registration $registration, $user): void
+    {
+        if ($this->canReviewAdmissions($user)) {
+            return;
+        }
+
+        $campusScopeId = $this->userCampusScopeId($user);
+
+        if (! $campusScopeId) {
+            return;
+        }
+
+        if ((int) ($registration->campus_id ?? 0) === $campusScopeId) {
+            return;
+        }
+
+        $hasCampusMatchedAdmission = Admission::query()
+            ->where('registration_id', $registration->id)
+            ->where('campus_id', $campusScopeId)
+            ->exists();
+
+        abort_unless(
+            $hasCampusMatchedAdmission,
+            403,
+            'You are not allowed to access student records from another campus.'
+        );
     }
 }
