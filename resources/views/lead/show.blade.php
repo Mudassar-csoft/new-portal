@@ -38,9 +38,7 @@
 		$defaultCampusDisplay = $defaultCampusRecord?->code
 			?? $defaultCampusRecord?->name
 			?? $leadLocationDisplay;
-		$defaultCampusFallbackLabel = !empty($previousFollowupCampusId ?? null)
-			? 'Same as previous follow-up'
-			: 'Same as lead';
+		$defaultCampusFallbackLabel = 'Same as lead';
 		$statusLabel = match ($lead->status) {
 			'registered' => $stages['registered'] ?? 'Registered',
 			'enrolled' => $isCoworkingLead ? ($stages['registered'] ?? 'Registered') : ($stages['enroll'] ?? 'Enrolled'),
@@ -1498,8 +1496,17 @@
 						throw new Error('Unable to save follow-up.');
 					}
 
-					showAlert('Success', 'Follow-up saved successfully.', 'success');
+					const data = await response.json().catch(function () {
+						return {};
+					});
+
+					showAlert('Success', data.status || 'Follow-up saved successfully.', 'success');
 					setTimeout(function () {
+						if (data.redirect_url) {
+							window.location.assign(data.redirect_url);
+							return;
+						}
+
 						window.location.reload();
 					}, 900);
 				} catch (error) {

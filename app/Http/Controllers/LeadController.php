@@ -370,12 +370,14 @@ class LeadController extends Controller
 
         $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true);
         $followupCampusId = $this->resolvePermittedFollowupCampusId($lead, $validated['campus_id'] ?? null);
+        $leadCampusChanged = (int) ($followupCampusId ?? 0) > 0
+            && (int) ($lead->campus_id ?? 0) !== (int) $followupCampusId;
         $nextActionAt = $isTerminalStage
             ? null
             : $this->normalizeFollowupDateTime($validated['next_action_date'] ?? null);
         $leadStatusAfterFollowup = $this->resolveLeadStatusForFollowupStage($lead, $validated['stage']);
 
-        DB::transaction(function () use ($followupCampusId, $lead, $leadStatusAfterFollowup, $nextActionAt, $request, $validated, $isTerminalStage): void {
+        DB::transaction(function () use ($followupCampusId, $lead, $leadCampusChanged, $leadStatusAfterFollowup, $nextActionAt, $request, $validated, $isTerminalStage): void {
             LeadFollowup::create([
                 'lead_id' => $lead->id,
                 'campus_id' => $followupCampusId,
@@ -387,6 +389,12 @@ class LeadController extends Controller
                 'stage' => $validated['stage'],
                 'lead_status' => $leadStatusAfterFollowup,
             ]);
+
+            if ($leadCampusChanged) {
+                $lead->update([
+                    'campus_id' => $followupCampusId,
+                ]);
+            }
 
             $this->syncLeadNextFollowupAt(
                 $lead,
@@ -400,13 +408,21 @@ class LeadController extends Controller
             }
         });
 
+        $statusMessage = $leadCampusChanged
+            ? 'Follow-up added and lead campus updated.'
+            : 'Follow-up added.';
+        $redirectUrl = $this->followupSuccessRedirectUrl($lead, $followupCampusId);
+
         if ($request->expectsJson()) {
             return response()->json([
-                'status' => 'Follow-up added.',
+                'status' => $statusMessage,
+                'redirect_url' => $redirectUrl,
             ]);
         }
 
-        return Redirect::back()->with('status', 'Follow-up added.');
+        return $redirectUrl
+            ? Redirect::to($redirectUrl)->with('status', $statusMessage)
+            : Redirect::back()->with('status', $statusMessage);
     }
 
     public function show(Lead $lead): View
@@ -471,7 +487,7 @@ class LeadController extends Controller
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
         $previousFollowupCampusId = $this->resolvePreviousFollowupCampusId($lead);
-        $defaultFollowupCampusId = $this->resolvePermittedFollowupCampusId($lead);
+        $defaultFollowupCampusId = $this->resolveDefaultFollowupCampusId($lead);
         $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
         $interestHeading = $this->leadInterestHeading($lead->type);
         $interestValue = $this->leadInterestValue($lead);
@@ -933,6 +949,35 @@ class LeadController extends Controller
     private function resolvePermittedFollowupCampusId(Lead $lead, mixed $requestedCampusId = null): ?int
     {
         return $this->resolveFollowupCampusId($lead, $requestedCampusId);
+    }
+
+    private function resolveDefaultFollowupCampusId(Lead $lead): ?int
+    {
+        $leadCampusId = (int) ($lead->campus_id ?? 0);
+
+        if ($leadCampusId > 0 && Campus::query()->whereKey($leadCampusId)->exists()) {
+            return $leadCampusId;
+        }
+
+        $resolvedCampusId = (int) ($this->resolveLeadCampusScopeId($lead) ?? 0);
+
+        if ($resolvedCampusId > 0) {
+            return $resolvedCampusId;
+        }
+
+        return $this->resolvePreviousFollowupCampusId($lead);
+    }
+
+    private function followupSuccessRedirectUrl(Lead $lead, ?int $followupCampusId): ?string
+    {
+        $campusScopeId = $this->currentUserCampusScopeId();
+        $resolvedFollowupCampusId = (int) ($followupCampusId ?? 0);
+
+        if (! $campusScopeId || $resolvedFollowupCampusId <= 0 || $resolvedFollowupCampusId === $campusScopeId) {
+            return null;
+        }
+
+        return route($this->leadTypeMeta($lead->type)['indexRoute']);
     }
 
     private function resolvePreviousFollowupCampusId(Lead $lead): ?int
