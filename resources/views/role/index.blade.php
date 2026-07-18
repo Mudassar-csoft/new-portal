@@ -129,7 +129,7 @@
 
         $(function () {
             $('#roles-table').DataTable({
-                processing: true, serverSide: true, searchDelay: 700, autoWidth: false,
+                processing: true, serverSide: true, autoWidth: false,
                 dom: '<"follow-controls"l f>rt<"follow-footer"i p>',
                 ajax: "{{ route('roles.index', ['scope' => $activeScope]) }}",
                 order: [[1, 'asc']],

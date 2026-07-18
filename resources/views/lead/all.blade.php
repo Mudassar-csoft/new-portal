@@ -18,7 +18,7 @@
 		$indexRoute = $indexRoute ?? route('leads.index');
 		$selectedStatus = $selectedStatus ?? 'all';
 		$perPage = (int) ($perPage ?? 25);
-		$filters = $filters ?? ['campus_id' => null, 'program_id' => null, 'created_from' => null, 'created_to' => null];
+		$filters = $filters ?? ['campus_id' => null, 'program_id' => null, 'created_from' => null, 'created_to' => null, 'search' => ''];
 		$campuses = $campuses ?? collect();
 		$programs = $programs ?? collect();
 		$showCampusFilter = $campuses->count() > 1;
@@ -76,10 +76,6 @@
 							</select>
 							<label class="">Entries</label>
 						</div>
-						<div class="follow-search">
-							<input type="text" name="search" id="lead-status-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $filters['search'] ?? '' }}">
-							<i class="fa fa-search"></i>
-						</div>
 
 						<div class="lead-filter-row">
 							@if($showCampusFilter)
@@ -114,6 +110,13 @@
 									<input type="date" name="created_from" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_from'] ?? '' }}" onchange="this.form.submit()">
 									<span class="lead-date-range-separator">to</span>
 									<input type="date" name="created_to" class="form-control form-control-sm lead-auto-submit" value="{{ $filters['created_to'] ?? '' }}" onchange="this.form.submit()">
+								</div>
+							</div>
+
+							<div class="lead-filter-field">
+								<label class="form-label">Search</label>
+								<div class="follow-search">
+									<input type="text" name="search" class="form-control form-control-sm" value="{{ $filters['search'] ?? '' }}" placeholder="Search leads...">
 								</div>
 							</div>
 

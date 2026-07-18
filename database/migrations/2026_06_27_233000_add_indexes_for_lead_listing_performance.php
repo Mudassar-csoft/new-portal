@@ -39,12 +39,14 @@ return new class extends Migration
 
     private function hasIndex(string $table, string $indexName): bool
     {
-        $database = DB::getDatabaseName();
-        $rows = DB::select(
-            'SELECT 1 FROM information_schema.statistics WHERE table_schema = ? AND table_name = ? AND index_name = ? LIMIT 1',
-            [$database, $table, $indexName]
-        );
+        $driver = DB::getDriverName();
 
-        return $rows !== [];
+        return match ($driver) {
+            'mysql', 'mariadb' => DB::select(
+                'SELECT 1 FROM information_schema.statistics WHERE table_schema = ? AND table_name = ? AND index_name = ? LIMIT 1',
+                [DB::getDatabaseName(), $table, $indexName]
+            ) !== [],
+            default => false,
+        };
     }
 };

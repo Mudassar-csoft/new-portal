@@ -46,9 +46,8 @@
                         </div>
                         <div class="form-group col-lg-3 col-md-6">
                             <label class="form-label"> Payee</label>
-                            <select name="payee_id" id="payeeSelect" class="form-control">
+                            <select name="payee_id" class="form-control">
                                 <option value="">- Select -</option>
-                                <option value="__add_new__">+ Add Payee</option>
                                 @foreach($payees as $payee)
                                     <option value="{{ $payee->id }}">{{ $payee->full_name }} ({{ ucfirst($payee->type) }})</option>
                                 @endforeach
@@ -189,12 +188,12 @@
                                             @if($canManageExpense && $expense->status === 'pending')
                                                 <form method="POST" action="{{ route('finance.expense.approve', $expense) }}">
                                                     @csrf
-                                                    <button class="dropdown-item text-success" type="submit">✅ Approve</button>
+                                                    <button class="dropdown-item text-success" type="submit">Approve</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('finance.expense.reject', $expense) }}">
                                                     @csrf
                                                     <input type="hidden" name="reason" value="Rejected by admin">
-                                                    <button class="dropdown-item text-danger" type="submit">❌ Reject</button>
+                                                    <button class="dropdown-item text-danger" type="submit">Reject</button>
                                                 </form>
                                             @endif
                                             @if($canManageExpense && $expense->status === 'approved')
@@ -252,40 +251,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="quickPayeeModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="quickPayeeForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add Payee</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-danger d-none" id="quickPayeeError"></div>
-                        <div class="form-group">
-                            <label class="form-label required">Payee Name</label>
-                            <input type="text" name="full_name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label required">Type</label>
-                            <select name="type" class="form-control" required>
-                                <option value="payee">Payee</option>
-                                <option value="supplier">Supplier</option>
-                                <option value="employee">Employee</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-inline btn-danger-outline" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-inline btn-primary-outline">Save Payee</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @push('styles')
@@ -331,7 +296,6 @@
         (function ($) {
             const endpoints = {
                 expenseTypeStore: @json(route('finance.expense.types.store')),
-                payeeStore: @json(route('finance.payees.quickStore')),
                 rentMeta: @json(route('finance.expense.rentMeta')),
                 utilityLookup: @json(route('finance.utility.lookup'))
             };
@@ -549,13 +513,6 @@
 
                 toggleExpenseSourceSections();
             });
-
-            $('#payeeSelect').on('change', function () {
-                if ($(this).val() === '__add_new__') {
-                    $('#quickPayeeModal').modal('show');
-                    $(this).val('');
-                }
-            });
             $('#utilityBillTypeFilter').on('change', function () {
                 syncUtilityCompany();
                 renderUtilityBills();
@@ -590,37 +547,6 @@
                 }).fail(function (xhr) {
                     const errors = xhr.responseJSON && xhr.responseJSON.errors ? xhr.responseJSON.errors : {};
                     const message = Object.values(errors).flat().join(' ') || 'Unable to save expense type.';
-                    $error.removeClass('d-none').text(message);
-                });
-            });
-
-            $('#quickPayeeForm').on('submit', function (event) {
-                event.preventDefault();
-
-                const $form = $(this);
-                const $error = $('#quickPayeeError');
-
-                $.ajax({
-                    url: endpoints.payeeStore,
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'Accept': 'application/json'
-                    },
-                    data: $form.serialize()
-                }).done(function (response) {
-                    const typeLabel = response.payee.type ? response.payee.type.charAt(0).toUpperCase() + response.payee.type.slice(1) : 'Payee';
-                    const option = $('<option></option>')
-                        .val(response.payee.id)
-                        .text(response.payee.full_name + ' (' + typeLabel + ')');
-
-                    $('#payeeSelect').append(option).val(String(response.payee.id));
-                    $('#quickPayeeModal').modal('hide');
-                    $form.trigger('reset');
-                    $error.addClass('d-none').text('');
-                }).fail(function (xhr) {
-                    const errors = xhr.responseJSON && xhr.responseJSON.errors ? xhr.responseJSON.errors : {};
-                    const message = Object.values(errors).flat().join(' ') || 'Unable to save payee.';
                     $error.removeClass('d-none').text(message);
                 });
             });

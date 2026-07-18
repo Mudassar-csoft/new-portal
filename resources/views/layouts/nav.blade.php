@@ -54,14 +54,6 @@
     $canCampusView = $can('campus.view');
     $showCampusModule = $canCampusCreate || $canCampusView;
 
-    $canNewsCreate = $can('news.create');
-    $canNewsView = $can('news.view');
-    $showNewsModule = $canNewsCreate || $canNewsView;
-
-    $canReviewCreate = $can('review.create');
-    $canReviewView = $can('review.view');
-    $showReviewModule = $canReviewCreate || $canReviewView;
-
     $canHrmDashboard = $can('hrm_dashboard.view', 'hrm.dashboard.view');
     $canHrmEmployees = $can('hrm_employee.view', 'hrm_employee.create', 'hrm_employee.update', 'hrm_employee.manage_status', 'hrm.employee.view', 'hrm.employee.create', 'hrm.employee.update');
     $canHrmMasters = $can('hrm_department.view', 'hrm_department.create', 'hrm_designation.create', 'hrm_leave.manage_type', 'hrm_holiday.view', 'hrm_holiday.manage', 'hrm.master.view', 'hrm.master.create', 'hrm.master.update');
@@ -370,45 +362,6 @@
                         <li><a href="{{ route('campus.index', ['scope' => 'suspended_campuses']) }}" class="stage-link"><span class="lbl">Suspended Campuses</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_company'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('campus.index', ['scope' => 'suspended_franchise']) }}" class="stage-link"><span class="lbl">Suspended Franchise</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_suspended_franchise'] ?? 0)) }}</span></a></li>
                         <li><a href="{{ route('campus.index') }}" class="stage-link"><span class="lbl">All Campuses / Franchise</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['campus_all'] ?? 0)) }}</span></a></li>
-                    @endif
-                </ul>
-            </li>
-        @endif
-
-        @if($showNewsModule)
-            <!-- <li class="blue with-sub">
-                <span>
-                    <img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp" alt="News">
-                    <span class="lbl">News Management</span>
-                </span>
-                <ul>
-                    @if($canNewsCreate)
-                        <li><a href="{{ route('news.create') }}" class="stage-link"><span class="lbl">Create News</span></a></li>
-                    @endif
-                    @if($canNewsView)
-                        <li><a href="{{ route('news.index', ['scope' => 'active']) }}" class="stage-link"><span class="lbl">Active News</span></a></li>
-                        <li><a href="{{ route('news.index', ['scope' => 'inactive']) }}" class="stage-link"><span class="lbl">Inactive News</span></a></li>
-                        <li><a href="{{ route('news.index') }}" class="stage-link"><span class="lbl">All News</span></a></li>
-                    @endif
-                </ul>
-            </li> -->
-        @endif
-
-        @if($showReviewModule)
-            <li class="blue with-sub">
-                <span>
-                    <img class="font-icon-dashboard" src="img/navbarIcons/content-managing.webp" alt="Reviews">
-                    <span class="lbl">Reviews Management</span>
-                </span>
-                <ul>
-                    @if($canReviewCreate)
-                        <li><a href="{{ route('reviews.create') }}" class="stage-link"><span class="lbl">Create Review</span></a></li>
-                    @endif
-                    @if($canReviewView)
-                        <li><a href="{{ route('reviews.index', ['scope' => 'active']) }}" class="stage-link"><span class="lbl">Active Reviews</span></a></li>
-                        <li><a href="{{ route('reviews.index', ['scope' => 'inactive']) }}" class="stage-link"><span class="lbl">Inactive Reviews</span></a></li>
-                        <li><a href="{{ route('reviews.index', ['scope' => 'featured']) }}" class="stage-link"><span class="lbl">Featured Reviews</span></a></li>
-                        <li><a href="{{ route('reviews.index', ['scope' => 'all']) }}" class="stage-link"><span class="lbl">All Reviews</span></a></li>
                     @endif
                 </ul>
             </li>

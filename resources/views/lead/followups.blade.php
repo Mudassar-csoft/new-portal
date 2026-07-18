@@ -93,7 +93,7 @@
                         @endif
                         <div class="d-flex control-flow-show-bar" style="gap: 0.5rem; align-items: center;">
                             <label>Show</label>
-                            <select class="form-select form-select-sm" name="per_page" id="follow-per-page">
+                            <select class="form-select form-select-sm" name="per_page" id="follow-per-page" onchange="this.form.submit()">
                                 @foreach([10, 25, 50, 100] as $option)
                                     <option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>{{ $option }}</option>
                                 @endforeach
@@ -434,12 +434,6 @@
                 initLeadModal();
                 revealFollowPage();
 
-                var perPage = document.getElementById('follow-per-page');
-                if (perPage) {
-                    perPage.addEventListener('change', function () {
-                        this.form.submit();
-                    });
-                }
             });
         })();
     </script>
