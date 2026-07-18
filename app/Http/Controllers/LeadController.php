@@ -369,7 +369,7 @@ class LeadController extends Controller
         }
 
         $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true);
-        $followupCampusId = $this->resolveFollowupCampusId($lead, $validated['campus_id'] ?? null);
+        $followupCampusId = $this->resolvePermittedFollowupCampusId($lead, $validated['campus_id'] ?? null);
         $nextActionAt = $isTerminalStage
             ? null
             : $this->normalizeFollowupDateTime($validated['next_action_date'] ?? null);
@@ -429,7 +429,8 @@ class LeadController extends Controller
         $supportsRegistration = $this->supportsRegistration($lead->type);
         $supportsAdmission = $this->supportsAdmission($lead->type);
         $stages = $this->followupStageConfig($lead->type)['stageMap'];
-        $campuses = Campus::orderBy('name')->get();
+        $campusScopeId = $this->currentUserCampusScopeId();
+        $campuses = $this->leadIndexCampusOptions();
         $resolvedCoworkingCampus = $isCoworkingLead
             ? $this->resolveCoworkingCampus($lead, $campuses)
             : null;
@@ -470,8 +471,8 @@ class LeadController extends Controller
         $currentStage = $this->normalizeFollowupStage($lead->type, $followups->first()->stage ?? 'new');
         $latestFollowup = $followups->first();
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
-        $previousFollowupCampusId = $this->resolvePreviousFollowupCampusId($lead);
-        $defaultFollowupCampusId = $this->resolveFollowupCampusId($lead);
+        $previousFollowupCampusId = $campusScopeId ? null : $this->resolvePreviousFollowupCampusId($lead);
+        $defaultFollowupCampusId = $this->resolvePermittedFollowupCampusId($lead);
         $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
         $interestHeading = $this->leadInterestHeading($lead->type);
         $interestValue = $this->leadInterestValue($lead);
@@ -928,6 +929,17 @@ class LeadController extends Controller
         }
 
         return null;
+    }
+
+    private function resolvePermittedFollowupCampusId(Lead $lead, mixed $requestedCampusId = null): ?int
+    {
+        $campusScopeId = $this->currentUserCampusScopeId();
+
+        if ($campusScopeId) {
+            return $campusScopeId;
+        }
+
+        return $this->resolveFollowupCampusId($lead, $requestedCampusId);
     }
 
     private function resolvePreviousFollowupCampusId(Lead $lead): ?int
