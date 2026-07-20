@@ -131,6 +131,138 @@ class StudentDropWorkflowTest extends TestCase
         $this->assertStringNotContainsString('Freeze Course', $dropActions);
     }
 
+    public function test_reenroll_action_shows_for_incomplete_suspended_cancelled_and_dropped_students(): void
+    {
+        $studentView = $this->createPermission('student', 'view', 'student.view');
+        $studentUpdate = $this->createPermission('student', 'update', 'student.update');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('UI101', 'UI Design');
+        $batch = $this->createBatch($campus, $program, 'ALP-B4');
+
+        $statusStudents = [
+            'Dropped Student' => 'dropped',
+            'Incomplete Student' => 'incomplete',
+            'Suspended Student' => 'suspended',
+            'Cancelled Student' => 'admission_cancelled',
+            'Enrolled Student' => 'enrolled',
+        ];
+
+        $index = 0;
+
+        foreach ($statusStudents as $studentName => $status) {
+            $phone = '03000001' . str_pad((string) $index, 2, '0', STR_PAD_LEFT);
+            $registration = $this->createRegistration($campus, $program, $studentName, $phone);
+
+            $this->createAdmission($campus, $program, $batch, $registration, $studentName, $registration->phone, [
+                'roll_number' => $campus->code . '-' . $batch->code . '-' . str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
+                'student_status' => $status,
+            ]);
+            $index++;
+        }
+
+        $user = $this->createUser($campus, [$studentView, $studentUpdate]);
+
+        $response = $this->actingAs($user)->getJson(
+            route('student.records.index', [
+                'scope' => 'all_students',
+                'draw' => 1,
+                'start' => 0,
+                'length' => 10,
+            ]),
+            [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]
+        );
+
+        $response->assertOk();
+
+        $reenrollActionCount = collect($response->json('data'))
+            ->filter(fn (array $row) => str_contains((string) ($row['actions'] ?? ''), 'Enroll Now'))
+            ->count();
+
+        $this->assertSame(4, $reenrollActionCount);
+    }
+
+    public function test_reenroll_allows_supported_statuses_and_restores_unpaid_fee_rows_to_pending(): void
+    {
+        $studentUpdate = $this->createPermission('student', 'update', 'student.update');
+        $sourceCampus = $this->createCampus('Source Campus', 'SRC');
+        $targetCampus = $this->createCampus('Target Campus', 'TGT');
+        $program = $this->createProgram('WD201', 'Advanced Web Development');
+        $sourceBatch = $this->createBatch($sourceCampus, $program, 'SRC-B1');
+        $targetBatch = $this->createBatch($targetCampus, $program, 'TGT-B1');
+        $user = $this->createUser($sourceCampus, [$studentUpdate]);
+
+        foreach (Admission::REENROLLABLE_STATUSES as $index => $status) {
+            $studentNumber = 200 + $index;
+            $phone = '03000000' . str_pad((string) $studentNumber, 3, '0', STR_PAD_LEFT);
+            $studentName = 'Reenroll Student ' . ($index + 1);
+            $registration = $this->createRegistration($sourceCampus, $program, $studentName, $phone);
+            $admission = $this->createAdmission($sourceCampus, $program, $sourceBatch, $registration, $studentName, $phone, [
+                'roll_number' => $sourceCampus->code . '-' . $sourceBatch->code . '-' . str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
+                'student_status' => $status,
+            ]);
+
+            $pendingFee = $this->createFeeCollection($sourceCampus, $program, $registration, $admission, [
+                'installment_no' => 1,
+                'status' => 'pending',
+            ]);
+            $badDebtFee = $this->createFeeCollection($sourceCampus, $program, $registration, $admission, [
+                'installment_no' => 2,
+                'status' => 'baddebt',
+            ]);
+            $cancelledFee = $this->createFeeCollection($sourceCampus, $program, $registration, $admission, [
+                'installment_no' => 3,
+                'status' => 'cancel',
+                'net_amount' => 0,
+                'amount' => 0,
+            ]);
+            $paidFee = $this->createFeeCollection($sourceCampus, $program, $registration, $admission, [
+                'installment_no' => 4,
+                'status' => 'paid',
+                'paid_at' => now(),
+            ]);
+
+            $this->actingAs($user)
+                ->getJson(route('student.records.reenroll.meta', $admission))
+                ->assertOk()
+                ->assertJsonPath('admission.id', $admission->id);
+
+            $this->actingAs($user)
+                ->post(route('student.records.reenroll.store', $admission), [
+                    'campus_id' => $targetCampus->id,
+                    'batch_id' => $targetBatch->id,
+                ])
+                ->assertRedirect()
+                ->assertSessionHas('status', function (?string $message): bool {
+                    return str_contains((string) $message, 'Student enrolled to TGT - Target Campus / TGT-B1 - TGT-B1 Batch.')
+                        && str_contains((string) $message, 'Pending, bad debt, and cancelled fee moved to pending.');
+                });
+
+            $admission->refresh();
+            $pendingFee->refresh();
+            $badDebtFee->refresh();
+            $cancelledFee->refresh();
+            $paidFee->refresh();
+
+            $this->assertSame('enrolled', $admission->student_status);
+            $this->assertSame($targetCampus->id, $admission->campus_id);
+            $this->assertSame($targetBatch->id, $admission->batch_id);
+            $this->assertSame('pending', $pendingFee->status);
+            $this->assertSame($targetCampus->id, $pendingFee->campus_id);
+            $this->assertSame($targetBatch->program_id, $pendingFee->program_id);
+            $this->assertStringContainsString('Fee moved to pending because the student was enrolled again', (string) $pendingFee->notes);
+            $this->assertSame('pending', $badDebtFee->status);
+            $this->assertSame($targetCampus->id, $badDebtFee->campus_id);
+            $this->assertSame($targetBatch->program_id, $badDebtFee->program_id);
+            $this->assertSame('pending', $cancelledFee->status);
+            $this->assertSame($targetCampus->id, $cancelledFee->campus_id);
+            $this->assertSame($targetBatch->program_id, $cancelledFee->program_id);
+            $this->assertSame('paid', $paidFee->status);
+            $this->assertSame($sourceCampus->id, $paidFee->campus_id);
+        }
+    }
+
     private function createUser(?Campus $campus, array $permissions): User
     {
         $user = User::factory()->create([
@@ -144,11 +276,13 @@ class StudentDropWorkflowTest extends TestCase
 
     private function createPermission(string $resource, string $action, string $slug): Permission
     {
-        return Permission::query()->create([
-            'resource' => $resource,
-            'action' => $action,
-            'slug' => $slug,
-        ]);
+        return Permission::query()->firstOrCreate(
+            ['slug' => $slug],
+            [
+                'resource' => $resource,
+                'action' => $action,
+            ]
+        );
     }
 
     private function createCampus(string $name, string $code): Campus

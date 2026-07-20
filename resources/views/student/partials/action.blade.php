@@ -5,6 +5,8 @@
     $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
     $canDropStudent = auth()->user()?->hasAnyPermission(['student.drop']) ?? false;
     $isDroppedStudent = (string) ($admission->student_status ?? '') === 'dropped';
+    $isReenrollableStudent = in_array((string) ($admission->student_status ?? ''), \App\Models\Admission::REENROLLABLE_STATUSES, true);
+    $canReEnrollStudent = $isReenrollableStudent && $canUpdateStudent;
     $statusActions = [
         [
             'key' => 'frozen',
@@ -48,7 +50,7 @@
     }));
     $hasActionItems = $isDroppedStudent
         ? $canUpdateStudent
-        : (!empty($statusActions) || $canUpdateStudent || $canAdminEdit);
+        : (!empty($statusActions) || $canReEnrollStudent || $canUpdateStudent || $canAdminEdit);
 @endphp
 
 @once
@@ -198,6 +200,20 @@
                     </span>
                 @endif
             @endforelse
+
+            @if($canReEnrollStudent)
+                <button
+                    type="button"
+                    class="dropdown-item lead-action-item js-student-reenroll"
+                    data-reenroll-meta-url="{{ route('student.records.reenroll.meta', $admission) }}"
+                    data-reenroll-store-url="{{ route('student.records.reenroll.store', $admission) }}"
+                >
+                    <span class="lead-action-icon lead-icon-green" aria-hidden="true">
+                        <i class="fa fa-repeat"></i>
+                    </span>
+                    <span class="lead-action-label">Enroll Now</span>
+                </button>
+            @endif
 
             <button
                 type="button"

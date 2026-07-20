@@ -813,8 +813,8 @@
                                     '<input id="swal-reenroll-timing" class="swal-transfer-input" value="' + escapeHtml(admission.current_timing || 'Timing not set') + '" disabled>' +
                                 '</div>' +
                             '</div>' +
-                            '<p class="swal-transfer-note">Any fee marked as bad debt will be moved back to pending after enrollment.</p>' +
-                        '</div>',
+                            '<p class="swal-transfer-note">Any pending, bad debt, or cancelled fee row will be set to pending after enrollment.</p>' +
+                         '</div>',
                     html: true,
                     showCancelButton: true,
                     closeOnConfirm: false,

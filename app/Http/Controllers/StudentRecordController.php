@@ -36,6 +36,15 @@ class StudentRecordController extends Controller
         'dropped' => 'Dropped',
     ];
 
+    private const REENROLLABLE_FEE_STATUSES = [
+        '',
+        'pending',
+        'baddebt',
+        'cancel',
+        'cancelled',
+        'canceled',
+    ];
+
     private const FEE_COLLECTION_NOTES_MAX_LENGTH = 255;
 
     public function index(Request $request, ?string $scope = null)
@@ -459,9 +468,9 @@ class StudentRecordController extends Controller
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
 
-        if (($admission->student_status ?? null) !== 'dropped') {
+        if (! $this->canReEnrollAdmission($admission)) {
             return response()->json([
-                'message' => 'Only dropped students can be enrolled again.',
+                'message' => $this->reEnrollNotAllowedMessage(),
             ], 422);
         }
 
@@ -557,8 +566,8 @@ class StudentRecordController extends Controller
             return back()->with('error', 'Student can only be enrolled again after admission approval.');
         }
 
-        if (($admission->student_status ?? null) !== 'dropped') {
-            return back()->with('error', 'Only dropped students can be enrolled again.');
+        if (! $this->canReEnrollAdmission($admission)) {
+            return back()->with('error', $this->reEnrollNotAllowedMessage());
         }
 
         $validated = $request->validate([
@@ -621,11 +630,10 @@ class StudentRecordController extends Controller
                 FeeCollection::query()
                     ->where('admission_id', $lockedAdmission->id)
                     ->whereNull('paid_at')
-                    ->where(function (Builder $query) {
-                        $query
-                            ->whereNull('status')
-                            ->orWhereIn('status', ['pending', 'baddebt']);
-                    })
+                    ->whereRaw(
+                        'LOWER(TRIM(COALESCE(status, ?))) IN (' . implode(', ', array_fill(0, count(self::REENROLLABLE_FEE_STATUSES), '?')) . ')',
+                        array_merge([''], self::REENROLLABLE_FEE_STATUSES)
+                    )
                     ->lockForUpdate()
                     ->get()
                     ->each(function (FeeCollection $feeCollection) use ($request, $targetCampus, $targetBatch): void {
@@ -648,7 +656,7 @@ class StudentRecordController extends Controller
 
         return back()->with(
             'status',
-            'Student enrolled to ' . $this->formatCampusLabel($targetCampus) . ' / ' . $this->formatBatchLabel($targetBatch) . '. Bad debt fee moved back to pending.'
+            'Student enrolled to ' . $this->formatCampusLabel($targetCampus) . ' / ' . $this->formatBatchLabel($targetBatch) . '. Pending, bad debt, and cancelled fee moved to pending.'
         );
     }
 
@@ -1390,7 +1398,7 @@ class StudentRecordController extends Controller
     private function buildReEnrollFeeNote(?string $userName): string
     {
         $message = sprintf(
-            '[%s] Fee restored from bad debt to pending because the student was enrolled again',
+            '[%s] Fee moved to pending because the student was enrolled again',
             now()->format('d-M-Y h:i A')
         );
 
@@ -1399,6 +1407,16 @@ class StudentRecordController extends Controller
         }
 
         return $message . '.';
+    }
+
+    private function canReEnrollAdmission(Admission $admission): bool
+    {
+        return in_array((string) ($admission->student_status ?? ''), Admission::REENROLLABLE_STATUSES, true);
+    }
+
+    private function reEnrollNotAllowedMessage(): string
+    {
+        return 'Only dropped, incomplete, suspended, or cancelled students can be enrolled again.';
     }
 
     private function buildBadDebtFeeNote(?string $userName, string $dropReason): string

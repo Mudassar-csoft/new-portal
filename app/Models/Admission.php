@@ -60,6 +60,13 @@ class Admission extends Model
         self::CERTIFICATE_STATUS_DELIVERED => 'label-default',
     ];
 
+    public const REENROLLABLE_STATUSES = [
+        'dropped',
+        'incomplete',
+        'suspended',
+        'admission_cancelled',
+    ];
+
     public const CERTIFICATE_WORKFLOW_STATUSES = [
         self::CERTIFICATE_STATUS_REQUESTED,
         self::CERTIFICATE_STATUS_APPROVED,
