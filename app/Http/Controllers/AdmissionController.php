@@ -579,23 +579,47 @@ class AdmissionController extends Controller
                         ]);
                     }
 
-                    $inputAmounts = array_values(array_filter(
-                        (array) $request->input('installment_amounts', []),
-                        fn ($v) => $v !== null && $v !== ''
+                    $rawInstallmentAmounts = array_map(
+                        static fn ($value) => is_string($value) ? trim($value) : $value,
+                        array_values((array) $request->input('installment_amounts', []))
+                    );
+                    $filledInstallmentAmounts = array_values(array_filter(
+                        $rawInstallmentAmounts,
+                        static fn ($value) => $value !== null && $value !== ''
                     ));
 
-                    if (!empty($inputAmounts)) {
-                        if (count($inputAmounts) !== $programMaxInstallments) {
+                    if (!empty($filledInstallmentAmounts)) {
+                        $normalizedAmounts = array_map(
+                            static fn ($value) => round((float) $value, 2),
+                            $filledInstallmentAmounts
+                        );
+
+                        if (collect($normalizedAmounts)->contains(fn (float $amount) => $amount < 0)) {
                             throw ValidationException::withMessages([
-                                'installment_amounts' => ['This program requires exactly ' . $programMaxInstallments . ' installments.'],
+                                'installment_amounts' => ['Installment amounts cannot be negative.'],
                             ]);
                         }
 
-                        $amounts = array_map(fn ($v) => round((float) $v, 2), $inputAmounts);
+                        $amounts = array_values(array_filter(
+                            $normalizedAmounts,
+                            static fn (float $amount): bool => $amount > 0
+                        ));
 
-                        if (collect($amounts)->contains(fn (float $amount) => $amount <= 0)) {
+                        if (empty($amounts)) {
                             throw ValidationException::withMessages([
                                 'installment_amounts' => ['Each installment amount must be greater than zero.'],
+                            ]);
+                        }
+
+                        if (count($amounts) < 2) {
+                            throw ValidationException::withMessages([
+                                'installment_amounts' => ['Please enter at least two installment amounts or choose full fee.'],
+                            ]);
+                        }
+
+                        if (count($amounts) > $programMaxInstallments) {
+                            throw ValidationException::withMessages([
+                                'installment_amounts' => ['This program allows up to ' . $programMaxInstallments . ' installments.'],
                             ]);
                         }
 

@@ -392,6 +392,9 @@
 								<span>Total: <strong id="installments-total">0</strong></span>
 								<span class="ml-3">Remaining: <strong id="installments-remaining">0</strong></span>
 							</div>
+							@error('installment_amounts')
+								<div class="field-error mt-2">{{ $message }}</div>
+							@enderror
 						</div>
 					</div>
 
@@ -875,6 +878,8 @@
 			const installmentsTotalEl = document.getElementById('installments-total');
 			const installmentsRemainingEl = document.getElementById('installments-remaining');
 			const installmentsMaxHint = document.getElementById('installments-max-hint');
+			const initialInstallmentAmounts = @json(array_values(old('installment_amounts', [])));
+			let pendingInstallmentAmounts = Array.isArray(initialInstallmentAmounts) ? initialInstallmentAmounts.slice() : [];
 
 			let maxDiscountPercent = 0;
 			let currentFee = 0;
@@ -1060,14 +1065,22 @@
 				const n = programInstallmentsMax();
 				const total = discountedFee();
 				installmentsRows.innerHTML = '';
-				const baseSplit = round2(total / n);
-				const amounts = [];
-				for (let i = 0; i < n; i++) {
-					amounts.push(baseSplit);
-				}
-				const drift = round2(total - amounts.reduce((s, a) => s + a, 0));
-				if (drift !== 0 && n > 0) {
-					amounts[n - 1] = round2(amounts[n - 1] + drift);
+				let amounts = [];
+
+				if (pendingInstallmentAmounts.length > 0) {
+					for (let i = 0; i < n; i++) {
+						amounts.push(round2(Number(pendingInstallmentAmounts[i]) || 0));
+					}
+					pendingInstallmentAmounts = [];
+				} else {
+					const baseSplit = round2(total / n);
+					for (let i = 0; i < n; i++) {
+						amounts.push(baseSplit);
+					}
+					const drift = round2(total - amounts.reduce((s, a) => s + a, 0));
+					if (drift !== 0 && n > 0) {
+						amounts[n - 1] = round2(amounts[n - 1] + drift);
+					}
 				}
 
 				for (let i = 0; i < n; i++) {
@@ -1140,7 +1153,11 @@
 
 				if (feeTypeInst.checked && !feeTypeInst.disabled) {
 					installmentsBlock.style.display = 'flex';
-					rebuildInstallments();
+					if (installmentsRows.querySelectorAll('input').length !== programInstallmentsMax()) {
+						rebuildInstallments();
+					} else {
+						updateSummary();
+					}
 				} else {
 					installmentsBlock.style.display = 'none';
 				}

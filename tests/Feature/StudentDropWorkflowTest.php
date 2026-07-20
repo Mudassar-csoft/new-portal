@@ -131,7 +131,7 @@ class StudentDropWorkflowTest extends TestCase
         $this->assertStringNotContainsString('Freeze Course', $dropActions);
     }
 
-    public function test_reenroll_action_shows_for_incomplete_suspended_cancelled_and_dropped_students(): void
+    public function test_reenroll_only_action_shows_for_dropped_frozen_incomplete_suspended_and_cancelled_students(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');
         $studentUpdate = $this->createPermission('student', 'update', 'student.update');
@@ -141,6 +141,7 @@ class StudentDropWorkflowTest extends TestCase
 
         $statusStudents = [
             'Dropped Student' => 'dropped',
+            'Frozen Student' => 'frozen',
             'Incomplete Student' => 'incomplete',
             'Suspended Student' => 'suspended',
             'Cancelled Student' => 'admission_cancelled',
@@ -179,8 +180,16 @@ class StudentDropWorkflowTest extends TestCase
         $reenrollActionCount = collect($response->json('data'))
             ->filter(fn (array $row) => str_contains((string) ($row['actions'] ?? ''), 'Enroll Now'))
             ->count();
+        $transferActionCount = collect($response->json('data'))
+            ->filter(fn (array $row) => str_contains((string) ($row['actions'] ?? ''), 'Transfer Campus &amp; Batch'))
+            ->count();
+        $freezeActionCount = collect($response->json('data'))
+            ->filter(fn (array $row) => str_contains((string) ($row['actions'] ?? ''), 'Freeze Course'))
+            ->count();
 
-        $this->assertSame(4, $reenrollActionCount);
+        $this->assertSame(5, $reenrollActionCount);
+        $this->assertSame(1, $transferActionCount);
+        $this->assertSame(1, $freezeActionCount);
     }
 
     public function test_reenroll_allows_supported_statuses_and_restores_unpaid_fee_rows_to_pending(): void

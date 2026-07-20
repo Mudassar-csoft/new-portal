@@ -1416,7 +1416,7 @@ class StudentRecordController extends Controller
 
     private function reEnrollNotAllowedMessage(): string
     {
-        return 'Only dropped, incomplete, suspended, or cancelled students can be enrolled again.';
+        return 'Only dropped, frozen, incomplete, suspended, or cancelled students can be enrolled again.';
     }
 
     private function buildBadDebtFeeNote(?string $userName, string $dropReason): string

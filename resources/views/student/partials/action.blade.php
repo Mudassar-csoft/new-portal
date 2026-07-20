@@ -4,9 +4,8 @@
     $canAdminEdit = auth()->user()?->isAdmin();
     $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
     $canDropStudent = auth()->user()?->hasAnyPermission(['student.drop']) ?? false;
-    $isDroppedStudent = (string) ($admission->student_status ?? '') === 'dropped';
-    $isReenrollableStudent = in_array((string) ($admission->student_status ?? ''), \App\Models\Admission::REENROLLABLE_STATUSES, true);
-    $canReEnrollStudent = $isReenrollableStudent && $canUpdateStudent;
+    $isReenrollOnlyStudent = in_array((string) ($admission->student_status ?? ''), \App\Models\Admission::REENROLLABLE_STATUSES, true);
+    $canReEnrollStudent = $isReenrollOnlyStudent && $canUpdateStudent;
     $statusActions = [
         [
             'key' => 'frozen',
@@ -45,10 +44,10 @@
             'icon_class' => 'lead-icon-red',
         ],
     ];
-    $statusActions = $isDroppedStudent ? [] : array_values(array_filter($statusActions, static function (array $item) use ($canUpdateStudent, $canDropStudent): bool {
+    $statusActions = $isReenrollOnlyStudent ? [] : array_values(array_filter($statusActions, static function (array $item) use ($canUpdateStudent, $canDropStudent): bool {
         return $item['key'] === 'dropped' ? $canDropStudent : $canUpdateStudent;
     }));
-    $hasActionItems = $isDroppedStudent
+    $hasActionItems = $isReenrollOnlyStudent
         ? $canUpdateStudent
         : (!empty($statusActions) || $canReEnrollStudent || $canUpdateStudent || $canAdminEdit);
 @endphp
@@ -150,7 +149,7 @@
         Actions
     </button>
     <div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
-        @if($isDroppedStudent)
+        @if($isReenrollOnlyStudent)
             @if($canUpdateStudent)
                 <button
                     type="button"
@@ -200,20 +199,6 @@
                     </span>
                 @endif
             @endforelse
-
-            @if($canReEnrollStudent)
-                <button
-                    type="button"
-                    class="dropdown-item lead-action-item js-student-reenroll"
-                    data-reenroll-meta-url="{{ route('student.records.reenroll.meta', $admission) }}"
-                    data-reenroll-store-url="{{ route('student.records.reenroll.store', $admission) }}"
-                >
-                    <span class="lead-action-icon lead-icon-green" aria-hidden="true">
-                        <i class="fa fa-repeat"></i>
-                    </span>
-                    <span class="lead-action-label">Enroll Now</span>
-                </button>
-            @endif
 
             <button
                 type="button"

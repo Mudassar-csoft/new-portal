@@ -62,6 +62,7 @@ class Admission extends Model
 
     public const REENROLLABLE_STATUSES = [
         'dropped',
+        'frozen',
         'incomplete',
         'suspended',
         'admission_cancelled',

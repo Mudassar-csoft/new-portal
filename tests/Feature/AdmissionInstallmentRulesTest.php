@@ -31,7 +31,7 @@ class AdmissionInstallmentRulesTest extends TestCase
             ->assertJsonValidationErrors(['fee_type']);
     }
 
-    public function test_admission_store_requires_exact_installment_count_defined_by_program(): void
+    public function test_admission_store_allows_fewer_installments_than_program_max_when_extra_rows_are_zero(): void
     {
         $user = $this->createScopedUser();
         $campus = $this->createCampus('Three Pay Campus', 'TPC');
@@ -41,10 +41,40 @@ class AdmissionInstallmentRulesTest extends TestCase
         $this->actingAs($user)
             ->postJson(route('admission.store'), $this->admissionPayload($campus, $program, $batch, [
                 'fee_type' => 'installments',
-                'installment_amounts' => [20000, 20000],
+                'installment_amounts' => [30000, 30000, 0],
             ]))
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['installment_amounts']);
+            ->assertOk()
+            ->assertJsonPath('status', 'Admission created successfully.');
+
+        $admission = Admission::query()->where('phone', '03000000123')->firstOrFail();
+        $fees = FeeCollection::query()
+            ->where('admission_id', $admission->id)
+            ->where('fee_type', 'admission')
+            ->orderBy('installment_no')
+            ->get();
+
+        $this->assertCount(2, $fees);
+        $this->assertSame([1, 2], $fees->pluck('installment_no')->all());
+        $this->assertSame([2, 2], $fees->pluck('installments_total')->all());
+        $this->assertSame(['paid', 'pending'], $fees->pluck('status')->all());
+        $this->assertSame([30000.0, 30000.0], $fees->map(fn (FeeCollection $fee) => (float) $fee->net_amount)->all());
+    }
+
+    public function test_admission_store_rejects_zero_only_installment_amounts_and_shows_the_error_on_the_form(): void
+    {
+        $user = $this->createScopedUser();
+        $campus = $this->createCampus('Zero Error Campus', 'ZEC');
+        $program = $this->createProgram('ZEC101', 'Zero Error Program', 3, 60000);
+        $batch = $this->createBatch($campus, $program, 'ZEC-B1');
+
+        $this->actingAs($user)
+            ->followingRedirects()
+            ->from(route('admission.create'))
+            ->post(route('admission.store'), $this->admissionPayload($campus, $program, $batch, [
+                'fee_type' => 'installments',
+                'installment_amounts' => [0, 0, 0],
+            ]))
+            ->assertSee('Each installment amount must be greater than zero.');
     }
 
     public function test_admission_store_auto_creates_program_defined_installment_schedule(): void
@@ -81,11 +111,13 @@ class AdmissionInstallmentRulesTest extends TestCase
 
     private function createScopedUser(): User
     {
-        $permission = Permission::query()->create([
-            'resource' => 'admission',
-            'action' => 'create',
-            'slug' => 'admission.create',
-        ]);
+        $permission = Permission::query()->firstOrCreate(
+            ['slug' => 'admission.create'],
+            [
+                'resource' => 'admission',
+                'action' => 'create',
+            ]
+        );
 
         $user = User::factory()->create();
         $user->permissions()->sync([$permission->id]);
