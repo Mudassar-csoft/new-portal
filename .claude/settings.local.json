@@ -43,7 +43,15 @@
       "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\app\\\\Support\\\\PermissionCatalog.php\")",
       "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\database\\\\seeders\\\\RolePermissionSeeder.php\")",
       "Bash(php artisan tinker '--execute= *)",
-      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue)"
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue)",
+      "Bash(php \"C:\\\\Users\\\\caree\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-caree-Desktop-CRM-Career\\\\f4e741bb-bc22-46f2-8158-d99cb9206564\\\\scratchpad\\\\seed_permission.php\")",
+      "Bash(timeout 5 bash -c \"cat < /dev/tcp/127.0.0.1/3306\")",
+      "Bash(xxd)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(php -v)",
+      "Bash(php -m)",
+      "Bash(timeout 5 php -r ' *)",
+      "Bash(echo \"exit code: $?\")"
     ]
   }
 }
