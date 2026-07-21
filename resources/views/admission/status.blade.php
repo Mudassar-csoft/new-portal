@@ -78,39 +78,56 @@
 <form method="GET" action="{{ route('admission.status') }}" class="follow-controls adm-filter-form">
 					<input type="hidden" name="scope" value="{{ $activeScope }}">
 					<input type="hidden" name="period" value="{{ $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : '' }}">
-					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
-						<label class="mr-2 mb-0">Show</label>
+					<div class="d-flex control-flow-show-bar ci-inline-gap-05-center">
+						<label class="mb-0">Show</label>
 						<select name="per_page" class="form-control form-control-sm" onchange="this.form.submit()">
 							@foreach ([10, 25, 50, 100] as $option)
 								<option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
 							@endforeach
 						</select>
-						<label class="ml-2 mb-0">Entries</label>
+						<label class="mb-0">Entries</label>
 					</div>
-					<div class="d-flex flex-wrap adm-filter-fields" style="gap:0.5rem;align-items: baseline;">
-						<select name="campus_id" class="form-control form-control-sm" onchange="this.form.submit()">
-							<option value="0">All Campuses</option>
-							@foreach ($campuses as $campus)
-								<option value="{{ $campus->id }}" @selected((int) $campusId === (int) $campus->id)>{{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}</option>
-							@endforeach
-						</select>
-						<select name="program_id" class="form-control form-control-sm" onchange="this.form.submit()">
-							<option value="0">All Programs</option>
-							@foreach ($programs as $program)
-								<option value="{{ $program->id }}" @selected((int) $programId === (int) $program->id)>{{ $program->title ?? $program->name }}</option>
-							@endforeach
-						</select>
-						<input type="date" name="from" value="{{ $fromDate }}" class="form-control form-control-sm" placeholder="From date" onchange="this.form.submit()">
-						<input type="date" name="to" value="{{ $toDate }}" class="form-control form-control-sm" placeholder="To date" onchange="this.form.submit()">
-						@if($campusId || $programId || $fromDate || $toDate)
-							<a href="{{ route('admission.status', array_filter(['scope' => $activeScope, 'period' => $activeScope === 'all' ? $activePeriod : null, 'per_page' => $perPage, 'search' => $search])) }}" class="btn btn-default btn-sm">Clear</a>
-						@endif
-					</div>
-					<div class="follow-search">
-						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
-						<!-- <button type="submit" class="reg-search-submit" aria-label="Search">
-							<i class="fa fa-search"></i>
-						</button> -->
+
+					<div class="adm-filter-row">
+						<div class="adm-filter-field">
+							<label class="form-label">Campus</label>
+							<select name="campus_id" class="form-control form-control-sm" onchange="this.form.submit()">
+								<option value="0">All Campuses</option>
+								@foreach ($campuses as $campus)
+									<option value="{{ $campus->id }}" @selected((int) $campusId === (int) $campus->id)>{{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}</option>
+								@endforeach
+							</select>
+						</div>
+
+						<div class="adm-filter-field">
+							<label class="form-label">Programme</label>
+							<select name="program_id" class="form-control form-control-sm" onchange="this.form.submit()">
+								<option value="0">All Programs</option>
+								@foreach ($programs as $program)
+									<option value="{{ $program->id }}" @selected((int) $programId === (int) $program->id)>{{ $program->title ?? $program->name }}</option>
+								@endforeach
+							</select>
+						</div>
+
+						<div class="adm-filter-field adm-date-range-field">
+							<label class="form-label">Created Date Range</label>
+							<div class="adm-date-range-inputs">
+								<input type="date" name="from" value="{{ $fromDate }}" class="form-control form-control-sm" onchange="this.form.submit()">
+								<span class="adm-date-range-separator">to</span>
+								<input type="date" name="to" value="{{ $toDate }}" class="form-control form-control-sm" onchange="this.form.submit()">
+							</div>
+						</div>
+
+						<div class="adm-filter-field">
+							<label class="form-label">Search</label>
+							<div class="follow-search">
+								<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
+							</div>
+						</div>
+
+						<div class="adm-filter-actions">
+							<a href="{{ route('admission.status', array_filter(['scope' => $activeScope, 'period' => $activeScope === 'all' ? $activePeriod : null, 'per_page' => $perPage])) }}" class="btn btn-primary btn-sm">Reset</a>
+						</div>
 					</div>
 				</form>
 
@@ -553,10 +570,15 @@
 
         .follow-controls {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: var(--space-admission-status-2);
             margin-bottom: var(--space-admission-status-4);
+            flex-wrap: wrap;
+        }
+
+        .ci-inline-gap-05-center {
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .follow-status-copy {
@@ -569,25 +591,60 @@
             display: flex;
             align-items: center;
             gap: var(--space-admission-status-5);
-            margin-left: auto;
         }
 
         .follow-search .form-control {
             width: min(280px, 100%);
         }
 
-        .adm-filter-form {
+        .adm-filter-row {
+            display: flex;
+            flex: 1 1 100%;
             flex-wrap: wrap;
+            align-items: end;
+            gap: 14px;
         }
 
-        .adm-filter-fields select.form-control {
-            width: auto;
-            min-width: 150px;
+        .adm-filter-field {
+            flex: 1 1 220px;
+            min-width: 210px;
         }
 
-        .adm-filter-fields input[type="date"].form-control {
-            width: auto;
-            min-width: 140px;
+        .adm-filter-field .form-label {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #54667a;
+            margin-bottom: 4px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .adm-date-range-field {
+            flex: 1.4 1 320px;
+        }
+
+        .adm-date-range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adm-date-range-inputs .form-control {
+            min-width: 0;
+        }
+
+        .adm-date-range-separator {
+            color: #6b7b8f;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .adm-filter-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .adm-search-submit {
