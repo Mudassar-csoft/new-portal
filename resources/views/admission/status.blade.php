@@ -11,6 +11,12 @@
         $periodCounts = $periodCounts ?? [];
         $search = $search ?? '';
         $perPage = $perPage ?? 25;
+        $campuses = $campuses ?? collect();
+        $programs = $programs ?? collect();
+        $campusId = $campusId ?? 0;
+        $programId = $programId ?? 0;
+        $fromDate = $fromDate ?? '';
+        $toDate = $toDate ?? '';
         $currentUser = auth()->user();
         $canStudentView = $currentUser?->hasAnyPermission(['student.view']) ?? false;
         $canAdmissionView = $currentUser?->hasAnyPermission(['admission.view']) ?? false;
@@ -69,7 +75,7 @@
             </div>
 
             <div class="box-typical-body panel-body follow-body">
-<form method="GET" action="{{ route('admission.status') }}" class="follow-controls">
+<form method="GET" action="{{ route('admission.status') }}" class="follow-controls adm-filter-form">
 					<input type="hidden" name="scope" value="{{ $activeScope }}">
 					<input type="hidden" name="period" value="{{ $activeScope === 'all' && $activePeriod !== 'all' ? $activePeriod : '' }}">
 					<div class="d-flex" style="gap:0.5rem;align-items: baseline;">
@@ -80,6 +86,25 @@
 							@endforeach
 						</select>
 						<label class="ml-2 mb-0">Entries</label>
+					</div>
+					<div class="d-flex flex-wrap adm-filter-fields" style="gap:0.5rem;align-items: baseline;">
+						<select name="campus_id" class="form-control form-control-sm" onchange="this.form.submit()">
+							<option value="0">All Campuses</option>
+							@foreach ($campuses as $campus)
+								<option value="{{ $campus->id }}" @selected((int) $campusId === (int) $campus->id)>{{ $campus->code ? $campus->code . ' - ' . $campus->name : $campus->name }}</option>
+							@endforeach
+						</select>
+						<select name="program_id" class="form-control form-control-sm" onchange="this.form.submit()">
+							<option value="0">All Programs</option>
+							@foreach ($programs as $program)
+								<option value="{{ $program->id }}" @selected((int) $programId === (int) $program->id)>{{ $program->title ?? $program->name }}</option>
+							@endforeach
+						</select>
+						<input type="date" name="from" value="{{ $fromDate }}" class="form-control form-control-sm" placeholder="From date" onchange="this.form.submit()">
+						<input type="date" name="to" value="{{ $toDate }}" class="form-control form-control-sm" placeholder="To date" onchange="this.form.submit()">
+						@if($campusId || $programId || $fromDate || $toDate)
+							<a href="{{ route('admission.status', array_filter(['scope' => $activeScope, 'period' => $activeScope === 'all' ? $activePeriod : null, 'per_page' => $perPage, 'search' => $search])) }}" class="btn btn-default btn-sm">Clear</a>
+						@endif
 					</div>
 					<div class="follow-search">
 						<input type="text" name="search" value="{{ $search }}" class="form-control form-control-sm" placeholder="Search...">
@@ -549,6 +574,20 @@
 
         .follow-search .form-control {
             width: min(280px, 100%);
+        }
+
+        .adm-filter-form {
+            flex-wrap: wrap;
+        }
+
+        .adm-filter-fields select.form-control {
+            width: auto;
+            min-width: 150px;
+        }
+
+        .adm-filter-fields input[type="date"].form-control {
+            width: auto;
+            min-width: 140px;
         }
 
         .adm-search-submit {

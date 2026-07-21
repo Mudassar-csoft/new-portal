@@ -741,10 +741,61 @@ class AdmissionController extends Controller
             $perPage = 25;
         }
 
-        $countBaseQuery = $this->scopeQueryToUserCampus(Admission::query(), $user);
-        $requestedCountBaseQuery = $this->scopeAdmissionStatusQuery(Admission::query(), $user, 'requested');
+        $campuses = $this->campusOptionsForUser($user, ['id', 'code', 'name']);
+        $programs = Program::query()
+            ->orderByRaw('COALESCE(title, name)')
+            ->get(['id', 'code', 'title', 'name']);
 
-        $baseQuery = $this->scopeAdmissionStatusQuery(Admission::query(), $user, $activeScope)
+        $campusId = (int) $request->query('campus_id', 0);
+        if ($campusId > 0 && !$campuses->contains('id', $campusId)) {
+            $campusId = 0;
+        }
+
+        $programId = (int) $request->query('program_id', 0);
+        if ($programId > 0 && !$programs->contains('id', $programId)) {
+            $programId = 0;
+        }
+
+        $fromDate = trim((string) $request->query('from', ''));
+        $toDate = trim((string) $request->query('to', ''));
+        $dateFrom = $this->parseAdmissionFilterDate($fromDate);
+        $dateTo = $this->parseAdmissionFilterDate($toDate);
+        if ($dateFrom && $dateTo && $dateFrom->gt($dateTo)) {
+            [$dateFrom, $dateTo] = [$dateTo, $dateFrom];
+        }
+
+        $applyAdmissionFilters = function ($query) use ($campusId, $programId, $dateFrom, $dateTo) {
+            return $query
+                ->when($campusId > 0, fn ($q) => $q->where('campus_id', $campusId))
+                ->when($programId > 0, fn ($q) => $q->where('program_id', $programId))
+                ->when($dateFrom, function ($q) use ($dateFrom) {
+                    $q->where(function ($builder) use ($dateFrom) {
+                        $builder
+                            ->whereDate('admission_date', '>=', $dateFrom->toDateString())
+                            ->orWhere(function ($nested) use ($dateFrom) {
+                                $nested
+                                    ->whereNull('admission_date')
+                                    ->whereDate('created_at', '>=', $dateFrom->toDateString());
+                            });
+                    });
+                })
+                ->when($dateTo, function ($q) use ($dateTo) {
+                    $q->where(function ($builder) use ($dateTo) {
+                        $builder
+                            ->whereDate('admission_date', '<=', $dateTo->toDateString())
+                            ->orWhere(function ($nested) use ($dateTo) {
+                                $nested
+                                    ->whereNull('admission_date')
+                                    ->whereDate('created_at', '<=', $dateTo->toDateString());
+                            });
+                    });
+                });
+        };
+
+        $countBaseQuery = $applyAdmissionFilters($this->scopeQueryToUserCampus(Admission::query(), $user));
+        $requestedCountBaseQuery = $applyAdmissionFilters($this->scopeAdmissionStatusQuery(Admission::query(), $user, 'requested'));
+
+        $baseQuery = $applyAdmissionFilters($this->scopeAdmissionStatusQuery(Admission::query(), $user, $activeScope))
             ->with([
                 'program:id,code,title,name',
                 'campus:id,code,name',
@@ -809,7 +860,13 @@ class AdmissionController extends Controller
             'activePeriod',
             'periodCounts',
             'search',
-            'perPage'
+            'perPage',
+            'campuses',
+            'programs',
+            'campusId',
+            'programId',
+            'fromDate',
+            'toDate'
         ));
     }
 
@@ -1425,6 +1482,20 @@ class AdmissionController extends Controller
         }
 
         return $this->scopeQueryToUserCampus($query, $user);
+    }
+
+    private function parseAdmissionFilterDate(string $value): ?Carbon
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->startOfDay();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     private function applyAdmissionPeriodFilter($query, string $period)
