@@ -35,7 +35,8 @@ class RolePermissionSeeder extends Seeder
                 'member' => $permissionIds->filter(function ($id, $slug) {
                     return !str_contains($slug, 'user.')
                         && !str_contains($slug, 'role.')
-                        && !str_contains($slug, 'permission.');
+                        && !str_contains($slug, 'permission.')
+                        && $slug !== 'lead.followup.not-interesting';
                 })->values(),
                 'read-only' => $permissionIds->filter(function ($id, $slug) {
                     return str_contains($slug, '.view');
@@ -99,6 +100,7 @@ class RolePermissionSeeder extends Seeder
         // Lead follow-up
         $catalog[] = ['resource' => 'lead', 'action' => 'followup.view'];
         $catalog[] = ['resource' => 'lead', 'action' => 'followup.update'];
+        $catalog[] = ['resource' => 'lead', 'action' => 'followup.not-interesting'];
         $catalog[] = ['resource' => 'lead', 'action' => 'transfer.approve'];
         $catalog[] = ['resource' => 'lead', 'action' => 'coworking.view'];
 

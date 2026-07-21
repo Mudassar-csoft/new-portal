@@ -38,7 +38,12 @@
       "Bash(php -l resources/views/admission/voucher.blade.php)",
       "Bash(php -l resources/views/shared/voucher_redirect.blade.php)",
       "Bash(php -l resources/views/registration/voucher.blade.php)",
-      "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\app\\\\Http\\\\Controllers\\\\AdmissionController.php\")"
+      "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\app\\\\Http\\\\Controllers\\\\AdmissionController.php\")",
+      "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\app\\\\Http\\\\Controllers\\\\LeadController.php\")",
+      "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\app\\\\Support\\\\PermissionCatalog.php\")",
+      "Bash(php -l \"c:\\\\Users\\\\caree\\\\Desktop\\\\CRM-Career\\\\database\\\\seeders\\\\RolePermissionSeeder.php\")",
+      "Bash(php artisan tinker '--execute= *)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue)"
     ]
   }
 }

@@ -295,7 +295,7 @@ class LeadController extends Controller
     {
         $this->ensureLeadCampusAccess($lead);
 
-        if (in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
+        if ($this->isFollowupBlockedForLead($lead, $request->user())) {
             $message = 'This lead is already ' . str_replace('_', ' ', $lead->status) . '; no further follow-ups allowed.';
 
             if ($request->expectsJson()) {
@@ -498,7 +498,7 @@ class LeadController extends Controller
         $nextFollowup = $followups->firstWhere('next_action_date', '!=', null);
         $previousFollowupCampusId = $this->resolvePreviousFollowupCampusId($lead);
         $defaultFollowupCampusId = $this->resolveDefaultFollowupCampusId($lead);
-        $isFollowupClosed = in_array($lead->status, $this->closedFollowupStatuses($lead->type), true);
+        $isFollowupClosed = $this->isFollowupBlockedForLead($lead, auth()->user());
         $interestHeading = $this->leadInterestHeading($lead->type);
         $interestValue = $this->leadInterestValue($lead);
 
@@ -1884,6 +1884,24 @@ class LeadController extends Controller
         return $this->usesTrainingConversionFlow($type)
             ? ['registered', 'not_interesting', 'enrolled']
             : ['registered', 'not_interesting', 'enrolled'];
+    }
+
+    private function canFollowupNotInterestingLead(?User $user): bool
+    {
+        return $user?->hasAnyPermission(['lead.followup.not-interesting']) ?? false;
+    }
+
+    private function isFollowupBlockedForLead(Lead $lead, ?User $user): bool
+    {
+        if (! in_array($lead->status, $this->closedFollowupStatuses($lead->type), true)) {
+            return false;
+        }
+
+        if ($lead->status === 'not_interesting' && $this->canFollowupNotInterestingLead($user)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function resolveLeadStatusForFollowupStage(Lead $lead, string $stage): string

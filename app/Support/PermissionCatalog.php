@@ -168,6 +168,7 @@ class PermissionCatalog
 
             ['moduleKey' => 'lead-management', 'section' => null, 'sectionOrder' => 10, 'order' => 10, 'label' => 'Create New Lead', 'slugs' => ['lead.create']],
             ['moduleKey' => 'lead-management', 'section' => 'Training Leads', 'sectionOrder' => 20, 'order' => 10, 'label' => "Lead's Follow-up", 'slugs' => ['lead.followup.view']],
+            ['moduleKey' => 'lead-management', 'section' => 'Training Leads', 'sectionOrder' => 20, 'order' => 15, 'label' => 'Follow-up on Not Interested Leads', 'slugs' => ['lead.followup.not-interesting']],
             ['moduleKey' => 'lead-management', 'section' => 'Training Leads', 'sectionOrder' => 20, 'order' => 20, 'label' => 'Transferred Leads', 'slugs' => ['lead.transfer.approve']],
             ['moduleKey' => 'lead-management', 'section' => 'Training Leads', 'sectionOrder' => 20, 'order' => 30, 'label' => 'All Leads', 'slugs' => ['lead.view']],
             ['moduleKey' => 'lead-management', 'section' => 'Coworking Space', 'sectionOrder' => 30, 'order' => 10, 'label' => "Lead's Follow-up", 'slugs' => ['lead.coworking.view']],
@@ -241,6 +242,7 @@ class PermissionCatalog
             'lead.delete' => self::meta('lead-management', null, 'Delete Lead Record', 10, 30),
             'lead.followup.view' => self::meta('lead-management', 'Training Leads', "Lead's Follow-up", 20, 10),
             'lead.followup.update' => self::meta('lead-management', 'Training Leads', "Update Lead's Follow-up", 20, 20),
+            'lead.followup.not-interesting' => self::meta('lead-management', 'Training Leads', 'Follow-up on Not Interested Leads', 20, 15),
             'lead.transfer.approve' => self::meta('lead-management', 'Training Leads', 'Transferred Leads', 20, 30),
             'lead.view' => self::meta('lead-management', 'Training Leads', 'All Leads', 20, 40),
             'lead.coworking.view' => self::meta('lead-management', 'Coworking Space', "Lead's Follow-up", 30, 10),
