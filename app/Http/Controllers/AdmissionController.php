@@ -743,6 +743,7 @@ class AdmissionController extends Controller
 
         $campuses = $this->campusOptionsForUser($user, ['id', 'code', 'name']);
         $programs = Program::query()
+            ->where('status', 'active')
             ->orderByRaw('COALESCE(title, name)')
             ->get(['id', 'code', 'title', 'name']);
 
