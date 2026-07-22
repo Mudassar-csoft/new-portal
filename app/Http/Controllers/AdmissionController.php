@@ -60,7 +60,14 @@ class AdmissionController extends Controller
 
         if ($request->filled('lead_id')) {
             $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
-            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+
+            // Lead campus can legitimately differ from the source registration/admission's
+            // campus (e.g. a lead transferred campuses before registering). Access to those
+            // records is already validated above, so only gate directly on the lead's own
+            // campus when there is no already-authorized source registration/admission.
+            if (! $sourceRegistration && ! $sourceAdmission) {
+                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+            }
         }
 
         if (! $lead) {
@@ -316,7 +323,14 @@ class AdmissionController extends Controller
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
-                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+
+                // Lead campus can legitimately differ from the source registration/admission's
+                // campus (e.g. a lead transferred campuses before registering). Access to those
+                // records is already validated above, so only gate directly on the lead's own
+                // campus when there is no already-authorized source registration/admission.
+                if (! $sourceRegistration && ! $sourceAdmission) {
+                    $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+                }
             }
             if (! $lead) {
                 $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
