@@ -33,16 +33,24 @@ class Registration extends Model
         'net_payable',
         'status',
         'registered_at',
+        'personal_info_updated_by',
+        'personal_info_updated_at',
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
         'date_of_birth' => 'date',
+        'personal_info_updated_at' => 'datetime',
     ];
 
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class);
+    }
+
+    public function personalInfoUpdatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'personal_info_updated_by');
     }
 
     public function campus(): BelongsTo

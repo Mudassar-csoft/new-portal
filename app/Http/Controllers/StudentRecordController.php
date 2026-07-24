@@ -170,6 +170,7 @@ class StudentRecordController extends Controller
             'lead',
             'campus',
             'program',
+            'personalInfoUpdatedBy:id,name',
         ]);
 
         $this->backfillRegistrationFee($registration);
@@ -370,8 +371,11 @@ class StudentRecordController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
         ]);
 
-        DB::transaction(function () use ($registration, $validated) {
-            $registration->update($validated);
+        DB::transaction(function () use ($request, $registration, $validated) {
+            $registration->update($validated + [
+                'personal_info_updated_by' => $request->user()?->id,
+                'personal_info_updated_at' => now(),
+            ]);
 
             Admission::query()
                 ->where('registration_id', $registration->id)

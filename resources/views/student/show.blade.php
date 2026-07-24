@@ -466,6 +466,12 @@
                                 </tr>
                             </tbody>
                         </table>
+                        @if($registration->personal_info_updated_at)
+                            <div class="pane-section-footnote">
+                                Last updated by {{ $registration->personalInfoUpdatedBy?->name ?? 'Unknown' }}
+                                on {{ $registration->personal_info_updated_at->format('d-M-Y h:i A') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </section>
@@ -924,6 +930,11 @@
         }
         .pane-section-header .pane-section-title {
             flex: 1 1 auto;
+        }
+        .pane-section-footnote {
+            margin-top: 14px;
+            font-size: var(--typo-student-show-font-size-1);
+            color: var(--color-student-show-5);
         }
         .info-table {
             width: var(--dimension-student-show-1);
