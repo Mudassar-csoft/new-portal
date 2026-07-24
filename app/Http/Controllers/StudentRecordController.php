@@ -6,6 +6,7 @@ use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\Campus;
 use App\Models\FeeCollection;
+use App\Models\Lead;
 use App\Models\Program;
 use App\Services\FinanceAccountingService;
 use App\Support\ResolvesCampusScope;
@@ -352,6 +353,59 @@ class StudentRecordController extends Controller
         }
 
         return back()->with('status', 'Fee details updated.');
+    }
+
+    public function updatePersonalInfo(Request $request, \App\Models\Registration $registration): RedirectResponse
+    {
+        $this->ensureCampusAccess((int) ($registration->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
+
+        $validated = $request->validate([
+            'student_name' => ['required', 'string', 'min:3', 'max:150'],
+            'date_of_birth' => ['nullable', 'date'],
+            'guardian_name' => ['nullable', 'string', 'max:150'],
+            'cnic' => ['nullable', 'string', 'max:15'],
+            'address' => ['nullable', 'string', 'max:1000'],
+            'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
+            'education' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+        ]);
+
+        DB::transaction(function () use ($registration, $validated) {
+            $registration->update($validated);
+
+            Admission::query()
+                ->where('registration_id', $registration->id)
+                ->update([
+                    'student_name' => $validated['student_name'],
+                    'date_of_birth' => $validated['date_of_birth'] ?? null,
+                    'guardian_name' => $validated['guardian_name'] ?? null,
+                    'cnic' => $validated['cnic'] ?? null,
+                    'postal_address' => $validated['address'] ?? null,
+                    'gender' => $validated['gender'] ?? null,
+                    'education' => $validated['education'] ?? null,
+                    'email' => $validated['email'] ?? null,
+                ]);
+
+            if ($registration->lead_id) {
+                $lead = Lead::find($registration->lead_id);
+
+                if ($lead) {
+                    $details = $lead->details ?? [];
+
+                    if (array_key_exists('gender', $validated)) {
+                        $details['gender'] = $validated['gender'];
+                    }
+
+                    $lead->update([
+                        'name' => $validated['student_name'],
+                        'email' => $validated['email'] ?? null,
+                        'details' => $details,
+                    ]);
+                }
+            }
+        });
+
+        return back()->with('status', 'Personal information updated.');
     }
 
     public function updateStatus(Request $request, Admission $admission): RedirectResponse

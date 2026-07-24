@@ -2187,7 +2187,6 @@ class LeadController extends Controller
         return match ($type) {
             'training' => array_merge($rules, [
                 'program_id' => ['required', 'integer', 'exists:programs,id'],
-                'email' => ['required', 'email', 'max:255'],
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'details.area' => ['required', 'string', 'min:2', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],

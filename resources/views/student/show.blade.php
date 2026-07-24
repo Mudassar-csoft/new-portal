@@ -13,6 +13,7 @@
         $studentWhatsappUrl = $studentPhone !== '' ? 'https://wa.me/' . $studentPhone : null;
         $canAdminEdit = auth()->user()?->isAdmin();
         $canAdmissionReview = $canAdmissionReview ?? (auth()->user()?->hasAnyPermission(['admission.review']) ?? false);
+        $canUpdateStudent = auth()->user()?->hasAnyPermission(['student.update']) ?? false;
     @endphp
 
     <div class="student-detail-shell">
@@ -405,7 +406,22 @@
                 {{-- ===== PERSONAL INFORMATION ===== --}}
                 <div class="student-pane" id="pane-personal">
                     <div class="pane-card pane-card--info">
-                        <h3 class="pane-section-title">Personal Details</h3>
+                        <div class="pane-section-header">
+                            <h3 class="pane-section-title">Personal Details</h3>
+                            @if($canUpdateStudent)
+                                <button type="button" class="btn btn-xs btn-primary-outline" id="js-personal-info-edit"
+                                    data-student-name="{{ $registration->student_name }}"
+                                    data-date-of-birth="{{ optional($registration->date_of_birth)->format('Y-m-d') }}"
+                                    data-guardian-name="{{ $registration->guardian_name }}"
+                                    data-cnic="{{ $registration->cnic }}"
+                                    data-address="{{ $registration->address }}"
+                                    data-gender="{{ $registration->gender }}"
+                                    data-education="{{ $registration->education }}"
+                                    data-email="{{ $registration->email }}">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </button>
+                            @endif
+                        </div>
                         <table class="info-table">
                             <tbody>
                                 <tr>
@@ -524,6 +540,65 @@
             </form>
         </div>
     </div>
+
+    {{-- ============ PERSONAL INFO EDIT MODAL ============ --}}
+    @if($canUpdateStudent)
+        <div class="fee-edit-modal" id="personalInfoEditModal" aria-hidden="true">
+            <div class="fee-edit-backdrop" data-personal-close></div>
+            <div class="fee-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="personalInfoEditTitle">
+                <div class="fee-edit-header">
+                    <h4 id="personalInfoEditTitle">Edit Personal Information</h4>
+                    <button type="button" class="fee-edit-close" data-personal-close aria-label="Close">&times;</button>
+                </div>
+                <form id="personalInfoEditForm" method="POST" action="{{ route('student.registration.personal-info.update', $registration) }}">
+                    @csrf
+                    <div class="fee-edit-body">
+                        <div class="fee-edit-field">
+                            <label for="personal_student_name">Name</label>
+                            <input type="text" id="personal_student_name" name="student_name" required>
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_date_of_birth">Date of Birth</label>
+                            <input type="date" id="personal_date_of_birth" name="date_of_birth">
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_guardian_name">Guardian Name</label>
+                            <input type="text" id="personal_guardian_name" name="guardian_name">
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_cnic">CNIC</label>
+                            <input type="text" id="personal_cnic" name="cnic">
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_address">Postal Address</label>
+                            <input type="text" id="personal_address" name="address">
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_gender">Gender</label>
+                            <select id="personal_gender" name="gender">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_education">Qualification</label>
+                            <input type="text" id="personal_education" name="education">
+                        </div>
+                        <div class="fee-edit-field">
+                            <label for="personal_email">Email Address</label>
+                            <input type="email" id="personal_email" name="email">
+                        </div>
+                    </div>
+                    <div class="fee-edit-footer">
+                        <button type="button" class="btn-fee-cancel" data-personal-close>Cancel</button>
+                        <button type="submit" class="btn-fee-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @push('styles')
@@ -841,6 +916,15 @@
             padding-bottom: var(--space-student-show-1);
             border-bottom: 1px solid var(--color-student-show-7);
         }
+        .pane-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .pane-section-header .pane-section-title {
+            flex: 1 1 auto;
+        }
         .info-table {
             width: var(--dimension-student-show-1);
             border-collapse: collapse;
@@ -989,7 +1073,8 @@
             color: var(--color-student-show-3);
             margin-bottom: var(--space-student-show-6);
         }
-        .fee-edit-field input {
+        .fee-edit-field input,
+        .fee-edit-field select {
             width: var(--dimension-student-show-1);
             padding: 8px 10px;
             border: 1px solid var(--color-student-show-6);
@@ -997,7 +1082,8 @@
             font-size: var(--typo-student-show-font-size-4);
             color: var(--color-student-show-3);
         }
-        .fee-edit-field input:focus {
+        .fee-edit-field input:focus,
+        .fee-edit-field select:focus {
             outline: 0;
             border-color: var(--color-student-show-2);
             box-shadow: 0 0 0 2px rgba(10, 150, 204, 0.15);
@@ -1201,6 +1287,37 @@
                     closeCollectModal();
                 }
             });
+
+            // Personal info edit modal
+            const personalModal = document.getElementById('personalInfoEditModal');
+            const personalEditBtn = document.getElementById('js-personal-info-edit');
+            if (personalModal && personalEditBtn) {
+                function openPersonalModal() {
+                    document.getElementById('personal_student_name').value = personalEditBtn.getAttribute('data-student-name') || '';
+                    document.getElementById('personal_date_of_birth').value = personalEditBtn.getAttribute('data-date-of-birth') || '';
+                    document.getElementById('personal_guardian_name').value = personalEditBtn.getAttribute('data-guardian-name') || '';
+                    document.getElementById('personal_cnic').value = personalEditBtn.getAttribute('data-cnic') || '';
+                    document.getElementById('personal_address').value = personalEditBtn.getAttribute('data-address') || '';
+                    document.getElementById('personal_gender').value = personalEditBtn.getAttribute('data-gender') || '';
+                    document.getElementById('personal_education').value = personalEditBtn.getAttribute('data-education') || '';
+                    document.getElementById('personal_email').value = personalEditBtn.getAttribute('data-email') || '';
+                    personalModal.classList.add('is-open');
+                    personalModal.setAttribute('aria-hidden', 'false');
+                }
+                function closePersonalModal() {
+                    personalModal.classList.remove('is-open');
+                    personalModal.setAttribute('aria-hidden', 'true');
+                }
+                personalEditBtn.addEventListener('click', openPersonalModal);
+                personalModal.querySelectorAll('[data-personal-close]').forEach(function (el) {
+                    el.addEventListener('click', closePersonalModal);
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && personalModal.classList.contains('is-open')) {
+                        closePersonalModal();
+                    }
+                });
+            }
         })();
     </script>
 @endpush
