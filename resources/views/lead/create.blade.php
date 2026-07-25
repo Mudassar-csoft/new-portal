@@ -13,6 +13,8 @@
 		$formSubmitLabel = $formSubmitLabel ?? 'Create Lead';
 		$cancelUrl = $cancelUrl ?? url()->previous();
 		$leadTypeSelectEnabled = (bool) ($leadTypeSelectEnabled ?? true);
+		$canEditPhone = (bool) ($canEditPhone ?? true);
+		$lockPhoneField = isset($lead) && $lead && ! $canEditPhone;
 		$selectedWebLeadId = request('web_lead') ?: ($webLead->id ?? null);
 		$leadTypeOptions = [
 			'training' => 'Training',

@@ -31,10 +31,14 @@
                    name="phone"
                    class="form-control form-control-sm @error('phone') is-invalid @enderror"
                    placeholder="0300-0000000"
-                   value="{{ old('phone', $leadPrefill['phone'] ?? '') }}">
+                   value="{{ old('phone', $leadPrefill['phone'] ?? '') }}"
+                   @readonly($lockPhoneField ?? false)>
             @error('phone')
                 <div class="field-error">{{ $message }}</div>
             @enderror
+            @if($lockPhoneField ?? false)
+                <small class="text-muted">Only an admin can change the contact number.</small>
+            @endif
         </div>
         <div class="col-md-6 col-lg-3">
                 <label class="form-label small required">

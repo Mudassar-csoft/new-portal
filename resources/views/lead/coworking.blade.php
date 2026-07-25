@@ -20,10 +20,13 @@
 		</div>
 		<div class="form-group col-lg-3 col-md-6">
 			<label class="form-label required">Primary Contact Number</label>
-			<input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone', $leadPrefill['phone'] ?? '') }}">
+			<input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror" placeholder="03000000000" value="{{ old('phone', $leadPrefill['phone'] ?? '') }}" @readonly($lockPhoneField ?? false)>
 			@error('phone')
 				<div class="field-error">{{ $message }}</div>
 			@enderror
+			@if($lockPhoneField ?? false)
+				<small class="text-muted">Only an admin can change the contact number.</small>
+			@endif
 		</div>
 		<div class="form-group col-lg-3 col-md-6">
 			<label class="form-label">Email Address</label>

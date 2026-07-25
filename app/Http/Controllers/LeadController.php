@@ -80,7 +80,6 @@ class LeadController extends Controller
     public function edit(Request $request, Lead $lead): View
     {
         $this->ensureLeadCampusAccess($lead);
-        abort_unless($request->user()?->isAdmin(), 403);
 
         return view('lead.create', array_merge(
             $this->leadFormOptions(),
@@ -94,6 +93,7 @@ class LeadController extends Controller
                 'formSubmitLabel' => 'Update Lead',
                 'cancelUrl' => route('leads.show', $lead),
                 'leadTypeSelectEnabled' => false,
+                'canEditPhone' => $request->user()?->isAdmin() ?? false,
             ]
         ));
     }
@@ -223,14 +223,20 @@ class LeadController extends Controller
     public function update(Request $request, Lead $lead): RedirectResponse
     {
         $this->ensureLeadCampusAccess($lead);
-        abort_unless($request->user()?->isAdmin(), 403);
+        $canEditPhone = $request->user()?->isAdmin() ?? false;
 
         $request->merge([
             'type' => $lead->type,
         ]);
 
+        $updateRules = $this->leadStoreRules($lead->type, $lead);
+
+        if (! $canEditPhone) {
+            unset($updateRules['phone']);
+        }
+
         $validated = $request->validate(
-            $this->leadStoreRules($lead->type, $lead),
+            $updateRules,
             $this->leadStoreMessages(),
             $this->leadStoreAttributes()
         );
@@ -239,7 +245,7 @@ class LeadController extends Controller
         $updatedLeadName = trim((string) ($validated['name'] ?? ''));
         $leadNameChanged = $updatedLeadName !== '' && $updatedLeadName !== trim((string) ($lead->name ?? ''));
 
-        DB::transaction(function () use ($lead, $validated, $mergedDetails, $leadNameChanged, $updatedLeadName): void {
+        DB::transaction(function () use ($lead, $validated, $mergedDetails, $leadNameChanged, $updatedLeadName, $canEditPhone): void {
             $lead->update([
                 'campus_id' => $validated['campus_id'] ?? null,
                 'program_id' => $validated['program_id'] ?? null,
@@ -247,7 +253,7 @@ class LeadController extends Controller
                 'type' => $lead->type,
                 'name' => $validated['name'] ?? null,
                 'email' => $validated['email'] ?? null,
-                'phone' => $validated['phone'] ?? null,
+                'phone' => $canEditPhone ? ($validated['phone'] ?? null) : $lead->phone,
                 'city' => $validated['city'] ?? null,
                 'origin' => $validated['origin'] ?? null,
                 'marketing_source' => $validated['marketing_source'] ?? null,
