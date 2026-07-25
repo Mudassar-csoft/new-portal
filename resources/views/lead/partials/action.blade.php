@@ -21,7 +21,7 @@
 		? 'Create New Coworking Space Registration (All fields marked with * are required)'
 		: 'Create New Registration (All fields marked with * are required)';
 	$canMarkNotInterested = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
-	$canAdminEdit = auth()->user()?->isAdmin();
+	$canEditLead = auth()->user()?->hasAnyPermission(['lead.update']) ?? false;
 @endphp
 
 @once
@@ -243,7 +243,7 @@
 				</form>
 			@endif
 		@endif
-		@if($canAdminEdit)
+		@if($canEditLead)
 			<a class="dropdown-item lead-action-item" href="{{ !empty($leadId) ? route('leads.edit', $leadId) : '#' }}">
 				@include('partials.action-edit-black-content')
 			</a>
