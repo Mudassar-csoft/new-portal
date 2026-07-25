@@ -216,6 +216,17 @@
                     <div class="admission-modal__body">
                         <p class="admission-modal__student" id="uploadDocumentsStudent"></p>
                         <div class="alert alert-warning admission-modal__notice" id="uploadDocumentsRemark" style="display:none;"></div>
+
+                        <div class="admission-modal__previous-docs" id="uploadDocumentsPreviousDocs" style="display:none;">
+                            <p class="admission-modal__previous-docs-title">Previously Submitted Documents</p>
+                            <div class="admission-doc-tabs">
+                                <a href="#" target="_blank" rel="noopener" class="admission-doc-tab" id="uploadPrevDocCnic" style="display:none;">CNIC Front</a>
+                                <a href="#" target="_blank" rel="noopener" class="admission-doc-tab" id="uploadPrevDocCnicBack" style="display:none;">CNIC Back</a>
+                                <a href="#" target="_blank" rel="noopener" class="admission-doc-tab" id="uploadPrevDocForm" style="display:none;">Form</a>
+                                <a href="#" target="_blank" rel="noopener" class="admission-doc-tab" id="uploadPrevDocSlip" style="display:none;">Fee Slip</a>
+                            </div>
+                        </div>
+
                         <div class="alert alert-info admission-modal__notice" id="uploadDocumentsScannerNotice" style="display:none;"></div>
 
                         <div class="form-group">
@@ -378,58 +389,127 @@
     @if($canReviewApproval)
         <div class="admission-modal" id="reviewAdmissionModal" aria-hidden="true">
             <div class="admission-modal__backdrop" data-admission-review-close></div>
-            <div class="admission-modal__dialog">
+            <div class="admission-modal__dialog admission-review-modal__dialog">
                 <div class="admission-modal__header">
                     <h4 class="admission-modal__title">Review Admission Request</h4>
                     <button type="button" class="admission-modal__close" data-admission-review-close>&times;</button>
                 </div>
-                <form id="reviewAdmissionForm" method="POST">
+                <form id="reviewAdmissionForm" method="POST" class="admission-review-modal__form">
                     @csrf
-                    <div class="admission-modal__body">
-                        <p class="admission-modal__student" id="reviewAdmissionStudent"></p>
-                        <div class="alert alert-secondary admission-modal__notice" id="reviewAdmissionIdentityType">
-                            Identity Document Type: <strong id="reviewAdmissionIdentityTypeValue">CNIC</strong>
+                    <div class="admission-review-modal__body">
+                        <div class="admission-review-modal__pane admission-review-modal__pane--info">
+                            <p class="admission-modal__student" id="reviewAdmissionStudent"></p>
+
+                            <table class="admission-review-details">
+                                <tbody>
+                                    <tr>
+                                        <th>Guardian Name</th>
+                                        <td id="reviewAdmissionFather">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Contact</th>
+                                        <td id="reviewAdmissionPhone">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date of Birth</th>
+                                        <td id="reviewAdmissionDob">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>CNIC</th>
+                                        <td id="reviewAdmissionCnic">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td id="reviewAdmissionAddress">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Gender</th>
+                                        <td id="reviewAdmissionGender">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td id="reviewAdmissionEmail">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Program</th>
+                                        <td id="reviewAdmissionProgram">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Session</th>
+                                        <td id="reviewAdmissionSession">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td id="reviewAdmissionStatus">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Admission Date</th>
+                                        <td id="reviewAdmissionAdmissionDate">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Registration Date</th>
+                                        <td id="reviewAdmissionRegistrationDate">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fee Package</th>
+                                        <td id="reviewAdmissionFeePackage">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Discount %/Amount</th>
+                                        <td id="reviewAdmissionDiscount">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Payment Plan</th>
+                                        <td id="reviewAdmissionFeePlan">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Paid Installment</th>
+                                        <td id="reviewAdmissionPaidInstallment">—</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pending Installment</th>
+                                        <td id="reviewAdmissionPendingInstallment">—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="alert alert-secondary admission-modal__notice" id="reviewAdmissionIdentityType">
+                                Identity Document Type: <strong id="reviewAdmissionIdentityTypeValue">CNIC</strong>
+                            </div>
+
+                            <div class="alert alert-info admission-modal__notice" id="reviewAdmissionPreviousRemark" style="display:none;"></div>
+
+                            <div class="form-group mb-0">
+                                <label>Remarks <span class="text-danger">*</span></label>
+                                <textarea name="approval_remarks" id="reviewAdmissionRemarks" rows="3" class="form-control" required placeholder="Write approval or revert remarks"></textarea>
+                            </div>
                         </div>
-
-                        <div class="admission-doc-list">
-                            <div class="admission-doc-link" id="reviewIdentityPrimaryRow">
-                                <span id="reviewIdentityPrimaryLabel">CNIC Front Side</span>
-                                <span class="text-right eye-span">
-                                    <a href="#" id="reviewDocCnic" class="js-review-doc-preview" data-doc-title="CNIC Front Side"><i class="fa fa-eye"></i></a>
-                                </span>
+                        <div class="admission-review-modal__pane admission-review-modal__pane--preview">
+                            <div class="admission-review-modal__preview-frame-wrap">
+                                <iframe id="reviewDocumentPreviewFrame" class="admission-review-modal__preview-frame" title="Admission document preview"></iframe>
+                                <div class="admission-review-modal__preview-empty" id="reviewDocumentPreviewEmpty">Select a document below to preview it here.</div>
+                                <div class="admission-review-modal__zoom-controls" id="reviewZoomControls" style="display:none;">
+                                    <button type="button" class="admission-review-modal__zoom-btn" id="reviewZoomOut" title="Zoom out">&minus;</button>
+                                    <span class="admission-review-modal__zoom-level" id="reviewZoomLevel">100%</span>
+                                    <button type="button" class="admission-review-modal__zoom-btn" id="reviewZoomIn" title="Zoom in">+</button>
+                                    <button type="button" class="admission-review-modal__zoom-btn" id="reviewZoomReset" title="Reset zoom">Reset</button>
+                                </div>
                             </div>
 
-                            <div class="admission-doc-link" id="reviewIdentityBackRow">
-                                <span id="reviewIdentityBackLabel">CNIC Back Side</span>
-                                <span class="text-right eye-span">
-                                    <a href="#" id="reviewDocCnicBack" class="js-review-doc-preview" data-doc-title="CNIC Back Side"><i class="fa fa-eye"></i></a>
-                                </span>
+                            <div class="admission-doc-tabs" id="reviewDocTabs">
+                                <button type="button" class="admission-doc-tab js-review-doc-preview" id="reviewDocCnic" data-doc-title="CNIC Front Side">
+                                    <span id="reviewIdentityPrimaryLabel">CNIC Front</span>
+                                </button>
+                                <button type="button" class="admission-doc-tab js-review-doc-preview" id="reviewDocCnicBack" data-doc-title="CNIC Back Side">
+                                    <span id="reviewIdentityBackLabel">CNIC Back</span>
+                                </button>
+                                <button type="button" class="admission-doc-tab js-review-doc-preview" id="reviewDocForm" data-doc-title="Admission Form">
+                                    Form
+                                </button>
+                                <button type="button" class="admission-doc-tab js-review-doc-preview" id="reviewDocSlip" data-doc-title="Paid Slip With Authorized Stamp">
+                                    Fee Slip
+                                </button>
                             </div>
-
-                            <div class="admission-doc-link">
-                                Admission Form
-                                <span class="text-right eye-span">
-                                    <a href="#" id="reviewDocForm" class="js-review-doc-preview" data-doc-title="Admission Form">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </span>
-                            </div>
-
-                            <div class="admission-doc-link">
-                                Paid Slip With Authorized Stamp
-                                <span class="text-right eye-span-4">
-                                    <a href="#" id="reviewDocSlip" class="js-review-doc-preview" data-doc-title="Paid Slip With Authorized Stamp">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info admission-modal__notice" id="reviewAdmissionPreviousRemark" style="display:none;"></div>
-
-                        <div class="form-group mb-0">
-                            <label>Remarks <span class="text-danger">*</span></label>
-                            <textarea name="approval_remarks" id="reviewAdmissionRemarks" rows="4" class="form-control" required placeholder="Write approval or revert remarks"></textarea>
                         </div>
                     </div>
                     <div class="admission-modal__footer admission-modal__footer--split">
@@ -440,22 +520,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <div class="admission-modal admission-document-modal" id="reviewDocumentPreviewModal" aria-hidden="true">
-            <div class="admission-modal__backdrop" data-admission-document-close></div>
-            <div class="admission-modal__dialog admission-document-modal__dialog">
-                <div class="admission-modal__header">
-                    <h4 class="admission-modal__title" id="reviewDocumentPreviewTitle">Document Preview</h4>
-                    <button type="button" class="admission-modal__close" data-admission-document-close>&times;</button>
-                </div>
-                <div class="admission-document-modal__body">
-                    <iframe id="reviewDocumentPreviewFrame" class="admission-document-modal__frame" title="Admission document preview"></iframe>
-                </div>
-                <div class="admission-modal__footer">
-                    <button type="button" class="btn btn-danger-outline" data-admission-document-close>Close</button>
-                </div>
             </div>
         </div>
     @endif
@@ -528,22 +592,6 @@
             width: 350px;
         }
 
-        .eye-span{
-                height: var(--dimension-admission-status-2);
-                text-align: right !important;
-                /* margin-left: 341px; */
-                padding: var(--space-admission-status-6);
-                background: var(--color-admission-status-7);
-                border-radius: 20px;
-        }
-         .eye-span-4{
-             height: var(--dimension-admission-status-2);
-         text-align: right !important;
-                /* margin-left: 241px; */
-                padding: var(--space-admission-status-6);
-                background: var(--color-admission-status-7);
-                border-radius: 20px;
-        }
         .follow-card,
         .follow-body,
         .table-responsive {
@@ -824,67 +872,224 @@
             gap: var(--space-admission-status-1);
         }
 
-        .admission-doc-list {
-            display: grid;
-            gap: var(--space-admission-status-1);
-            margin-bottom: var(--space-admission-status-4);
-        }
-
-        .admission-doc-link {
-            display: flex;
-            padding: 10px 12px;
-            border: 1px solid var(--color-admission-status-6);
-            border-radius: 6px;
-            color: #0f5fa8;
-            font-weight: var(--typo-admission-status-font-weight-1);
-            text-decoration: none;
-            background: var(--color-admission-status-9);
-             justify-content: space-between;
-    align-items: center;
-        }
-
-        .admission-doc-link:hover {
-            text-decoration: none;
-            background: #eef6ff;
-        }
-
-        .admission-doc-link.is-disabled {
-            color: var(--color-admission-status-5);
-            pointer-events: none;
-            background: var(--color-admission-status-8);
-        }
-
-        .admission-doc-link a.is-disabled {
-            color: var(--color-admission-status-5);
-            pointer-events: none;
-        }
-
-        .admission-document-modal {
-            z-index: 1200;
-        }
-
-        .admission-document-modal__dialog {
-            max-width: 980px;
-            height: min(86vh, 760px);
+        .admission-review-modal__dialog {
+            max-width: 1080px;
+            height: min(88vh, 760px);
             display: flex;
             flex-direction: column;
         }
 
-        .admission-document-modal__body {
-            flex: 1;
+        .admission-review-modal__form {
+            display: flex;
+            flex-direction: column;
             min-height: 0;
-            padding: var(--space-admission-status-2);
-            background: var(--color-admission-status-8);
-            overflow: hidden;
+            flex: 1;
         }
 
-        .admission-document-modal__frame {
-            width: var(--dimension-admission-status-1);
-            height: var(--dimension-admission-status-1);
+        .admission-review-modal__body {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .admission-review-modal__pane {
+            padding: 18px;
+            overflow-y: auto;
+        }
+
+        .admission-review-modal__pane--info {
+            flex: 0 0 35%;
+            max-width: 35%;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .admission-review-modal__pane--preview {
+            flex: 0 0 65%;
+            max-width: 65%;
+            display: flex;
+            flex-direction: column;
+            background: var(--color-admission-status-8);
+        }
+
+        .admission-review-details {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+            font-size: 0.8125rem;
+        }
+
+        .admission-review-details th {
+            width: 38%;
+            text-align: left;
+            padding: 5px 8px 5px 0;
+            color: var(--color-admission-status-4);
+            font-weight: var(--typo-admission-status-font-weight-1);
+            vertical-align: top;
+        }
+
+        .admission-review-details td {
+            padding: 5px 0;
+            color: #1f2937;
+            word-break: break-word;
+        }
+
+        .admission-review-modal__preview-frame-wrap {
+            position: relative;
+            flex: 1;
+            min-height: 260px;
+            margin-bottom: var(--space-admission-status-2);
+        }
+
+        .admission-review-modal__preview-frame {
+            width: 100%;
+            height: 100%;
             border: 1px solid var(--color-admission-status-6);
             border-radius: 6px;
             background: white;
+            display: none;
+            position: absolute;
+            inset: 0;
+        }
+
+        .admission-review-modal__preview-frame.is-active {
             display: block;
+        }
+
+        .admission-review-modal__preview-empty {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            color: var(--color-admission-status-5);
+            font-size: 0.875rem;
+            border: 1px dashed var(--color-admission-status-6);
+            border-radius: 6px;
+            background: var(--color-admission-status-9);
+        }
+
+        .admission-review-modal__zoom-controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--color-admission-status-6);
+            border-radius: 6px;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+        }
+
+        .admission-review-modal__zoom-btn {
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            border: 1px solid var(--color-admission-status-6);
+            border-radius: 4px;
+            background: var(--color-admission-status-10);
+            color: var(--color-admission-status-3);
+            font-weight: var(--typo-admission-status-font-weight-1);
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        #reviewZoomReset {
+            width: auto;
+            padding: 0 8px;
+            font-size: var(--typo-admission-status-font-size-3);
+        }
+
+        .admission-review-modal__zoom-btn:hover:not(:disabled) {
+            background: #eef6ff;
+        }
+
+        .admission-review-modal__zoom-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .admission-review-modal__zoom-level {
+            min-width: 40px;
+            text-align: center;
+            font-size: var(--typo-admission-status-font-size-3);
+            font-weight: var(--typo-admission-status-font-weight-1);
+            color: var(--color-admission-status-4);
+        }
+
+        .admission-doc-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-admission-status-1);
+        }
+
+        .admission-doc-tab {
+            flex: 1 1 auto;
+            padding: 9px 10px;
+            border: 1px solid var(--color-admission-status-6);
+            border-radius: 6px;
+            color: #0f5fa8;
+            font-weight: var(--typo-admission-status-font-weight-1);
+            font-size: var(--typo-admission-status-font-size-3);
+            background: var(--color-admission-status-9);
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .admission-doc-tab:hover {
+            background: #eef6ff;
+            color: #0f5fa8;
+            text-decoration: none;
+        }
+
+        .admission-modal__previous-docs {
+            margin-bottom: var(--space-admission-status-4);
+        }
+
+        .admission-modal__previous-docs-title {
+            margin: 0 0 var(--space-admission-status-5);
+            font-size: var(--typo-admission-status-font-size-3);
+            font-weight: var(--typo-admission-status-font-weight-1);
+            color: var(--color-admission-status-4);
+        }
+
+        .admission-doc-tab.is-active {
+            background: var(--color-admission-status-2);
+            border-color: var(--color-admission-status-2);
+            color: var(--color-admission-status-10);
+        }
+
+        .admission-doc-tab:disabled {
+            color: var(--color-admission-status-5);
+            cursor: not-allowed;
+            background: var(--color-admission-status-8);
+        }
+
+        @media (max-width: 768px) {
+            .admission-review-modal__body {
+                flex-direction: column;
+            }
+
+            .admission-review-modal__pane--info,
+            .admission-review-modal__pane--preview {
+                flex: 1 1 auto;
+                max-width: 100%;
+            }
+
+            .admission-review-modal__pane--info {
+                border-right: 0;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .admission-review-modal__preview-frame-wrap {
+                min-height: 220px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -933,6 +1138,7 @@
                 var form = document.getElementById('uploadDocumentsForm');
                 var studentLabel = document.getElementById('uploadDocumentsStudent');
                 var remarkBox = document.getElementById('uploadDocumentsRemark');
+                var previousDocsPanel = document.getElementById('uploadDocumentsPreviousDocs');
                 var scannerNotice = document.getElementById('uploadDocumentsScannerNotice');
                 var uploadBase = @json(url('/admission'));
                 var scannerHelperBases = ['http://127.0.0.1:18777', 'http://localhost:18777'];
@@ -1368,6 +1574,23 @@
                     }
                 }
 
+                function bindPreviousDoc(elementId, url) {
+                    var element = document.getElementById(elementId);
+                    if (!element) {
+                        return false;
+                    }
+
+                    if (url) {
+                        element.href = url;
+                        element.style.display = '';
+                        return true;
+                    }
+
+                    element.href = '#';
+                    element.style.display = 'none';
+                    return false;
+                }
+
                 function openModal(button) {
                     var admissionId = button.getAttribute('data-admission-id');
                     var studentName = button.getAttribute('data-student-name') || 'Admission';
@@ -1387,6 +1610,16 @@
                     } else {
                         remarkBox.style.display = 'none';
                         remarkBox.textContent = '';
+                    }
+
+                    var hasPreviousDocs = false;
+                    hasPreviousDocs = bindPreviousDoc('uploadPrevDocCnic', button.getAttribute('data-doc-cnic')) || hasPreviousDocs;
+                    hasPreviousDocs = bindPreviousDoc('uploadPrevDocCnicBack', button.getAttribute('data-doc-cnic-back')) || hasPreviousDocs;
+                    hasPreviousDocs = bindPreviousDoc('uploadPrevDocForm', button.getAttribute('data-doc-form')) || hasPreviousDocs;
+                    hasPreviousDocs = bindPreviousDoc('uploadPrevDocSlip', button.getAttribute('data-doc-slip')) || hasPreviousDocs;
+
+                    if (previousDocsPanel) {
+                        previousDocsPanel.style.display = hasPreviousDocs ? 'block' : 'none';
                     }
 
                     modal.classList.add('is-open');
@@ -1450,103 +1683,188 @@
                 var studentLabel = document.getElementById('reviewAdmissionStudent');
                 var remarksInput = document.getElementById('reviewAdmissionRemarks');
                 var previousRemark = document.getElementById('reviewAdmissionPreviousRemark');
-                var documentModal = document.getElementById('reviewDocumentPreviewModal');
                 var documentFrame = document.getElementById('reviewDocumentPreviewFrame');
-                var documentTitle = document.getElementById('reviewDocumentPreviewTitle');
+                var documentEmpty = document.getElementById('reviewDocumentPreviewEmpty');
+                var docTabs = document.getElementById('reviewDocTabs');
                 var reviewIdentityTypeValue = document.getElementById('reviewAdmissionIdentityTypeValue');
                 var reviewIdentityPrimaryLabel = document.getElementById('reviewIdentityPrimaryLabel');
-                var reviewIdentityBackRow = document.getElementById('reviewIdentityBackRow');
+                var reviewIdentityBackRow = document.getElementById('reviewDocCnicBack');
                 var reviewBase = @json(url('/admission'));
+                var zoomLevels = [1, 1.5, 2, 2.5, 3];
+                var zoomIndex = 0;
+                var zoomControls = document.getElementById('reviewZoomControls');
+                var zoomInBtn = document.getElementById('reviewZoomIn');
+                var zoomOutBtn = document.getElementById('reviewZoomOut');
+                var zoomResetBtn = document.getElementById('reviewZoomReset');
+                var zoomLevelLabel = document.getElementById('reviewZoomLevel');
 
                 if (!modal || !form) {
                     return;
                 }
 
-                function bindDocLink(elementId, url) {
-                    var element = document.getElementById(elementId);
-                    if (!element) {
-                        return;
-                    }
-
-                    if (url) {
-                        element.href = url;
-                        element.classList.remove('is-disabled');
-                        var activeRow = element.closest('.admission-doc-link');
-                        if (activeRow) {
-                            activeRow.classList.remove('is-disabled');
-                        }
-                    } else {
-                        element.href = '#';
-                        element.classList.add('is-disabled');
-                        var disabledRow = element.closest('.admission-doc-link');
-                        if (disabledRow) {
-                            disabledRow.classList.add('is-disabled');
-                        }
-                    }
-                }
-
-                function openDocumentPreview(link) {
-                    var url = link.getAttribute('href');
-                    if (!documentModal || !documentFrame || !url || url === '#' || link.classList.contains('is-disabled')) {
-                        return;
-                    }
-
-                    documentTitle.textContent = link.getAttribute('data-doc-title') || 'Document Preview';
-                    documentFrame.src = url;
-                    documentModal.classList.add('is-open');
-                    documentModal.setAttribute('aria-hidden', 'false');
-                }
-
                 function fitImageInsidePreview() {
+                    if (documentFrame) {
+                        try {
+                            var frameDocument = documentFrame.contentDocument || documentFrame.contentWindow.document;
+                            var image = frameDocument ? frameDocument.querySelector('img') : null;
+
+                            if (frameDocument && image) {
+                                frameDocument.documentElement.style.height = '100%';
+                                frameDocument.body.style.height = '100%';
+                                frameDocument.body.style.margin = '0';
+                                frameDocument.body.style.display = 'flex';
+                                frameDocument.body.style.alignItems = 'center';
+                                frameDocument.body.style.justifyContent = 'center';
+                                frameDocument.body.style.background = '#111827';
+                                image.style.display = 'block';
+                            }
+                        } catch (error) {
+                            // Browser PDF viewers may block frame styling; images remain handled when accessible.
+                        }
+                    }
+
+                    zoomIndex = 0;
+                    applyZoom();
+                }
+
+                function getPreviewImage() {
                     if (!documentFrame) {
-                        return;
+                        return null;
                     }
 
                     try {
                         var frameDocument = documentFrame.contentDocument || documentFrame.contentWindow.document;
-                        if (!frameDocument) {
-                            return;
-                        }
+                        return frameDocument ? frameDocument.querySelector('img') : null;
+                    } catch (error) {
+                        return null;
+                    }
+                }
 
-                        var image = frameDocument.querySelector('img');
-                        if (!image) {
-                            return;
-                        }
+                function applyZoom() {
+                    var image = getPreviewImage();
+                    var zoom = zoomLevels[zoomIndex];
 
-                        frameDocument.documentElement.style.height = '100%';
-                        frameDocument.body.style.height = '100%';
-                        frameDocument.body.style.margin = '0';
-                        frameDocument.body.style.display = 'flex';
-                        frameDocument.body.style.alignItems = 'center';
-                        frameDocument.body.style.justifyContent = 'center';
-                        frameDocument.body.style.overflow = 'hidden';
-                        frameDocument.body.style.background = '#111827';
+                    if (zoomLevelLabel) {
+                        zoomLevelLabel.textContent = Math.round(zoom * 100) + '%';
+                    }
 
+                    if (zoomOutBtn) {
+                        zoomOutBtn.disabled = !image || zoomIndex === 0;
+                    }
+
+                    if (zoomInBtn) {
+                        zoomInBtn.disabled = !image || zoomIndex === zoomLevels.length - 1;
+                    }
+
+                    if (zoomResetBtn) {
+                        zoomResetBtn.disabled = !image;
+                    }
+
+                    if (zoomControls) {
+                        zoomControls.style.display = image ? 'flex' : 'none';
+                    }
+
+                    if (!image) {
+                        return;
+                    }
+
+                    var frameDocument = image.ownerDocument;
+
+                    if (zoom > 1) {
+                        image.style.width = (zoom * 100) + '%';
+                        image.style.height = 'auto';
+                        image.style.maxWidth = 'none';
+                        image.style.maxHeight = 'none';
+                        image.style.objectFit = '';
+                        frameDocument.body.style.overflow = 'auto';
+                    } else {
                         image.style.width = '100%';
                         image.style.height = '100%';
                         image.style.maxWidth = '100%';
                         image.style.maxHeight = '100%';
                         image.style.objectFit = 'contain';
-                        image.style.display = 'block';
-                    } catch (error) {
-                        // Browser PDF viewers may block frame styling; images remain handled when accessible.
+                        frameDocument.body.style.overflow = 'hidden';
                     }
                 }
 
-                function closeDocumentPreview() {
-                    if (!documentModal || !documentFrame) {
+                function zoomIn() {
+                    zoomIndex = Math.min(zoomIndex + 1, zoomLevels.length - 1);
+                    applyZoom();
+                }
+
+                function zoomOut() {
+                    zoomIndex = Math.max(zoomIndex - 1, 0);
+                    applyZoom();
+                }
+
+                function zoomReset() {
+                    zoomIndex = 0;
+                    applyZoom();
+                }
+
+                function bindDocTab(elementId, url) {
+                    var element = document.getElementById(elementId);
+                    if (!element) {
                         return;
                     }
 
-                    documentModal.classList.remove('is-open');
-                    documentModal.setAttribute('aria-hidden', 'true');
-                    documentFrame.src = 'about:blank';
+                    element.setAttribute('data-doc-url', url || '');
+                    element.disabled = !url;
+                    element.classList.remove('is-active');
+                }
+
+                function clearDocumentPreview() {
+                    docTabs.querySelectorAll('.admission-doc-tab').forEach(function (el) {
+                        el.classList.remove('is-active');
+                    });
+
+                    if (documentFrame) {
+                        documentFrame.classList.remove('is-active');
+                        documentFrame.src = 'about:blank';
+                    }
+
+                    if (documentEmpty) {
+                        documentEmpty.style.display = 'flex';
+                    }
+                }
+
+                function showDocument(tab) {
+                    var url = tab.getAttribute('data-doc-url');
+
+                    if (!url || tab.disabled) {
+                        clearDocumentPreview();
+                        return;
+                    }
+
+                    docTabs.querySelectorAll('.admission-doc-tab').forEach(function (el) {
+                        el.classList.remove('is-active');
+                    });
+                    tab.classList.add('is-active');
+
+                    if (documentEmpty) {
+                        documentEmpty.style.display = 'none';
+                    }
+
+                    if (documentFrame) {
+                        documentFrame.classList.add('is-active');
+                        documentFrame.src = url;
+                    }
+                }
+
+                function showFirstAvailableDocument() {
+                    var firstTab = docTabs.querySelector('.admission-doc-tab:not(:disabled)');
+
+                    if (firstTab) {
+                        showDocument(firstTab);
+                    } else {
+                        clearDocumentPreview();
+                    }
                 }
 
                 function applyReviewIdentityDocumentType(type) {
                     var normalizedType = type === 'b_form' ? 'b_form' : 'cnic';
                     var primaryLabel = normalizedType === 'b_form' ? 'B-Form Copy' : 'CNIC Front Side';
-                    var primaryLink = document.getElementById('reviewDocCnic');
+                    var primaryTab = document.getElementById('reviewDocCnic');
                     var identityTypeLabel = normalizedType === 'b_form' ? 'B-Form' : 'CNIC';
 
                     if (reviewIdentityTypeValue) {
@@ -1557,12 +1875,19 @@
                         reviewIdentityPrimaryLabel.textContent = primaryLabel;
                     }
 
-                    if (primaryLink) {
-                        primaryLink.setAttribute('data-doc-title', primaryLabel);
+                    if (primaryTab) {
+                        primaryTab.setAttribute('data-doc-title', primaryLabel);
                     }
 
                     if (reviewIdentityBackRow) {
                         reviewIdentityBackRow.style.display = normalizedType === 'b_form' ? 'none' : '';
+                    }
+                }
+
+                function setDetail(elementId, value) {
+                    var element = document.getElementById(elementId);
+                    if (element) {
+                        element.textContent = value && value.trim() !== '' ? value : '—';
                     }
                 }
 
@@ -1577,10 +1902,29 @@
                     remarksInput.value = '';
                     applyReviewIdentityDocumentType(identityDocumentType);
 
-                    bindDocLink('reviewDocCnic', button.getAttribute('data-doc-cnic'));
-                    bindDocLink('reviewDocCnicBack', button.getAttribute('data-doc-cnic-back'));
-                    bindDocLink('reviewDocForm', button.getAttribute('data-doc-form'));
-                    bindDocLink('reviewDocSlip', button.getAttribute('data-doc-slip'));
+                    setDetail('reviewAdmissionFather', button.getAttribute('data-father-name'));
+                    setDetail('reviewAdmissionCnic', button.getAttribute('data-cnic'));
+                    setDetail('reviewAdmissionPhone', button.getAttribute('data-phone'));
+                    setDetail('reviewAdmissionEmail', button.getAttribute('data-email'));
+                    setDetail('reviewAdmissionDob', button.getAttribute('data-dob'));
+                    setDetail('reviewAdmissionAddress', button.getAttribute('data-address'));
+                    setDetail('reviewAdmissionGender', button.getAttribute('data-gender'));
+                    setDetail('reviewAdmissionProgram', button.getAttribute('data-program'));
+                    setDetail('reviewAdmissionSession', button.getAttribute('data-session'));
+                    setDetail('reviewAdmissionStatus', button.getAttribute('data-status'));
+                    setDetail('reviewAdmissionAdmissionDate', button.getAttribute('data-admission-date'));
+                    setDetail('reviewAdmissionRegistrationDate', button.getAttribute('data-registration-date'));
+                    setDetail('reviewAdmissionFeePackage', button.getAttribute('data-fee-package'));
+                    setDetail('reviewAdmissionDiscount', button.getAttribute('data-discount'));
+                    setDetail('reviewAdmissionFeePlan', button.getAttribute('data-fee-plan'));
+                    setDetail('reviewAdmissionPaidInstallment', button.getAttribute('data-paid-installment'));
+                    setDetail('reviewAdmissionPendingInstallment', button.getAttribute('data-pending-installment'));
+
+                    bindDocTab('reviewDocCnic', button.getAttribute('data-doc-cnic'));
+                    bindDocTab('reviewDocCnicBack', button.getAttribute('data-doc-cnic-back'));
+                    bindDocTab('reviewDocForm', button.getAttribute('data-doc-form'));
+                    bindDocTab('reviewDocSlip', button.getAttribute('data-doc-slip'));
+                    showFirstAvailableDocument();
 
                     if (remark) {
                         previousRemark.style.display = 'block';
@@ -1595,7 +1939,9 @@
                 }
 
                 function closeModal() {
-                    closeDocumentPreview();
+                    if (documentFrame) {
+                        documentFrame.src = 'about:blank';
+                    }
                     modal.classList.remove('is-open');
                     modal.setAttribute('aria-hidden', 'true');
                 }
@@ -1610,34 +1956,30 @@
                     element.addEventListener('click', closeModal);
                 });
 
-                document.querySelectorAll('.js-review-doc-preview').forEach(function (link) {
-                    link.addEventListener('click', function (event) {
-                        event.preventDefault();
-                        openDocumentPreview(this);
+                docTabs.querySelectorAll('.js-review-doc-preview').forEach(function (tab) {
+                    tab.addEventListener('click', function () {
+                        showDocument(this);
                     });
                 });
-
-                if (documentModal) {
-                    documentModal.querySelectorAll('[data-admission-document-close]').forEach(function (element) {
-                        element.addEventListener('click', closeDocumentPreview);
-                    });
-                }
 
                 if (documentFrame) {
                     documentFrame.addEventListener('load', fitImageInsidePreview);
                 }
 
+                if (zoomInBtn) {
+                    zoomInBtn.addEventListener('click', zoomIn);
+                }
+
+                if (zoomOutBtn) {
+                    zoomOutBtn.addEventListener('click', zoomOut);
+                }
+
+                if (zoomResetBtn) {
+                    zoomResetBtn.addEventListener('click', zoomReset);
+                }
+
                 document.addEventListener('keydown', function (event) {
-                    if (event.key !== 'Escape') {
-                        return;
-                    }
-
-                    if (documentModal && documentModal.classList.contains('is-open')) {
-                        closeDocumentPreview();
-                        return;
-                    }
-
-                    if (modal.classList.contains('is-open')) {
+                    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
                         closeModal();
                     }
                 });

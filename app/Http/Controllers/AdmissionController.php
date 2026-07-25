@@ -814,12 +814,24 @@ class AdmissionController extends Controller
             ->with([
                 'program:id,code,title,name',
                 'campus:id,code,name',
+                'batch:id,code,name',
+                'registration:id,registered_at,created_at',
             ])
             ->withCount([
                 'feeCollections as pending_admission_fee_count' => fn ($query) => $query
                     ->where('fee_type', 'admission')
                     ->where('status', 'pending'),
-            ]);
+            ])
+            ->withSum([
+                'feeCollections as paid_admission_fee_total' => fn ($query) => $query
+                    ->where('fee_type', 'admission')
+                    ->where('status', 'paid'),
+            ], 'net_amount')
+            ->withSum([
+                'feeCollections as pending_admission_fee_total' => fn ($query) => $query
+                    ->where('fee_type', 'admission')
+                    ->where('status', 'pending'),
+            ], 'net_amount');
 
         $scopeCounts = [
             'all' => $canAdmissionView ? (clone $countBaseQuery)->count() : 0,

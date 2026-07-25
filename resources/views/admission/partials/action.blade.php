@@ -13,6 +13,23 @@
     $docCnicBackUrl = $admission?->document_cnic_back_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'cnic-back']) : null;
     $docFormUrl = $admission?->document_admission_form_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'admission-form']) : null;
     $docSlipUrl = $admission?->document_paid_slip_path ? route('admission.documents.view', ['admission' => $admission->id, 'document' => 'paid-slip']) : null;
+    $reviewProgramLabel = $admission?->program?->title ?? $admission?->program?->name ?? '';
+    $reviewSessionLabel = $admission?->batch?->code ?? $admission?->batch?->name ?? '';
+    $reviewStatusLabel = \App\Models\Admission::STUDENT_STATUS_LABELS[$admission->student_status ?? ''] ?? ($admission->student_status ?? '');
+    $reviewDobLabel = optional($admission?->date_of_birth)->format('d-M-Y') ?? '';
+    $reviewRegistrationDateLabel = optional($admission?->registration?->registered_at ?? $admission?->registration?->created_at)->format('d-M-Y') ?? '';
+    $reviewAdmissionDateLabel = optional($admission?->admission_date)->format('d-M-Y') ?? '';
+    $reviewFeePackageLabel = $admission?->fee_package !== null ? number_format((float) $admission->fee_package, 0) : '';
+    $reviewDiscountLabel = $admission
+        ? trim(number_format((float) ($admission->discount_percent ?? 0), 0) . '% (' . number_format((float) ($admission->discount_amount ?? 0), 0) . ')')
+        : '';
+    $reviewFeePlanLabel = match ($admission?->fee_type) {
+        'full' => 'Full Payment',
+        'installments' => 'Installments',
+        default => '',
+    };
+    $reviewPaidInstallmentLabel = number_format((float) ($admission?->paid_admission_fee_total ?? 0), 0);
+    $reviewPendingInstallmentLabel = number_format((float) ($admission?->pending_admission_fee_total ?? 0), 0);
 @endphp
 
 @once
@@ -163,7 +180,11 @@ div.dataTables_scrollBody{
     data-admission-id="{{ $admission->id }}"
     data-student-name="{{ $admission->student_name }}"
     data-identity-document-type="{{ $identityDocumentType }}"
-    data-approval-remarks="{{ $admission->approval_remarks ?? '' }}">
+    data-approval-remarks="{{ $admission->approval_remarks ?? '' }}"
+    data-doc-cnic="{{ $docCnicUrl ?? '' }}"
+    data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
+    data-doc-form="{{ $docFormUrl ?? '' }}"
+    data-doc-slip="{{ $docSlipUrl ?? '' }}">
 
    <span class="lead-action-icon lead-action-icon--whatsapp lead-icon-green" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -236,6 +257,23 @@ div.dataTables_scrollBody{
                  js-open-review-admission"
                 data-admission-id="{{ $admission->id }}"
                 data-student-name="{{ $admission->student_name }}"
+                data-father-name="{{ $admission->guardian_name }}"
+                data-cnic="{{ $admission->cnic }}"
+                data-phone="{{ $admission->phone }}"
+                data-email="{{ $admission->email }}"
+                data-dob="{{ $reviewDobLabel }}"
+                data-address="{{ $admission->postal_address }}"
+                data-gender="{{ ucfirst((string) $admission->gender) }}"
+                data-admission-date="{{ $reviewAdmissionDateLabel }}"
+                data-registration-date="{{ $reviewRegistrationDateLabel }}"
+                data-fee-package="{{ $reviewFeePackageLabel }}"
+                data-discount="{{ $reviewDiscountLabel }}"
+                data-fee-plan="{{ $reviewFeePlanLabel }}"
+                data-paid-installment="{{ $reviewPaidInstallmentLabel }}"
+                data-pending-installment="{{ $reviewPendingInstallmentLabel }}"
+                data-program="{{ $reviewProgramLabel }}"
+                data-session="{{ $reviewSessionLabel }}"
+                data-status="{{ $reviewStatusLabel }}"
                 data-doc-cnic="{{ $docCnicUrl ?? '' }}"
                 data-doc-cnic-back="{{ $docCnicBackUrl ?? '' }}"
                 data-doc-form="{{ $docFormUrl ?? '' }}"
