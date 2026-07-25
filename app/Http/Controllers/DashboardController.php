@@ -1922,7 +1922,17 @@ $programLabels = Program::query()
 
     private function canSelectDashboardCampus(?User $user): bool
     {
-        return (bool) ($user?->isAdmin() ?? false);
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        // A non-admin with no campus assigned isn't tied to a single campus,
+        // so treat them as having access to all campuses too.
+        return (int) ($user->campus_id ?? 0) <= 0;
     }
 
     private function ensureDashboardCampusAccess(?int $campusId, ?User $user): void
