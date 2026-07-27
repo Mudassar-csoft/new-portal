@@ -574,7 +574,7 @@
                         </div>
                     </div>
                     <div class="fee-edit-footer">
-                        <button type="button" class="btn btn-primary-outline">Submit</button>
+                        <button type="submit" class="btn btn-primary-outline">Submit</button>
                         <button type="button" class="btn btn-danger-outline" data-inactive-close>Cancel</button>
                     </div>
                 </form>
@@ -621,8 +621,8 @@
                         </div>
                     </div>
                     <div class="fee-edit-footer">
-                        <button type="button" class="btn btn-primary-outline">Submit</button>
-                        <button type="button" class="btn btn-danger-outline" data-inactive-close>Cancel</button>
+                        <button type="submit" class="btn btn-primary-outline">Submit</button>
+                        <button type="button" class="btn btn-danger-outline" data-charge-close>Cancel</button>
                     </div>
                 </form>
             </div>
