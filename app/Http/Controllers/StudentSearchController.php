@@ -88,6 +88,9 @@ class StudentSearchController extends Controller
 
             $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name'])
+                // Leads that already converted into a registration/admission/coworking
+                // membership are shown via those sections instead, not as a lead too.
+                ->whereNotIn('status', ['registered', 'enrolled'])
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('name', 'like', $needle)
                         ->orWhere('phone', 'like', $needle)
