@@ -351,17 +351,6 @@ class CoworkingRegistrationController extends Controller
                 ->with('error', 'Charges can only be collected for active coworking members.');
         }
 
-        $pendingChargeExists = $coworkingRegistration->receipts()
-            ->where('receipt_type', 'coworking_charge')
-            ->whereNull('paid_at')
-            ->exists();
-
-        if ($pendingChargeExists) {
-            return redirect()
-                ->route('coworking-registrations.show', $coworkingRegistration)
-                ->with('error', 'A pending coworking charge already exists for this member.');
-        }
-
         try {
             $chargeDate = Carbon::parse($validated['charge_date'])->startOfDay();
             $campus = $coworkingRegistration->campus ?? $coworkingRegistration->lead?->campus;
@@ -370,7 +359,22 @@ class CoworkingRegistrationController extends Controller
                 ? $dueDate->copy()->addMonthNoOverflow()
                 : $chargeDate->copy()->addMonthNoOverflow();
 
-            $chargeReceipt = DB::transaction(function () use ($campus, $chargeDate, $validated, $coworkingRegistration, $request, $dueDate) {
+            $pendingCharge = $coworkingRegistration->receipts()
+                ->where('receipt_type', 'coworking_charge')
+                ->whereNull('paid_at')
+                ->first();
+
+            $chargeReceipt = DB::transaction(function () use ($campus, $chargeDate, $validated, $coworkingRegistration, $request, $dueDate, $pendingCharge) {
+                if ($pendingCharge) {
+                    $pendingCharge->update([
+                        'amount' => $validated['charge_amount'],
+                        'paid_at' => $chargeDate,
+                        'notes' => 'Coworking charge collected for due date ' . optional($dueDate)->format('Y-m-d'),
+                    ]);
+
+                    return $pendingCharge->fresh();
+                }
+
                 return $this->createReceiptAtomically($campus?->code ?? 'CI', $chargeDate, 'coworking_charge', [
                     'coworking_registration_id' => $coworkingRegistration->id,
                     'lead_id' => $coworkingRegistration->lead_id,
