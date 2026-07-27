@@ -36,7 +36,7 @@
                     @elseif($totalMatches === 0)
                         <div class="search-empty">
                             <i class="fa fa-frown-o" style="font-size: var(--typo-student-search-index-font-size-1); color: #cbd5e1;"></i>
-                            <p>No students or leads matched "<strong>{{ $query }}</strong>".</p>
+                            <p>No students, coworking members, or leads matched "<strong>{{ $query }}</strong>".</p>
                         </div>
                     @else
                         <div class="search-summary">
@@ -46,6 +46,8 @@
                                 <strong>admissions</strong>.
                             @elseif($resultType === 'registrations')
                                 <strong>registrations</strong>.
+                            @elseif($resultType === 'coworking')
+                                <strong>coworking members</strong>.
                             @elseif($resultType === 'leads')
                                 <strong>leads</strong>.
                             @else
@@ -125,6 +127,38 @@
                                                 <!-- <td>{{ $r->registration_number ?: 'N/A' }}</td> -->
                                                 <!-- <td>{{ $r->receipt_number ?: 'N/A' }}</td> -->
                                                 <td>{{ $r->campus?->code ?? $r->campus?->name ?? 'N/A' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+
+                        @if(($coworkingRegistrations ?? collect())->isNotEmpty())
+                            <h4 class="section-heading">Coworking Members</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered follow-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sr</th>
+                                            <th>Name</th>
+                                            <th>Primary Contact</th>
+                                            <th>CNIC</th>
+                                            <th>Campus Code</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($coworkingRegistrations as $idx => $c)
+                                            <tr>
+                                                <td class="text-center">{{ $idx + 1 }}</td>
+                                                <td>
+                                                    <a href="{{ route('coworking-registrations.show', $c->id) }}" class="student-search-name-link">
+                                                        {{ $c->full_name ?? 'N/A' }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ $c->phone ?: 'N/A' }}</td>
+                                                <td>{{ $c->cnic ?: 'N/A' }}</td>
+                                                <td>{{ $c->campus?->code ?? $c->campus?->name ?? 'N/A' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
