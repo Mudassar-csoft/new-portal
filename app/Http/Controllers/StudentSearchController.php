@@ -36,8 +36,7 @@ class StudentSearchController extends Controller
                         ->orWhere('roll_number', 'like', $needle)
                         ->orWhere('registration_number', 'like', $needle)
                         ->orWhere('cnic', 'like', $needle)
-                        ->orWhere('email', 'like', $needle)
-                        ->orWhere('guardian_phone', 'like', $needle);
+                        ->orWhere('email', 'like', $needle);
 
                     if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
                         $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
@@ -70,7 +69,6 @@ class StudentSearchController extends Controller
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('full_name', 'like', $needle)
                         ->orWhere('phone', 'like', $needle)
-                        ->orWhere('guardian_phone', 'like', $needle)
                         ->orWhere('cnic', 'like', $needle)
                         ->orWhere('email', 'like', $needle)
                         ->orWhere('registration_number', 'like', $needle)
@@ -78,7 +76,6 @@ class StudentSearchController extends Controller
 
                     if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
                         $q->orWhere('phone', 'like', $normalizedDigitsNeedle)
-                            ->orWhere('guardian_phone', 'like', $normalizedDigitsNeedle)
                             ->orWhere('cnic', 'like', $normalizedDigitsNeedle);
                     }
                 })
