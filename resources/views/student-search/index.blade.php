@@ -39,17 +39,20 @@
                             <p>No students, coworking members, or leads matched "<strong>{{ $query }}</strong>".</p>
                         </div>
                     @else
+                        @php
+                            $categoryLabels = [
+                                'admissions' => 'admissions',
+                                'registrations' => 'registrations',
+                                'coworking' => 'coworking members',
+                                'leads' => 'leads',
+                            ];
+                            $matchedLabels = ($matchedCategories ?? collect())->map(fn ($key) => $categoryLabels[$key] ?? $key);
+                        @endphp
                         <div class="search-summary">
                             Found <strong>{{ $totalMatches }}</strong> result{{ $totalMatches === 1 ? '' : 's' }}
                             in
-                            @if($resultType === 'admissions')
-                                <strong>admissions</strong>.
-                            @elseif($resultType === 'registrations')
-                                <strong>registrations</strong>.
-                            @elseif($resultType === 'coworking')
-                                <strong>coworking members</strong>.
-                            @elseif($resultType === 'leads')
-                                <strong>leads</strong>.
+                            @if($matchedLabels->isNotEmpty())
+                                <strong>{{ $matchedLabels->implode(', ') }}</strong>.
                             @else
                                 search results.
                             @endif
