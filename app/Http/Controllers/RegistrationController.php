@@ -248,7 +248,9 @@ class RegistrationController extends Controller
             $perPage = 25;
         }
 
-        $countBaseQuery = $this->scopeQueryToUserCampus(Registration::query(), auth()->user());
+        // Registration listing is visible across all campuses; only voucher
+        // access (and other detail actions) is restricted via ensureCampusAccess().
+        $countBaseQuery = Registration::query();
 
         $periodCounts = [
             'all' => (clone $countBaseQuery)->count(),
@@ -257,7 +259,7 @@ class RegistrationController extends Controller
             'year' => $this->applyRegistrationPeriodFilter(clone $countBaseQuery, 'year')->count(),
         ];
 
-        $registrations = $this->scopeQueryToUserCampus(Registration::query(), auth()->user())
+        $registrations = Registration::query()
             ->with([
                 'campus:id,code,name',
                 'admission:id,registration_id',

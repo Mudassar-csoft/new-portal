@@ -6,14 +6,11 @@ use App\Models\Admission;
 use App\Models\CoworkingRegistration;
 use App\Models\Lead;
 use App\Models\Registration;
-use App\Support\ResolvesCampusScope;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StudentSearchController extends Controller
 {
-    use ResolvesCampusScope;
-
     public function index(Request $request): View
     {
         $query = trim((string) $request->query('q', ''));
@@ -31,7 +28,9 @@ class StudentSearchController extends Controller
             // Cascading priority search: only fall through to the next tier
             // when the previous one has no matches, instead of showing all
             // four categories at once. Order: Admission -> Registration -> Lead -> Coworking.
-            $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
+            // Search results are visible across all campuses; only opening
+            // or acting on a record is restricted to the user's own campus.
+            $admissions = Admission::query()
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                     $q->where('student_name', 'like', $needle)
@@ -51,7 +50,7 @@ class StudentSearchController extends Controller
                 ->get();
 
             if ($admissions->isEmpty()) {
-                $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
+                $registrations = Registration::query()
                     ->with(['program:id,code,title,name', 'campus:id,code,name'])
                     ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                         $q->where('student_name', 'like', $needle)
@@ -70,7 +69,7 @@ class StudentSearchController extends Controller
             }
 
             if ($admissions->isEmpty() && $registrations->isEmpty()) {
-                $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                $leads = Lead::query()
                     ->with(['program:id,code,title,name', 'campus:id,code,name'])
                     // Leads that already converted into a registration/admission/coworking
                     // membership are shown via those sections instead, not as a lead too.
@@ -90,7 +89,7 @@ class StudentSearchController extends Controller
             }
 
             if ($admissions->isEmpty() && $registrations->isEmpty() && $leads->isEmpty()) {
-                $coworkingRegistrations = $this->scopeQueryToUserCampus(CoworkingRegistration::query(), $request->user())
+                $coworkingRegistrations = CoworkingRegistration::query()
                     ->with(['campus:id,code,name'])
                     ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
                         $q->where('full_name', 'like', $needle)

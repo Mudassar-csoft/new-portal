@@ -887,16 +887,6 @@ class LeadController extends Controller
         return $lead->campus;
     }
 
-    private function scopeLeadQueryToCurrentCampus(Builder $query): Builder
-    {
-        $campusScopeId = $this->currentUserCampusScopeId();
-
-        return $query->when(
-            $campusScopeId,
-            fn (Builder $builder, int $campusId) => $builder->where('campus_id', $campusId)
-        );
-    }
-
     private function ensureLeadCampusAccess(?Lead $lead): void
     {
         if (! $lead) {
@@ -1118,9 +1108,8 @@ class LeadController extends Controller
 
     private function resolveLeadIndexFilters(Request $request): array
     {
-        $campusScopeId = $this->currentUserCampusScopeId();
         $requestedCampusId = (int) $request->query('campus_id', 0);
-        $campusId = $campusScopeId ?: ($requestedCampusId > 0 ? $requestedCampusId : null);
+        $campusId = $requestedCampusId > 0 ? $requestedCampusId : null;
 
         $requestedProgramId = (int) $request->query('program_id', 0);
         $programId = $requestedProgramId > 0 ? $requestedProgramId : null;
@@ -1215,10 +1204,6 @@ class LeadController extends Controller
     private function leadIndexCampusOptions(): Collection
     {
         return Campus::query()
-            ->when(
-                $this->currentUserCampusScopeId(),
-                fn ($query, int $campusId) => $query->whereKey($campusId)
-            )
             ->orderBy('code')
             ->orderBy('name')
             ->get(['id', 'code', 'name', 'title']);
@@ -1274,11 +1259,9 @@ class LeadController extends Controller
             default => $query->training(),
         };
 
-        if ($type === 'coworking') {
-            return $query;
-        }
-
-        return $this->scopeLeadQueryToCurrentCampus($query);
+        // Lead listings are visible across all campuses; only viewing or
+        // acting on an individual lead is restricted via ensureLeadCampusAccess().
+        return $query;
     }
 
     private function normalizeLeadType(string $type): string

@@ -808,10 +808,9 @@ class StudentRecordController extends Controller
 
     private function baseStudentRecordsQuery($user): Builder
     {
-        return $this->scopeQueryToUserCampus(
-            Admission::query(),
-            $user
-        );
+        // Student record listing is visible across all campuses; only the
+        // detail/show page and its actions stay campus-scoped (ensureStudentProfileAccess()).
+        return Admission::query();
     }
 
     private function studentScopeCounts($user): array
