@@ -755,9 +755,7 @@ class AdmissionController extends Controller
             $perPage = 25;
         }
 
-        // Admission listing (and its campus filter) is visible across all
-        // campuses; only detail actions (documents, voucher) stay campus-scoped.
-        $campuses = Campus::query()->orderBy('name')->get(['id', 'code', 'name']);
+        $campuses = $this->campusOptionsForUser($user, ['id', 'code', 'name']);
         $programs = Program::query()
             ->where('status', 'active')
             ->orderByRaw('COALESCE(title, name)')
@@ -809,7 +807,7 @@ class AdmissionController extends Controller
                 });
         };
 
-        $countBaseQuery = $applyAdmissionFilters(Admission::query());
+        $countBaseQuery = $applyAdmissionFilters($this->scopeQueryToUserCampus(Admission::query(), $user));
         $requestedCountBaseQuery = $applyAdmissionFilters($this->scopeAdmissionStatusQuery(Admission::query(), $user, 'requested'));
 
         $baseQuery = $applyAdmissionFilters($this->scopeAdmissionStatusQuery(Admission::query(), $user, $activeScope))
@@ -1506,8 +1504,11 @@ class AdmissionController extends Controller
 
     private function scopeAdmissionStatusQuery(Builder $query, ?User $user, string $scope): Builder
     {
-        // Admission listing is visible across all campuses regardless of scope.
-        return $query;
+        if ($scope === 'requested' && $this->canReviewAdmissions($user)) {
+            return $query;
+        }
+
+        return $this->scopeQueryToUserCampus($query, $user);
     }
 
     private function parseAdmissionFilterDate(string $value): ?Carbon

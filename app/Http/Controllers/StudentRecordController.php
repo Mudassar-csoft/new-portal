@@ -164,7 +164,9 @@ class StudentRecordController extends Controller
 
     public function show(Request $request, \App\Models\Registration $registration): View
     {
-        $this->ensureStudentProfileAccess($registration, $request->user());
+        // Viewing a student's profile (e.g. opened from the cross-campus
+        // search) is allowed regardless of campus; editing/actions on the
+        // record stay restricted via ensureCampusAccess() on those endpoints.
 
         $registration->load([
             'lead',
@@ -808,9 +810,10 @@ class StudentRecordController extends Controller
 
     private function baseStudentRecordsQuery($user): Builder
     {
-        // Student record listing is visible across all campuses; only the
-        // detail/show page and its actions stay campus-scoped (ensureStudentProfileAccess()).
-        return Admission::query();
+        return $this->scopeQueryToUserCampus(
+            Admission::query(),
+            $user
+        );
     }
 
     private function studentScopeCounts($user): array

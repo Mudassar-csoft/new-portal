@@ -526,7 +526,9 @@ class CoworkingRegistrationController extends Controller
 
     public function show(CoworkingRegistration $coworkingRegistration): View
     {
-        $this->ensureCampusAccess((int) ($coworkingRegistration->campus_id ?? 0), auth()->user(), 'You are not allowed to access coworking registrations from another campus.');
+        // Viewing a coworking member's detail page (e.g. opened from the
+        // cross-campus search) is allowed regardless of campus; editing/
+        // actions stay restricted via ensureCampusAccess() on those endpoints.
 
         $coworkingRegistration->load([
             'campus',
