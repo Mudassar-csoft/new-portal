@@ -54,7 +54,7 @@
 							@else
 								{{-- User is tied to a single campus: no picker, just the fixed value. --}}
 								<input type="text" class="form-control" value="{{ optional($campuses->first())->code ?? optional($campuses->first())->name }} - {{ optional($campuses->first())->name }}" disabled>
-								<select class="d-none" name="campus_id" required>
+								<select name="campus_id" required style="display:none;">
 									@foreach($campuses ?? [] as $campus)
 										<option value="{{ $campus->id }}" selected>{{ $campus->code ?? $campus->name }} - {{ $campus->name }}</option>
 									@endforeach
