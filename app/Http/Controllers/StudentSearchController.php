@@ -28,6 +28,9 @@ class StudentSearchController extends Controller
             $needle = '%' . $query . '%';
             $normalizedDigitsNeedle = $normalizedDigits !== '' ? '%' . $normalizedDigits . '%' : null;
 
+            // Cascading priority search: only fall through to the next tier
+            // when the previous one has no matches, instead of showing all
+            // four categories at once. Order: Admission -> Registration -> Lead -> Coworking.
             $admissions = $this->scopeQueryToUserCampus(Admission::query(), $request->user())
                 ->with(['program:id,code,title,name', 'campus:id,code,name', 'batch:id,code,name'])
                 ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
@@ -47,59 +50,65 @@ class StudentSearchController extends Controller
                 ->limit(50)
                 ->get();
 
-            $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
-                ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
-                    $q->where('student_name', 'like', $needle)
-                        ->orWhere('phone', 'like', $needle)
-                        ->orWhere('cnic', 'like', $needle)
-                        ->orWhere('registration_number', 'like', $needle)
-                        ->orWhere('receipt_number', 'like', $needle);
+            if ($admissions->isEmpty()) {
+                $registrations = $this->scopeQueryToUserCampus(Registration::query(), $request->user())
+                    ->with(['program:id,code,title,name', 'campus:id,code,name'])
+                    ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
+                        $q->where('student_name', 'like', $needle)
+                            ->orWhere('phone', 'like', $needle)
+                            ->orWhere('cnic', 'like', $needle)
+                            ->orWhere('registration_number', 'like', $needle)
+                            ->orWhere('receipt_number', 'like', $needle);
 
-                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
-                        $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
-                    }
-                })
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+                        if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                            $q->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                        }
+                    })
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+            }
 
-            $coworkingRegistrations = $this->scopeQueryToUserCampus(CoworkingRegistration::query(), $request->user())
-                ->with(['campus:id,code,name'])
-                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
-                    $q->where('full_name', 'like', $needle)
-                        ->orWhere('phone', 'like', $needle)
-                        ->orWhere('cnic', 'like', $needle)
-                        ->orWhere('email', 'like', $needle)
-                        ->orWhere('registration_number', 'like', $needle)
-                        ->orWhere('receipt_number', 'like', $needle);
+            if ($admissions->isEmpty() && $registrations->isEmpty()) {
+                $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
+                    ->with(['program:id,code,title,name', 'campus:id,code,name'])
+                    // Leads that already converted into a registration/admission/coworking
+                    // membership are shown via those sections instead, not as a lead too.
+                    ->whereNotIn('status', ['registered', 'enrolled'])
+                    ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
+                        $q->where('name', 'like', $needle)
+                            ->orWhere('phone', 'like', $needle)
+                            ->orWhere('email', 'like', $needle);
 
-                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
-                        $q->orWhere('phone', 'like', $normalizedDigitsNeedle)
-                            ->orWhere('cnic', 'like', $normalizedDigitsNeedle);
-                    }
-                })
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+                        if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                            $q->orWhere('phone', 'like', $normalizedDigitsNeedle);
+                        }
+                    })
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+            }
 
-            $leads = $this->scopeQueryToUserCampus(Lead::query(), $request->user())
-                ->with(['program:id,code,title,name', 'campus:id,code,name'])
-                // Leads that already converted into a registration/admission/coworking
-                // membership are shown via those sections instead, not as a lead too.
-                ->whereNotIn('status', ['registered', 'enrolled'])
-                ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
-                    $q->where('name', 'like', $needle)
-                        ->orWhere('phone', 'like', $needle)
-                        ->orWhere('email', 'like', $needle);
+            if ($admissions->isEmpty() && $registrations->isEmpty() && $leads->isEmpty()) {
+                $coworkingRegistrations = $this->scopeQueryToUserCampus(CoworkingRegistration::query(), $request->user())
+                    ->with(['campus:id,code,name'])
+                    ->where(function ($q) use ($needle, $normalizedDigitsNeedle) {
+                        $q->where('full_name', 'like', $needle)
+                            ->orWhere('phone', 'like', $needle)
+                            ->orWhere('cnic', 'like', $needle)
+                            ->orWhere('email', 'like', $needle)
+                            ->orWhere('registration_number', 'like', $needle)
+                            ->orWhere('receipt_number', 'like', $needle);
 
-                    if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
-                        $q->orWhere('phone', 'like', $normalizedDigitsNeedle);
-                    }
-                })
-                ->orderByDesc('id')
-                ->limit(50)
-                ->get();
+                        if ($normalizedDigitsNeedle !== null && $normalizedDigitsNeedle !== $needle) {
+                            $q->orWhere('phone', 'like', $normalizedDigitsNeedle)
+                                ->orWhere('cnic', 'like', $normalizedDigitsNeedle);
+                        }
+                    })
+                    ->orderByDesc('id')
+                    ->limit(50)
+                    ->get();
+            }
         }
 
         $totalMatches = $admissions->count()
