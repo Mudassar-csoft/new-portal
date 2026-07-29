@@ -42,14 +42,24 @@
 					<div class="form-row">
 						<div class="form-group col-md-3">
 							<label class="form-label required">Select Campus</label>
-							<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
-								<option value="">- Select -</option>
-								@foreach($campuses ?? [] as $campus)
-									<option value="{{ $campus->id }}" {{ old('campus_id', $formDefaults['campus_id'] ?? '') == $campus->id ? 'selected' : '' }}>
-										{{ $campus->code ?? $campus->name }} - {{ $campus->name }}
-									</option>
-								@endforeach
-							</select>
+							@if($canSelectCampus ?? true)
+								<select class="form-control @error('campus_id') is-invalid @enderror" name="campus_id" required>
+									<option value="">- Select -</option>
+									@foreach($campuses ?? [] as $campus)
+										<option value="{{ $campus->id }}" {{ old('campus_id', $formDefaults['campus_id'] ?? '') == $campus->id ? 'selected' : '' }}>
+											{{ $campus->code ?? $campus->name }} - {{ $campus->name }}
+										</option>
+									@endforeach
+								</select>
+							@else
+								{{-- User is tied to a single campus: no picker, just the fixed value. --}}
+								<input type="text" class="form-control" value="{{ optional($campuses->first())->code ?? optional($campuses->first())->name }} - {{ optional($campuses->first())->name }}" disabled>
+								<select class="d-none" name="campus_id" required>
+									@foreach($campuses ?? [] as $campus)
+										<option value="{{ $campus->id }}" selected>{{ $campus->code ?? $campus->name }} - {{ $campus->name }}</option>
+									@endforeach
+								</select>
+							@endif
 							@error('campus_id')
 								<div class="field-error">{{ $message }}</div>
 							@enderror

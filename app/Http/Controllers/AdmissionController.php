@@ -41,12 +41,14 @@ class AdmissionController extends Controller
         $sourceRegistration = null;
         $sourceAdmission = null;
 
+        // A student's registration/prior admission is tied to the campus they
+        // registered at, but a new admission can legitimately be made at a
+        // different campus - so no cross-campus block on the source record here.
         if ($request->filled('source_admission_id')) {
             $sourceAdmission = Admission::query()
                 ->with(['registration.lead', 'campus', 'program', 'batch'])
                 ->findOrFail($request->integer('source_admission_id'));
 
-            $this->ensureCampusAccess((int) ($sourceAdmission->campus_id ?? 0), $request->user(), 'You are not allowed to use a student admission from another campus.');
             $sourceRegistration = $sourceAdmission->registration;
         }
 
@@ -54,8 +56,6 @@ class AdmissionController extends Controller
             $sourceRegistration = Registration::query()
                 ->with(['lead', 'campus', 'program', 'admission'])
                 ->findOrFail($request->integer('source_registration_id'));
-
-            $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
         }
 
         if ($request->filled('lead_id')) {
@@ -74,9 +74,11 @@ class AdmissionController extends Controller
             $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
         }
 
-        $campuses = Campus::query()
-            ->orderBy('name')
-            ->get();
+        // Only admins / users without a fixed campus get to pick a campus for
+        // the new admission; a user tied to one campus always admits there.
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        $canSelectCampus = $campusScopeId === null;
+        $campuses = $this->campusOptionsForUser($request->user());
         $programs = Program::query()
             ->where('status', 'active')
             ->orderByRaw('COALESCE(title, name)')
@@ -140,7 +142,9 @@ class AdmissionController extends Controller
             'end_time' => $b->end_time,
         ])->values()->toArray();
 
-        $selectedCampusId = (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0);
+        $selectedCampusId = $canSelectCampus
+            ? (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0)
+            : $campusScopeId;
         $previewCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
             : ($sourceAdmission?->campus ?? $sourceRegistration?->campus ?? $lead?->campus ?? $campuses->first());
@@ -158,6 +162,8 @@ class AdmissionController extends Controller
 
         return view('admission.create', compact(
             'campuses',
+            'canSelectCampus',
+            'campusScopeId',
             'programs',
             'batches',
             'batchList',
@@ -278,6 +284,13 @@ class AdmissionController extends Controller
         $validated['roll_number'] = $validated['roll_number'] ?? null;
         $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
+        // A user tied to one campus can only ever admit to that campus; ignore
+        // any other campus_id the form submitted (defends against tampering).
+        $campusScopeId = $this->userCampusScopeId($request->user());
+        if ($campusScopeId) {
+            $validated['campus_id'] = $campusScopeId;
+        }
+
         try {
             $campus = Campus::findOrFail($validated['campus_id']);
             $program = Program::findOrFail($validated['program_id']);
@@ -300,20 +313,15 @@ class AdmissionController extends Controller
                 'discountedFee' => $discountedFee,
             ] = $this->resolveAdmissionPricing($program, $campus, $validated);
 
+            // A student's registration/prior admission is tied to the campus they
+            // registered at, but a new admission can legitimately be made at a
+            // different campus - so no cross-campus block on the source record here.
             $sourceAdmission = !empty($validated['source_admission_id'])
                 ? Admission::query()->with(['registration.lead'])->findOrFail($validated['source_admission_id'])
                 : null;
             $sourceRegistration = !empty($validated['source_registration_id'])
                 ? Registration::query()->with(['lead', 'admission'])->findOrFail($validated['source_registration_id'])
                 : ($sourceAdmission?->registration);
-
-            if ($sourceAdmission) {
-                $this->ensureCampusAccess((int) ($sourceAdmission->campus_id ?? 0), $request->user(), 'You are not allowed to use a student admission from another campus.');
-            }
-
-            if ($sourceRegistration) {
-                $this->ensureCampusAccess((int) ($sourceRegistration->campus_id ?? 0), $request->user(), 'You are not allowed to use a student registration from another campus.');
-            }
 
             $isAnotherCourseEnrollment = $this->isAnotherCourseEnrollment(
                 $sourceRegistration,
