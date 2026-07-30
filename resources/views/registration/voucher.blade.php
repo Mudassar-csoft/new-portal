@@ -12,6 +12,12 @@
     $rollNo = optional($reg->admission)->roll_number ?? '-';
     $campusCode = optional($reg->campus)->code ?? '-';
     $campusName = optional($reg->campus)->name ?? 'Branch';
+    $campusAddress = trim((string) (optional($reg->campus)->address ?? ''));
+    $campusPhone = collect([
+        optional($reg->campus)->landline,
+        optional($reg->campus)->mobile,
+    ])->filter(fn ($value) => filled($value))->implode(' / ');
+    $campusFooterLabel = $campusName;
     $showCourseTuitionFeeRow = false;
     $registrationFee = (float) ($reg->fee ?? 0);
     $courseTuitionFee = 0;
