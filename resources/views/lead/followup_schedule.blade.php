@@ -7,6 +7,8 @@
         $selectedWindow = $selectedWindow ?? 'today';
         $search = $search ?? '';
         $perPage = (int) ($perPage ?? 25);
+        $lastFollowupFrom = $lastFollowupFrom ?? '';
+        $lastFollowupTo = $lastFollowupTo ?? '';
         $currentPage = $followups->currentPage();
         $lastPage = $followups->lastPage();
         $pageStart = max(1, $currentPage - 2);
@@ -97,10 +99,17 @@
                             <label>Entries</label>
                         </div>
 
+                        <div class="d-flex follow-date-range-field" style="gap: 0.5rem; align-items: center;">
+                            <label class="mb-0">Last Follow-up</label>
+                            <input type="date" name="last_followup_from" class="form-control form-control-sm follow-auto-submit" value="{{ $lastFollowupFrom }}" onchange="this.form.submit()">
+                            <span>to</span>
+                            <input type="date" name="last_followup_to" class="form-control form-control-sm follow-auto-submit" value="{{ $lastFollowupTo }}" onchange="this.form.submit()">
+                        </div>
+
                         <div class="follow-search">
                             <input type="text" name="q" id="follow-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
                             <!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
-                            @if($search !== '' || $selectedWindow !== 'today')
+                            @if($search !== '' || $selectedWindow !== 'today' || $lastFollowupFrom !== '' || $lastFollowupTo !== '')
                                 <a href="{{ request()->url() }}" class="btn btn-default btn-sm">Reset</a>
                             @endif
                             <i class="fa fa-search"></i>
@@ -308,6 +317,11 @@
 
         .follow-search .form-control {
             width: min(280px, 100%);
+        }
+
+        .follow-date-range-field .form-control {
+            width: 150px;
+            max-width: 100%;
         }
 
         .follow-footer {

@@ -1532,6 +1532,13 @@ class LeadController extends Controller
         $badgeColors = $scheduleConfig['badgeColors'];
         $stageMap = $this->followupStageConfig($type)['stageMap'];
 
+        $lastFollowupFrom = $this->normalizeLeadIndexDate($request->query('last_followup_from'));
+        $lastFollowupTo = $this->normalizeLeadIndexDate($request->query('last_followup_to'));
+
+        if ($lastFollowupFrom !== null && $lastFollowupTo !== null && $lastFollowupFrom > $lastFollowupTo) {
+            [$lastFollowupFrom, $lastFollowupTo] = [$lastFollowupTo, $lastFollowupFrom];
+        }
+
         $followupQuery = $this->baseFollowupLeadQuery($type);
 
         if ($search !== null) {
@@ -1539,11 +1546,12 @@ class LeadController extends Controller
         }
 
         $this->applyFollowupScheduleWindowFilter($followupQuery, $selectedWindow);
+        $this->applyLastFollowupDateRangeFilter($followupQuery, $lastFollowupFrom, $lastFollowupTo);
 
-        $countsByWindow = $this->latestFollowupScheduleCounts($type, $search);
+        $countsByWindow = $this->latestFollowupScheduleCounts($type, $search, $lastFollowupFrom, $lastFollowupTo);
 
         $followups = $followupQuery
-            ->orderBy('latest_next_action_date')
+            ->orderByDesc('latest_next_action_date')
             ->orderByDesc('latest_followup_id')
             ->paginate($perPage)
             ->withQueryString();
@@ -1587,6 +1595,8 @@ class LeadController extends Controller
             'selectedWindow' => $selectedWindow,
             'search' => $search ?? '',
             'perPage' => $perPage,
+            'lastFollowupFrom' => $lastFollowupFrom ?? '',
+            'lastFollowupTo' => $lastFollowupTo ?? '',
             'stageRoute' => route($this->leadFollowupsRouteName($type)),
         ]);
     }
@@ -1728,13 +1738,19 @@ class LeadController extends Controller
     /**
      * @return array<string, int>
      */
-    private function latestFollowupScheduleCounts(string $type, ?string $search = null): array
-    {
+    private function latestFollowupScheduleCounts(
+        string $type,
+        ?string $search = null,
+        ?string $lastFollowupFrom = null,
+        ?string $lastFollowupTo = null
+    ): array {
         $baseQuery = $this->baseFollowupLeadQuery($type);
 
         if ($search !== null) {
             $this->applyFollowupSearch($baseQuery, $search, $type);
         }
+
+        $this->applyLastFollowupDateRangeFilter($baseQuery, $lastFollowupFrom, $lastFollowupTo);
 
         $counts = [];
 
@@ -1746,6 +1762,29 @@ class LeadController extends Controller
         }
 
         return $counts;
+    }
+
+    private function applyLastFollowupDateRangeFilter(Builder $query, ?string $from, ?string $to): Builder
+    {
+        if ($from === null && $to === null) {
+            return $query;
+        }
+
+        return $query->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($from, $to) {
+            if ($from !== null) {
+                $latestFollowupQuery->whereRaw(
+                    'COALESCE(updated_at, created_at) >= ?',
+                    [$from . ' 00:00:00']
+                );
+            }
+
+            if ($to !== null) {
+                $latestFollowupQuery->whereRaw(
+                    'COALESCE(updated_at, created_at) <= ?',
+                    [$to . ' 23:59:59']
+                );
+            }
+        });
     }
 
     private function applyFollowupScheduleWindowFilter(Builder $query, ?string $window): Builder

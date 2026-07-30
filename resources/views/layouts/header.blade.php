@@ -132,8 +132,8 @@
                                         <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
                                       @endif
                                     </td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>
@@ -175,8 +175,8 @@
                                         <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
                                       @endif
                                     </td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>
@@ -218,8 +218,8 @@
                                         <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
                                       @endif
                                     </td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>
@@ -261,8 +261,8 @@
                                         <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
                                       @endif
                                     </td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-y') ?? 'N/A' }}</td>
-                                    <td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
                                   </tr>
                                 @endforeach
                               </tbody>

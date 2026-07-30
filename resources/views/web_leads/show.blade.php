@@ -73,7 +73,7 @@
                 <div class="col-md-6">
                     <table class="table table-bordered">
                         <tbody>
-                            <tr><th>Submitted</th><td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td></tr>
+                            <tr><th>Submitted</th><td>{{ optional($webLead->display_submitted_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td></tr>
                             <tr><th>Phone</th><td>{{ $webLead->phone ?: 'N/A' }}</td></tr>
                             <tr><th>Email</th><td>{{ $webLead->email ?: 'N/A' }}</td></tr>
                             <tr><th>Country</th><td>{{ $webLead->country ?: 'N/A' }}</td></tr>

@@ -109,6 +109,13 @@ class WebLead extends Model
         return self::statusLabels()[$this->status] ?? ucfirst(str_replace('_', ' ', (string) $this->status));
     }
 
+    public function getDisplaySubmittedAtAttribute(): ?\Illuminate\Support\Carbon
+    {
+        $submittedAt = $this->submitted_at ?? $this->created_at;
+
+        return $submittedAt?->copy()->setTimezone('Asia/Karachi');
+    }
+
     public function isActionable(): bool
     {
         return $this->status === self::STATUS_NEW;

@@ -67,8 +67,8 @@
 					@if (!empty($webLead))
 						<div class="alert alert-info web-lead-alert">
 							<strong>Website Lead:</strong> {{ $webLead->source_label }} from {{ $webLead->source_site }}
-							@if ($webLead->submitted_at)
-								<span class="text-muted ml-2">{{ $webLead->submitted_at->format('d-M-Y h:i A') }}</span>
+							@if ($webLead->display_submitted_at)
+								<span class="text-muted ml-2">{{ $webLead->display_submitted_at->format('d-M-Y h:i A') }}</span>
 							@endif
 							<a href="{{ route('web-leads.show', $webLead) }}" class="btn btn-xs btn-primary-outline ml-2">View Source Lead</a>
 						</div>

@@ -88,8 +88,8 @@
 										<td>{{ $webLead->phone ?: 'N/A' }}</td>
 										<!-- <td>{{ $webLead->email ?: 'N/A' }}</td> -->
 										<!-- <td>{{ $webLead->city ?: 'N/A' }}</td> -->
-										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('d-M-Y') ?? 'N/A' }}</td>
-										<td>{{ optional($webLead->submitted_at ?? $webLead->created_at)->format('h:i A') ?? 'N/A' }}</td>
+										<td>{{ optional($webLead->display_submitted_at)->format('d-M-Y') ?? 'N/A' }}</td>
+										<td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
 										<td>{{ $webLead->campus_id ?: 'N/A' }}</td>
 										<td class=" action-cell">
 											@if(!empty($webLead->is_placeholder))
