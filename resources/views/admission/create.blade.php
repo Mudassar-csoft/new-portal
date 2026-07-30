@@ -319,25 +319,25 @@
 								Applied Discount %
 								<span class="discount-limit-hint" id="admission-discount-limit-hint"></span>
 							</label>
-							<input type="number" step="0.01"
+							<input type="number" step="0.01" min="0"
 								   class="form-control @error('discount_percent') is-invalid @enderror"
 								   name="discount_percent"
 								   id="admission-discount-percent"
 								   value="{{ old('discount_percent') }}"
-								   readonly required>
+								   required>
+							<div class="field-error" id="admission-discount-error"></div>
 							@error('discount_percent')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Discount Amount</label>
-							<input type="number" step="0.01" min="0"
+							<input type="number" step="0.01"
 								   class="form-control @error('discount_amount') is-invalid @enderror"
 								   name="discount_amount"
 								   id="admission-discount-amount"
 								   value="{{ old('discount_amount') }}"
-								   required>
-							<div class="field-error" id="admission-discount-error"></div>
+								   readonly required>
 							@error('discount_amount')
 								<div class="field-error">{{ $message }}</div>
 							@enderror
@@ -809,7 +809,7 @@
 			display: none;
 		}
 
-		#admission-discount-amount.is-invalid {
+		#admission-discount-percent.is-invalid {
 			border-color: var(--color-admission-create-6);
 			background-color: var(--color-admission-create-7)5f5;
 		}
@@ -1020,32 +1020,31 @@
 
 			function clearDiscountError() {
 				discountErrorEl.textContent = '';
-				discountAmtEl.classList.remove('is-invalid');
+				discountPctEl.classList.remove('is-invalid');
 			}
 
 			function showDiscountError(msg) {
 				discountErrorEl.textContent = msg;
-				discountAmtEl.classList.add('is-invalid');
+				discountPctEl.classList.add('is-invalid');
 			}
 
-			function onDiscountAmountInput() {
+			function onDiscountPercentInput() {
 				if (currentFee <= 0) {
 					return;
 				}
-				const entered = round2(Number(discountAmtEl.value) || 0);
-				const cap = maxDiscountAmount();
+				const entered = round2(Number(discountPctEl.value) || 0);
 
-				if (entered > cap) {
-					showDiscountError('Discount cannot exceed ' + cap.toFixed(2) + ' (' + maxDiscountPercent + '%).');
+				if (entered > maxDiscountPercent) {
+					showDiscountError('Discount cannot exceed ' + maxDiscountPercent + '%.');
 				} else if (entered < 0) {
 					showDiscountError('Discount cannot be negative.');
 				} else {
 					clearDiscountError();
 				}
 
-				const pct = round2((entered / currentFee) * 100);
-				discountPctEl.value = pct.toFixed(2);
-				discountedFeeEl.value = round2(currentFee - entered).toFixed(2);
+				const amt = round2(currentFee * entered / 100);
+				discountAmtEl.value = amt.toFixed(2);
+				discountedFeeEl.value = round2(currentFee - amt).toFixed(2);
 
 				if (feeTypeInst.checked) {
 					renderInstallmentInputs();
@@ -1293,7 +1292,7 @@
 
 			refreshBatchOptions();
 			refreshPreviewNumbers();
-			discountAmtEl.addEventListener('input', onDiscountAmountInput);
+			discountPctEl.addEventListener('input', onDiscountPercentInput);
 			feeTypeFull.addEventListener('change', toggleInstallmentsBlock);
 			feeTypeInst.addEventListener('change', toggleInstallmentsBlock);
 
