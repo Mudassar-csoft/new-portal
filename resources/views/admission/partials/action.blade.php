@@ -20,8 +20,9 @@
     $reviewRegistrationDateLabel = optional($admission?->registration?->registered_at ?? $admission?->registration?->created_at)->format('d-M-Y') ?? '';
     $reviewAdmissionDateLabel = optional($admission?->admission_date)->format('d-M-Y') ?? '';
     $reviewFeePackageLabel = $admission?->fee_package !== null ? number_format((float) $admission->fee_package, 0) : '';
+    $reviewDiscountPercentLabel = rtrim(rtrim(number_format((float) ($admission?->discount_percent ?? 0), 2, '.', ''), '0'), '.');
     $reviewDiscountLabel = $admission
-        ? trim(number_format((float) ($admission->discount_percent ?? 0), 0) . '% (' . number_format((float) ($admission->discount_amount ?? 0), 0) . ')')
+        ? trim(($reviewDiscountPercentLabel !== '' ? $reviewDiscountPercentLabel : '0') . '% (' . number_format((float) ($admission->discount_amount ?? 0), 0) . ')')
         : '';
     $reviewFeePlanLabel = match ($admission?->fee_type) {
         'full' => 'Full Payment',
