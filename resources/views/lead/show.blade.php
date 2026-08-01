@@ -43,10 +43,12 @@
 			'registered' => $stages['registered'] ?? 'Registered',
 			'enrolled' => $isCoworkingLead ? ($stages['registered'] ?? 'Registered') : ($stages['enroll'] ?? 'Enrolled'),
 			'not_interesting' => $stages['not_interesting'] ?? 'Not Interesting',
+			'not_interested_admission' => $stages['not_interested_admission'] ?? 'Not Interested for Admission',
 			default => ucfirst(str_replace('_', ' ', $lead->status ?? 'pending')),
 		};
 		$defaultProbability = old('probability', $latestFollowup?->probability ?? 0);
-		$closedStatuses = ['registered', 'not_interesting', 'enrolled'];
+		$closedStatuses = ['registered', 'not_interesting', 'not_interested_admission', 'enrolled'];
+		$followupStageOptions = $followupStageOptions ?? $stages;
 	@endphp
 
 	<div class="lead-show-shell">
@@ -131,15 +133,9 @@
 								</div>
 								<div class="form-group col-lg-3 col-md-6">
 									<label class="form-label">Stage</label>
-									@php
-										$hideRegistered = $lead->status === 'not_interesting';
-										$hideNotInteresting = in_array($lead->status, array_diff($closedStatuses, ['not_interesting']), true);
-									@endphp
 									<select class="form-control" name="stage" id="followup-stage" required onchange="window.handleFollowupStageChange && window.handleFollowupStageChange(this)">
-										@foreach ($stages as $key => $label)
+										@foreach ($followupStageOptions as $key => $label)
 											@if ($key === 'new') @continue @endif
-											@if ($hideRegistered && $key === 'registered') @continue @endif
-											@if ($hideNotInteresting && $key === 'not_interesting') @continue @endif
 											<option value="{{ $key }}" @selected(old('stage', $currentStage === 'new' ? 'contacted' : $currentStage) === $key)>
 												{{ $usesTrainingConversionFlow && $key === 'registered' ? 'Register' : ($usesTrainingConversionFlow && $key === 'enroll' ? 'Enroll' : $label) }}
 											</option>
@@ -301,7 +297,7 @@
 						@forelse ($followups as $idx => $row)
 							@php
 								$label = $stages[$row->stage] ?? ucfirst(str_replace('_', ' ', $row->stage));
-								$rowHighlight = $row->stage === 'not_interesting';
+								$rowHighlight = in_array($row->stage, ['not_interesting', 'not_interested_admission'], true);
 								$isLatestRow = $idx === 0;
 							@endphp
 							<tr class="{{ $rowHighlight ? 'row-highlight' : '' }} {{ $isLatestRow ? 'latest-followup-highlight' : '' }}">
@@ -1386,12 +1382,13 @@
 		function updateStageSpecificUI(stageValue) {
 			const normalizedStage = String(stageValue || '').trim().toLowerCase();
 			const isNotInteresting = normalizedStage === 'not_interesting';
+			const isNotInterestedAdmission = normalizedStage === 'not_interested_admission';
 			const form = $('#followup-form');
 			const usesTrainingConversionFlow = form && form.dataset.usesTrainingConversionFlow === '1';
 			const isRegistrationStage = normalizedStage === 'registered';
 			const isAdmissionStage = usesTrainingConversionFlow && normalizedStage === 'enroll';
 			const isModalStage = isRegistrationStage || isAdmissionStage;
-			const useMinimalFields = isNotInteresting || isModalStage;
+			const useMinimalFields = isNotInteresting || isNotInterestedAdmission || isModalStage;
 			const registrationLink = $('#registration-link');
 			const admissionLink = $('#admission-link');
 			const completionFields = $('#lead-completion-fields');

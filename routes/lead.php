@@ -18,6 +18,9 @@ Route::put('/leads/{lead}', [LeadController::class, 'update'])
 Route::post('/leads/{lead}/not-interested', [LeadController::class, 'markNotInterested'])
     ->middleware('permission:lead.view')
     ->name('leads.not-interested');
+Route::post('/leads/{lead}/not-interested-admission', [LeadController::class, 'markNotInterestedForAdmission'])
+    ->middleware('permission:lead.view')
+    ->name('leads.not-interested-admission');
 Route::post('/leads/{lead}/followups', [LeadController::class, 'addFollowup'])
     ->middleware('permission:lead.view')
     ->name('leads.followups.store');

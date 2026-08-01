@@ -297,6 +297,35 @@ class LeadController extends Controller
         return Redirect::back()->with('status', 'Lead marked as not interested.');
     }
 
+    public function markNotInterestedForAdmission(Request $request, Lead $lead): RedirectResponse
+    {
+        $this->ensureLeadCampusAccess($lead);
+
+        if (! $this->supportsAdmission($lead->type) || $lead->status !== 'registered') {
+            return Redirect::back()->with('error', 'This lead is not awaiting an admission decision.');
+        }
+
+        $lead->update([
+            'status' => 'not_interested_admission',
+        ]);
+
+        $this->syncLeadNextFollowupAt($lead, null);
+
+        LeadFollowup::create([
+            'lead_id' => $lead->id,
+            'campus_id' => $this->resolveFollowupCampusId($lead),
+            'user_id' => $request->user()?->id,
+            'method' => null,
+            'probability' => null,
+            'note' => 'Lead marked as not interested for admission from the actions menu.',
+            'next_action_date' => null,
+            'stage' => 'not_interested_admission',
+            'lead_status' => 'not_interested_admission',
+        ]);
+
+        return Redirect::back()->with('status', 'Lead marked as not interested for admission.');
+    }
+
     public function addFollowup(Request $request, Lead $lead): RedirectResponse|JsonResponse
     {
         $this->ensureLeadCampusAccess($lead);
@@ -324,8 +353,16 @@ class LeadController extends Controller
         $supportsRegistration = $this->supportsRegistration($lead->type);
         $supportsAdmission = $this->supportsAdmission($lead->type);
         $allowedStages = array_keys($this->followupStageConfig($lead->type)['stageMap']);
+
+        if ($supportsAdmission && $lead->status === 'registered') {
+            // Once a training lead is registered it can only move forward to
+            // Enroll or Not Interested for Admission — no reverting to an
+            // earlier pipeline stage.
+            $allowedStages = array_values(array_intersect($allowedStages, ['enroll', 'not_interested_admission']));
+        }
+
         $selectedStage = (string) $request->input('stage');
-        $usesMinimalFields = in_array($selectedStage, ['registered', 'not_interesting', 'enroll'], true);
+        $usesMinimalFields = in_array($selectedStage, ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
 
         $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
@@ -333,7 +370,7 @@ class LeadController extends Controller
             'probability' => $usesMinimalFields
                 ? ['nullable', 'integer', 'min:1', 'max:100']
                 : ['required', 'integer', 'min:1', 'max:100'],
-            'note' => $selectedStage === 'not_interesting'
+            'note' => in_array($selectedStage, ['not_interesting', 'not_interested_admission'], true)
                 ? ['required', 'string']
                 : ['nullable', 'string'],
             'next_action_date' => ['nullable', 'date'],
@@ -384,7 +421,7 @@ class LeadController extends Controller
             $this->syncLeadProfileFromFollowup($lead, $validated);
         }
 
-        $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll'], true);
+        $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
         $followupCampusId = $this->resolvePermittedFollowupCampusId($lead, $validated['campus_id'] ?? null);
         $leadCampusChanged = (int) ($followupCampusId ?? 0) > 0
             && (int) ($lead->campus_id ?? 0) !== (int) $followupCampusId;
@@ -514,20 +551,37 @@ class LeadController extends Controller
         if ($lead->status === 'not_interesting') {
             unset($stages['registered']);
             unset($stages['enroll']);
+            unset($stages['not_interested_admission']);
         } elseif ($lead->status === 'registered') {
             unset($stages['not_interesting']);
         } elseif ($lead->status === 'enrolled') {
             unset($stages['not_interesting']);
+            unset($stages['not_interested_admission']);
+        } elseif ($lead->status === 'not_interested_admission') {
+            unset($stages['not_interesting']);
+            unset($stages['enroll']);
+        } else {
+            // "Not Interested for Admission" only becomes relevant once the
+            // lead has actually registered.
+            unset($stages['not_interested_admission']);
         }
 
         if (!array_key_exists($currentStage, $stages)) {
             $currentStage = array_key_first($stages);
         }
 
+        // After registration, a training lead can only move forward to Enroll
+        // or Not Interested for Admission — earlier stages are no longer
+        // selectable from the follow-up form.
+        $followupStageOptions = ($supportsAdmission && $lead->status === 'registered')
+            ? array_intersect_key($stages, array_flip(['enroll', 'not_interested_admission']))
+            : $stages;
+
         return view('lead.show', [
             'lead' => $lead,
             'followups' => $followups,
             'stages' => $stages,
+            'followupStageOptions' => $followupStageOptions,
             'currentStage' => $currentStage,
             'latestFollowup' => $latestFollowup,
             'nextFollowup' => $nextFollowup,
@@ -1368,6 +1422,7 @@ class LeadController extends Controller
 
         if ($this->supportsAdmission($type)) {
             $colors['enrolled'] = 'badge-warning';
+            $colors['not_interested_admission'] = 'badge-danger';
         }
 
         return $colors;
@@ -1827,6 +1882,7 @@ class LeadController extends Controller
                     'proposal_negotiation' => 'Proposal & Negotiation',
                     'not_interesting' => 'Not Interesting',
                     'registered' => 'Registered',
+                    'not_interested_admission' => 'Not Interested for Admission',
                     'enroll' => 'Enrolled',
                 ],
                 'tabs' => [
@@ -1838,6 +1894,7 @@ class LeadController extends Controller
                     'proposal_negotiation' => 'Proposal & Negotiation',
                     'not_interesting' => 'Not Interesting',
                     'registered' => 'Registered',
+                    'not_interested_admission' => 'Not Interested for Admission',
                     'enroll' => 'Enrolled',
                 ],
                 'badgeColors' => [
@@ -1849,6 +1906,7 @@ class LeadController extends Controller
                     'proposal_negotiation' => 'badge-info',
                     'not_interesting' => 'badge-warning',
                     'registered' => 'badge-success',
+                    'not_interested_admission' => 'badge-danger',
                     'enroll' => 'badge-success',
                 ],
             ];
@@ -1928,9 +1986,17 @@ class LeadController extends Controller
 
     private function closedFollowupStatuses(?string $type): array
     {
-        return $this->usesTrainingConversionFlow($type)
-            ? ['registered', 'not_interesting', 'enrolled']
-            : ['registered', 'not_interesting', 'enrolled'];
+        $statuses = ['not_interesting', 'enrolled'];
+
+        if ($this->supportsAdmission($type)) {
+            // Training leads stay open for follow-ups after registration so the
+            // team can still push them to enroll or decline the admission.
+            $statuses[] = 'not_interested_admission';
+        } else {
+            $statuses[] = 'registered';
+        }
+
+        return $statuses;
     }
 
     private function canFollowupNotInterestingLead(?User $user): bool
@@ -1957,6 +2023,7 @@ class LeadController extends Controller
             'registered' => 'registered',
             'enroll' => 'enrolled',
             'not_interesting' => 'not_interesting',
+            'not_interested_admission' => 'not_interested_admission',
             default => (string) ($lead->status ?? 'pending'),
         };
     }

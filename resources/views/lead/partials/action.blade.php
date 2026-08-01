@@ -21,6 +21,7 @@
 		? 'Create New Coworking Space Registration (All fields marked with * are required)'
 		: 'Create New Registration (All fields marked with * are required)';
 	$canMarkNotInterested = !in_array($leadStatus, ['registered', 'enrolled', 'not_interesting'], true);
+	$canMarkNotInterestedForAdmission = $supportsAdmission && $leadStatus === 'registered';
 	$canEditLead = auth()->user()?->hasAnyPermission(['lead.update']) ?? false;
 @endphp
 
@@ -178,6 +179,20 @@
 							</svg>
 						</span><span class="lead-action-label">Enroll Now</span>
 					</a>
+				@endif
+				@if($canMarkNotInterestedForAdmission && !empty($leadId))
+					<form method="POST" action="{{ route('leads.not-interested-admission', $leadId) }}" onsubmit="return confirm('Mark this lead as not interested for admission?');">
+						@csrf
+						<button type="submit" class="dropdown-item lead-action-item lead-action-danger">
+							<span class="lead-action-icon lead-icon-red" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M9.4 2.75h5.2l6.65 6.65v5.2l-6.65 6.65H9.4l-6.65-6.65V9.4z"/>
+									<path d="m9 9 6 6"/>
+									<path d="m15 9-6 6"/>
+								</svg>
+							</span><span class="lead-action-label">Not Interested for Admission</span>
+						</button>
+					</form>
 				@endif
 			@endif
 			<a class="dropdown-item lead-action-item" href="{{ !empty($leadId) ? route('leads.show', $leadId) : '#' }}">
