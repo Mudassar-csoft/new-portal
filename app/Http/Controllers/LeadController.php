@@ -355,14 +355,21 @@ class LeadController extends Controller
         $allowedStages = array_keys($this->followupStageConfig($lead->type)['stageMap']);
 
         if ($supportsAdmission && $lead->status === 'registered') {
-            // Once a training lead is registered it can only move forward to
-            // Enroll or Not Interested for Admission — no reverting to an
+            // Once a training lead is registered it can only stay Registered
+            // (to keep logging follow-ups), move forward to Enroll, or move
+            // forward to Not Interested for Admission — no reverting to an
             // earlier pipeline stage.
-            $allowedStages = array_values(array_intersect($allowedStages, ['enroll', 'not_interested_admission']));
+            $allowedStages = array_values(array_intersect($allowedStages, ['registered', 'enroll', 'not_interested_admission']));
         }
 
         $selectedStage = (string) $request->input('stage');
-        $usesMinimalFields = in_array($selectedStage, ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
+        // Re-selecting "Registered" while the lead is already registered isn't
+        // a real transition — it just means the decision (Enroll / Not
+        // Interested for Admission) hasn't been made yet, so the follow-up
+        // should behave like a normal, still-open follow-up (next date shown).
+        $isReaffirmingRegisteredStage = $selectedStage === 'registered' && $lead->status === 'registered';
+        $usesMinimalFields = ! $isReaffirmingRegisteredStage
+            && in_array($selectedStage, ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
 
         $rules = [
             'campus_id' => ['nullable', 'exists:campuses,id'],
@@ -391,7 +398,7 @@ class LeadController extends Controller
             'note' => 'remarks',
         ]);
 
-        if ($lead->type === 'coworking' && $validated['stage'] === 'registered') {
+        if (! $isReaffirmingRegisteredStage && $lead->type === 'coworking' && $validated['stage'] === 'registered') {
             throw ValidationException::withMessages([
                 'stage' => [
                     'Use the coworking registration form to register this lead.',
@@ -399,7 +406,7 @@ class LeadController extends Controller
             ]);
         }
 
-        if ($supportsRegistration && $usesTrainingConversionFlow && in_array($validated['stage'], ['registered', 'enroll'], true)) {
+        if (! $isReaffirmingRegisteredStage && $supportsRegistration && $usesTrainingConversionFlow && in_array($validated['stage'], ['registered', 'enroll'], true)) {
             throw ValidationException::withMessages([
                 'stage' => [
                     $validated['stage'] === 'registered'
@@ -421,7 +428,8 @@ class LeadController extends Controller
             $this->syncLeadProfileFromFollowup($lead, $validated);
         }
 
-        $isTerminalStage = in_array($validated['stage'], ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
+        $isTerminalStage = ! $isReaffirmingRegisteredStage
+            && in_array($validated['stage'], ['registered', 'not_interesting', 'enroll', 'not_interested_admission'], true);
         $followupCampusId = $this->resolvePermittedFollowupCampusId($lead, $validated['campus_id'] ?? null);
         $leadCampusChanged = (int) ($followupCampusId ?? 0) > 0
             && (int) ($lead->campus_id ?? 0) !== (int) $followupCampusId;
@@ -570,11 +578,11 @@ class LeadController extends Controller
             $currentStage = array_key_first($stages);
         }
 
-        // After registration, a training lead can only move forward to Enroll
-        // or Not Interested for Admission — earlier stages are no longer
-        // selectable from the follow-up form.
+        // After registration, a training lead can stay Registered (still
+        // deciding), or move forward to Enroll or Not Interested for
+        // Admission — earlier stages are no longer selectable.
         $followupStageOptions = ($supportsAdmission && $lead->status === 'registered')
-            ? array_intersect_key($stages, array_flip(['enroll', 'not_interested_admission']))
+            ? array_intersect_key($stages, array_flip(['registered', 'enroll', 'not_interested_admission']))
             : $stages;
 
         return view('lead.show', [

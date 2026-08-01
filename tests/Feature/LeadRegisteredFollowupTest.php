@@ -41,8 +41,50 @@ class LeadRegisteredFollowupTest extends TestCase
         $response->assertDontSee('No further follow-ups can be added.');
         $response->assertSee('Not Interested for Admission');
         $response->assertSee('id="followup-form-card"', false);
-        $response->assertDontSee('>Contacted<', false);
-        $response->assertDontSee('>Need Analysis<', false);
+        // The progress bar still shows the full pipeline history, but the
+        // follow-up stage dropdown itself must not offer earlier stages.
+        $response->assertDontSee('<option value="contacted"', false);
+        $response->assertDontSee('<option value="need_analysis"', false);
+        $response->assertDontSee('<option value="branch_visited"', false);
+        $response->assertDontSee('<option value="proposal_negotiation"', false);
+        $response->assertSee('<option value="not_interested_admission"', false);
+    }
+
+    public function test_reaffirming_registered_stage_keeps_followup_open_with_next_action_date(): void
+    {
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('TRN306');
+        $lead = $this->createTrainingLead($campus, $program, [
+            'name' => 'Registered Lead Five',
+            'phone' => '03000000306',
+            'status' => 'registered',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->from(route('leads.show', $lead))
+            ->post(route('leads.followups.store', $lead), [
+                'method' => 'call',
+                'note' => 'Still deciding, will call back.',
+                'stage' => 'registered',
+                'next_action_date' => now()->addDays(2)->format('Y-m-d\TH:i'),
+            ]);
+
+        $response->assertRedirect(route('leads.show', $lead));
+        $response->assertSessionHas('status', 'Follow-up added.');
+
+        $lead->refresh();
+        $this->assertSame('registered', $lead->status);
+        $this->assertNotNull(data_get($lead->details, 'next_followup_at'));
+
+        $followup = LeadFollowup::query()->where('lead_id', $lead->id)->latest('id')->first();
+        $this->assertSame('registered', $followup->stage);
+        $this->assertNotNull($followup->next_action_date);
+
+        // Still open for another follow-up afterward.
+        $showResponse = $this->actingAs($admin)->get(route('leads.show', $lead));
+        $showResponse->assertOk();
+        $showResponse->assertDontSee('No further follow-ups can be added.');
     }
 
     public function test_followup_cannot_move_a_registered_lead_back_to_an_earlier_stage(): void

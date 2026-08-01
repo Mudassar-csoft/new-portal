@@ -111,6 +111,7 @@
 				<div class="card-body">
 					<form method="POST" action="{{ route('leads.followups.store', $lead) }}" id="followup-form"
 						data-uses-training-conversion-flow="{{ $usesTrainingConversionFlow ? '1' : '0' }}"
+						data-lead-status="{{ $lead->status }}"
 						@if($supportsRegistration && $registrationFormModalUrl)
 							data-registration-url="{{ $registrationFormModalUrl }}"
 							data-registration-title="{{ $isCoworkingLead ? 'Create New Coworking Space Registration (All fields marked with * are required)' : 'Create New Registration (All fields marked with * are required)' }}"
@@ -1385,7 +1386,12 @@
 			const isNotInterestedAdmission = normalizedStage === 'not_interested_admission';
 			const form = $('#followup-form');
 			const usesTrainingConversionFlow = form && form.dataset.usesTrainingConversionFlow === '1';
-			const isRegistrationStage = normalizedStage === 'registered';
+			const leadStatus = form ? form.dataset.leadStatus : '';
+			// Re-selecting "Registered" while the lead is already registered is
+			// just a continuing follow-up (decision not made yet), not a real
+			// registration trigger — keep the next-follow-up date field shown.
+			const isReaffirmingRegisteredStage = normalizedStage === 'registered' && leadStatus === 'registered';
+			const isRegistrationStage = normalizedStage === 'registered' && !isReaffirmingRegisteredStage;
 			const isAdmissionStage = usesTrainingConversionFlow && normalizedStage === 'enroll';
 			const isModalStage = isRegistrationStage || isAdmissionStage;
 			const useMinimalFields = isNotInteresting || isNotInterestedAdmission || isModalStage;
