@@ -81,6 +81,59 @@ class StudentDropWorkflowTest extends TestCase
         $this->assertSame('pending', $registrationFee->status);
     }
 
+    public function test_drop_is_allowed_while_admission_approval_is_pending(): void
+    {
+        $studentDrop = $this->createPermission('student', 'drop', 'student.drop');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $program = $this->createProgram('MK101', 'Marketing');
+        $batch = $this->createBatch($campus, $program, 'ALP-B5');
+        $registration = $this->createRegistration($campus, $program, 'Pending Approval Student', '03000000199');
+        $admission = $this->createAdmission($campus, $program, $batch, $registration, 'Pending Approval Student', '03000000199', [
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $user = $this->createUser($campus, [$studentDrop]);
+
+        $this->actingAs($user)
+            ->post(route('student.records.drop', $admission), [
+                'drop_reason' => 'Pending approval student withdrew.',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('status', 'Student dropped and pending fee moved to bad debt.');
+
+        $admission->refresh();
+        $this->assertSame('dropped', $admission->student_status);
+        $this->assertSame(Admission::APPROVAL_STATUS_PENDING, $admission->approval_status);
+    }
+
+    public function test_transfer_is_allowed_while_admission_approval_is_pending(): void
+    {
+        $studentUpdate = $this->createPermission('student', 'update', 'student.update');
+        $campus = $this->createCampus('Alpha Campus', 'ALP');
+        $targetCampus = $this->createCampus('Beta Campus', 'BET');
+        $program = $this->createProgram('MK102', 'Marketing Advanced');
+        $batch = $this->createBatch($campus, $program, 'ALP-B6');
+        $targetBatch = $this->createBatch($targetCampus, $program, 'BET-B1');
+        $registration = $this->createRegistration($campus, $program, 'Pending Transfer Student', '03000000198');
+        $admission = $this->createAdmission($campus, $program, $batch, $registration, 'Pending Transfer Student', '03000000198', [
+            'approval_status' => Admission::APPROVAL_STATUS_PENDING,
+        ]);
+
+        $user = $this->createUser($campus, [$studentUpdate]);
+
+        $this->actingAs($user)
+            ->post(route('student.records.transfer.store', $admission), [
+                'campus_id' => $targetCampus->id,
+                'batch_id' => $targetBatch->id,
+            ])
+            ->assertRedirect();
+
+        $admission->refresh();
+        $this->assertSame($targetCampus->id, $admission->campus_id);
+        $this->assertSame($targetBatch->id, $admission->batch_id);
+        $this->assertSame(Admission::APPROVAL_STATUS_PENDING, $admission->approval_status);
+    }
+
     public function test_drop_student_action_only_shows_for_users_with_drop_permission(): void
     {
         $studentView = $this->createPermission('student', 'view', 'student.view');

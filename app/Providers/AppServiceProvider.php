@@ -6,6 +6,7 @@ use App\Models\Admission;
 use App\Models\Batch;
 use App\Models\BatchTimetable;
 use App\Models\Campus;
+use App\Models\FeeCollection;
 use App\Models\FinanceOtherCharge;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
@@ -15,6 +16,7 @@ use App\Models\Registration;
 use App\Models\StudentAttendance;
 use App\Models\User;
 use App\Models\WebLead;
+use App\Observers\FeeCollectionObserver;
 use App\Support\ResolvesLeadFollowupNotifications;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -40,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        FeeCollection::observe(FeeCollectionObserver::class);
+
         View::composer('layouts.nav', function ($view): void {
             $view->with('sidebarCounts', $this->resolveSidebarCounts(auth()->user()));
         });

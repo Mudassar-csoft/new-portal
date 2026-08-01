@@ -350,8 +350,8 @@
                                         <td>{{ number_format((float) ($fee->net_amount ?? $fee->amount ?? 0), 0) }}</td>
                                         <td>{{ $fee->installment_no ?? 0 }}</td>
 
-                                    <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?? '' }}</td>
-                                    <td>{{ optional($fee->paid_at)->format('Y-m-d') ?? '—' }}</td>
+                                    <td>{{ optional($fee->due_at ?? null)->format('Y-m-d') ?: '—' }}</td>
+                                    <td>{{ $fee->status === 'paid' ? (optional($fee->paid_at)->format('Y-m-d') ?: '—') : '—' }}</td>
                                    <td class="fee-status-cell">
                                             @if($fee->status === 'paid')
                                             <span class="label label-primary p-2 fee-status-control fee-status-control--text">Paid</span>
@@ -386,7 +386,9 @@
                                     type="button"
                                     data-fee-id="{{ $fee->id }}"
                                     data-fee-net="{{ (float) ($fee->net_amount ?? $fee->amount ?? 0) }}"
+                                    data-fee-status="{{ $fee->status }}"
                                     data-fee-paid-at="{{ optional($fee->paid_at)->format('Y-m-d') }}"
+                                    data-fee-due-at="{{ optional($fee->due_at)->format('Y-m-d') }}"
                                     data-fee-label="{{ $fee->fee_type === 'registration' ? 'Registration Fee' : (ucfirst($fee->fee_type ?? '') . ' Fee') }}">
                                     Edit
                                 </button>
@@ -498,7 +500,7 @@
                         <input type="number" step="0.01" min="0" id="fee_net_amount" name="net_amount" required>
                     </div>
                     <div class="fee-edit-field">
-                        <label for="fee_paid_at">Paid Date</label>
+                        <label for="fee_paid_at" id="fee_paid_at_label">Paid Date</label>
                         <input type="date" id="fee_paid_at" name="paid_at" required>
                     </div>
                 </div>
@@ -1168,17 +1170,28 @@
             const nameEl = document.getElementById('feeEditName');
             const netInput = document.getElementById('fee_net_amount');
             const paidInput = document.getElementById('fee_paid_at');
+            const paidLabel = document.getElementById('fee_paid_at_label');
             const feeUpdateBase = @json(url('/student/fee'));
 
             function openFeeModal(btn) {
                 const id = btn.getAttribute('data-fee-id');
                 const net = btn.getAttribute('data-fee-net') || '';
+                const status = btn.getAttribute('data-fee-status') || 'pending';
                 const paid = btn.getAttribute('data-fee-paid-at') || '';
+                const due = btn.getAttribute('data-fee-due-at') || '';
                 const label = btn.getAttribute('data-fee-label') || 'Fee';
                 form.action = feeUpdateBase + '/' + id;
                 nameEl.textContent = label;
                 netInput.value = net;
-                paidInput.value = paid;
+                if (status === 'paid') {
+                    paidLabel.textContent = 'Paid Date';
+                    paidInput.name = 'paid_at';
+                    paidInput.value = paid;
+                } else {
+                    paidLabel.textContent = 'Due Date';
+                    paidInput.name = 'due_at';
+                    paidInput.value = due;
+                }
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
             }

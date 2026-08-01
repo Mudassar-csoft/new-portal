@@ -341,15 +341,23 @@ class StudentRecordController extends Controller
     {
         $this->ensureCampusAccess((int) ($feeCollection->campus_id ?? 0), $request->user(), 'You are not allowed to update fee records from another campus.');
 
+        $isPaid = $feeCollection->status === 'paid';
+
         $validated = $request->validate([
             'net_amount' => ['required', 'numeric', 'min:0'],
-            'paid_at' => ['required', 'date'],
+            'paid_at' => [$isPaid ? 'required' : 'nullable', 'date'],
+            'due_at' => [$isPaid ? 'nullable' : 'required', 'date'],
         ]);
 
-        $feeCollection->update([
-            'net_amount' => $validated['net_amount'],
-            'paid_at' => $validated['paid_at'],
-        ]);
+        $updates = ['net_amount' => $validated['net_amount']];
+
+        if ($isPaid) {
+            $updates['paid_at'] = $validated['paid_at'];
+        } else {
+            $updates['due_at'] = $validated['due_at'];
+        }
+
+        $feeCollection->update($updates);
 
         if ($feeCollection->status === 'paid' && $feeCollection->paid_at) {
             app(FinanceAccountingService::class)->syncFeeCollection($feeCollection->fresh());
@@ -439,10 +447,6 @@ class StudentRecordController extends Controller
     public function dropStudent(Request $request, Admission $admission): RedirectResponse
     {
         $this->ensureCampusAccess((int) ($admission->campus_id ?? 0), $request->user(), 'You are not allowed to update student records from another campus.');
-
-        if (($admission->approval_status ?? Admission::APPROVAL_STATUS_APPROVED) !== Admission::APPROVAL_STATUS_APPROVED) {
-            return back()->with('error', 'Student can only be dropped after admission approval.');
-        }
 
         $validated = $request->validate([
             'drop_reason' => ['required', 'string', 'max:2000'],

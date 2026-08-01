@@ -5,7 +5,8 @@
       "Bash(grep -c 'webLead->submitted_at ?? $webLead->created_at' resources/views/layouts/header.blade.php resources/views/web_leads/index.blade.php resources/views/web_leads/show.blade.php)",
       "Bash(php -l app/Models/WebLead.php)",
       "Bash(php artisan *)",
-      "Bash(grep -n 'protected $fillable\\\\|address\\\\|phone\\\\|city\\\\b' app/Models/Campus.php)"
+      "Bash(grep -n 'protected $fillable\\\\|address\\\\|phone\\\\|city\\\\b' app/Models/Campus.php)",
+      "Bash(git stash *)"
     ]
   }
 }
