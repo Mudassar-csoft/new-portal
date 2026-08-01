@@ -67,6 +67,7 @@ class LeadRegisteredFollowupTest extends TestCase
                 'method' => 'call',
                 'note' => 'Still deciding, will call back.',
                 'stage' => 'registered',
+                'probability' => 80,
                 'next_action_date' => now()->addDays(2)->format('Y-m-d\TH:i'),
             ]);
 
