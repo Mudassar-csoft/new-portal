@@ -598,6 +598,10 @@
             overflow: visible !important;
         }
 
+        .adm-status-shell .select2-hidden-accessible {
+            width: 1px !important;
+        }
+
         .follow-tab-bar .follow-tab {
             text-decoration: none;
         }
