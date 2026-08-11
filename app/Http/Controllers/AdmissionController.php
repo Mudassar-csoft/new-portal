@@ -1249,6 +1249,22 @@ class AdmissionController extends Controller
                 });
             } catch (QueryException $e) {
                 $msg = $e->getMessage();
+
+                // MySQL names the violated index in its message; SQLite (used in
+                // tests) instead lists the column pair. Match either so this stays
+                // reliable across both drivers.
+                $isRegistrationProgramConflict = str_contains($msg, 'admissions_registration_program_unique')
+                    || (str_contains($msg, 'registration_id') && str_contains($msg, 'program_id'));
+
+                if ($isRegistrationProgramConflict) {
+                    // Two concurrent submissions raced past the pre-insert
+                    // "already enrolled" check; the DB constraint is the real
+                    // guard, so surface the same friendly message here.
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'program_id' => ['This student is already enrolled in the selected course. Please choose a different course.'],
+                    ]);
+                }
+
                 if (str_contains($msg, 'UNIQUE') || str_contains($msg, 'Duplicate entry') || $e->getCode() === '23000') {
                     // If the user provided a number that conflicts, fail loudly
                     if ($providedRollNumber || $providedReceiptNumber) {

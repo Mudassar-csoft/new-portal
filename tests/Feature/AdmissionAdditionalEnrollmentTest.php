@@ -238,6 +238,49 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
             ->assertJsonValidationErrors(['program_id']);
     }
 
+    public function test_concurrent_admission_inserts_for_the_same_course_are_blocked_at_the_database_level(): void
+    {
+        $campus = $this->createCampus('Race Campus', 'RAC');
+        $program = $this->createProgram('TRN409', 'Race Course');
+        $batch = $this->createBatch($campus, $program, 'RAC-B1');
+        $registration = $this->createRegistration($campus, $program, 'Race Student', '03200000161');
+
+        $attributes = [
+            'registration_id' => $registration->id,
+            'campus_id' => $campus->id,
+            'program_id' => $program->id,
+            'batch_id' => $batch->id,
+            'student_name' => 'Race Student',
+            'phone' => '03200000161',
+            'admission_date' => now()->toDateString(),
+            'fee_package' => 50000,
+            'discount_amount' => 0,
+            'discount_percent' => 0,
+            'discounted_fee' => 50000,
+            'fee_type' => 'full',
+            'approval_status' => Admission::APPROVAL_STATUS_APPROVED,
+            'student_status' => 'enrolled',
+            'status_updated_at' => now(),
+            'remarks' => 'Race condition regression test.',
+        ];
+
+        $controller = app(\App\Http\Controllers\AdmissionController::class);
+        $method = new \ReflectionMethod(\App\Http\Controllers\AdmissionController::class, 'createAdmissionAtomically');
+        $method->setAccessible(true);
+
+        // Simulates the first of two near-simultaneous submissions: it wins the
+        // application-level "already enrolled" check (nothing exists yet) and inserts.
+        $first = $method->invoke($controller, $campus->code, $batch->code, null, null, $attributes);
+        $this->assertInstanceOf(Admission::class, $first);
+
+        // Simulates a second submission that also passed the pre-insert check
+        // before the first one committed. The database's unique constraint on
+        // (registration_id, program_id) is the real backstop, and it must surface
+        // as the same friendly validation error rather than a raw 500.
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        $method->invoke($controller, $campus->code, $batch->code, null, null, $attributes);
+    }
+
     public function test_admission_store_normalizes_dashed_cnic_before_saving(): void
     {
         $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
