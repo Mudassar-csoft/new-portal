@@ -418,18 +418,18 @@ class AdmissionController extends Controller
                 $lead->update($leadUpdates);
             }
 
-            $registration = null;
+            // Reuse the student's existing registration whenever we have one so that
+            // additional courses stay linked to the same registration record instead
+            // of forking off a new registration (which would hide earlier courses on
+            // the student's registration page).
+            $registration = $sourceRegistration;
 
-            if (! $isAnotherCourseEnrollment) {
-                $registration = $sourceRegistration;
-
-                if (! $registration && $lead) {
-                    $registration = Registration::query()
-                        ->where('lead_id', $lead->id)
-                        ->where('program_id', $validated['program_id'])
-                        ->latest()
-                        ->first();
-                }
+            if (! $registration && ! $isAnotherCourseEnrollment && $lead) {
+                $registration = Registration::query()
+                    ->where('lead_id', $lead->id)
+                    ->where('program_id', $validated['program_id'])
+                    ->latest()
+                    ->first();
             }
             if (!$registration) {
                 $regNumbers = $this->previewNumbers($campus->code);
@@ -481,7 +481,11 @@ class AdmissionController extends Controller
 
                     $this->syncFeeCollectionSafely($registrationFee);
                 }
-            } else {
+            } elseif (! $isAnotherCourseEnrollment) {
+                // Enrolling in another course reuses the registration purely to keep
+                // the courses linked together; its own campus/program/profile fields
+                // stay as originally registered rather than being overwritten by the
+                // new course's details.
                 $registration->update([
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],

@@ -109,7 +109,7 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
             ->assertDontSee('Current Enrolled Course');
     }
 
-    public function test_enroll_another_course_creates_a_new_registration_without_overwriting_the_existing_course(): void
+    public function test_enroll_another_course_reuses_the_existing_registration_without_overwriting_it(): void
     {
         $admissionCreate = $this->createPermission('admission', 'create', 'admission.create');
 
@@ -168,16 +168,17 @@ class AdmissionAdditionalEnrollmentTest extends TestCase
 
         $registration->refresh();
 
+        // The registration itself keeps its original course/profile details...
         $this->assertSame($currentProgram->id, $registration->program_id);
-        $this->assertSame(2, Registration::query()->where('cnic', '3520212345672')->count());
+        $this->assertSame(1, Registration::query()->where('cnic', '3520212345672')->count());
+
+        // ...while the new course is added as a second admission linked to the
+        // same registration, so both courses stay visible on the student's
+        // registration page instead of splitting across separate registrations.
         $this->assertSame(2, Admission::query()->where('cnic', '3520212345672')->count());
-        $this->assertDatabaseHas('registrations', [
-            'cnic' => '3520212345672',
-            'program_id' => $otherProgram->id,
-            'student_name' => 'Second Course Student',
-        ]);
         $this->assertDatabaseHas('admissions', [
             'cnic' => '3520212345672',
+            'registration_id' => $registration->id,
             'program_id' => $otherProgram->id,
             'batch_id' => $otherBatch->id,
         ]);
