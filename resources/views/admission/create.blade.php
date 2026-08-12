@@ -899,7 +899,7 @@
 			}
 
 			function roundOff(n) {
-				return Math.round(Number(n) || 0);
+				return Math.round((Number(n) || 0) / 10) * 10;
 			}
 
 			function selectedProgramOption() {

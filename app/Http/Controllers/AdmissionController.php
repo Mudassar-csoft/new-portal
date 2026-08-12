@@ -1169,9 +1169,9 @@ class AdmissionController extends Controller
     {
         $feePackage = round((float) (!is_null($program->fee) ? $program->fee : ($validated['fee_package'] ?? 0)), 2);
         $maxDiscountPercent = round($this->resolveDiscountPercent($program->id, $campus->id), 2);
-        $maxDiscountAmount = round($feePackage * ($maxDiscountPercent / 100));
+        $maxDiscountAmount = round($feePackage * ($maxDiscountPercent / 100), -1);
         $submittedDiscountAmount = array_key_exists('discount_amount', $validated) && $validated['discount_amount'] !== null
-            ? round((float) $validated['discount_amount'])
+            ? round((float) $validated['discount_amount'], -1)
             : $maxDiscountAmount;
 
         if ($submittedDiscountAmount < 0) {
@@ -1180,7 +1180,7 @@ class AdmissionController extends Controller
             ]);
         }
 
-        if ($submittedDiscountAmount > $maxDiscountAmount + 0.5) {
+        if ($submittedDiscountAmount > $maxDiscountAmount + 5) {
             throw ValidationException::withMessages([
                 'discount_amount' => ['Discount cannot exceed the allowed limit of ' . $maxDiscountAmount . ' (' . $maxDiscountPercent . '%).'],
             ]);
@@ -1190,7 +1190,7 @@ class AdmissionController extends Controller
         $discountPercent = $feePackage > 0
             ? round(($discountAmount / $feePackage) * 100, 2)
             : 0.0;
-        $discountedFee = round(max(0, $feePackage - $discountAmount));
+        $discountedFee = round(max(0, $feePackage - $discountAmount), -1);
 
         return [
             'feePackage' => $feePackage,
