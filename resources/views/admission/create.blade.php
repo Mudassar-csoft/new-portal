@@ -332,7 +332,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Discount Amount</label>
-							<input type="number" step="0.01"
+							<input type="number" step="1"
 								   class="form-control @error('discount_amount') is-invalid @enderror"
 								   name="discount_amount"
 								   id="admission-discount-amount"
@@ -344,7 +344,7 @@
 						</div>
 						<div class="form-group col-md-3">
 							<label class="form-label required">Discounted Fee</label>
-							<input type="number" step="0.01"
+							<input type="number" step="1"
 								   class="form-control @error('discounted_fee') is-invalid @enderror"
 								   name="discounted_fee"
 								   id="admission-discounted-fee"
@@ -898,6 +898,10 @@
 				return Math.round((Number(n) || 0) * 100) / 100;
 			}
 
+			function roundOff(n) {
+				return Math.round(Number(n) || 0);
+			}
+
 			function selectedProgramOption() {
 				if (!programEl) {
 					return null;
@@ -991,13 +995,13 @@
 					(campusId && discountMap[key] !== undefined ? discountMap[key] : discountMap[fallbackKey]) || 0
 				);
 
-				const amt = round2(currentFee * maxDiscountPercent / 100);
-				const net = round2(currentFee - amt);
+				const amt = roundOff(currentFee * maxDiscountPercent / 100);
+				const net = roundOff(currentFee - amt);
 
 				feePackageEl.value = currentFee.toFixed(2);
-				discountAmtEl.value = amt.toFixed(2);
+				discountAmtEl.value = amt.toFixed(0);
 				discountPctEl.value = maxDiscountPercent.toFixed(2);
-				discountedFeeEl.value = net.toFixed(2);
+				discountedFeeEl.value = net.toFixed(0);
 				updateLimitHint();
 				clearDiscountError();
 
@@ -1008,14 +1012,14 @@
 			function updateLimitHint() {
 				const maxAmount = maxDiscountAmount();
 				if (maxDiscountPercent > 0) {
-					discountLimitHintEl.textContent = 'limit (' + maxDiscountPercent + '% / Rs. ' + maxAmount.toFixed(2) + ')';
+					discountLimitHintEl.textContent = 'limit (' + maxDiscountPercent + '% / Rs. ' + maxAmount.toFixed(0) + ')';
 				} else {
 					discountLimitHintEl.textContent = '';
 				}
 			}
 
 			function maxDiscountAmount() {
-				return round2(currentFee * maxDiscountPercent / 100);
+				return roundOff(currentFee * maxDiscountPercent / 100);
 			}
 
 			function clearDiscountError() {
@@ -1042,9 +1046,9 @@
 					clearDiscountError();
 				}
 
-				const amt = round2(currentFee * entered / 100);
-				discountAmtEl.value = amt.toFixed(2);
-				discountedFeeEl.value = round2(currentFee - amt).toFixed(2);
+				const amt = roundOff(currentFee * entered / 100);
+				discountAmtEl.value = amt.toFixed(0);
+				discountedFeeEl.value = roundOff(currentFee - amt).toFixed(0);
 
 				if (feeTypeInst.checked) {
 					renderInstallmentInputs();
