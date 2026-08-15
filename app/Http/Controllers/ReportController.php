@@ -25,7 +25,7 @@ class ReportController extends Controller
         'cash' => 'Cash',
         'bank' => 'Bank',
         'online' => 'Online',
-        'unrecorded' => '-',
+        'unrecorded' => 'Cash',
     ];
 
     public function dbr(Request $request): View
@@ -644,7 +644,7 @@ class ReportController extends Controller
             'cash' => 'cash',
             'bank', 'cheque' => 'bank',
             'online', 'online_transfer', 'easypaisa', 'jazzcash' => 'online',
-            default => 'unrecorded',
+            default => 'cash',
         };
     }
 
