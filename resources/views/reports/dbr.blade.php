@@ -57,6 +57,39 @@
             ->filter(fn ($row) => (int) ($row['count'] ?? 0) > 0 || (float) ($row['amount'] ?? 0) > 0)
             ->values();
 
+        $paymentMethodLabels = [
+            'cash' => 'Cash',
+            'bank' => 'Bank',
+            'online' => 'Online',
+            'unrecorded' => '-',
+        ];
+        $paymentMethodOrder = ['cash', 'bank', 'online'];
+        $hasUnrecordedPayments = $paymentRows->contains(
+            fn ($row) => (string) ($row['method'] ?? '') === 'unrecorded'
+        );
+        $paymentDisplayRows = collect($showCampusColumn ? $paymentRows->groupBy(fn ($row) => $row['campus'] ?? 'N/A') : [
+            '__all_campuses__' => $paymentRows,
+        ])
+            ->flatMap(function ($groupRows, $campus) use ($paymentMethodOrder, $paymentMethodLabels, $hasUnrecordedPayments, $showCampusColumn) {
+                $methods = $hasUnrecordedPayments
+                    ? array_merge($paymentMethodOrder, ['unrecorded'])
+                    : $paymentMethodOrder;
+
+                return collect($methods)->map(function ($method) use ($groupRows, $campus, $paymentMethodLabels, $showCampusColumn) {
+                    $matched = $groupRows->firstWhere('method', $method);
+
+                    return [
+                        'campus' => $showCampusColumn ? ($campus ?: 'N/A') : null,
+                        'method' => $method,
+                        'label' => $matched['label'] ?? ($paymentMethodLabels[$method] ?? ucfirst($method)),
+                        'count' => (int) ($matched['count'] ?? 0),
+                        'amount' => (float) ($matched['amount'] ?? 0),
+                    ];
+                });
+            })
+            ->filter(fn ($row) => $row['method'] !== 'unrecorded' || $row['count'] > 0 || $row['amount'] > 0)
+            ->values();
+
         $summaryRows = collect([
             ['label' => 'Registrations', 'amount' => (float) ($summaryTotals['registrations'] ?? 0)],
             ['label' => 'Enrollment + Installments', 'amount' => (float) ($summaryTotals['enrollment_installments'] ?? 0)],
@@ -330,27 +363,28 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .dbr-tags {
-            display: flex;
-            flex-wrap: wrap;
+        .dbr-detail-lines {
+            display: grid;
             gap: 4px;
         }
 
-        .dbr-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 7px;
-            border-radius: 999px;
-            background: #eef6ff;
+        .dbr-detail-line {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: start;
             color: #21415f;
-            font-size: 10px;
-            line-height: 1.25;
+            font-size: 11px;
+            line-height: 1.3;
             font-weight: 700;
         }
 
-        .dbr-tag strong {
-            font-size: 10px;
+        .dbr-detail-name {
+            min-width: 0;
+        }
+
+        .dbr-detail-count {
+            white-space: nowrap;
             font-weight: 800;
         }
 
@@ -492,7 +526,7 @@
             .dbr-meta,
             .dbr-table th,
             .dbr-table td,
-            .dbr-tag,
+            .dbr-detail-line,
             .dbr-mini-stat span,
             .dbr-signature strong,
             .dbr-signature span {
@@ -620,9 +654,12 @@
                                                                 <td>{{ $row['user'] ?? 'Unassigned' }}</td>
                                                             @endif
                                                             <td>
-                                                                <div class="dbr-tags">
+                                                                <div class="dbr-detail-lines">
                                                                     @foreach($row['items'] as $item)
-                                                                        <span class="dbr-tag">{{ $item['label'] }} <strong>{{ number_format($item['count']) }}</strong></span>
+                                                                        <div class="dbr-detail-line">
+                                                                            <span class="dbr-detail-name">{{ $item['label'] }}</span>
+                                                                            <strong class="dbr-detail-count">{{ number_format($item['count']) }}</strong>
+                                                                        </div>
                                                                     @endforeach
                                                                 </div>
                                                             </td>
@@ -662,9 +699,12 @@
                                                                 <td>{{ $row['user'] ?? 'Unassigned' }}</td>
                                                             @endif
                                                             <td>
-                                                                <div class="dbr-tags">
+                                                                <div class="dbr-detail-lines">
                                                                     @foreach($row['items'] as $item)
-                                                                        <span class="dbr-tag">{{ $item['label'] }} <strong>{{ number_format($item['count']) }}</strong></span>
+                                                                        <div class="dbr-detail-line">
+                                                                            <span class="dbr-detail-name">{{ $item['label'] }}</span>
+                                                                            <strong class="dbr-detail-count">{{ number_format($item['count']) }}</strong>
+                                                                        </div>
                                                                     @endforeach
                                                                 </div>
                                                             </td>
@@ -704,9 +744,12 @@
                                                                 <td>{{ $row['user'] ?? 'Unassigned' }}</td>
                                                             @endif
                                                             <td>
-                                                                <div class="dbr-tags">
+                                                                <div class="dbr-detail-lines">
                                                                     @foreach($row['items'] as $item)
-                                                                        <span class="dbr-tag">{{ $item['label'] }} <strong>{{ number_format($item['count']) }}</strong></span>
+                                                                        <div class="dbr-detail-line">
+                                                                            <span class="dbr-detail-name">{{ $item['label'] }}</span>
+                                                                            <strong class="dbr-detail-count">{{ number_format($item['count']) }}</strong>
+                                                                        </div>
                                                                     @endforeach
                                                                 </div>
                                                             </td>
@@ -723,47 +766,30 @@
                                     <section class="dbr-card">
                                         <h3 class="dbr-card-title">Payment Methods</h3>
                                         <div class="dbr-card-body">
-                                            @if($showCampusColumn || $showUserColumn)
-                                                <table class="dbr-table">
-                                                    <thead>
+                                            <table class="dbr-table">
+                                                <thead>
+                                                    <tr>
+                                                        @if($showCampusColumn)
+                                                            <th>Campus</th>
+                                                        @endif
+                                                        <th>Method</th>
+                                                        <th>Number</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($paymentDisplayRows as $row)
                                                         <tr>
                                                             @if($showCampusColumn)
-                                                                <th>Campus</th>
+                                                                <td>{{ $row['campus'] ?? 'N/A' }}</td>
                                                             @endif
-                                                            @if($showUserColumn)
-                                                                <th>User</th>
-                                                            @endif
-                                                            <th>Method</th>
-                                                            <th>Number</th>
-                                                            <th>Amount</th>
+                                                            <td>{{ $row['label'] }}</td>
+                                                            <td class="count">{{ number_format((int) $row['count']) }}</td>
+                                                            <td class="amount">{{ $formatAmount($row['amount']) }}</td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach($paymentRows as $row)
-                                                            <tr>
-                                                                @if($showCampusColumn)
-                                                                    <td>{{ $row['campus'] ?? 'N/A' }}</td>
-                                                                @endif
-                                                                @if($showUserColumn)
-                                                                    <td>{{ $row['user'] ?? 'Unassigned' }}</td>
-                                                                @endif
-                                                                <td>{{ $row['label'] }}</td>
-                                                                <td class="count">{{ number_format((int) $row['count']) }}</td>
-                                                                <td class="amount">{{ $formatAmount($row['amount']) }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            @else
-                                                <div class="dbr-mini-grid">
-                                                    @foreach($paymentRows as $row)
-                                                        <div class="dbr-mini-stat">
-                                                            <span>{{ $row['label'] }}</span>
-                                                            <strong>{{ number_format((int) $row['count']) }} / {{ $formatAmount($row['amount']) }}</strong>
-                                                        </div>
                                                     @endforeach
-                                                </div>
-                                            @endif
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </section>
                                 @endif
