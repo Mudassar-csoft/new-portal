@@ -63,6 +63,53 @@
             ['label' => 'Coworking Space', 'amount' => (float) ($summaryTotals['coworking'] ?? 0)],
         ])->filter(fn ($row) => $row['amount'] > 0)->values();
 
+        $summaryBreakdownRows = collect()
+            ->concat($registrationRows->map(fn ($row) => [
+                'campus' => $row['campus'] ?? null,
+                'user' => $row['user'] ?? null,
+                'registrations' => (float) ($row['amount'] ?? 0),
+                'enrollment_installments' => 0.0,
+                'coworking' => 0.0,
+            ]))
+            ->concat($feeRows->map(fn ($row) => [
+                'campus' => $row['campus'] ?? null,
+                'user' => $row['user'] ?? null,
+                'registrations' => 0.0,
+                'enrollment_installments' => (float) ($row['amount'] ?? 0),
+                'coworking' => 0.0,
+            ]))
+            ->concat($coworkingRows->map(fn ($row) => [
+                'campus' => $row['campus'] ?? null,
+                'user' => $row['user'] ?? null,
+                'registrations' => 0.0,
+                'enrollment_installments' => 0.0,
+                'coworking' => (float) ($row['amount'] ?? 0),
+            ]))
+            ->groupBy(function (array $row) use ($showCampusColumn, $showUserColumn): string {
+                return implode('||', [
+                    $showCampusColumn ? ($row['campus'] ?? 'N/A') : '__all_campuses__',
+                    $showUserColumn ? ($row['user'] ?? 'Unassigned') : '__all_users__',
+                ]);
+            })
+            ->map(function ($group) use ($showCampusColumn, $showUserColumn) {
+                $first = $group->first();
+                $registrations = round((float) $group->sum('registrations'), 2);
+                $enrollmentInstallments = round((float) $group->sum('enrollment_installments'), 2);
+                $coworking = round((float) $group->sum('coworking'), 2);
+
+                return [
+                    'campus' => $showCampusColumn ? ($first['campus'] ?? 'N/A') : null,
+                    'user' => $showUserColumn ? ($first['user'] ?? 'Unassigned') : null,
+                    'registrations' => $registrations,
+                    'enrollment_installments' => $enrollmentInstallments,
+                    'coworking' => $coworking,
+                    'total' => round($registrations + $enrollmentInstallments + $coworking, 2),
+                ];
+            })
+            ->filter(fn ($row) => $row['total'] > 0)
+            ->sortBy(fn ($row) => strtolower(($row['campus'] ?? '') . '|' . ($row['user'] ?? '')))
+            ->values();
+
         $metricRows = collect([
             ['label' => 'Leads', 'raw' => (float) ($topline['leads'] ?? 0), 'value' => number_format((int) ($topline['leads'] ?? 0))],
             ['label' => 'Enroll', 'raw' => (float) ($topline['enroll_amount'] ?? 0), 'value' => $formatAmount($topline['enroll_amount'] ?? 0)],
@@ -676,14 +723,47 @@
                                     <section class="dbr-card">
                                         <h3 class="dbr-card-title">Payment Methods</h3>
                                         <div class="dbr-card-body">
-                                            <div class="dbr-mini-grid">
-                                                @foreach($paymentRows as $row)
-                                                    <div class="dbr-mini-stat">
-                                                        <span>{{ $row['label'] }}</span>
-                                                        <strong>{{ number_format((int) $row['count']) }} / {{ $formatAmount($row['amount']) }}</strong>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                            @if($showCampusColumn || $showUserColumn)
+                                                <table class="dbr-table">
+                                                    <thead>
+                                                        <tr>
+                                                            @if($showCampusColumn)
+                                                                <th>Campus</th>
+                                                            @endif
+                                                            @if($showUserColumn)
+                                                                <th>User</th>
+                                                            @endif
+                                                            <th>Method</th>
+                                                            <th>Number</th>
+                                                            <th>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($paymentRows as $row)
+                                                            <tr>
+                                                                @if($showCampusColumn)
+                                                                    <td>{{ $row['campus'] ?? 'N/A' }}</td>
+                                                                @endif
+                                                                @if($showUserColumn)
+                                                                    <td>{{ $row['user'] ?? 'Unassigned' }}</td>
+                                                                @endif
+                                                                <td>{{ $row['label'] }}</td>
+                                                                <td class="count">{{ number_format((int) $row['count']) }}</td>
+                                                                <td class="amount">{{ $formatAmount($row['amount']) }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="dbr-mini-grid">
+                                                    @foreach($paymentRows as $row)
+                                                        <div class="dbr-mini-stat">
+                                                            <span>{{ $row['label'] }}</span>
+                                                            <strong>{{ number_format((int) $row['count']) }} / {{ $formatAmount($row['amount']) }}</strong>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     </section>
                                 @endif
@@ -844,14 +924,49 @@
                                     <section class="dbr-card">
                                         <h3 class="dbr-card-title">Summary</h3>
                                         <div class="dbr-card-body">
-                                            <div class="dbr-mini-grid">
-                                                @foreach($summaryRows as $row)
-                                                    <div class="dbr-mini-stat">
-                                                        <span>{{ $row['label'] }}</span>
-                                                        <strong>{{ $formatAmount($row['amount']) }}</strong>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                            @if(($showCampusColumn || $showUserColumn) && $summaryBreakdownRows->isNotEmpty())
+                                                <table class="dbr-table">
+                                                    <thead>
+                                                        <tr>
+                                                            @if($showCampusColumn)
+                                                                <th>Campus</th>
+                                                            @endif
+                                                            @if($showUserColumn)
+                                                                <th>User</th>
+                                                            @endif
+                                                            <th>Registrations</th>
+                                                            <th>Enroll + Inst.</th>
+                                                            <th>Coworking</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($summaryBreakdownRows as $row)
+                                                            <tr>
+                                                                @if($showCampusColumn)
+                                                                    <td>{{ $row['campus'] ?? 'N/A' }}</td>
+                                                                @endif
+                                                                @if($showUserColumn)
+                                                                    <td>{{ $row['user'] ?? 'Unassigned' }}</td>
+                                                                @endif
+                                                                <td class="amount">{{ $formatAmount($row['registrations']) }}</td>
+                                                                <td class="amount">{{ $formatAmount($row['enrollment_installments']) }}</td>
+                                                                <td class="amount">{{ $formatAmount($row['coworking']) }}</td>
+                                                                <td class="amount">{{ $formatAmount($row['total']) }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="dbr-mini-grid">
+                                                    @foreach($summaryRows as $row)
+                                                        <div class="dbr-mini-stat">
+                                                            <span>{{ $row['label'] }}</span>
+                                                            <strong>{{ $formatAmount($row['amount']) }}</strong>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     </section>
                                 @endif
