@@ -618,6 +618,19 @@
                                     <input type="text" value="{{ optional($member->next_due_date)->format('Y-m-d') ?: 'N/A' }}" readonly>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="fee-edit-field">
+                                    <label class="form-label" for="charge_payment_method">Payment Method</label>
+                                    <select id="charge_payment_method" name="payment_method" required>
+                                        <option value="cash" @selected(old('payment_method', 'cash') === 'cash')>Cash</option>
+                                        <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
+                                        <option value="online" @selected(old('payment_method') === 'online')>Online</option>
+                                    </select>
+                                    @error('payment_method')
+                                        <div class="field-error">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="fee-edit-footer">
@@ -1169,6 +1182,7 @@
         }
 
         .fee-edit-field input,
+        .fee-edit-field select,
         .fee-edit-field textarea {
             width: var(--dimension-coworking-registration-show-1);
             padding: 8px 10px;
@@ -1179,11 +1193,13 @@
         }
 
         .fee-edit-field input[readonly],
+        .fee-edit-field select[readonly],
         .fee-edit-field textarea[readonly] {
             background: var(--color-coworking-registration-show-8);
         }
 
         .fee-edit-field input:focus,
+        .fee-edit-field select:focus,
         .fee-edit-field textarea:focus {
             outline: 0;
             border-color: var(--color-coworking-registration-show-1);

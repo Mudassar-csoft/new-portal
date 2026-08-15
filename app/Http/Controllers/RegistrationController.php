@@ -68,6 +68,7 @@ class RegistrationController extends Controller
             $fee = 2000;
             $discount = 0;
             $net = $fee - $discount;
+            $paymentMethod = (string) ($validated['payment_method'] ?? 'cash');
 
             $lead = null;
             if (!empty($validated['lead_id'])) {
@@ -160,6 +161,7 @@ class RegistrationController extends Controller
                     'net_amount' => $net,
                     'receipt_number' => $registration->receipt_number,
                     'status' => 'paid',
+                    'payment_method' => $paymentMethod,
                     'paid_at' => Carbon::now(),
                     'created_by' => $request->user()?->id,
                     'notes' => 'Registration fee collected.',
@@ -394,6 +396,7 @@ class RegistrationController extends Controller
             'address' => ['required', 'string', 'min:10', 'max:1000'],
             'remarks' => ['nullable', 'string', 'max:2000'],
             'fee' => ['nullable', 'numeric', 'min:0'],
+            'payment_method' => ['required', 'in:cash,bank,online'],
         ];
     }
 
@@ -422,6 +425,7 @@ class RegistrationController extends Controller
             'passport_number' => 'passport number',
             'date_of_birth' => 'date of birth',
             'address' => 'postal address',
+            'payment_method' => 'payment method',
             'remarks' => 'remarks',
         ];
     }

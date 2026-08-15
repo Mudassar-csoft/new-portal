@@ -179,6 +179,7 @@ class CoworkingRegistrationController extends Controller
                     'lead_id' => $resolvedLead->id,
                     'campus_id' => $campus->id,
                     'receipt_type' => 'security_fee',
+                    'payment_method' => $validated['payment_method'],
                     'amount' => $validated['security_fee'],
                     'paid_at' => $registrationDate->copy()->startOfDay(),
                     'notes' => 'Security fee collected at the time of coworking registration.',
@@ -190,6 +191,7 @@ class CoworkingRegistrationController extends Controller
                     'lead_id' => $resolvedLead->id,
                     'campus_id' => $campus->id,
                     'receipt_type' => 'coworking_charge',
+                    'payment_method' => $validated['payment_method'],
                     'amount' => $validated['coworking_charges'],
                     'paid_at' => $registrationDate->copy()->startOfDay(),
                     'notes' => 'Initial coworking charges collected at the time of registration.',
@@ -343,6 +345,7 @@ class CoworkingRegistrationController extends Controller
         $validated = $request->validate([
             'charge_date' => ['required', 'date'],
             'charge_amount' => ['required', 'numeric', 'min:1'],
+            'payment_method' => ['required', Rule::in(['cash', 'bank', 'online'])],
         ]);
 
         if ($coworkingRegistration->status !== 'registered') {
@@ -368,6 +371,7 @@ class CoworkingRegistrationController extends Controller
                 if ($pendingCharge) {
                     $pendingCharge->update([
                         'amount' => $validated['charge_amount'],
+                        'payment_method' => $validated['payment_method'],
                         'paid_at' => $chargeDate,
                         'notes' => 'Coworking charge collected for due date ' . optional($dueDate)->format('Y-m-d'),
                     ]);
@@ -380,6 +384,7 @@ class CoworkingRegistrationController extends Controller
                     'lead_id' => $coworkingRegistration->lead_id,
                     'campus_id' => $campus?->id,
                     'receipt_type' => 'coworking_charge',
+                    'payment_method' => $validated['payment_method'],
                     'amount' => $validated['charge_amount'],
                     'paid_at' => $chargeDate,
                     'notes' => 'Coworking charge collected for due date ' . optional($dueDate)->format('Y-m-d'),
@@ -810,6 +815,7 @@ class CoworkingRegistrationController extends Controller
             'registration_date' => ['required', 'date'],
             'coworking_charges' => ['required', 'numeric', 'min:1'],
             'security_fee' => ['required', 'numeric', 'min:0'],
+            'payment_method' => [$registration ? 'nullable' : 'required', Rule::in(['cash', 'bank', 'online'])],
             'remarks' => ['required', 'string', 'max:2000'],
         ];
     }
@@ -853,6 +859,7 @@ class CoworkingRegistrationController extends Controller
             'registration_date' => 'registration date',
             'coworking_charges' => 'coworking charges',
             'security_fee' => 'security fee',
+            'payment_method' => 'payment method',
         ];
     }
 

@@ -280,13 +280,14 @@ class StudentRecordController extends Controller
 
         $validated = $request->validate([
             'paid_amount' => ['required', 'numeric', 'min:0.01'],
+            'payment_method' => ['required', 'in:cash,bank,online'],
         ]);
 
         $paid = round((float) $validated['paid_amount'], 2);
         try {
             $alreadyCollected = false;
 
-            DB::transaction(function () use ($feeCollection, $paid, $request, &$alreadyCollected) {
+            DB::transaction(function () use ($feeCollection, $paid, $request, $validated, &$alreadyCollected) {
                 $lockedFee = FeeCollection::query()
                     ->with(['campus', 'admission.campus', 'registration.campus'])
                     ->lockForUpdate()
@@ -311,16 +312,17 @@ class StudentRecordController extends Controller
 
                 $this->ensureInstallmentDifferenceCanBeDistributed($diff, $nextPending);
 
-                $lockedFee->update([
-                    'amount' => $paid,
-                    'net_amount' => $paid,
-                    'receipt_number' => $lockedFee->fee_type === 'admission' && $lockedFee->admission_id
-                        ? $this->generateFeeReceiptNumber($lockedFee)
-                        : $lockedFee->receipt_number,
-                    'status' => 'paid',
-                    'paid_at' => now(),
-                    'created_by' => $request->user()?->id,
-                ]);
+                    $lockedFee->update([
+                        'amount' => $paid,
+                        'net_amount' => $paid,
+                        'receipt_number' => $lockedFee->fee_type === 'admission' && $lockedFee->admission_id
+                            ? $this->generateFeeReceiptNumber($lockedFee)
+                            : $lockedFee->receipt_number,
+                        'status' => 'paid',
+                        'payment_method' => $validated['payment_method'],
+                        'paid_at' => now(),
+                        'created_by' => $request->user()?->id,
+                    ]);
 
                 $this->redistributeInstallmentDifference($nextPending, $diff);
             });

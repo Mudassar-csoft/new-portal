@@ -432,6 +432,17 @@
 								<div class="field-error">{{ $message }}</div>
 							@enderror
 						</div>
+						<div class="form-group col-md-3">
+							<label class="form-label required">Payment Method</label>
+							<select class="form-control @error('payment_method') is-invalid @enderror" name="payment_method" required>
+								<option value="cash" @selected(old('payment_method', 'cash') === 'cash')>Cash</option>
+								<option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
+								<option value="online" @selected(old('payment_method') === 'online')>Online</option>
+							</select>
+							@error('payment_method')
+								<div class="field-error">{{ $message }}</div>
+							@enderror
+						</div>
 					</div>
 
 						<div  class="form-actions mb-2 mt-3 text-right">

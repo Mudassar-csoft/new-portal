@@ -540,6 +540,14 @@
                         <label for="fee_collect_receipt">Receipt Number <span style="color:#dc3545;">*</span></label>
                         <input type="text" id="fee_collect_receipt" readonly>
                     </div>
+                    <div class="fee-edit-field">
+                        <label for="fee_collect_payment_method">Payment Method</label>
+                        <select id="fee_collect_payment_method" name="payment_method" required>
+                            <option value="cash">Cash</option>
+                            <option value="bank">Bank</option>
+                            <option value="online">Online</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="fee-edit-footer">
                     <button type="submit" class="btn-fee-save">Update</button>

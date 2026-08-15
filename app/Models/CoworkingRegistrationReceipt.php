@@ -16,6 +16,7 @@ class CoworkingRegistrationReceipt extends Model
         'campus_id',
         'receipt_type',
         'receipt_number',
+        'payment_method',
         'amount',
         'paid_at',
         'notes',

@@ -106,6 +106,9 @@ Route::middleware('auth')->group(function () {
     // Finance routes
     require __DIR__ . '/finance.php';
 
+    // Report routes
+    require __DIR__ . '/report.php';
+
     // HRM routes
     require __DIR__ . '/hrm.php';
 

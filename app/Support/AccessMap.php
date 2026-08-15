@@ -160,6 +160,7 @@ class AccessMap
             ['route' => 'finance.dashboard', 'permissions' => ['finance.dashboard.view']],
             ['route' => 'inventory.index', 'permissions' => ['inventory.view']],
             ['route' => 'certificate.index', 'permissions' => ['certificate.view']],
+            ['route' => 'reports.dbr', 'permissions' => ['report.leads', 'report.admissions', 'report.finance']],
             ['route' => 'users.index', 'permissions' => ['user.view']],
             ['route' => 'roles.index', 'permissions' => ['role.view', 'role.manage']],
             ['route' => 'permissions.index', 'permissions' => ['permission.view', 'permission.manage']],

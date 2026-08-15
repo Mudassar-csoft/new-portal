@@ -266,6 +266,7 @@ class AdmissionController extends Controller
             'discount_percent' => ['nullable', 'numeric'],
             'discounted_fee' => ['nullable', 'numeric'],
             'fee_type' => ['required', 'in:full,installments'],
+            'payment_method' => ['required', 'in:cash,bank,online'],
             'remarks' => ['required', 'string', 'max:1000'],
             'receipt_number' => ['nullable', 'string', 'max:100'],
         ], [
@@ -480,6 +481,7 @@ class AdmissionController extends Controller
                         'net_amount' => 2000,
                         'receipt_number' => $registration->receipt_number,
                         'status' => 'paid',
+                        'payment_method' => $validated['payment_method'],
                         'paid_at' => Carbon::now(),
                         'created_by' => $request->user()?->id,
                         'notes' => 'Registration fee auto-collected during admission.',
@@ -697,6 +699,7 @@ class AdmissionController extends Controller
                         'net_amount' => $amount,
                         'receipt_number' => $receiptNumber,
                         'status' => $isPaid ? 'paid' : 'pending',
+                        'payment_method' => $isPaid ? $validated['payment_method'] : null,
                         'paid_at' => $isPaid ? $admissionDate : null,
                         'due_at' => $isInstallment
                             ? $admissionDate->copy()->addMonthsNoOverflow($index)

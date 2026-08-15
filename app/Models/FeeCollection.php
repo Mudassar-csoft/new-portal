@@ -25,6 +25,7 @@ class FeeCollection extends Model
         'net_amount',
         'receipt_number',
         'status',
+        'payment_method',
         'paid_at',
         'due_at',
         'created_by',

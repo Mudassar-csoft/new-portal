@@ -105,6 +105,11 @@
     $canCertificateView = $can('certificate.view');
     $showCertificateModule = $canCertificateCreate || $canCertificateView;
 
+    $canReportLeads = $can('report.leads');
+    $canReportAdmissions = $can('report.admissions');
+    $canReportFinance = $can('report.finance');
+    $showReportsModule = $canReportLeads || $canReportAdmissions || $canReportFinance;
+
     $canUserCreate = $can('user.create');
     $canUserView = $can('user.view');
     $canRoleCreate = $can('role.create', 'role.manage');
@@ -538,6 +543,20 @@
             </li>
         @endif
 
+        @if($showReportsModule)
+            <li class="brown with-sub">
+                <span>
+                    <img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Reports">
+                    <span class="lbl">Reports</span>
+                </span>
+                <ul>
+                    @if($canReportLeads || $canReportAdmissions || $canReportFinance)
+                        <li><a href="{{ route('reports.dbr') }}"><span class="lbl">DBR Report</span></a></li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
         @if($isAdmin)
             <li class="gold orange">
                 <a href="{{ route('admin.coming-soon', ['module' => 'event-management']) }}">
@@ -550,13 +569,6 @@
                 <a href="{{ route('admin.coming-soon', ['module' => 'marketing-management']) }}">
                     <img class="font-icon-dashboard" src="img/navbarIcons/marketing.webp" alt="Marketing Management">
                     <span class="lbl">Marketing Management</span>
-                </a>
-            </li>
-
-            <li class="brown">
-                <a href="{{ route('admin.coming-soon', ['module' => 'reports']) }}">
-                    <img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Reports">
-                    <span class="lbl">Reports</span>
                 </a>
             </li>
 

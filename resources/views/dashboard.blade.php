@@ -2543,6 +2543,9 @@ var admissionData = admissionAllowed
 
 			applyDashboardPayload(dashboardData);
 			$('body').addClass('dashboard-ready');
+			window.setTimeout(function () {
+				refreshDashboard();
+			}, 150);
 
 			$('#dashboard-live-refresh').on('click', function () {
 				var btn = $(this);

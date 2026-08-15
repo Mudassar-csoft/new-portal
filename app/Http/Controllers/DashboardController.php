@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,8 +29,7 @@ class DashboardController extends Controller
         $selectedCampus = $selectedCampusId && Schema::hasTable('campuses')
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'campus_type'])
             : null;
-
-        $dashboard = $this->buildDashboardPayload($selectedCampusId, $dashboardAccess);
+        $dashboard = $this->cachedDashboardPayload($request, $selectedCampusId, $dashboardAccess);
 
         return view('dashboard', [
             'dashboard' => $dashboard,
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $dashboardAccess = $this->resolveDashboardAccess($request->user());
 
         return response()->json([
-            'dashboard' => $this->buildDashboardPayload($this->resolveCampusId($request), $dashboardAccess),
+            'dashboard' => $this->rememberDashboardPayload($request, $this->resolveCampusId($request), $dashboardAccess),
         ]);
     }
 
@@ -205,6 +205,60 @@ class DashboardController extends Controller
                 : $emptyPayload['charts'],
             'generatedAt' => now()->toIso8601String(),
         ];
+    }
+
+    /**
+     * @param  array<string, bool>  $dashboardAccess
+     * @return array<string, mixed>
+     */
+    private function cachedDashboardPayload(Request $request, ?int $selectedCampusId, array $dashboardAccess): array
+    {
+        $payload = $this->dashboardCacheStore()->get(
+            $this->dashboardPayloadCacheKey($request, $selectedCampusId, $dashboardAccess)
+        );
+
+        if (is_array($payload)) {
+            return $payload;
+        }
+
+        $payload = $this->emptyPayload();
+        $payload['generatedAt'] = now()->toIso8601String();
+
+        return $payload;
+    }
+
+    /**
+     * @param  array<string, bool>  $dashboardAccess
+     * @return array<string, mixed>
+     */
+    private function rememberDashboardPayload(Request $request, ?int $selectedCampusId, array $dashboardAccess): array
+    {
+        return $this->dashboardCacheStore()->remember(
+            $this->dashboardPayloadCacheKey($request, $selectedCampusId, $dashboardAccess),
+            now()->addSeconds(90),
+            fn (): array => $this->buildDashboardPayload($selectedCampusId, $dashboardAccess)
+        );
+    }
+
+    private function dashboardCacheStore(): \Illuminate\Contracts\Cache\Repository
+    {
+        return Cache::store('file');
+    }
+
+    /**
+     * @param  array<string, bool>  $dashboardAccess
+     */
+    private function dashboardPayloadCacheKey(Request $request, ?int $selectedCampusId, array $dashboardAccess): string
+    {
+        return implode(':', [
+            'dashboard',
+            'payload',
+            'user',
+            (string) ($request->user()?->id ?? 0),
+            'campus',
+            (string) ($selectedCampusId ?: 0),
+            md5(json_encode($dashboardAccess)),
+        ]);
     }
 
     /**
