@@ -25,7 +25,7 @@ class ReportController extends Controller
         'cash' => 'Cash',
         'bank' => 'Bank',
         'online' => 'Online',
-        'unrecorded' => 'Not Recorded',
+        'unrecorded' => '-',
     ];
 
     public function dbr(Request $request): View
@@ -50,7 +50,7 @@ class ReportController extends Controller
         $selectedUser = $userId ? User::query()->select(['id', 'name'])->find($userId) : null;
         $selectedCampus = $campusId ? $campuses->firstWhere('id', $campusId) : null;
         $showCampusColumn = ! $selectedCampus;
-        $showUserColumn = ! $selectedUser;
+        $showUserColumn = false;
 
         $leadRows = $this->leadRows($reportDate, $campusId, $userId, $user);
         $registrationRows = $this->registrationRows($reportDate, $campusId, $userId, $user);
