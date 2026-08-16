@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         FeeCollection::observe(FeeCollectionObserver::class);
 
         View::composer('layouts.nav', function ($view): void {
-            $view->with('sidebarCounts', $this->sidebarCountDefaults());
+            $view->with('sidebarCounts', $this->resolveSidebarCounts(auth()->user()));
         });
 
         View::composer('layouts.header', function ($view): void {
@@ -133,6 +133,7 @@ class AppServiceProvider extends ServiceProvider
             'program_create' => 0,
             'program_ongoing' => 0,
             'program_suspended' => 0,
+            'program_discounted' => 0,
             'program_all' => 0,
             'campus_create' => 0,
             'campus_all' => 0,
@@ -434,6 +435,12 @@ class AppServiceProvider extends ServiceProvider
                 $sidebarCounts['program_create'] = (int) ($programSummary?->total ?? 0);
                 $sidebarCounts['program_ongoing'] = (int) ($programSummary?->program_ongoing ?? 0);
                 $sidebarCounts['program_suspended'] = (int) ($programSummary?->program_suspended ?? 0);
+
+                if (Schema::hasTable('program_campus_discounts')) {
+                    $sidebarCounts['program_discounted'] = Program::query()
+                        ->whereHas('campusDiscounts', fn (Builder $builder) => $builder->where('status', 'active'))
+                        ->count();
+                }
             }
 
             if (($can('campus.create') || $can('campus.view')) && Schema::hasTable('campuses')) {

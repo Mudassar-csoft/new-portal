@@ -7,6 +7,12 @@
         $filters = $filters ?? ['scope' => 'all', 'program_type' => null, 'status' => null, 'campus_id' => null, 'search' => null];
         $scopeCards = $scopeCards ?? [];
         $activeScope = $filters['scope'] ?? 'all';
+        $perPage = $perPage ?? 10;
+        $exportQuery = request()->except('page');
+
+        if (($exportQuery['scope'] ?? 'all') === 'all') {
+            unset($exportQuery['scope']);
+        }
 
         $scopeBadgeColors = [
             'all' => 'badge-secondary',
@@ -51,10 +57,10 @@
                         <div class="follow-controls">
                             <div class="d-flex ci-inline-gap-05-center">
                                 <label class="">Show</label>
-                                <select class="form-select form-select-sm">
-                                    <option>10</option>
-                                    <option>25</option>
-                                    <option>50</option>
+                                <select class="form-select form-select-sm" name="per_page" onchange="this.form.submit()">
+                                    @foreach ([10, 20, 50, 100] as $option)
+                                        <option value="{{ $option }}" @selected((int) $perPage === $option)>{{ $option }}</option>
+                                    @endforeach
                                 </select>
                                 <label class="">Entries</label>
                             </div>
@@ -89,13 +95,16 @@
                             </div>
                             <div class="program-filter-actions">
                                 <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                <a href="{{ route('program.index', array_filter(['scope' => $activeScope !== 'all' ? $activeScope : null])) }}" class="btn btn-danger-outline">Reset</a>
+                                <a href="{{ route('program.index', array_filter([
+                                    'scope' => $activeScope !== 'all' ? $activeScope : null,
+                                    'per_page' => (int) $perPage !== 10 ? $perPage : null,
+                                ])) }}" class="btn btn-danger-outline">Reset</a>
                             </div>
                         </div>
                     </form>
 
                     <div class="table-responsive">
-                        <table class="table table-bordered follow-table" id="program-status-table">
+                        <table class="table table-bordered follow-table" id="program-status-table" data-export-url="{{ route('program.export', $exportQuery) }}">
                             <thead>
                                 <tr>
                                     <th>Sr</th>

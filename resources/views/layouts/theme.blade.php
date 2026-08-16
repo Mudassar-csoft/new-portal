@@ -3052,6 +3052,7 @@ margin-left: 0;
 				}
 
 				var filename = (context.$table.attr('id') || 'table') + '.csv';
+				var exportUrl = context.$table.data('exportUrl') || (context.$wrapper && context.$wrapper.length ? context.$wrapper.data('exportUrl') : '');
 				var $dropdown = $(
 					'<div class="follow-toolbar-dropdown dropdown">' +
 						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Export">' +
@@ -3070,6 +3071,11 @@ margin-left: 0;
 				});
 
 				$dropdown.on('click', '[data-export="csv"]', function () {
+					if (exportUrl) {
+						window.location.href = String(exportUrl);
+						return;
+					}
+
 					exportTableToCsv(context.$table, filename);
 				});
 
