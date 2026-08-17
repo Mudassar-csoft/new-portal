@@ -24,14 +24,308 @@
 					<div class="site-header-shown">
             <div class="dropdown dropdown-notification notif">
                 <a href="#" class="header-alarm dropdown-toggle active" id="dd-notification"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  data-poll-url="{{ route('header.notifications') }}" data-poll-interval-ms="60000">
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="font-icon-alarm"></i>
-                  @php($notificationTotal = (int) ($notificationTotal ?? ((int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0)))
-                  <span id="notification-total-badge" class="notification-total-badge" style="font-size:0.625rem !important;" @if($notificationTotal <= 0) hidden @endif>{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
+                  @php($notificationTotal = (int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0))
+                  @if($notificationTotal > 0)
+                    <span class="notification-total-badge" style="font-size:0.625rem !important;">{{ $notificationTotal > 99 ? '99+' : $notificationTotal }}</span>
+                  @endif
                 </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" id="notification-menu" aria-labelledby="dd-notification">
-                  @include('layouts.partials.notification-menu')
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" aria-labelledby="dd-notification">
+                  @php($quickLeads = $webLeadNotifications['quick_lead'] ?? collect())
+                  @php($websiteEnrollments = $webLeadNotifications['website_enrollment'] ?? collect())
+                  @php($websiteAdmissions = $webLeadNotifications['website_admission'] ?? collect())
+                  @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
+                  @php($overdueInvoices = $invoiceOverdueNotifications ?? collect())
+                  @php($followupItems = $followupNotifications ?? collect())
+                  @php($hasWebLeadNotifications = (bool) ($canViewWebLeadNotifications ?? false))
+                  @php($hasFollowupNotifications = (bool) ($canViewFollowupNotifications ?? false))
+                  @php($hasInvoiceNotifications = (bool) ($canViewInvoiceNotifications ?? false))
+                  @php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications)
+                  @php($notificationMoreLinks = [
+                    'follow_up' => route('leads.followups'),
+                    'quick_lead' => route('web-leads.index', ['tab' => 'quick_lead']),
+                    'website_enrollment' => route('web-leads.index', ['tab' => 'website_enrollment']),
+                    'website_admission' => route('web-leads.index', ['tab' => 'website_admission']),
+                    'brochure_download' => route('web-leads.index', ['tab' => 'brochure_download']),
+                    'overdue_invoices' => route('finance.receivables', ['status' => 'overdue']),
+                  ])
+
+                  @if(!$hasVisibleNotificationPanels)
+                    <div class="text-center p-4 text-muted">No notifications available.</div>
+                  @else
+                  <div class="notif-accordion">
+
+                    @if($hasFollowupNotifications)
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-follow-up" aria-expanded="false">
+                        <span>Leads Follow Up</span>
+                        <span class="count">{{ $followupNotificationCount ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-follow-up">
+                        @if ($followupItems->isEmpty())
+                          <div class="text-center p-4 text-muted">No Follow Up notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($followupItems->take(3) as $followup)
+                                  @php($notificationDueAt = $followup->notification_due_at ?? $followup->next_action_date)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($followup->is_placeholder))
+                                        <span class="notification-name-link">{{ $followup->lead->name ?? 'N/A' }}</span>
+                                        <div class="text-muted">{{ $followup->counselor ?? 'Counselor' }} - {{ $followup->status ?? 'Pending' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                                      @endif
+                                    </td>
+                                    <td>{{ optional($notificationDueAt)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($notificationDueAt)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['follow_up'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+                    @endif
+
+                    @if($hasWebLeadNotifications)
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-quick-leads" aria-expanded="false">
+                        <span>Quick Leads</span>
+                        <span class="count">{{ $webLeadNotificationCounts['quick_lead'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-quick-leads">
+                        @if ($quickLeads->isEmpty())
+                          <div class="text-center p-4 text-muted">No quick leads notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($quickLeads->take(3) as $webLead)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
+                                    </td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['quick_lead'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-enrollments" aria-expanded="false">
+                        <span>Course Enrollment</span>
+                        <span class="count">{{ $webLeadNotificationCounts['website_enrollment'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-enrollments">
+                        @if ($websiteEnrollments->isEmpty())
+                          <div class="text-center p-4 text-muted">No course enrollment notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($websiteEnrollments->take(3) as $webLead)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->batch ?? 'Batch Pending' }} - {{ $webLead->status ?? 'New' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
+                                    </td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['website_enrollment'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-admissions" aria-expanded="false">
+                        <span>Website Admissions</span>
+                        <span class="count">{{ $webLeadNotificationCounts['website_admission'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-admissions">
+                        @if ($websiteAdmissions->isEmpty())
+                          <div class="text-center p-4 text-muted">No website admissions notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($websiteAdmissions->take(3) as $webLead)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
+                                    </td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['website_admission'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-brochures" aria-expanded="false">
+                        <span>Brochure Downloads</span>
+                        <span class="count">{{ $webLeadNotificationCounts['brochure_download'] ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-brochures">
+                        @if ($brochureDownloads->isEmpty())
+                          <div class="text-center p-4 text-muted">No brochure download notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Full Name</th>
+                                  <th>Date</th>
+                                  <th>Time</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($brochureDownloads->take(3) as $webLead)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($webLead->is_placeholder))
+                                        <span class="notification-name-link">{{ $webLead->full_name }}</span>
+                                        <div class="text-muted">{{ $webLead->city ?? 'City' }} - {{ $webLead->interested_program ?? 'Program' }}</div>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('web-leads.show', $webLead) }}">{{ $webLead->full_name }}</a>
+                                      @endif
+                                    </td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>{{ optional($webLead->display_submitted_at)->format('h:i A') ?? 'N/A' }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['brochure_download'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+                    @endif
+
+                    @if($hasInvoiceNotifications)
+                    <div class="notif-accordion-item notif-hover-card">
+                      <button class="notif-accordion-toggle" type="button" data-target="#notif-overdue-invoices" aria-expanded="false">
+                        <span>Overdue Invoices</span>
+                        <span class="count">{{ $invoiceOverdueNotificationCount ?? 0 }}</span>
+                      </button>
+                      <div class="notif-accordion-panel" id="notif-overdue-invoices">
+                        @if ($overdueInvoices->isEmpty())
+                          <div class="text-center p-4 text-muted">No overdue invoice notifications.</div>
+                        @else
+                          <div class="table-responsive">
+                            <table class="table table-sm mb-0 notification-table">
+                              <thead>
+                                <tr>
+                                  <th>Invoice</th>
+                                  <th>Due Date</th>
+                                  <th>Balance</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($overdueInvoices->take(3) as $invoice)
+                                  <tr>
+                                    <td>
+                                      @if(!empty($invoice->is_placeholder))
+                                        <span class="notification-name-link">{{ $invoice->invoice_number ?: 'Invoice' }}</span>
+                                      @else
+                                        <a class="notification-name-link" href="{{ route('finance.receivables.show', $invoice) }}">
+                                          {{ $invoice->invoice_number ?: 'Invoice' }}
+                                        </a>
+                                      @endif
+                                      <div class="text-muted">{{ $invoice->student_name ?: ($invoice->campus->code ?? 'N/A') }}</div>
+                                    </td>
+                                    <td>{{ optional($invoice->due_date)->format('d-M-y') ?? 'N/A' }}</td>
+                                    <td>Rs. {{ number_format((float) $invoice->balance_amount, 0) }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        @endif
+                        <div class="notification-see-more">
+                          <a href="{{ $notificationMoreLinks['overdue_invoices'] }}">See More</a>
+                        </div>
+                      </div>
+                    </div>
+                    @endif
+
+                  </div>
+                  @endif
+
                 </div>
 						</div>
 
@@ -1238,27 +1532,19 @@ img.icon{
 document.addEventListener("DOMContentLoaded", function () {
   var notificationToggle = document.getElementById('dd-notification');
   var notificationDropdown = notificationToggle ? notificationToggle.closest('.dropdown-notification') : null;
-  var notificationMenu = document.getElementById('notification-menu');
-  var notificationBadge = document.getElementById('notification-total-badge');
+  var notificationMenu = notificationDropdown ? notificationDropdown.querySelector('.dropdown-menu-notif') : null;
   var headerDropdownToggles = document.querySelectorAll('.site-header [data-toggle="dropdown"]');
-  var notificationPollUrl = notificationToggle ? notificationToggle.getAttribute('data-poll-url') : '';
-  var notificationPollInterval = notificationToggle ? parseInt(notificationToggle.getAttribute('data-poll-interval-ms') || '30000', 10) : 30000;
-  var notificationRequestInFlight = false;
 
   function resetNotificationAccordion() {
-    if (!notificationMenu) {
-      return;
-    }
-
-    notificationMenu.querySelectorAll('.notif-accordion-item').forEach(function(item) {
+    document.querySelectorAll('.notif-accordion-item').forEach(function(item) {
       item.classList.remove('active');
     });
 
-    notificationMenu.querySelectorAll('.notif-accordion-panel').forEach(function(panel) {
+    document.querySelectorAll('.notif-accordion-panel').forEach(function(panel) {
       panel.classList.remove('show');
     });
 
-    notificationMenu.querySelectorAll('.notif-accordion-toggle').forEach(function(button) {
+    document.querySelectorAll('.notif-accordion-toggle').forEach(function(button) {
       button.setAttribute('aria-expanded', 'false');
     });
   }
@@ -1295,84 +1581,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function bindNotificationAccordionToggle(target) {
-    if (!target || !notificationMenu) {
-      return;
-    }
-
-    var targetId = target.getAttribute('data-target');
-    var parentItem = target.closest('.notif-accordion-item');
-    var targetPanel = targetId ? notificationMenu.querySelector(targetId) : null;
-    var isOpen = parentItem && parentItem.classList.contains('active');
-
-    resetNotificationAccordion();
-
-    if (!isOpen && parentItem && targetPanel) {
-      parentItem.classList.add('active');
-      targetPanel.classList.add('show');
-      target.setAttribute('aria-expanded', 'true');
-    }
-  }
-
-  function syncNotificationBadge(total) {
-    if (!notificationBadge) {
-      return;
-    }
-
-    var count = Math.max(parseInt(total || 0, 10), 0);
-
-    if (count > 0) {
-      notificationBadge.hidden = false;
-      notificationBadge.textContent = count > 99 ? '99+' : String(count);
-    } else {
-      notificationBadge.hidden = true;
-      notificationBadge.textContent = '';
-    }
-  }
-
-  function syncNotificationMenu(menuHtml) {
-    if (!notificationMenu || typeof menuHtml !== 'string') {
-      return;
-    }
-
-    notificationMenu.innerHTML = menuHtml;
-    resetNotificationAccordion();
-  }
-
-  function pollNotificationBell() {
-    if (!notificationPollUrl || !notificationMenu || notificationRequestInFlight || document.visibilityState === 'hidden') {
-      return;
-    }
-
-    notificationRequestInFlight = true;
-
-    fetch(notificationPollUrl, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error('Notification polling failed.');
-        }
-
-        return response.json();
-      })
-      .then(function(payload) {
-        syncNotificationBadge(payload.notification_total || 0);
-        syncNotificationMenu(payload.menu_html || '');
-      })
-      .catch(function() {
-        // Keep the existing notification state when polling fails.
-      })
-      .finally(function() {
-        notificationRequestInFlight = false;
-      });
-  }
-
   headerDropdownToggles.forEach(function(toggle) {
     if (toggle === notificationToggle) {
       return;
@@ -1401,27 +1609,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     notificationMenu.addEventListener('click', function(e) {
       e.stopPropagation();
-
-      var accordionToggle = e.target.closest('.notif-accordion-toggle');
-      if (accordionToggle) {
-        e.preventDefault();
-        bindNotificationAccordionToggle(accordionToggle);
-      }
     });
 
     document.addEventListener('click', function() {
       closeNotificationDropdown();
     });
-
-    if (notificationPollInterval > 0) {
-      window.setInterval(pollNotificationBell, notificationPollInterval);
-    }
   }
 
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible') {
-      pollNotificationBell();
-    }
+  document.querySelectorAll('.notif-accordion-toggle').forEach(function(toggle) {
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var targetId = this.getAttribute('data-target');
+      var parentItem = this.closest('.notif-accordion-item');
+      var targetPanel = targetId ? document.querySelector(targetId) : null;
+      var isOpen = parentItem && parentItem.classList.contains('active');
+
+      resetNotificationAccordion();
+
+      if (!isOpen && parentItem && targetPanel) {
+        parentItem.classList.add('active');
+        targetPanel.classList.add('show');
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
   });
 
   function setupSearch(inputId){

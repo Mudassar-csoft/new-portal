@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\UserSetupController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\HeaderNotificationController;
 use App\Http\Controllers\UserLoginLogController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,8 +52,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard');
-    Route::get('/header/notifications', HeaderNotificationController::class)
-        ->name('header.notifications');
 
     Route::get('/admin/coming-soon/{module}', function (string $module) {
         abort_unless(auth()->user()?->isAdmin(), 403);
