@@ -51,26 +51,16 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.header', function ($view): void {
             $currentUser = auth()->user();
             $webLeadSourceLabels = WebLead::leadManagementSourceLabels();
-            $webLeadNotifications = collect(array_keys($webLeadSourceLabels))
-                ->mapWithKeys(fn (string $sourceType): array => [$sourceType => collect()]);
             [
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
                 'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
             ] = $this->resolveDashboardCampusSelectorData($currentUser);
+            $notificationPayload = $this->resolveHeaderNotificationPayload($currentUser, $webLeadSourceLabels);
 
             $view->with([
                 'webLeadSourceLabels' => $webLeadSourceLabels,
-                'webLeadNotificationCounts' => array_fill_keys(array_keys($webLeadSourceLabels), 0),
-                'webLeadNotifications' => $webLeadNotifications,
-                'webLeadNotificationTotal' => 0,
-                'canViewWebLeadNotifications' => false,
-                'followupNotifications' => collect(),
-                'followupNotificationCount' => 0,
-                'canViewFollowupNotifications' => false,
-                'invoiceOverdueNotifications' => collect(),
-                'invoiceOverdueNotificationCount' => 0,
-                'canViewInvoiceNotifications' => false,
+                ...$notificationPayload,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
                 'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
@@ -481,6 +471,133 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return $sidebarCounts;
+    }
+
+    /**
+     * @param  array<string, string>  $webLeadSourceLabels
+     * @return array<string, mixed>
+     */
+    private function resolveHeaderNotificationPayload(?User $user, array $webLeadSourceLabels): array
+    {
+        $payload = $this->headerNotificationDefaults($webLeadSourceLabels);
+
+        if (! $user) {
+            return $payload;
+        }
+
+        if (($user->hasAnyPermission(['web-lead.view']) ?? false) && Schema::hasTable('web_leads')) {
+            $payload['canViewWebLeadNotifications'] = true;
+
+            try {
+                $managedSourceTypes = array_keys($webLeadSourceLabels);
+                $pendingWebLeads = WebLead::query()
+                    ->pending()
+                    ->whereIn('source_type', $managedSourceTypes);
+
+                $sourceCounts = (clone $pendingWebLeads)
+                    ->selectRaw('source_type, COUNT(*) as aggregate')
+                    ->groupBy('source_type')
+                    ->pluck('aggregate', 'source_type');
+
+                $payload['webLeadNotificationCounts'] = array_replace(
+                    $payload['webLeadNotificationCounts'],
+                    collect($managedSourceTypes)->mapWithKeys(
+                        fn (string $sourceType): array => [$sourceType => (int) ($sourceCounts[$sourceType] ?? 0)]
+                    )->all()
+                );
+
+                $payload['webLeadNotifications'] = collect($managedSourceTypes)
+                    ->mapWithKeys(function (string $sourceType) use ($pendingWebLeads): array {
+                        return [
+                            $sourceType => (clone $pendingWebLeads)
+                                ->where('source_type', $sourceType)
+                                ->latest('submitted_at')
+                                ->latest('id')
+                                ->limit(5)
+                                ->get(),
+                        ];
+                    });
+            } catch (Throwable) {
+                $payload['webLeadNotifications'] = collect(array_keys($webLeadSourceLabels))
+                    ->mapWithKeys(fn (string $sourceType): array => [$sourceType => collect()]);
+                $payload['webLeadNotificationCounts'] = array_fill_keys(array_keys($webLeadSourceLabels), 0);
+            }
+        }
+
+        if (
+            ($user->hasAnyPermission(['lead.followup.view']) ?? false)
+            && Schema::hasTable('lead_followups')
+            && Schema::hasTable('leads')
+        ) {
+            $payload['canViewFollowupNotifications'] = true;
+
+            try {
+                $followupNotifications = $this->latestDueLeadFollowupNotifications(
+                    $user,
+                    fn (Builder $leadQuery, $scopedUser = null) => $this->scopeLeadQueryToUserCampus($leadQuery, $scopedUser),
+                    ['training', 'certification', 'study_abroad']
+                );
+
+                $payload['followupNotificationCount'] = $followupNotifications->count();
+                $payload['followupNotifications'] = $followupNotifications->take(5)->values();
+            } catch (Throwable) {
+                $payload['followupNotifications'] = collect();
+                $payload['followupNotificationCount'] = 0;
+            }
+        }
+
+        if (
+            ($user->hasAnyPermission(['finance.receivable.view', 'finance.receivable.create', 'finance.receivable.update']) ?? false)
+        ) {
+            try {
+                if (FinanceOtherCharge::hasInvoiceSchema()) {
+                    $payload['canViewInvoiceNotifications'] = true;
+
+                    $overdueInvoicesQuery = $this->scopeQueryToUserCampus(
+                        FinanceOtherCharge::query()->with(['campus:id,code,name']),
+                        $user
+                    )
+                        ->where('balance_amount', '>', 0)
+                        ->whereNotNull('due_date')
+                        ->whereDate('due_date', '<', now()->toDateString());
+
+                    $payload['invoiceOverdueNotificationCount'] = (int) (clone $overdueInvoicesQuery)->count();
+                    $payload['invoiceOverdueNotifications'] = (clone $overdueInvoicesQuery)
+                        ->orderBy('due_date')
+                        ->orderBy('id')
+                        ->limit(5)
+                        ->get();
+                }
+            } catch (Throwable) {
+                $payload['invoiceOverdueNotifications'] = collect();
+                $payload['invoiceOverdueNotificationCount'] = 0;
+            }
+        }
+
+        $payload['webLeadNotificationTotal'] = array_sum($payload['webLeadNotificationCounts']);
+
+        return $payload;
+    }
+
+    /**
+     * @param  array<string, string>  $webLeadSourceLabels
+     * @return array<string, mixed>
+     */
+    private function headerNotificationDefaults(array $webLeadSourceLabels): array
+    {
+        return [
+            'webLeadNotificationCounts' => array_fill_keys(array_keys($webLeadSourceLabels), 0),
+            'webLeadNotifications' => collect(array_keys($webLeadSourceLabels))
+                ->mapWithKeys(fn (string $sourceType): array => [$sourceType => collect()]),
+            'webLeadNotificationTotal' => 0,
+            'canViewWebLeadNotifications' => false,
+            'followupNotifications' => collect(),
+            'followupNotificationCount' => 0,
+            'canViewFollowupNotifications' => false,
+            'invoiceOverdueNotifications' => collect(),
+            'invoiceOverdueNotificationCount' => 0,
+            'canViewInvoiceNotifications' => false,
+        ];
     }
 
     /**
