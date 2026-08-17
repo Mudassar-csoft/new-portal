@@ -632,8 +632,8 @@
                                           </div>
                                       </div> -->
 							<div class="site-header-search-container">
-								 <form class="site-header-search" method="GET" action="{{ route('student-search.index') }}">
-	                                <input type="text" name="q" class="site-header-search-input" placeholder="Name, phone, CNIC, roll no..." value="{{ request()->routeIs('student-search.index') ? request()->query('q') : '' }}" autocomplete="off"/>
+								 <form class="site-header-search" method="GET" action="{{ route('student-search.index') }}" data-live-search="custom">
+	                                <input type="text" name="q" class="site-header-search-input" placeholder="Name, phone, CNIC, roll no..." value="{{ request()->routeIs('student-search.index') ? request()->query('q') : '' }}" autocomplete="off" enterkeyhint="search"/>
 	                                <button type="submit" class="site-header-search-btn">
 	                                    <span class="font-icon-search"></span>
 	                                </button>
