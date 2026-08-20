@@ -1242,7 +1242,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var notificationBadge = document.getElementById('notification-total-badge');
   var headerDropdownToggles = document.querySelectorAll('.site-header [data-toggle="dropdown"]');
   var notificationPollUrl = notificationToggle ? notificationToggle.getAttribute('data-poll-url') : '';
-  var notificationPollInterval = notificationToggle ? parseInt(notificationToggle.getAttribute('data-poll-interval-ms') || '30000', 10) : 30000;
+  var notificationPollInterval = notificationToggle ? parseInt(notificationToggle.getAttribute('data-poll-interval-ms') || '60000', 10) : 60000;
   var notificationRequestInFlight = false;
 
   function resetNotificationAccordion() {
