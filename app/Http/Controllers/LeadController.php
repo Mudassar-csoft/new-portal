@@ -2149,7 +2149,10 @@ class LeadController extends Controller
             'campuses' => Campus::query()
                 ->orderBy('name')
                 ->get(),
-            'programs' => Program::orderBy('title')->get(),
+            'programs' => Program::query()
+                ->where('status', 'active')
+                ->orderByRaw('COALESCE(title, name)')
+                ->get(),
             'origins' => ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'],
             'marketingSources' => ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'],
         ];
@@ -2225,7 +2228,7 @@ class LeadController extends Controller
         $payload = $webLead->payload ?? [];
         $programId = $payload['program_id'] ?? null;
 
-        if (is_numeric($programId) && Program::query()->whereKey((int) $programId)->exists()) {
+        if (is_numeric($programId) && Program::query()->whereKey((int) $programId)->where('status', 'active')->exists()) {
             return (int) $programId;
         }
 
@@ -2237,6 +2240,7 @@ class LeadController extends Controller
         $needle = Str::lower($candidate);
 
         return Program::query()
+            ->where('status', 'active')
             ->where(function (Builder $query) use ($needle) {
                 $query->whereRaw('LOWER(code) = ?', [$needle])
                     ->orWhereRaw('LOWER(title) = ?', [$needle])
@@ -2282,7 +2286,7 @@ class LeadController extends Controller
             'origin' => ['required', 'string', 'max:255'],
             'marketing_source' => ['required', 'string', 'max:255'],
             'campus_id' => ['nullable', 'integer', 'exists:campuses,id'],
-            'program_id' => ['nullable', 'integer', 'exists:programs,id'],
+            'program_id' => ['nullable', 'integer', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
             'details' => ['nullable', 'array'],
             'details.country' => ['nullable', 'string', 'max:255'],
             'details.area' => ['nullable', 'string', 'min:2', 'max:255'],
@@ -2308,7 +2312,7 @@ class LeadController extends Controller
 
         return match ($type) {
             'training' => array_merge($rules, [
-                'program_id' => ['required', 'integer', 'exists:programs,id'],
+                'program_id' => ['required', 'integer', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'details.area' => ['required', 'string', 'min:2', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],

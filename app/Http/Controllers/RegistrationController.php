@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
@@ -35,7 +36,10 @@ class RegistrationController extends Controller
         $campuses = Campus::query()
             ->orderBy('name')
             ->get();
-        $programs = Program::orderBy('title')->get();
+        $programs = Program::query()
+            ->where('status', 'active')
+            ->orderByRaw('COALESCE(title, name)')
+            ->get();
         $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
         $selectedCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
@@ -382,7 +386,7 @@ class RegistrationController extends Controller
         return [
             'lead_id' => ['nullable', 'exists:leads,id'],
             'campus_id' => ['required', 'exists:campuses,id'],
-            'program_id' => ['required', 'exists:programs,id'],
+            'program_id' => ['required', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
             'student_name' => ['required', 'string', 'min:3', 'max:255'],
             'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:registrations,phone'],
             'guardian_name' => ['required', 'string', 'min:3', 'max:255'],
