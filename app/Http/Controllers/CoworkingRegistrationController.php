@@ -346,6 +346,10 @@ class CoworkingRegistrationController extends Controller
             'charge_date' => ['required', 'date'],
             'charge_amount' => ['required', 'numeric', 'min:1'],
             'payment_method' => ['required', Rule::in(['cash', 'bank', 'online'])],
+        ], [
+            'payment_method.required' => 'Please select a payment mode.',
+        ], [
+            'payment_method' => 'payment mode',
         ]);
 
         if ($coworkingRegistration->status !== 'registered') {
@@ -840,6 +844,7 @@ class CoworkingRegistrationController extends Controller
             'cnic.regex' => 'The CNIC must be exactly 13 digits.',
             'cnic.unique' => 'This CNIC is already registered in coworking registrations.',
             'date_of_birth.before' => 'The date of birth must be earlier than today.',
+            'payment_method.required' => 'Please select a payment mode.',
         ];
     }
 

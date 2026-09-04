@@ -110,7 +110,9 @@
             ]);
         }
 
-        $showChargeModal = $errors->has('charge_date') || $errors->has('charge_amount');
+        $showChargeModal = $errors->has('charge_date')
+            || $errors->has('charge_amount')
+            || $errors->has('payment_method');
         $defaultChargeDate = old('charge_date', optional($member->next_due_date)->toDateString() ?: now()->toDateString());
         $defaultChargeAmount = old('charge_amount', number_format((float) $member->coworking_charges, 2, '.', ''));
     @endphp
@@ -622,7 +624,8 @@
                                 <div class="fee-edit-field">
                                     <label class="form-label" for="charge_payment_method">Payment Method</label>
                                     <select id="charge_payment_method" name="payment_method" required>
-                                        <option value="cash" @selected(old('payment_method', 'cash') === 'cash')>Cash</option>
+                                        <option value="">- Select payment mode -</option>
+                                        <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
                                         <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
                                         <option value="online" @selected(old('payment_method') === 'online')>Online</option>
                                     </select>
