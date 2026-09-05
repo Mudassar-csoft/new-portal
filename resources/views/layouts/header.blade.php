@@ -27,7 +27,7 @@
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                   data-poll-url="{{ route('header.notifications') }}" data-poll-interval-ms="60000">
                   <i class="font-icon-alarm"></i>
-                  @php($headerNotificationTotal = (int) ($notificationTotal ?? ((int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0))))
+                  @php($headerNotificationTotal = (int) ($notificationTotal ?? ((int) ($webLeadNotificationTotal ?? 0) + (int) ($followupNotificationCount ?? 0) + (int) ($invoiceOverdueNotificationCount ?? 0) + (int) ($coworkingDueNotificationCount ?? 0))))
                   <span id="notification-total-badge" class="notification-total-badge" style="font-size:0.625rem !important;" @if($headerNotificationTotal <= 0) hidden @endif>{{ $headerNotificationTotal > 99 ? '99+' : $headerNotificationTotal }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-notif m-0 p-0" id="notification-menu" aria-labelledby="dd-notification">

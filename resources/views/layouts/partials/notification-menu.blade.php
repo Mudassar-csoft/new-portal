@@ -4,10 +4,12 @@
 @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
 @php($overdueInvoices = $invoiceOverdueNotifications ?? collect())
 @php($followupItems = $followupNotifications ?? collect())
+@php($coworkingDueItems = $coworkingDueNotifications ?? collect())
 @php($hasWebLeadNotifications = (bool) ($canViewWebLeadNotifications ?? false))
 @php($hasFollowupNotifications = (bool) ($canViewFollowupNotifications ?? false))
 @php($hasInvoiceNotifications = (bool) ($canViewInvoiceNotifications ?? false))
-@php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications)
+@php($hasCoworkingDueNotifications = (bool) ($canViewCoworkingDueNotifications ?? false))
+@php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications || $hasCoworkingDueNotifications)
 @php($notificationMoreLinks = [
     'follow_up' => route('leads.followups'),
     'quick_lead' => route('web-leads.index', ['tab' => 'quick_lead']),
@@ -237,6 +239,46 @@
           <div class="notification-see-more">
             <a href="{{ $notificationMoreLinks['brochure_download'] }}">See More</a>
           </div>
+        </div>
+      </div>
+    @endif
+
+    @if($hasCoworkingDueNotifications)
+      <div class="notif-accordion-item notif-hover-card">
+        <button class="notif-accordion-toggle" type="button" data-target="#notif-coworking-due" aria-expanded="false">
+          <span>Coworking Due Soon</span>
+          <span class="count">{{ $coworkingDueNotificationCount ?? 0 }}</span>
+        </button>
+        <div class="notif-accordion-panel" id="notif-coworking-due">
+          @if ($coworkingDueItems->isEmpty())
+            <div class="text-center p-4 text-muted">No coworking payments due in the next five days.</div>
+          @else
+            <div class="table-responsive">
+              <table class="table table-sm mb-0 notification-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Due Date</th>
+                    <th>Charge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach ($coworkingDueItems->take(3) as $registration)
+                    <tr>
+                      <td>
+                        <a class="notification-name-link" href="{{ route('coworking-registrations.show', $registration) }}">
+                          {{ $registration->full_name }}
+                        </a>
+                        <div class="text-muted">{{ $registration->registration_number ?: ($registration->campus->code ?? 'N/A') }}</div>
+                      </td>
+                      <td>{{ optional($registration->next_due_date)->format('d-M-y') ?? 'N/A' }}</td>
+                      <td>Rs. {{ number_format((float) $registration->coworking_charges, 0) }}</td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          @endif
         </div>
       </div>
     @endif

@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\FinanceOtherCharge;
+use App\Models\CoworkingRegistration;
 use App\Models\User;
 use App\Models\WebLead;
 use Illuminate\Database\Eloquent\Builder;
@@ -112,10 +113,39 @@ class HeaderNotificationResolver
             }
         }
 
+        if (
+            ($user->hasAnyPermission(['registration.view']) ?? false)
+            && Schema::hasTable('coworking_registrations')
+        ) {
+            $payload['canViewCoworkingDueNotifications'] = true;
+
+            try {
+                $today = now()->toDateString();
+                $reminderEndDate = now()->addDays(5)->toDateString();
+                $coworkingDueQuery = $this->scopeQueryToUserCampus(
+                    CoworkingRegistration::query()->with(['campus:id,code,name']),
+                    $user
+                )
+                    ->where('status', 'registered')
+                    ->whereBetween('next_due_date', [$today, $reminderEndDate]);
+
+                $payload['coworkingDueNotificationCount'] = (int) (clone $coworkingDueQuery)->count();
+                $payload['coworkingDueNotifications'] = (clone $coworkingDueQuery)
+                    ->orderBy('next_due_date')
+                    ->orderBy('id')
+                    ->limit(5)
+                    ->get();
+            } catch (Throwable) {
+                $payload['coworkingDueNotifications'] = collect();
+                $payload['coworkingDueNotificationCount'] = 0;
+            }
+        }
+
         $payload['webLeadNotificationTotal'] = array_sum($payload['webLeadNotificationCounts']);
         $payload['notificationTotal'] = (int) $payload['webLeadNotificationTotal']
             + (int) $payload['followupNotificationCount']
-            + (int) $payload['invoiceOverdueNotificationCount'];
+            + (int) $payload['invoiceOverdueNotificationCount']
+            + (int) $payload['coworkingDueNotificationCount'];
 
         return $payload;
     }
@@ -139,6 +169,9 @@ class HeaderNotificationResolver
             'invoiceOverdueNotifications' => collect(),
             'invoiceOverdueNotificationCount' => 0,
             'canViewInvoiceNotifications' => false,
+            'coworkingDueNotifications' => collect(),
+            'coworkingDueNotificationCount' => 0,
+            'canViewCoworkingDueNotifications' => false,
             'notificationTotal' => 0,
         ];
     }

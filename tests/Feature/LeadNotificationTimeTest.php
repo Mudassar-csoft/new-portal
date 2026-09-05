@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Campus;
+use App\Models\CoworkingRegistration;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\Program;
@@ -109,6 +110,29 @@ class LeadNotificationTimeTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_header_shows_registered_coworking_payments_due_within_five_days(): void
+    {
+        Carbon::setTestNow('2026-06-15 10:00:00');
+
+        $admin = $this->createAdminUser();
+        $campus = $this->createCampus('Coworking Campus', 'COW');
+        $dueSoon = $this->createCoworkingRegistration($campus, 'Due In Five Days', '2026-06-20', '3520212345601');
+        $this->createCoworkingRegistration($campus, 'Due In Six Days', '2026-06-21', '3520212345602');
+        $this->createCoworkingRegistration($campus, 'Inactive Coworking Member', '2026-06-18', '3520212345603', 'inactive');
+
+        $this->actingAs($admin);
+
+        $html = view('layouts.header')->render();
+
+        $this->assertStringContainsString('Coworking Due Soon', $html);
+        $this->assertStringContainsString('Due In Five Days', $html);
+        $this->assertStringContainsString('20-Jun-26', $html);
+        $this->assertStringContainsString(route('coworking-registrations.show', $dueSoon), $html);
+        $this->assertStringNotContainsString('Due In Six Days', $html);
+        $this->assertStringNotContainsString('Inactive Coworking Member', $html);
+        $this->assertStringContainsString('>1</span>', $html);
+    }
+
     public function test_add_followup_preserves_time_and_updates_lead_next_followup_at(): void
     {
         $followupUpdate = Permission::query()->create([
@@ -211,5 +235,36 @@ class LeadNotificationTimeTest extends TestCase
             'status' => 'pending',
             'details' => [],
         ], $overrides));
+    }
+
+    private function createCoworkingRegistration(
+        Campus $campus,
+        string $name,
+        string $nextDueDate,
+        string $cnic,
+        string $status = 'registered'
+    ): CoworkingRegistration {
+        return CoworkingRegistration::query()->create([
+            'campus_id' => $campus->id,
+            'registration_number' => 'COW-CWS-' . substr($cnic, -5),
+            'receipt_number' => 'COW-RCP-' . substr($cnic, -5),
+            'full_name' => $name,
+            'phone' => '03400000001',
+            'guardian_name' => 'Guardian',
+            'guardian_phone' => '03400000011',
+            'cnic' => $cnic,
+            'email' => strtolower(str_replace(' ', '.', $name)) . '@example.test',
+            'education' => 'Bachelors',
+            'date_of_birth' => '1998-01-01',
+            'nature_of_work' => 'Consulting',
+            'timing' => '09:00 AM - 06:00 PM',
+            'gender' => 'female',
+            'address' => 'Coworking Street',
+            'registration_date' => '2026-06-01',
+            'next_due_date' => $nextDueDate,
+            'coworking_charges' => 20000,
+            'security_fee' => 10000,
+            'status' => $status,
+        ]);
     }
 }
