@@ -185,6 +185,7 @@
                                     <li><a href="{{ route('leads.coworking.followup-schedule') }}" class="stage-link"><span class="lbl">Follow-up Schedule</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followup_schedule'] ?? 0)) }}</span></a></li>
                                     <li><a href="{{ route('leads.coworking.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_today_leads'] ?? 0)) }}</span></a></li>
                                     <li><a href="{{ route('leads.coworking.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_all_leads'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups', ['stage' => 'registered']) }}" class="stage-link"><span class="lbl">Registered Coworker</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_registered'] ?? 0)) }}</span></a></li>
                                 @endif
                             </ul>
                         </li>

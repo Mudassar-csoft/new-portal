@@ -88,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
             'coworking_followup_schedule' => 0,
             'coworking_all_leads' => 0,
             'coworking_today_leads' => 0,
+            'coworking_registered' => 0,
             'all_registrations' => 0,
             'all_admissions' => 0,
             'admission_today' => 0,
@@ -233,6 +234,13 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->coworking(), $user))
                     ->distinct()
                     ->count('lead_id');
+
+                $sidebarCounts['coworking_registered'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->coworking(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->where('stage', 'registered'))
+                    ->count();
 
                 $sidebarCounts['coworking_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
                     Lead::query()->coworking(),
