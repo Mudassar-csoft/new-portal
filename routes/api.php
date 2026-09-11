@@ -7,12 +7,8 @@ use App\Http\Controllers\FakeLeadController;
 use App\Http\Controllers\WebLeadController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/programs/{id}', [ProgramController::class, 'show'])
-    ->whereNumber('id')
-    ->name('api.programs.show');
-Route::get('/campuses/{id}', [CampusController::class, 'show'])
-    ->whereNumber('id')
-    ->name('api.campuses.show');
+Route::get('/programs', [ProgramController::class, 'index'])->name('api.programs.index');
+Route::get('/campuses', [CampusController::class, 'index'])->name('api.campuses.index');
 
 Route::post('/web-leads', [WebLeadController::class, 'storePublic'])->name('api.web-leads.store');
 Route::get('/verify-certificate/{rollNumber}', [CertificateVerificationController::class, 'show'])

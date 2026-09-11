@@ -5,12 +5,20 @@ namespace Tests\Feature;
 use App\Models\Campus;
 use App\Models\Program;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class CatalogDetailApiTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Isolate the catalog fixtures from records imported by legacy migrations.
+        Program::query()->update(['status' => 'inactive']);
+        Campus::query()->update(['status' => 'inactive']);
+    }
 
     public function test_program_details_are_public_and_include_only_available_discounts(): void
     {
@@ -41,12 +49,12 @@ class CatalogDetailApiTest extends TestCase
             ['campus_id' => $otherCampus->id, 'discount_percent' => 40, 'status' => 'inactive'],
         ]);
 
-        $this->get(route('api.programs.show', ['id' => $program->id]))
+        $this->get(route('api.programs.index'))
             ->assertOk()
             ->assertHeader('content-type', 'application/json')
             ->assertExactJson([
                 'status' => 'success',
-                'data' => [
+                'data' => [[
                     'id' => $program->id,
                     'name' => 'Web Development',
                     'title' => 'Full Stack Web Development',
@@ -63,7 +71,7 @@ class CatalogDetailApiTest extends TestCase
                         ['campus_id' => null, 'campus_name' => null, 'campus_code' => null, 'discount_percent' => '10.00'],
                         ['campus_id' => $campus->id, 'campus_name' => $campus->name, 'campus_code' => $campus->code, 'discount_percent' => '20.00'],
                     ],
-                ],
+                ]],
             ]);
     }
 
@@ -75,25 +83,25 @@ class CatalogDetailApiTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->getJson(route('api.programs.show', ['id' => $program->id]))
+        $this->getJson(route('api.programs.index'))
             ->assertOk()
-            ->assertJsonPath('data.title', 'Basic Computing')
-            ->assertJsonPath('data.fee', null)
-            ->assertJsonPath('data.duration_weeks', null)
-            ->assertJsonPath('data.outline_url', null)
-            ->assertJsonPath('data.campus_discounts', []);
+            ->assertJsonPath('data.0.title', 'Basic Computing')
+            ->assertJsonPath('data.0.fee', null)
+            ->assertJsonPath('data.0.duration_weeks', null)
+            ->assertJsonPath('data.0.outline_url', null)
+            ->assertJsonPath('data.0.campus_discounts', []);
     }
 
     public function test_campus_details_are_public_without_internal_financial_fields(): void
     {
         $campus = $this->createCampus();
 
-        $this->get(route('api.campuses.show', ['id' => $campus->id]))
+        $this->get(route('api.campuses.index'))
             ->assertOk()
             ->assertHeader('content-type', 'application/json')
             ->assertExactJson([
                 'status' => 'success',
-                'data' => [
+                'data' => [[
                     'id' => $campus->id,
                     'name' => 'API main Campus',
                     'title' => 'API main Campus',
@@ -109,42 +117,61 @@ class CatalogDetailApiTest extends TestCase
                     'address' => '123 Example Road',
                     'labs_count' => 2,
                     'status' => 'active',
-                ],
+                ]],
             ]);
     }
 
-    #[DataProvider('missingRecords')]
-    public function test_missing_records_return_json_not_found(string $path, string $message): void
+    public function test_inactive_records_are_excluded_and_empty_lists_return_success(): void
     {
-        $this->get($path)
-            ->assertNotFound()
-            ->assertHeader('content-type', 'application/json')
-            ->assertExactJson(['status' => 'error', 'message' => $message]);
-    }
-
-    public static function missingRecords(): array
-    {
-        return [
-            'program' => ['/api/programs/999999999', 'Program not found.'],
-            'campus' => ['/api/campuses/999999999', 'Campus not found.'],
-        ];
-    }
-
-    public function test_inactive_programs_and_campuses_are_not_public(): void
-    {
-        $program = Program::query()->create([
+        Program::query()->create([
             'name' => 'Suspended Program',
             'code' => 'API-INACTIVE',
             'status' => 'inactive',
         ]);
-        $campus = $this->createCampus('inactive');
+        $this->createCampus('inactive');
 
-        $this->getJson(route('api.programs.show', ['id' => $program->id]))
-            ->assertNotFound()
-            ->assertExactJson(['status' => 'error', 'message' => 'Program not found.']);
-        $this->getJson(route('api.campuses.show', ['id' => $campus->id]))
-            ->assertNotFound()
-            ->assertExactJson(['status' => 'error', 'message' => 'Campus not found.']);
+        $this->get('/api/programs')
+            ->assertOk()
+            ->assertExactJson(['status' => 'success', 'data' => []]);
+        $this->get('/api/campuses')
+            ->assertOk()
+            ->assertExactJson(['status' => 'success', 'data' => []]);
+    }
+
+    public function test_lists_return_all_active_records_in_name_order_without_pagination(): void
+    {
+        $programIds = [];
+        $campusIds = [];
+
+        foreach (range(25, 1) as $number) {
+            $suffix = sprintf('%02d', $number);
+            $programIds[] = Program::query()->create([
+                'name' => 'Program '.$suffix,
+                'code' => 'API-LIST-'.$suffix,
+                'status' => 'active',
+            ])->id;
+            $campusIds[] = $this->createCampus('active', $suffix)->id;
+        }
+
+        Program::query()->create([
+            'name' => 'Inactive Program',
+            'code' => 'API-LIST-INACTIVE',
+            'status' => 'inactive',
+        ]);
+        $this->createCampus('inactive', 'closed');
+
+        $this->get('/api/programs')
+            ->assertOk()
+            ->assertJsonCount(25, 'data')
+            ->assertJsonPath('data.*.id', array_reverse($programIds))
+            ->assertJsonMissingPath('meta')
+            ->assertJsonMissingPath('links');
+        $this->get('/api/campuses')
+            ->assertOk()
+            ->assertJsonCount(25, 'data')
+            ->assertJsonPath('data.*.id', array_reverse($campusIds))
+            ->assertJsonMissingPath('meta')
+            ->assertJsonMissingPath('links');
     }
 
     private function createCampus(string $status = 'active', string $suffix = 'main'): Campus

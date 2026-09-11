@@ -8,22 +8,17 @@ use Illuminate\Http\JsonResponse;
 
 class CampusController extends Controller
 {
-    public function show(string $id): JsonResponse
+    public function index(): JsonResponse
     {
-        $campus = Campus::query()
+        $campuses = Campus::query()
             ->where('status', 'active')
-            ->find($id);
-
-        if ($campus === null) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Campus not found.',
-            ], 404);
-        }
+            ->orderBy('name')
+            ->orderBy('id')
+            ->get();
 
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data' => $campuses->map(fn (Campus $campus): array => [
                 'id' => $campus->id,
                 'name' => $campus->name,
                 'title' => $campus->title ?? $campus->name,
@@ -39,7 +34,7 @@ class CampusController extends Controller
                 'address' => $campus->address,
                 'labs_count' => (int) $campus->labs_count,
                 'status' => $campus->status,
-            ],
+            ])->all(),
         ]);
     }
 }

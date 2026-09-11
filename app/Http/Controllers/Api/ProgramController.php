@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ProgramController extends Controller
 {
-    public function show(string $id): JsonResponse
+    public function index(): JsonResponse
     {
-        $program = Program::query()
+        $programs = Program::query()
             ->where('status', 'active')
             ->with(['campusDiscounts' => function (HasMany $query): void {
                 $query->where('status', 'active')
@@ -25,18 +25,13 @@ class ProgramController extends Controller
                     ->with('campus:id,name,code')
                     ->orderBy('id');
             }])
-            ->find($id);
-
-        if ($program === null) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Program not found.',
-            ], 404);
-        }
+            ->orderByRaw('COALESCE(title, name)')
+            ->orderBy('id')
+            ->get();
 
         return response()->json([
             'status' => 'success',
-            'data' => [
+            'data' => $programs->map(fn (Program $program): array => [
                 'id' => $program->id,
                 'name' => $program->name,
                 'title' => $program->title ?? $program->name,
@@ -55,7 +50,7 @@ class ProgramController extends Controller
                     'campus_code' => $discount->campus?->code,
                     'discount_percent' => number_format((float) $discount->discount_percent, 2, '.', ''),
                 ])->all(),
-            ],
+            ])->all(),
         ]);
     }
 }
