@@ -37,7 +37,7 @@ class LeadExportTest extends TestCase
         Lead::query()->delete();
     }
 
-    public function test_lead_page_has_single_and_filtered_excel_downloads_in_existing_menus(): void
+    public function test_admin_lead_page_has_visible_selected_all_and_single_excel_downloads(): void
     {
         $lead = $this->createLead(['name' => 'Export Lead']);
 
@@ -48,7 +48,43 @@ class LeadExportTest extends TestCase
             ->assertSee(route('leads.export-single', $lead), false)
             ->assertSee('Download Excel')
             ->assertSee('Download All Excel')
+            ->assertSee('id="lead-download-selected"', false)
+            ->assertSee('id="lead-download-all"', false)
+            ->assertSee('id="lead-export-form"', false)
+            ->assertSee('name="scope" value="selected"', false)
+            ->assertSee('name="lead_ids[]" value="'.$lead->id.'" form="lead-export-form"', false)
             ->assertDontSee('data-export-disabled="true"', false);
+    }
+
+    public function test_selected_download_only_contains_checked_leads_matching_the_filters(): void
+    {
+        $first = $this->createLead(['name' => 'First Selected']);
+        $second = $this->createLead(['name' => 'Second Selected']);
+        $pending = $this->createLead(['name' => 'Pending Lead', 'status' => 'pending']);
+        $otherType = $this->createLead(['name' => 'Other Type', 'type' => 'certification']);
+        $this->createLead(['name' => 'Unchecked Lead']);
+
+        $this->actingAs($this->createAdmin());
+        $response = $this->get(route('leads.export', [
+            'scope' => 'selected', 'status' => 'not_interesting',
+            'lead_ids' => [$first->id, $second->id, $pending->id, $otherType->id],
+        ]));
+        $rows = $this->workbookRows($response);
+
+        $this->assertCount(3, $rows);
+        $this->assertEqualsCanonicalizing(['First Selected', 'Second Selected'], array_column(array_slice($rows, 1), 2));
+        $this->assertStringContainsString('leads-selected-', $response->headers->get('Content-Disposition'));
+    }
+
+    public function test_selected_download_rejects_empty_or_invalid_selections(): void
+    {
+        $lead = $this->createLead();
+        $this->actingAs($this->createAdmin());
+
+        foreach ([[], ['lead_ids' => []], ['lead_ids' => 'all'], ['lead_ids' => ['invalid']], ['lead_ids' => [$lead->id, $lead->id]]] as $selection) {
+            $this->getJson(route('leads.export', ['scope' => 'selected'] + $selection))
+                ->assertUnprocessable();
+        }
     }
 
     public function test_all_download_includes_every_matching_lead_across_pages(): void
@@ -144,6 +180,7 @@ class LeadExportTest extends TestCase
         $this->actingAs($user);
         $this->get(route('leads.export', ['status' => 'not_interesting']))->assertForbidden();
         $this->get(route('leads.export', ['campus_id' => $otherCampus->id]))->assertForbidden();
+        $this->get(route('leads.export', ['scope' => 'selected', 'lead_ids' => [$ownLead->id]]))->assertForbidden();
         $this->get(route('leads.export-single', $ownLead))->assertForbidden();
         $this->get(route('leads.export-single', $otherLead))->assertForbidden();
         $this->get(route('leads.export-single', $unassignedLead))->assertForbidden();
@@ -154,6 +191,9 @@ class LeadExportTest extends TestCase
             ->assertSee('data-export-disabled="true"', false)
             ->assertDontSee('data-excel-export-url=', false)
             ->assertDontSee(route('leads.export-single', $ownLead), false)
+            ->assertDontSee('id="lead-download-selected"', false)
+            ->assertDontSee('id="lead-download-all"', false)
+            ->assertDontSee('class="lead-export-checkbox" name="lead_ids[]"', false)
             ->assertDontSee('Download Excel');
     }
 

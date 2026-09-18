@@ -37,11 +37,21 @@ class LeadController extends Controller
 
     public function export(Request $request): StreamedResponse
     {
+        $validated = $request->validate([
+            'scope' => ['nullable', Rule::in(['all', 'selected'])],
+            'lead_ids' => ['required_if:scope,selected', 'array', 'min:1', 'max:100'],
+            'lead_ids.*' => ['integer', 'min:1', 'distinct'],
+        ]);
+        $selectedOnly = ($validated['scope'] ?? 'all') === 'selected';
         $status = $this->normalizeLeadStatusFilter($request->query('status'), 'training');
         $query = $this->filteredLeadIndexQuery('training', $request)
             ->when($status !== null, fn (Builder $builder) => $builder->where('status', $status));
 
-        return $this->downloadLeads($query, 'leads-' . ($status ?? 'all'));
+        if ($selectedOnly) {
+            $query->whereKey($validated['lead_ids']);
+        }
+
+        return $this->downloadLeads($query, $selectedOnly ? 'leads-selected' : 'leads-' . ($status ?? 'all'));
     }
 
     public function exportLead(Lead $lead): StreamedResponse

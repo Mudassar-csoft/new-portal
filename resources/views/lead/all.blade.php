@@ -22,6 +22,8 @@
 		$campuses = $campuses ?? collect();
 		$programs = $programs ?? collect();
 		$showCampusFilter = $campuses->count() > 1;
+		$canExportLeads = ($type ?? 'training') === 'training' && (auth()->user()?->isAdmin() ?? false);
+		$exportQuery = request()->only(['status', 'today', 'campus_id', 'program_id', 'created_from', 'created_to', 'search']);
 		$resetQuery = array_filter([
 			'today' => $todayOnly ? 1 : null,
 			'status' => $selectedStatus !== 'all' ? $selectedStatus : null,
@@ -60,6 +62,14 @@
 							<a href="{{ $indexRoute }}" class="lead-filter-banner-link">View all leads</a>
 						</div>
 					@endif
+					@if($canExportLeads)
+						<form method="GET" action="{{ route('leads.export') }}" id="lead-export-form">
+							<input type="hidden" name="scope" value="selected">
+							@foreach($exportQuery as $filterName => $filterValue)
+								<input type="hidden" name="{{ $filterName }}" value="{{ $filterValue }}">
+							@endforeach
+						</form>
+					@endif
 					<form method="GET" action="{{ $indexRoute }}" class="follow-controls" id="lead-filter-form">
 						@if($todayOnly)
 							<input type="hidden" name="today" value="1">
@@ -76,6 +86,18 @@
 							</select>
 							<label class="">Entries</label>
 						</div>
+						@if($canExportLeads)
+							<div class="lead-export-actions">
+								<button type="submit" form="lead-export-form" id="lead-download-selected" class="btn btn-primary btn-sm" disabled>
+									<span class="fa fa-file-excel-o" aria-hidden="true"></span>
+									Download Selected<span id="lead-selected-count" aria-live="polite"></span>
+								</button>
+								<a href="{{ route('leads.export', $exportQuery) }}" id="lead-download-all" class="btn btn-primary btn-sm" title="Download all leads matching the current filters as Excel, across all pages">
+									<span class="fa fa-file-excel-o" aria-hidden="true"></span>
+									Download All
+								</a>
+							</div>
+						@endif
 
 						<div class="lead-filter-row">
 							@if($showCampusFilter)
@@ -130,14 +152,21 @@
 						<table class="table table-bordered follow-table" id="lead-status-table"
 							@if(($type ?? 'training') === 'training')
 								@if(auth()->user()?->isAdmin())
-									data-excel-export-url="{{ route('leads.export', request()->only(['status', 'today', 'campus_id', 'program_id', 'created_from', 'created_to', 'search'])) }}"
+									data-excel-export-url="{{ route('leads.export', $exportQuery) }}"
 								@else
 									data-export-disabled="true"
 								@endif
 							@endif>
 							<thead>
 								<tr>
-									<th>Sr</th>
+									<th>
+										<div class="lead-selection-cell">
+											@if($canExportLeads)
+												<input type="checkbox" id="lead-select-all" class="lead-export-checkbox" aria-label="Select all leads on this page" @disabled($leads->isEmpty())>
+											@endif
+											<span>Sr</span>
+										</div>
+									</th>
 									<th>Name</th>
 									<th>{{ $interestHeading }}</th>
 									<th>Primary Contact</th>
@@ -164,7 +193,14 @@
 										};
 									@endphp
 									<tr data-status="{{ $statusKey }}">
-										<td class="text-center">{{ ($leads->firstItem() ?? 1) + $loop->index }}</td>
+										<td class="text-center">
+											<div class="lead-selection-cell">
+												@if($canExportLeads)
+													<input type="checkbox" class="lead-export-checkbox" name="lead_ids[]" value="{{ $row->id }}" form="lead-export-form" aria-label="Select lead {{ $row->name ?? $row->id }}">
+												@endif
+												<span>{{ ($leads->firstItem() ?? 1) + $loop->index }}</span>
+											</div>
+										</td>
 										<td>
 											<a href="{{ route('leads.show', $row) }}" class="lead-link">
 												{{ $row->name ?? 'N/A' }}
@@ -330,6 +366,29 @@
 		.follow-controls {
 			gap: var(--space-lead-all-1);
 			flex-wrap: wrap;
+		}
+
+		.lead-export-actions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 8px;
+			margin-left: auto;
+		}
+
+		.lead-selection-cell {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+		}
+
+		.lead-export-checkbox {
+			width: 16px;
+			height: 16px;
+			flex: 0 0 16px;
+			margin: 0;
+			cursor: pointer;
 		}
 
 		.lead-filter-row {
@@ -519,6 +578,39 @@
 @push('scripts')
 	<script>
 		(function () {
+			function initLeadExport() {
+				var form = document.getElementById('lead-export-form');
+				var button = document.getElementById('lead-download-selected');
+				var selectAll = document.getElementById('lead-select-all');
+				var count = document.getElementById('lead-selected-count');
+				if (!form || !button || !selectAll || !count) return;
+
+				var checkboxes = Array.from(document.querySelectorAll('input[name="lead_ids[]"][form="lead-export-form"]'));
+
+				function updateSelection() {
+					var selectedCount = checkboxes.filter(function (checkbox) { return checkbox.checked; }).length;
+					button.disabled = selectedCount === 0;
+					count.textContent = selectedCount ? ' (' + selectedCount + ')' : '';
+					selectAll.checked = checkboxes.length > 0 && selectedCount === checkboxes.length;
+					selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+					selectAll.disabled = checkboxes.length === 0;
+				}
+
+				selectAll.addEventListener('click', function (event) { event.stopPropagation(); });
+				selectAll.addEventListener('change', function () {
+					checkboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
+					updateSelection();
+				});
+				checkboxes.forEach(function (checkbox) { checkbox.addEventListener('change', updateSelection); });
+				form.addEventListener('submit', function (event) {
+					if (!checkboxes.some(function (checkbox) { return checkbox.checked; })) {
+						event.preventDefault();
+					}
+				});
+				window.addEventListener('pageshow', updateSelection);
+				updateSelection();
+			}
+
 			function showAlert(title, text, type) {
 				if (window.swal) {
 					swal({ title: title, text: text, type: type });
@@ -614,6 +706,7 @@
 			}
 
 			document.addEventListener('DOMContentLoaded', function () {
+				initLeadExport();
 				initLeadModal();
 				revealLeadPage();
 
