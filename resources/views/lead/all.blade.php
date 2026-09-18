@@ -127,7 +127,14 @@
 					</form>
 
 					<div class="table-responsive">
-						<table class="table table-bordered follow-table" id="lead-status-table">
+						<table class="table table-bordered follow-table" id="lead-status-table"
+							@if(($type ?? 'training') === 'training')
+								@if(auth()->user()?->isAdmin())
+									data-excel-export-url="{{ route('leads.export', request()->only(['status', 'today', 'campus_id', 'program_id', 'created_from', 'created_to', 'search'])) }}"
+								@else
+									data-export-disabled="true"
+								@endif
+							@endif>
 							<thead>
 								<tr>
 									<th>Sr</th>
@@ -175,7 +182,7 @@
 										<td>{{ $row->origin ?? 'N/A' }}</td>
 										<td class="text-center">{{ (int) ($row->followups_count ?? 0) }}</td>
 										<td class=" action-cell">
-											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row])
+											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row, 'showExcelDownload' => ($type ?? 'training') === 'training'])
 										</td>
 									</tr>
 								@empty

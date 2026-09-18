@@ -11,6 +11,7 @@ use App\Models\Program;
 use App\Models\Registration;
 use App\Models\User;
 use App\Models\WebLead;
+use App\Support\ExcelDownload;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +24,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -31,6 +33,61 @@ class LeadController extends Controller
     public function index(Request $request): View
     {
         return $this->renderLeadIndex('training', $request);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $status = $this->normalizeLeadStatusFilter($request->query('status'), 'training');
+        $query = $this->filteredLeadIndexQuery('training', $request)
+            ->when($status !== null, fn (Builder $builder) => $builder->where('status', $status));
+
+        return $this->downloadLeads($query, 'leads-' . ($status ?? 'all'));
+    }
+
+    public function exportLead(Lead $lead): StreamedResponse
+    {
+        $this->ensureLeadCampusAccess($lead);
+        abort_unless($lead->type === 'training', 404);
+
+        $query = $this->leadQueryForType('training')->whereKey($lead->id);
+        abort_unless((clone $query)->exists(), 403);
+
+        return $this->downloadLeads($query, 'lead-' . $lead->id);
+    }
+
+    private function downloadLeads(Builder $query, string $filename): StreamedResponse
+    {
+        $statuses = $this->leadIndexTabs('training');
+        $rows = $query
+            ->with(['program', 'campus', 'createdBy:id,name', 'latestFollowup'])
+            ->withCount('followups')
+            ->latest()
+            ->orderByDesc('id')
+            ->lazy(500)
+            ->map(fn (Lead $lead, int $index) => [
+                $index + 1,
+                $lead->id,
+                $lead->name,
+                $this->leadInterestValue($lead),
+                $lead->phone,
+                $lead->email,
+                $lead->campus?->code ?? $lead->campus?->name,
+                $lead->createdBy?->name ?? 'Unknown',
+                $statuses[$lead->status] ?? Str::headline($lead->status ?? 'pending'),
+                $lead->origin,
+                $lead->marketing_source,
+                $lead->city,
+                $lead->followups_count,
+                $lead->created_at?->format('Y-m-d H:i:s'),
+                data_get($lead->details, 'remarks', ''),
+                $lead->latestFollowup?->note,
+            ]);
+
+        return ExcelDownload::make($filename . '-' . now()->format('Ymd-His') . '.xlsx', [
+            'Sr', 'Lead ID', 'Name', 'Program', 'Primary Contact', 'Email', 'Campus Code',
+            'Created By', 'Status', 'Origin', 'Marketing Source', 'City', 'Follow Ups',
+            'Created At', 'Remarks', 'Last Follow-up Remarks',
+        ], $rows);
     }
 
     public function certificationIndex(Request $request): View
@@ -1101,13 +1158,7 @@ class LeadController extends Controller
         $campuses = $this->leadIndexCampusOptions();
         $programs = $this->leadIndexProgramOptions($type, $filters['program_id'], $filters['campus_id']);
 
-        $baseLeadQuery = $this->leadQueryForType($type);
-
-        if ($todayOnly) {
-            $baseLeadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
-        }
-
-        $this->applyLeadIndexFilters($baseLeadQuery, $filters);
+        $baseLeadQuery = $this->filteredLeadIndexQuery($type, $request);
 
         $tabs = $this->leadIndexTabs($type);
         $badgeColors = $this->leadIndexBadgeColors($type);
@@ -1168,6 +1219,17 @@ class LeadController extends Controller
             'campuses' => $campuses,
             'programs' => $programs,
         ]);
+    }
+
+    private function filteredLeadIndexQuery(string $type, Request $request): Builder
+    {
+        $query = $this->leadQueryForType($type);
+
+        if ($request->boolean('today')) {
+            $query->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+
+        return $this->applyLeadIndexFilters($query, $this->resolveLeadIndexFilters($request));
     }
 
     private function resolveLeadIndexFilters(Request $request): array

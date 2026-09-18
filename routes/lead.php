@@ -63,6 +63,12 @@ Route::post('/lead-transfers/{transfer}/approve', [LeadController::class, 'appro
 Route::get('/leads', [LeadController::class, 'index'])
     ->middleware('permission:lead.view')
     ->name('leads.index');
+Route::get('/leads/export', [LeadController::class, 'export'])
+    ->middleware(['permission:lead.view', 'admin'])
+    ->name('leads.export');
+Route::get('/leads/{lead}/export', [LeadController::class, 'exportLead'])
+    ->middleware(['permission:lead.view', 'admin'])
+    ->name('leads.export-single');
 Route::get('/leads/certification-exam', [LeadController::class, 'certificationIndex'])
     ->middleware('permission:lead.view')
     ->name('leads.certification.index');
