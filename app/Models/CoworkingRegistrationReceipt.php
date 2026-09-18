@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class CoworkingRegistrationReceipt extends Model
 {
@@ -27,6 +28,16 @@ class CoworkingRegistrationReceipt extends Model
         'amount' => 'decimal:2',
         'paid_at' => 'datetime',
     ];
+
+    public function getDueDateAttribute(): ?Carbon
+    {
+        if ($this->receipt_type === 'coworking_charge'
+            && preg_match('/^Coworking charge collected for due date (\d{4}-\d{2}-\d{2})$/', (string) $this->notes, $matches)) {
+            return Carbon::parse($matches[1])->startOfDay();
+        }
+
+        return $this->paid_at ?? $this->created_at;
+    }
 
     public function coworkingRegistration(): BelongsTo
     {

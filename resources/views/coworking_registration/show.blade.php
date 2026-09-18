@@ -89,7 +89,7 @@
                 'status' => $receipt->receipt_type === 'security_refund'
                     ? 'refunded'
                     : ($receipt->paid_at ? 'paid' : 'pending'),
-                'due_date' => $receipt->paid_at ?? $receipt->created_at,
+                'due_date' => $receipt->due_date,
                 'collected_at' => $receipt->paid_at,
                 'voucher_url' => route('coworking-registrations.receipts.voucher', $receipt),
                 'receipt_number' => $receipt->receipt_number,
@@ -113,7 +113,7 @@
         $showChargeModal = $errors->has('charge_date')
             || $errors->has('charge_amount')
             || $errors->has('payment_method');
-        $defaultChargeDate = old('charge_date', optional($member->next_due_date)->toDateString() ?: now()->toDateString());
+        $defaultChargeDate = old('charge_date', now()->toDateString());
         $defaultChargeAmount = old('charge_amount', number_format((float) $member->coworking_charges, 2, '.', ''));
     @endphp
 
