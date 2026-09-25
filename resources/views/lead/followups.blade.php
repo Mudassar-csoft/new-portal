@@ -7,6 +7,7 @@
         $selectedStage = $selectedStage ?? 'all';
         $search = $search ?? '';
         $perPage = (int) ($perPage ?? 25);
+        $showProgram = ($type ?? 'training') === 'training';
         $currentPage = $followups->currentPage();
         $lastPage = $followups->lastPage();
         $pageStart = max(1, $currentPage - 2);
@@ -118,6 +119,9 @@
                                     <th>Sr</th>
                                     <th>Name</th>
                                     <th>Primary Contact</th>
+                                    @if($showProgram)
+                                        <th>Program</th>
+                                    @endif
                                     <th>Origin</th>
                                     <th>{{ ($type ?? 'training') === 'coworking' ? 'Campus Code' : 'Campus' }}</th>
                                     <th>Created At</th>
@@ -163,6 +167,9 @@
                                             </div>
                                         </td>
                                         <td>{{ $row->lead->phone ?? 'N/A' }}</td>
+                                        @if($showProgram)
+                                            <td>{{ $row->lead?->program?->title ?? $row->lead?->program?->name ?? 'N/A' }}</td>
+                                        @endif
                                         <td>{{ $row->lead->origin ?? 'N/A' }}</td>
                                         <td>
                                             @if(($type ?? 'training') === 'coworking')
@@ -180,7 +187,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted">No follow-ups found.</td>
+                                        <td colspan="{{ $showProgram ? 10 : 9 }}" class="text-center text-muted">No follow-ups found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

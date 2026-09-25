@@ -1,6 +1,6 @@
 @extends('layouts.theme')
 
-@section('title', 'Edit Certificate')
+@section('title', 'Preview / Edit Certificate Remarks')
 
 @section('content')
     <div class="lead-shell">

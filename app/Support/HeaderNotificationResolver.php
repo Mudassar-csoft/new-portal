@@ -87,6 +87,23 @@ class HeaderNotificationResolver
             }
         }
 
+        if (
+            $user->hasAnyPermission(['lead.followup.view', 'lead.coworking.view'])
+            && Schema::hasTable('lead_followups')
+            && Schema::hasTable('leads')
+        ) {
+            $payload['canViewPendingFollowupNotifications'] = true;
+
+            try {
+                $pendingFollowups = app(PendingLeadFollowups::class)->forUser($user);
+                $payload['pendingFollowupNotificationCount'] = $pendingFollowups->count();
+                $payload['pendingFollowupNotifications'] = $pendingFollowups->take(5)->values();
+            } catch (Throwable) {
+                $payload['pendingFollowupNotifications'] = collect();
+                $payload['pendingFollowupNotificationCount'] = 0;
+            }
+        }
+
         if ($user->hasAnyPermission(['finance.receivable.view', 'finance.receivable.create', 'finance.receivable.update']) ?? false) {
             try {
                 if (FinanceOtherCharge::hasInvoiceSchema()) {
@@ -144,6 +161,7 @@ class HeaderNotificationResolver
         $payload['webLeadNotificationTotal'] = array_sum($payload['webLeadNotificationCounts']);
         $payload['notificationTotal'] = (int) $payload['webLeadNotificationTotal']
             + (int) $payload['followupNotificationCount']
+            + (int) $payload['pendingFollowupNotificationCount']
             + (int) $payload['invoiceOverdueNotificationCount']
             + (int) $payload['coworkingDueNotificationCount'];
 
@@ -166,6 +184,9 @@ class HeaderNotificationResolver
             'followupNotifications' => collect(),
             'followupNotificationCount' => 0,
             'canViewFollowupNotifications' => false,
+            'pendingFollowupNotifications' => collect(),
+            'pendingFollowupNotificationCount' => 0,
+            'canViewPendingFollowupNotifications' => false,
             'invoiceOverdueNotifications' => collect(),
             'invoiceOverdueNotificationCount' => 0,
             'canViewInvoiceNotifications' => false,

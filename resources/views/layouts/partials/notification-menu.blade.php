@@ -4,12 +4,14 @@
 @php($brochureDownloads = $webLeadNotifications['brochure_download'] ?? collect())
 @php($overdueInvoices = $invoiceOverdueNotifications ?? collect())
 @php($followupItems = $followupNotifications ?? collect())
+@php($pendingFollowupItems = $pendingFollowupNotifications ?? collect())
 @php($coworkingDueItems = $coworkingDueNotifications ?? collect())
 @php($hasWebLeadNotifications = (bool) ($canViewWebLeadNotifications ?? false))
 @php($hasFollowupNotifications = (bool) ($canViewFollowupNotifications ?? false))
+@php($hasPendingFollowupNotifications = (bool) ($canViewPendingFollowupNotifications ?? false))
 @php($hasInvoiceNotifications = (bool) ($canViewInvoiceNotifications ?? false))
 @php($hasCoworkingDueNotifications = (bool) ($canViewCoworkingDueNotifications ?? false))
-@php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasInvoiceNotifications || $hasCoworkingDueNotifications)
+@php($hasVisibleNotificationPanels = $hasWebLeadNotifications || $hasFollowupNotifications || $hasPendingFollowupNotifications || $hasInvoiceNotifications || $hasCoworkingDueNotifications)
 @php($notificationMoreLinks = [
     'follow_up' => route('leads.followups'),
     'quick_lead' => route('web-leads.index', ['tab' => 'quick_lead']),
@@ -64,6 +66,46 @@
           @endif
           <div class="notification-see-more">
             <a href="{{ $notificationMoreLinks['follow_up'] }}">See More</a>
+          </div>
+        </div>
+      </div>
+    @endif
+
+    @if($hasPendingFollowupNotifications)
+      <div class="notif-accordion-item notif-hover-card">
+        <button class="notif-accordion-toggle" type="button" data-target="#notif-pending-follow-ups" aria-expanded="false">
+          <span>Pending Follow-ups</span>
+          <span class="count">{{ $pendingFollowupNotificationCount ?? 0 }}</span>
+        </button>
+        <div class="notif-accordion-panel" id="notif-pending-follow-ups">
+          @if($pendingFollowupItems->isEmpty())
+            <div class="text-center p-4 text-muted">You have no pending follow-ups.</div>
+          @else
+            <div class="table-responsive">
+              <table class="table table-sm mb-0 notification-table">
+                <thead>
+                  <tr><th>Full Name</th><th>Date</th><th>Time</th></tr>
+                </thead>
+                <tbody>
+                  @foreach($pendingFollowupItems->take(3) as $followup)
+                    <tr>
+                      <td>
+                        @if(auth()->user()?->hasAnyPermission(['lead.view']))
+                          <a class="notification-name-link" href="{{ route('leads.show', $followup->lead_id) }}">{{ $followup->lead->name ?? 'N/A' }}</a>
+                        @else
+                          <span class="notification-name-link">{{ $followup->lead->name ?? 'N/A' }}</span>
+                        @endif
+                      </td>
+                      <td>{{ $followup->notification_due_at->format('d-M-y') }}</td>
+                      <td>{{ $followup->notification_due_at->format('h:i A') }}</td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          @endif
+          <div class="notification-see-more">
+            <a href="{{ route('leads.pending-followups') }}">See More</a>
           </div>
         </div>
       </div>

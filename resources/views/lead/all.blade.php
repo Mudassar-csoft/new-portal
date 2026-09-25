@@ -13,6 +13,7 @@
 			'not_interesting' => 'Not Interested',
 		];
 		$todayOnly = (bool) ($todayOnly ?? false);
+		$showLeadStage = ($type ?? 'training') === 'training';
 		$interestHeading = $interestHeading ?? 'Program';
 		$emptyStateMessage = $emptyStateMessage ?? 'No leads found.';
 		$indexRoute = $indexRoute ?? route('leads.index');
@@ -172,7 +173,7 @@
 									<th>Primary Contact</th>
 									<th>Campus Code</th>
 									<th>Created By</th>
-									<th>Status</th>
+									<th>{{ $showLeadStage ? 'Lead Stage' : 'Status' }}</th>
 									<th>Origin	</th>
 									<th>Follow Ups</th>
 									<th class="text-left">Action</th>
@@ -183,12 +184,16 @@
 									@php
 										$actionId = 'action-' . Str::slug($row->name ?? 'lead') . '-' . $loop->iteration;
 										$statusKey = $row->status ?? 'pending';
-										$statusLabel = $statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
-										$labelClass = match ($statusKey) {
-											'pending' => 'label-primary',
-											'registered' => 'label-info',
-											'enrolled' => 'label-warning',
-											'not_interesting' => 'label-danger',
+										$displayKey = $showLeadStage ? $row->stage_key : $statusKey;
+										$displayLabel = $showLeadStage
+											? $row->stage_label
+											: ($statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey)));
+										$labelClass = match ($displayKey) {
+											'pending', 'new' => 'label-primary',
+											'contacted', 'enroll' => 'label-success',
+											'registered', 'proposal_negotiation' => 'label-info',
+											'enrolled', 'need_analysis' => 'label-warning',
+											'not_interesting', 'not_interested_admission' => 'label-danger',
 											default => 'label-default',
 										};
 									@endphp
@@ -212,7 +217,7 @@
 										<td>{{ $row->createdBy?->name ?? 'Unknown' }}</td>
 										<td>
 											<span class="label {{ $labelClass }}">
-												{{ $statusLabel }}
+												{{ $displayLabel }}
 											</span>
 										</td>
 										<td>{{ $row->origin ?? 'N/A' }}</td>

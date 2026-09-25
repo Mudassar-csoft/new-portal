@@ -1172,6 +1172,7 @@ class LeadController extends Controller
 
         $tabs = $this->leadIndexTabs($type);
         $badgeColors = $this->leadIndexBadgeColors($type);
+        $stageMap = $this->followupStageConfig($type)['stageMap'];
         $countsByStatus = (clone $baseLeadQuery)
             ->select('status', DB::raw('COUNT(*) as aggregate'))
             ->groupBy('status')
@@ -1183,6 +1184,7 @@ class LeadController extends Controller
                 'program',
                 'campus',
                 'createdBy:id,name',
+                'latestFollowup',
             ])
             ->withCount('followups')
             ->latest();
@@ -1196,8 +1198,10 @@ class LeadController extends Controller
             ->withQueryString();
 
         $leads->setCollection(
-            $leads->getCollection()->map(function (Lead $lead) {
+            $leads->getCollection()->map(function (Lead $lead) use ($type, $stageMap) {
                 $lead->interest_summary = $this->leadInterestValue($lead);
+                $lead->stage_key = $this->normalizeFollowupStage($type, $lead->latestFollowup?->stage);
+                $lead->stage_label = $stageMap[$lead->stage_key] ?? Str::headline($lead->stage_key);
 
                 return $lead;
             })
