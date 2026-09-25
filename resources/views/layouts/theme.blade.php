@@ -814,7 +814,7 @@ height: 26vh !important;
 }
 
 .follow-footer {
-padding: 63px 2px !important;
+padding: 5px 2px !important;
 display: flex;
     align-items: baseline !important;
 }

@@ -68,23 +68,27 @@
                     </div>
                 </div>
 
-                <div class="follow-tab-bar m-0 pt-3 small" style="gap: 2px;">
-                    @foreach ($tabs as $key => $label)
-                        @php
-                            $tabQuery = request()->query();
-                            unset($tabQuery['page']);
-                            if ($key === 'all') {
-                                unset($tabQuery['stage']);
-                            } else {
-                                $tabQuery['stage'] = $key;
-                            }
-                            $tabUrl = request()->url() . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
-                        @endphp
-                        <a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStage === $key ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
-                            <span class="label-text">{{ $label }}</span>
-                            <span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-                        </a>
-                    @endforeach
+                <div class="lead-tab-navigation" data-lead-tab-navigation>
+                    <button type="button" class="lead-tab-scroll lead-tab-scroll-left" data-lead-tab-scroll="left" aria-label="Scroll tabs left" hidden>&lsaquo;</button>
+                    <div class="follow-tab-bar m-0 pt-3 small" data-lead-tab-scroller style="gap: 2px;">
+                        @foreach ($tabs as $key => $label)
+                            @php
+                                $tabQuery = request()->query();
+                                unset($tabQuery['page']);
+                                if ($key === 'all') {
+                                    unset($tabQuery['stage']);
+                                } else {
+                                    $tabQuery['stage'] = $key;
+                                }
+                                $tabUrl = request()->url() . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
+                            @endphp
+                            <a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStage === $key ? 'active' : '' }}" data-status="{{ $key }}" style="display: flex; align-items: center; gap: 3px;">
+                                <span class="label-text">{{ $label }}</span>
+                                <span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                    <button type="button" class="lead-tab-scroll lead-tab-scroll-right" data-lead-tab-scroll="right" aria-label="Scroll tabs right" hidden>&rsaquo;</button>
                 </div>
 
                 <div class="box-typical-body panel-body follow-body">
@@ -291,6 +295,62 @@
             text-decoration: none;
         }
 
+        .lead-tab-navigation {
+            display: flex;
+            align-items: stretch;
+            min-width: 0;
+            background: #f6f8fb;
+            border-bottom: 3px solid #008efb;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .lead-tab-navigation .follow-tab-bar {
+            flex: 1 1 auto;
+            min-width: 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .lead-tab-navigation .follow-tab-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .lead-tab-navigation .follow-tab {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .lead-tab-navigation .lead-tab-scroll {
+            flex: 0 0 34px;
+            border: 0;
+            background: #f6f8fb;
+            color: #53708c;
+            font-size: 38px !important;
+            padding: 14px 0 0 !important;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .lead-tab-scroll:hover,
+        .lead-tab-scroll:focus-visible {
+            background: #eaf2fa;
+            color: #0f3c6e;
+            outline: none;
+        }
+
+        .follow-stage-meta .label {
+            display: inline-block;
+            max-width: 100%;
+            white-space: normal;
+            line-height: 1.25;
+            text-align: center;
+            overflow-wrap: break-word;
+        }
+
         .follow-controls {
             gap: var(--space-lead-followups-1);
             flex-wrap: wrap;
@@ -437,8 +497,47 @@
                 }, 150);
             }
 
+            function initLeadTabNavigation() {
+                var navigation = document.querySelector('[data-lead-tab-navigation]');
+                var scroller = navigation && navigation.querySelector('[data-lead-tab-scroller]');
+                if (!navigation || !scroller) return;
+
+                var leftButton = navigation.querySelector('[data-lead-tab-scroll="left"]');
+                var rightButton = navigation.querySelector('[data-lead-tab-scroll="right"]');
+
+                function updateButtons() {
+                    var maxScroll = scroller.scrollWidth - scroller.clientWidth;
+                    var scrollLeft = scroller.scrollLeft;
+                    leftButton.hidden = scrollLeft <= 1;
+                    rightButton.hidden = maxScroll <= 1 || scrollLeft >= maxScroll - 1;
+                }
+
+                function scrollTabs(direction) {
+                    scroller.scrollBy({
+                        left: direction * Math.max(scroller.clientWidth * 0.7, 180),
+                        behavior: 'smooth'
+                    });
+                }
+
+                leftButton.addEventListener('click', function () { scrollTabs(-1); });
+                rightButton.addEventListener('click', function () { scrollTabs(1); });
+                scroller.addEventListener('scroll', updateButtons, { passive: true });
+                window.addEventListener('resize', updateButtons);
+                if (window.ResizeObserver) {
+                    new ResizeObserver(updateButtons).observe(scroller);
+                }
+                if (window.MutationObserver) {
+                    new MutationObserver(updateButtons).observe(scroller, { childList: true, subtree: true, characterData: true });
+                }
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(updateButtons);
+                }
+                updateButtons();
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 initLeadModal();
+                initLeadTabNavigation();
                 revealFollowPage();
 
             });
