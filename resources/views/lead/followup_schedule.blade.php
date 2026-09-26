@@ -181,8 +181,9 @@
                                         </td>
                                         <td>
                                             @if($row->lead?->created_at)
+                                                @php($leadAgeDays = (int) $row->lead->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay()))
                                                 {{ $row->lead->created_at->format('d-m-Y') }}
-                                                ({{ $row->lead->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay()) }} days)
+                                                ({{ $leadAgeDays }} {{ $leadAgeDays === 1 ? 'day' : 'days' }})
                                             @else
                                                 N/A
                                             @endif

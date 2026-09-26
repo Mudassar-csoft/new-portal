@@ -44,8 +44,7 @@ class LeadController extends Controller
         ]);
         $selectedOnly = ($validated['scope'] ?? 'all') === 'selected';
         $status = $this->normalizeLeadStatusFilter($request->query('status'), 'training');
-        $query = $this->filteredLeadIndexQuery('training', $request)
-            ->when($status !== null, fn (Builder $builder) => $builder->where('status', $status));
+        $query = $this->applyLeadIndexStatusFilter($this->filteredLeadIndexQuery('training', $request), $status);
 
         if ($selectedOnly) {
             $query->whereKey($validated['lead_ids']);
@@ -529,7 +528,7 @@ class LeadController extends Controller
                 $isTerminalStage ? null : $nextActionAt
             );
 
-            if ($isTerminalStage) {
+            if ($lead->status !== $leadStatusAfterFollowup) {
                 $lead->update([
                     'status' => $leadStatusAfterFollowup,
                 ]);
@@ -1177,6 +1176,7 @@ class LeadController extends Controller
             ->select('status', DB::raw('COUNT(*) as aggregate'))
             ->groupBy('status')
             ->pluck('aggregate', 'status');
+        $countsByStatus['not_interesting'] = $this->applyLeadIndexStatusFilter(clone $baseLeadQuery, 'not_interesting')->count();
         $totalLeads = (int) (clone $baseLeadQuery)->count();
 
         $leadQuery = (clone $baseLeadQuery)
@@ -1189,9 +1189,7 @@ class LeadController extends Controller
             ->withCount('followups')
             ->latest();
 
-        if ($status !== null) {
-            $leadQuery->where('status', $status);
-        }
+        $this->applyLeadIndexStatusFilter($leadQuery, $status);
 
         $leads = $leadQuery
             ->paginate($perPage)
@@ -1233,6 +1231,22 @@ class LeadController extends Controller
             'campuses' => $campuses,
             'programs' => $programs,
         ]);
+    }
+
+    private function applyLeadIndexStatusFilter(Builder $query, ?string $status): Builder
+    {
+        if ($status === null) {
+            return $query;
+        }
+
+        $query->where('status', $status);
+
+        if ($status === 'not_interesting') {
+            // An old not-interested remark must not outlive a later stage change.
+            $query->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->where('stage', 'not_interesting'));
+        }
+
+        return $query;
     }
 
     private function filteredLeadIndexQuery(string $type, Request $request): Builder
@@ -2108,7 +2122,7 @@ class LeadController extends Controller
             'enroll' => 'enrolled',
             'not_interesting' => 'not_interesting',
             'not_interested_admission' => 'not_interested_admission',
-            default => (string) ($lead->status ?? 'pending'),
+            default => $lead->status === 'not_interesting' ? 'pending' : (string) ($lead->status ?? 'pending'),
         };
     }
 

@@ -146,6 +146,42 @@ class LeadActionMenuTest extends TestCase
         ]);
     }
 
+    public function test_not_interested_lead_returns_to_pending_after_an_active_followup(): void
+    {
+        $campus = $this->createCampus('Reopened Campus', 'ROP');
+        $lead = $this->createTrainingLead($campus, $this->createProgram('TRN206'), [
+            'status' => 'not_interesting',
+        ]);
+        $lead->followups()->create([
+            'stage' => 'not_interesting',
+            'lead_status' => 'not_interesting',
+            'note' => 'Not interested earlier.',
+        ]);
+
+        $this->actingAs($this->createAdminUser())
+            ->from(route('leads.show', $lead))
+            ->post(route('leads.followups.store', $lead), [
+                'method' => 'call',
+                'probability' => 60,
+                'note' => 'Interested again and discussing the programme.',
+                'next_action_date' => now()->addDay()->format('Y-m-d H:i:s'),
+                'stage' => 'contacted',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('leads.show', $lead));
+
+        $this->assertSame('pending', $lead->fresh()->status);
+        $followup = $lead->followups()->latest('id')->first();
+        $this->assertSame('contacted', $followup->stage);
+        $this->assertSame('pending', $followup->lead_status);
+        $this->assertNotNull($followup->next_action_date);
+
+        $response = $this->get(route('leads.index', ['status' => 'not_interesting']))->assertOk();
+        $this->assertFalse($response->viewData('leads')->contains('id', $lead->id));
+        $response = $this->get(route('leads.index', ['status' => 'pending']))->assertOk();
+        $this->assertTrue($response->viewData('leads')->contains('id', $lead->id));
+    }
+
     public function test_non_admin_users_cannot_open_or_submit_lead_edit_routes(): void
     {
         $leadUpdate = Permission::query()->create([

@@ -87,6 +87,38 @@ class LeadExportTest extends TestCase
         }
     }
 
+    public function test_not_interested_list_count_and_exports_only_include_the_latest_matching_followup(): void
+    {
+        $matching = $this->createLead(['name' => 'Still Not Interested']);
+        $declinedAgain = $this->createLead(['name' => 'Declined Again']);
+        $declinedAgain->followups()->create(['stage' => 'contacted', 'lead_status' => 'pending']);
+        $declinedAgain->followups()->create(['stage' => 'not_interesting', 'lead_status' => 'not_interesting']);
+
+        $moved = $this->createLead(['name' => 'Moved To Contacted']);
+        $moved->followups()->create(['stage' => 'contacted', 'lead_status' => 'not_interesting']);
+        // Editing an old remark must not make it the latest follow-up.
+        $moved->followups()->oldest('id')->first()->update(['note' => 'Not interesting']);
+
+        $withoutFollowup = $this->createLead(['name' => 'No Followup']);
+        $withoutFollowup->followups()->delete();
+
+        foreach (['registered', 'enrolled', 'not_interested_admission'] as $status) {
+            $this->createLead(['name' => 'Converted '.$status])->update(['status' => $status]);
+        }
+
+        $this->actingAs($this->createAdmin());
+        $filters = ['status' => 'not_interesting'];
+        $response = $this->get(route('leads.index', $filters))->assertOk();
+        $this->assertEqualsCanonicalizing([$matching->id, $declinedAgain->id], $response->viewData('leads')->pluck('id')->all());
+        $this->assertSame(2, $response->viewData('leads')->total());
+        $this->assertSame(2, $response->viewData('tabCounts')['not_interesting']);
+
+        foreach ([[], ['scope' => 'selected', 'lead_ids' => Lead::query()->pluck('id')->all()]] as $selection) {
+            $rows = $this->workbookRows($this->get(route('leads.export', $filters + $selection)));
+            $this->assertEqualsCanonicalizing(['Still Not Interested', 'Declined Again'], array_column(array_slice($rows, 1), 2));
+        }
+    }
+
     public function test_all_download_includes_every_matching_lead_across_pages(): void
     {
         foreach (range(1, 12) as $number) {
@@ -157,7 +189,7 @@ class LeadExportTest extends TestCase
         $this->assertSame((string) $lead->id, $rows[1][1]);
         $this->assertSame('علی & <Ahmed>', $rows[1][2]);
         $this->assertSame('03001234567', $rows[1][4]);
-        $this->assertSame('1', $rows[1][12]);
+        $this->assertSame('2', $rows[1][12]);
         $this->assertSame('=HYPERLINK("https://example.test")', $rows[1][14]);
         $this->assertSame("Not interested\nCall ended.", $rows[1][15]);
 
@@ -255,10 +287,20 @@ class LeadExportTest extends TestCase
 
     private function createLead(array $overrides = []): Lead
     {
-        return Lead::query()->create(array_merge([
+        $lead = Lead::query()->create(array_merge([
             'type' => 'training', 'name' => 'Export Lead', 'phone' => '03001234567',
             'status' => 'not_interesting',
         ], $overrides));
+
+        if ($lead->status === 'not_interesting') {
+            $lead->followups()->create([
+                'stage' => 'not_interesting',
+                'lead_status' => 'not_interesting',
+                'note' => 'Not interested.',
+            ]);
+        }
+
+        return $lead;
     }
 
     private function createAdmin(): User

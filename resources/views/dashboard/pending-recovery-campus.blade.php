@@ -6,26 +6,21 @@
 @section('content')
     @php
         $sections = collect($sections ?? []);
-        $selectedMonth = (int) ($selectedMonth ?? now()->month);
-        $selectedYear = (int) ($selectedYear ?? now()->year);
+        $studentRows = $sections->flatMap(fn ($section) => $section['rows'] ?? [])->unique('admission_id');
         $reportGrandTotal = (float) $sections->sum('section_total');
         $programCount = (int) $sections->count();
-        $studentCount = (int) $sections->sum(fn ($section) => count($section['rows'] ?? []));
-        $totalReceived = (float) $sections->sum(fn ($section) => collect($section['rows'] ?? [])->sum('total_received'));
-        $overallPending = (float) $sections->sum(fn ($section) => collect($section['rows'] ?? [])->sum('total_pending'));
+        $studentCount = $studentRows->count();
+        $totalReceived = (float) $studentRows->sum('total_received');
+        $overallPending = (float) $studentRows->sum('total_pending');
         $campusTitle = trim(implode('-', array_filter([
             $campus->code ?? null,
             $campus->title ?: ($campus->name ?? null),
-        ])));
-        $periodLabel = trim(implode(' to ', array_filter([
-            optional($reportStart)->format('d-M-Y'),
-            optional($reportEnd)->format('d-M-Y'),
         ])));
     @endphp
 
     <div class="campus-recovery-report">
         <div class="campus-recovery-toolbar no-print">
-            <a href="{{ route('dashboard.pending-recovery', ['month' => $selectedMonth, 'year' => $selectedYear]) }}" class="campus-recovery-toolbar-link">Back</a>
+            <a href="{{ route('dashboard.pending-recovery', $periodFilters) }}" class="campus-recovery-toolbar-link">Back</a>
             <button type="button" class="campus-recovery-toolbar-button" onclick="window.print()">Print Report</button>
         </div>
 
@@ -36,7 +31,7 @@
                     <div>
                         <div class="campus-recovery-brand-eyebrow">Career Institute</div>
                         <div class="campus-recovery-campus-name">{{ $campusTitle !== '' ? $campusTitle : ($campus->name ?? 'Campus') }}</div>
-                        <div class="campus-recovery-report-title">Campus Monthly Pending Recovery Report</div>
+                        <div class="campus-recovery-report-title">Campus Pending Recovery Report</div>
                     </div>
                 </div>
                 <div class="campus-recovery-period-card">
@@ -64,7 +59,7 @@
                 </div>
                 <div class="campus-recovery-metric-card campus-recovery-metric-card--highlight">
                     <strong class="campus-recovery-metric-value">Rs. {{ number_format($reportGrandTotal, 0) }}</strong>
-                    <span class="campus-recovery-metric-label">This Month Recovery</span>
+                    <span class="campus-recovery-metric-label">{{ $allPending ? 'All Pending Recovery' : 'Selected Period Recovery' }}</span>
                 </div>
             </div>
         </section>
@@ -77,7 +72,7 @@
                         <div class="campus-recovery-course-title">{{ $section['program_title'] ?? 'Program' }}</div>
                     </div>
                     <div class="campus-recovery-section-total">
-                        <span>This Month Due</span>
+                        <span>Amount Due</span>
                         <strong>Rs. {{ number_format((float) ($section['section_total'] ?? 0), 0) }}</strong>
                     </div>
                 </div>
@@ -107,7 +102,7 @@
                                 <th>Fee Package</th>
                                 <th>Total Received</th>
                                 <th>Total Pending</th>
-                                <th>This Month Due</th>
+                                <th>Amount Due</th>
                                 <th>Installment</th>
                                 <th>Due Date</th>
                             </tr>
@@ -137,7 +132,7 @@
                 </div>
             </div>
         @empty
-            <div class="campus-recovery-empty">No pending recovery data found for this campus in the selected month.</div>
+            <div class="campus-recovery-empty">No pending recovery data found for this campus in the selected period.</div>
         @endforelse
 
         @if($sections->isNotEmpty())

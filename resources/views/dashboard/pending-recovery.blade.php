@@ -4,19 +4,19 @@
 
 @section('content')
     @php
-        $rows = collect($rows ?? []);
+        $rows = collect($summary['rows'] ?? []);
+        $columns = collect($summary['columns'] ?? []);
         $monthOptions = $monthOptions ?? [];
-        $selectedMonth = (int) ($selectedMonth ?? now()->month);
-        $selectedYear = (int) ($selectedYear ?? now()->year);
-        $monthLabel = $monthOptions[$selectedMonth] ?? now()->format('F');
         $campusLabel = $selectedCampus?->code ?: $selectedCampus?->name;
-        $monthGrandTotal = (float) $rows->sum('month_total');
+        $periodGrandTotal = (float) $rows->sum('period_total');
         $overallGrandTotal = (float) $rows->sum('overall_total');
+        $periodColspan = $columns->count() + 2;
+        $tableColspan = $periodColspan + ($allPending ? 0 : 1);
     @endphp
 
     <div class="pending-recovery-shell">
         <div class="pending-recovery-heading">
-            Showing Pending Recovery {{ $monthLabel }} {{ $selectedYear }}
+            Showing Pending Recovery — {{ $periodLabel }}
          @if($campusLabel) <span class="pending-recovery-campus mr-4">{{ $campusLabel }}</span> @endif
         </div>
 
@@ -27,23 +27,29 @@
         <form method="GET" action="{{ route('dashboard.pending-recovery') }}" class="pending-recovery-filter">
             <div class="form-row">
                 <div class="form-group col-md-4">
-                    <label class="pending-recovery-label">Select Month:</label>
-                    <select name="month" class="form-control">
+                    <label for="recovery-months" class="pending-recovery-label">Select Month(s):</label>
+                    <select id="recovery-months" name="months[]" class="form-control pending-recovery-month-select" multiple size="6" @disabled($allPending)>
                         @foreach($monthOptions as $monthNumber => $label)
-                            <option value="{{ $monthNumber }}" @selected($selectedMonth === (int) $monthNumber)>{{ $label }}</option>
+                            <option value="{{ $monthNumber }}" @selected(in_array((int) $monthNumber, $selectedMonths, true))>{{ $label }}</option>
                         @endforeach
                     </select>
+                    <small class="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple months.</small>
                 </div>
                 <div class="form-group col-md-4">
-                    <label class="pending-recovery-label">Select Year:</label>
-                    <select name="year" class="form-control">
+                    <label for="recovery-year" class="pending-recovery-label">Select Year:</label>
+                    <select id="recovery-year" name="year" class="form-control" @disabled($allPending)>
                         @foreach(($yearOptions ?? []) as $yearValue)
                             <option value="{{ $yearValue }}" @selected($selectedYear === (int) $yearValue)>{{ $yearValue }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-4 d-flex align-items-end pending-recovery-action-cell mt-4 pt-2">
-                    <button type="submit" class="btn btn-primary pending-recovery-button ">Filter</button>
+                <div class="form-group col-md-4 pending-recovery-action-cell mt-4 pt-2">
+                    <label class="d-block" for="recovery-all-pending">
+                        <input id="recovery-all-pending" type="checkbox" name="all_pending" value="1" @checked($allPending)>
+                        All pending recovery (all years)
+                    </label>
+                    <button type="submit" class="btn btn-primary pending-recovery-button">Filter</button>
+                    <a href="{{ route('dashboard.pending-recovery') }}" class="btn btn-default">Reset</a>
                 </div>
             </div>
         </form>
@@ -52,15 +58,16 @@
             <table class="table table-bordered pending-recovery-table">
                 <thead>
                     <tr>
-                        <th class=" pending-border" colspan="6"><h4 class="text-center mt-2"> Pending Recovery {{ $monthLabel }} {{ $selectedYear }}  </h4></th>
-                        <th rowspan="2"><h4 class="text-center mt-2">Overall Pending</h4></th>
+                        <th class="pending-border" colspan="{{ $periodColspan }}"><h4 class="text-center mt-2">Pending Recovery — {{ $periodLabel }}</h4></th>
+                        @unless($allPending)
+                            <th rowspan="2"><h4 class="text-center mt-2">Overall Pending</h4></th>
+                        @endunless
                     </tr>
                     <tr>
                         <th>Campus Code</th>
-                        <th>1st Week</th>
-                        <th>2nd Week</th>
-                        <th>3rd Week</th>
-                        <th>4th Week</th>
+                        @foreach($columns as $column)
+                            <th>{{ $column['label'] }}</th>
+                        @endforeach
                         <th>Total</th>
                     </tr>
                 </thead>
@@ -70,7 +77,7 @@
                             <td class="pending-recovery-campus-code">
                                 @if(!empty($row['campus_id']))
                                     <a
-                                        href="{{ route('dashboard.pending-recovery.campus', ['campus' => $row['campus_id'], 'month' => $selectedMonth, 'year' => $selectedYear]) }}"
+                                        href="{{ route('dashboard.pending-recovery.campus', ['campus' => $row['campus_id']] + $periodFilters) }}"
                                         class="pending-recovery-campus-link"
                                         target="_blank"
                                         rel="noopener"
@@ -81,23 +88,33 @@
                                     {{ $row['campus_code'] ?? 'N/A' }}
                                 @endif
                             </td>
-                            <td>{{ number_format((float) ($row['week_1'] ?? 0), 0) }}</td>
-                            <td>{{ number_format((float) ($row['week_2'] ?? 0), 0) }}</td>
-                            <td>{{ number_format((float) ($row['week_3'] ?? 0), 0) }}</td>
-                            <td>{{ number_format((float) ($row['week_4'] ?? 0), 0) }}</td>
-                            <td>{{ number_format((float) ($row['month_total'] ?? 0), 0) }}</td>
-                            <td>{{ number_format((float) ($row['overall_total'] ?? 0), 0) }}</td>
+                            @foreach($columns as $column)
+                                <td>{{ number_format((float) ($row[$column['key']] ?? 0), 0) }}</td>
+                            @endforeach
+                            <td>{{ number_format((float) ($row['period_total'] ?? 0), 0) }}</td>
+                            @unless($allPending)
+                                <td>
+                                    <a href="{{ route('dashboard.pending-recovery.campus', ['campus' => $row['campus_id'], 'all_pending' => 1]) }}" target="_blank" rel="noopener" aria-label="View all pending recovery for {{ $row['campus_code'] }}">
+                                        {{ number_format((float) ($row['overall_total'] ?? 0), 0) }}
+                                    </a>
+                                </td>
+                            @endunless
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="pending-recovery-empty">No pending recovery data found.</td>
+                            <td colspan="{{ $tableColspan }}" class="pending-recovery-empty">No pending recovery data found.</td>
                         </tr>
                     @endforelse
                     @if($rows->isNotEmpty())
                         <tr class="pending-recovery-total-row">
-                            <td colspan="5" class="pending-recovery-total-label">Total</td>
-                            <td class="pending-recovery-total-value">{{ number_format($monthGrandTotal, 0) }}</td>
-                            <td class="pending-recovery-total-value">{{ number_format($overallGrandTotal, 0) }}</td>
+                            <td class="pending-recovery-total-label">Total</td>
+                            @foreach($columns as $column)
+                                <td class="pending-recovery-total-value">{{ number_format((float) $rows->sum($column['key']), 0) }}</td>
+                            @endforeach
+                            <td class="pending-recovery-total-value">{{ number_format($periodGrandTotal, 0) }}</td>
+                            @unless($allPending)
+                                <td class="pending-recovery-total-value">{{ number_format($overallGrandTotal, 0) }}</td>
+                            @endunless
                         </tr>
                     @endif
                 </tbody>
@@ -172,6 +189,10 @@
             border: 1px solid #d6e0ef;
             border-radius: 6px;
             box-shadow: none;
+        }
+        .pending-recovery-filter .pending-recovery-month-select {
+            height: auto;
+            min-height: 170px;
         }
         .page-content .table thead th{
             text-align:center !important;
@@ -274,4 +295,18 @@
             }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const allPending = document.getElementById('recovery-all-pending');
+            const months = document.getElementById('recovery-months');
+            const year = document.getElementById('recovery-year');
+            allPending.addEventListener('change', function () {
+                months.disabled = allPending.checked;
+                year.disabled = allPending.checked;
+            });
+        });
+    </script>
 @endpush

@@ -178,7 +178,15 @@
                                                 {{ $row->lead->campus->code ?? $row->campus->code ?? $row->campus->name ?? 'N/A' }}
                                             @endif
                                         </td>
-                                        <td>{{ optional($row->lead->created_at)->format('d-M-Y h:i A') ?? 'N/A' }}</td>
+                                        <td>
+                                            @if($row->lead?->created_at)
+                                                @php($leadAgeDays = (int) $row->lead->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay()))
+                                                {{ $row->lead->created_at->format('d-M-Y h:i A') }}
+                                                ({{ $leadAgeDays }} {{ $leadAgeDays === 1 ? 'day' : 'days' }})
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
                                         <td class="last-follower-cell">{{ $row->last_follower_name ?? 'System' }}</td>
                                         <td class="followup-count text-center">{{ (int) ($row->followups_count ?? 0) }}</td>
                                         <td class="action-cell">

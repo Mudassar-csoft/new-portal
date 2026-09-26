@@ -62,18 +62,14 @@ class DashboardController extends Controller
             ? Campus::query()->find($selectedCampusId, ['id', 'code', 'name', 'title', 'campus_type'])
             : null;
 
-        [$selectedMonth, $selectedYear] = $this->resolvePendingRecoveryPeriod($request);
-        $monthStart = Carbon::createFromDate($selectedYear, $selectedMonth, 1, $this->dashboardTimezone())->startOfMonth();
-        $monthEnd = $monthStart->copy()->endOfMonth();
+        $period = $this->resolvePendingRecoveryPeriod($request);
 
         return view('dashboard.pending-recovery', [
-            'rows' => $this->buildPendingRecoveryRows($monthStart, $monthEnd, $selectedCampusId),
-            'selectedMonth' => $selectedMonth,
-            'selectedYear' => $selectedYear,
+            'summary' => $this->buildPendingRecoverySummary($period, $selectedCampusId),
             'monthOptions' => $this->pendingRecoveryMonthOptions(),
-            'yearOptions' => $this->pendingRecoveryYearOptions($selectedCampusId, $selectedYear),
+            'yearOptions' => $this->pendingRecoveryYearOptions($selectedCampusId, $period['selectedYear']),
             'selectedCampus' => $selectedCampus,
-        ]);
+        ] + $period);
     }
 
     public function pendingRecoveryCampusReport(Request $request, Campus $campus): View
@@ -86,20 +82,12 @@ class DashboardController extends Controller
 
         $this->ensureDashboardCampusAccess((int) $campus->id, $request->user());
 
-        [$selectedMonth, $selectedYear] = $this->resolvePendingRecoveryPeriod($request);
-        $monthStart = Carbon::createFromDate($selectedYear, $selectedMonth, 1, $this->dashboardTimezone())->startOfMonth();
-        $monthEnd = $monthStart->copy()->endOfMonth();
+        $period = $this->resolvePendingRecoveryPeriod($request);
 
         return view('dashboard.pending-recovery-campus', [
             'campus' => $campus,
-            'sections' => $this->buildPendingRecoveryProgramSections((int) $campus->id, $monthStart, $monthEnd),
-            'selectedMonth' => $selectedMonth,
-            'selectedYear' => $selectedYear,
-            'monthOptions' => $this->pendingRecoveryMonthOptions(),
-            'yearOptions' => $this->pendingRecoveryYearOptions((int) $campus->id, $selectedYear),
-            'reportStart' => $monthStart,
-            'reportEnd' => $monthEnd,
-        ]);
+            'sections' => $this->buildPendingRecoveryProgramSections((int) $campus->id, $period),
+        ] + $period);
     }
 
     public function collection(Request $request): View
@@ -1207,12 +1195,36 @@ $programLabels = Program::query()
     }
 
     /**
-     * @return array<int, array<string, float|int|string>>
+     * @return array{columns: array, rows: array}
      */
-    private function buildPendingRecoveryRows(Carbon $monthStart, Carbon $monthEnd, ?int $campusId = null): array
+    private function buildPendingRecoverySummary(array $period, ?int $campusId = null): array
     {
+        $columns = [];
+        if (!$period['allPending']) {
+            foreach ($period['selectedMonths'] as $month) {
+                $start = Carbon::createFromDate($period['selectedYear'], $month, 1, $this->dashboardTimezone())->startOfMonth();
+                if (count($period['selectedMonths']) === 1) {
+                    foreach (['1st Week', '2nd Week', '3rd Week', '4th Week'] as $index => $label) {
+                        $columns[] = [
+                            'key' => 'week_' . ($index + 1),
+                            'label' => $label,
+                            'start' => $start->copy()->addDays($index * 7)->toDateString(),
+                            'end' => ($index === 3 ? $start->copy()->addMonth() : $start->copy()->addDays($index * 7 + 7))->toDateString(),
+                        ];
+                    }
+                } else {
+                    $columns[] = [
+                        'key' => 'month_' . $month,
+                        'label' => $start->format('F'),
+                        'start' => $start->toDateString(),
+                        'end' => $start->copy()->addMonth()->toDateString(),
+                    ];
+                }
+            }
+        }
+
         if (!Schema::hasTable('campuses')) {
-            return [];
+            return ['columns' => $columns, 'rows' => []];
         }
 
         $campuses = Campus::query()
@@ -1221,70 +1233,64 @@ $programLabels = Program::query()
             ->orderBy('name')
             ->get(['id', 'code', 'name']);
 
-        $weeklyByCampus = collect();
+        $selectedByCampus = collect();
+        $overallByCampus = collect();
 
         if (Schema::hasTable('fee_collections')) {
             $referenceDate = $this->pendingRecoveryReferenceDateExpression();
-            $monthStartValue = $monthStart->toDateString();
-            $monthEndValue = $monthEnd->toDateString();
-
-            $weeklyQuery = DB::table('fee_collections')
+            $baseQuery = DB::table('fee_collections')
                 ->select('fee_collections.campus_id')
-                ->selectRaw(
-                    "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) BETWEEN 1 AND 7 THEN net_amount ELSE 0 END) as week_1",
-                    [$monthStartValue, $monthEndValue]
-                )
-                ->selectRaw(
-                    "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) BETWEEN 8 AND 14 THEN net_amount ELSE 0 END) as week_2",
-                    [$monthStartValue, $monthEndValue]
-                )
-                ->selectRaw(
-                    "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) BETWEEN 15 AND 21 THEN net_amount ELSE 0 END) as week_3",
-                    [$monthStartValue, $monthEndValue]
-                )
-                ->selectRaw(
-                    "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? AND DAY({$referenceDate}) >= 22 THEN net_amount ELSE 0 END) as week_4",
-                    [$monthStartValue, $monthEndValue]
-                )
-                ->selectRaw(
-                    "SUM(CASE WHEN {$referenceDate} BETWEEN ? AND ? THEN net_amount ELSE 0 END) as month_total",
-                    [$monthStartValue, $monthEndValue]
-                )
-                ->selectRaw('SUM(net_amount) as overall_total')
                 ->whereNotNull('fee_collections.campus_id')
                 ->when($campusId, fn ($query, $id) => $query->where('fee_collections.campus_id', $id));
 
-            $this->applyPendingRecoveryQueryBuilderFilters($weeklyQuery);
+            $this->applyPendingRecoveryQueryBuilderFilters($baseQuery);
+            $overallByCampus = (clone $baseQuery)
+                ->selectRaw('SUM(fee_collections.net_amount) as overall_total')
+                ->groupBy('fee_collections.campus_id')
+                ->pluck('overall_total', 'campus_id');
 
-            $weeklyByCampus = $weeklyQuery
+            $selectedQuery = clone $baseQuery;
+            $this->applyPendingRecoveryPeriodFilter($selectedQuery, $period);
+            foreach ($columns as $column) {
+                $selectedQuery->selectRaw(
+                    "SUM(CASE WHEN {$referenceDate} >= ? AND {$referenceDate} < ? THEN fee_collections.net_amount ELSE 0 END) as {$column['key']}",
+                    [$column['start'], $column['end']]
+                );
+            }
+
+            $selectedByCampus = $selectedQuery
+                ->selectRaw('SUM(fee_collections.net_amount) as period_total')
                 ->groupBy('fee_collections.campus_id')
                 ->get()
                 ->keyBy('campus_id');
         }
 
-        return $campuses
-            ->map(function (Campus $campus) use ($weeklyByCampus) {
-                $bucket = $weeklyByCampus->get($campus->id);
+        $rows = $campuses
+            ->map(function (Campus $campus) use ($selectedByCampus, $overallByCampus, $columns) {
+                $bucket = $selectedByCampus->get($campus->id);
 
-                return [
+                $row = [
                     'campus_id' => (int) $campus->id,
                     'campus_code' => (string) ($campus->code ?: $campus->name ?: ('Campus #' . $campus->id)),
-                    'week_1' => round((float) ($bucket->week_1 ?? 0), 2),
-                    'week_2' => round((float) ($bucket->week_2 ?? 0), 2),
-                    'week_3' => round((float) ($bucket->week_3 ?? 0), 2),
-                    'week_4' => round((float) ($bucket->week_4 ?? 0), 2),
-                    'month_total' => round((float) ($bucket->month_total ?? 0), 2),
-                    'overall_total' => round((float) ($bucket->overall_total ?? 0), 2),
+                    'period_total' => round((float) ($bucket->period_total ?? 0), 2),
+                    'overall_total' => round((float) ($overallByCampus->get($campus->id) ?? 0), 2),
                 ];
+                foreach ($columns as $column) {
+                    $row[$column['key']] = round((float) ($bucket->{$column['key']} ?? 0), 2);
+                }
+
+                return $row;
             })
             ->values()
             ->all();
+
+        return ['columns' => $columns, 'rows' => $rows];
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function buildPendingRecoveryProgramSections(int $campusId, Carbon $monthStart, Carbon $monthEnd): array
+    private function buildPendingRecoveryProgramSections(int $campusId, array $period): array
     {
         if (!Schema::hasTable('fee_collections')) {
             return [];
@@ -1302,7 +1308,7 @@ $programLabels = Program::query()
             ->orderBy('id');
 
         $this->applyPendingRecoveryEloquentFilters($rowsQuery);
-        $this->applyPendingRecoveryMonthFilter($rowsQuery, $monthStart, $monthEnd);
+        $this->applyPendingRecoveryPeriodFilter($rowsQuery, $period);
 
         $rows = $rowsQuery->get([
                 'id',
@@ -1346,6 +1352,7 @@ $programLabels = Program::query()
 
                     return [
                         'sr' => $index + 1,
+                        'admission_id' => $row->admission_id,
                         'roll_no' => (string) ($admission?->roll_number ?: 'N/A'),
                         'name' => (string) ($admission?->student_name ?: 'N/A'),
                         'father_name' => (string) ($admission?->guardian_name ?: 'N/A'),
@@ -1576,23 +1583,23 @@ $programLabels = Program::query()
     }
 
     /**
-     * @return array{0: int, 1: int}
+     * @return array{selectedMonths: array, selectedYear: int, allPending: bool, periodLabel: string, periodFilters: array}
      */
     private function resolvePendingRecoveryPeriod(Request $request): array
     {
-        $now = $this->dashboardNow();
-        $month = (int) $request->input('month', $now->month);
-        $year = (int) $request->input('year', $now->year);
+        [$months, $year] = $this->resolveCollectionPeriod($request);
+        $allPending = $request->boolean('all_pending');
+        $monthOptions = $this->pendingRecoveryMonthOptions();
 
-        if ($month < 1 || $month > 12) {
-            $month = (int) $now->month;
-        }
-
-        if ($year < 2000 || $year > 2100) {
-            $year = (int) $now->year;
-        }
-
-        return [$month, $year];
+        return [
+            'selectedMonths' => $months,
+            'selectedYear' => $year,
+            'allPending' => $allPending,
+            'periodLabel' => $allPending
+                ? 'All Months / All Years'
+                : collect($months)->map(fn (int $month) => $monthOptions[$month])->implode(', ') . ' ' . $year,
+            'periodFilters' => $allPending ? ['all_pending' => 1] : ['months' => $months, 'year' => $year],
+        ];
     }
 
     private function pendingRecoveryReferenceDateExpression(): string
@@ -1604,16 +1611,22 @@ $programLabels = Program::query()
         return 'DATE(fee_collections.created_at)';
     }
 
-    private function applyPendingRecoveryMonthFilter($query, Carbon $monthStart, Carbon $monthEnd): void
+    private function applyPendingRecoveryPeriodFilter($query, array $period): void
     {
-        if (Schema::hasColumn('fee_collections', 'due_at')) {
-            $query->whereNotNull('fee_collections.due_at')
-                ->whereBetween('fee_collections.due_at', [$monthStart->toDateString(), $monthEnd->toDateString()]);
-
+        if ($period['allPending']) {
             return;
         }
 
-        $query->whereBetween(DB::raw('DATE(fee_collections.created_at)'), [$monthStart->toDateString(), $monthEnd->toDateString()]);
+        $referenceDate = DB::raw($this->pendingRecoveryReferenceDateExpression());
+        $query->where(function ($monthsQuery) use ($period, $referenceDate) {
+            foreach ($period['selectedMonths'] as $month) {
+                $start = Carbon::createFromDate($period['selectedYear'], $month, 1, $this->dashboardTimezone())->startOfMonth();
+                $monthsQuery->orWhere(function ($monthQuery) use ($referenceDate, $start) {
+                    $monthQuery->where($referenceDate, '>=', $start->toDateString())
+                        ->where($referenceDate, '<', $start->copy()->addMonth()->toDateString());
+                });
+            }
+        });
     }
 
     private function applyPendingRecoveryEloquentFilters($query): void
