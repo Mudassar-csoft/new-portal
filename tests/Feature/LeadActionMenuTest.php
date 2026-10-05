@@ -128,7 +128,7 @@ class LeadActionMenuTest extends TestCase
             ->from(route('leads.show', $lead))
             ->post(route('leads.followups.store', $lead), [
                 'method' => 'call',
-                'note' => 'Lead is not interested anymore.',
+                'note' => str_pad('Lead is not interested anymore.', 150, '.'),
                 'stage' => 'not_interesting',
             ])
             ->assertRedirect(route('leads.show', $lead))
@@ -140,7 +140,7 @@ class LeadActionMenuTest extends TestCase
         $this->assertDatabaseHas('lead_followups', [
             'lead_id' => $lead->id,
             'method' => 'call',
-            'note' => 'Lead is not interested anymore.',
+            'note' => str_pad('Lead is not interested anymore.', 150, '.'),
             'stage' => 'not_interesting',
             'lead_status' => 'not_interesting',
         ]);
@@ -163,7 +163,7 @@ class LeadActionMenuTest extends TestCase
             ->post(route('leads.followups.store', $lead), [
                 'method' => 'call',
                 'probability' => 60,
-                'note' => 'Interested again and discussing the programme.',
+                'note' => str_pad('Interested again and discussing the programme.', 150, '.'),
                 'next_action_date' => now()->addDay()->format('Y-m-d H:i:s'),
                 'stage' => 'contacted',
             ])

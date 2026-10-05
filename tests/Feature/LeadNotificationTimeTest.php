@@ -159,7 +159,7 @@ class LeadNotificationTimeTest extends TestCase
                 'campus_id' => $campus->id,
                 'method' => 'call',
                 'probability' => 75,
-                'note' => 'Scheduled the next follow-up for the evening.',
+                'note' => str_pad('Scheduled the next follow-up for the evening.', 150, '.'),
                 'next_action_date' => '2026-06-18T17:45',
                 'stage' => 'contacted',
             ])

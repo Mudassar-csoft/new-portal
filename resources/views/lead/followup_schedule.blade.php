@@ -183,7 +183,7 @@
                                             @if($row->lead?->created_at)
                                                 @php($leadAgeDays = (int) $row->lead->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay()))
                                                 {{ $row->lead->created_at->format('d-m-Y') }}
-                                                ({{ $leadAgeDays }} {{ $leadAgeDays === 1 ? 'day' : 'days' }})
+                                                ({{ $leadAgeDays === 0 ? '0day' : $leadAgeDays . ' ' . ($leadAgeDays === 1 ? 'day' : 'days') }})
                                             @else
                                                 N/A
                                             @endif

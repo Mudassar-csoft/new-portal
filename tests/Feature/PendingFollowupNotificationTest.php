@@ -73,7 +73,7 @@ class PendingFollowupNotificationTest extends TestCase
         $this->actingAs($nextUser)->post(route('leads.followups.store', $lead), [
             'method' => 'call',
             'probability' => 60,
-            'note' => 'I am handling the next follow-up.',
+            'note' => str_pad('I am handling the next follow-up.', 150, '.'),
             'stage' => 'contacted',
             'next_action_date' => '2026-09-25T11:30',
         ])->assertRedirect()->assertSessionHasNoErrors();

@@ -443,9 +443,7 @@ class LeadController extends Controller
             'probability' => $usesMinimalFields
                 ? ['nullable', 'integer', 'min:1', 'max:100']
                 : ['required', 'integer', 'min:1', 'max:100'],
-            'note' => in_array($selectedStage, ['not_interesting', 'not_interested_admission'], true)
-                ? ['required', 'string']
-                : ['nullable', 'string'],
+            'note' => ['required', 'string', 'min:150'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in($allowedStages)],
         ];
@@ -2365,6 +2363,8 @@ class LeadController extends Controller
 
     private function leadStoreRules(string $type, ?Lead $lead = null): array
     {
+        $remarksMinLength = $lead ? 5 : 250;
+
         $rules = [
             'web_lead_id' => ['nullable', 'exists:web_leads,id'],
             'assigned_user_id' => ['nullable', 'exists:users,id'],
@@ -2383,7 +2383,7 @@ class LeadController extends Controller
             'details.gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'details.next_followup_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
             'details.probability' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'details.remarks' => ['nullable', 'string', 'min:5', 'max:1000'],
+            'details.remarks' => ['nullable', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             'details.teaching_method' => ['nullable', Rule::in(['campus', 'online', 'hybrid'])],
             'details.organization' => ['nullable', 'string', 'max:255'],
             'details.certification_title' => ['nullable', 'string', 'max:255'],
@@ -2406,7 +2406,7 @@ class LeadController extends Controller
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'details.area' => ['required', 'string', 'min:2', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'certification' => array_merge($rules, [
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
@@ -2418,7 +2418,7 @@ class LeadController extends Controller
                 'details.certification_title' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'coworking' => array_merge($rules, [
                 'city' => ['required', 'string', 'max:255'],
@@ -2429,7 +2429,7 @@ class LeadController extends Controller
                 'details.space_required' => ['required', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'study_abroad' => array_merge($rules, [
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
@@ -2441,7 +2441,7 @@ class LeadController extends Controller
                 'details.preferred_country' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             default => $rules,
         };

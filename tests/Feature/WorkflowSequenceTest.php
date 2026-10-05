@@ -58,7 +58,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'Johar Town',
                 'next_followup_at' => '2026-05-20T14:30',
                 'probability' => 60,
-                'remarks' => 'Interested in the weekday evening batch.',
+                'remarks' => str_pad('Interested in the weekday evening batch.', 250, '.'),
                 'gender' => 'male',
                 'teaching_method' => 'campus',
             ],
@@ -85,7 +85,7 @@ class WorkflowSequenceTest extends TestCase
                 'campus_id' => $campus->id,
                 'method' => 'call',
                 'probability' => 75,
-                'note' => 'Shared fee plan and batch schedule.',
+                'note' => str_pad('Shared fee plan and batch schedule.', 150, '.'),
                 'next_action_date' => '2026-05-22',
                 'stage' => 'need_analysis',
             ])
@@ -300,7 +300,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'DHA',
                 'next_followup_at' => '2026-05-21T12:00',
                 'probability' => 55,
-                'remarks' => 'Imported from the website quick lead form.',
+                'remarks' => str_pad('Imported from the website quick lead form.', 250, '.'),
                 'gender' => 'female',
                 'teaching_method' => 'online',
             ],
@@ -358,7 +358,7 @@ class WorkflowSequenceTest extends TestCase
                 'next_followup_at' => '2026-05-21T16:00',
                 'additional_amenities' => 'Parking and meeting room access.',
                 'probability' => 65,
-                'remarks' => 'Needs a private office for an 8-person team.',
+                'remarks' => str_pad('Needs a private office for an 8-person team.', 250, '.'),
             ],
         ];
 
@@ -396,7 +396,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'Johar Town',
                 'next_followup_at' => '2026-05-22T12:00',
                 'probability' => 55,
-                'remarks' => 'Interested in the evening batch.',
+                'remarks' => str_pad('Interested in the evening batch.', 250, '.'),
                 'gender' => 'male',
                 'teaching_method' => 'campus',
             ],
@@ -436,7 +436,7 @@ class WorkflowSequenceTest extends TestCase
                 'next_followup_at' => '2026-05-22T11:00',
                 'additional_amenities' => 'Parking access',
                 'probability' => 60,
-                'remarks' => 'Needs five desks near the sales team.',
+                'remarks' => str_pad('Needs five desks near the sales team.', 250, '.'),
             ],
         ];
 
