@@ -64,7 +64,7 @@
                                             <path d="m9 12 2 2 4-4"/>
                                         </svg>
                                     </span>
-                                    <span class="lead-action-label">Enroll To Another Course</span>
+                                    <span class="lead-action-label">{{ $latestAdmission ? 'Enroll To Another Course' : 'Enroll Now' }}</span>
                                 </a>
                                 <a class="dropdown-item lead-action-item {{ $studentSmsUrl ? '' : 'is-disabled' }}" href="{{ $studentSmsUrl ?: '#' }}" @if(!$studentSmsUrl) aria-disabled="true" tabindex="-1" @endif>
                                     <span class="lead-action-icon lead-icon-yellow" aria-hidden="true">
