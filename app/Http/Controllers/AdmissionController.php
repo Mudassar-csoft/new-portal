@@ -60,25 +60,13 @@ class AdmissionController extends Controller
 
         if ($request->filled('lead_id')) {
             $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
-
-            // Lead campus can legitimately differ from the source registration/admission's
-            // campus (e.g. a lead transferred campuses before registering). Access to those
-            // records is already validated above, so only gate directly on the lead's own
-            // campus when there is no already-authorized source registration/admission.
-            if (! $sourceRegistration && ! $sourceAdmission) {
-                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
-            }
         }
 
         if (! $lead) {
             $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
         }
 
-        // Only admins / users without a fixed campus get to pick a campus for
-        // the new admission; a user tied to one campus always admits there.
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        $canSelectCampus = $campusScopeId === null;
-        $campuses = $this->campusOptionsForUser($request->user());
+        $campuses = Campus::query()->orderBy('name')->get();
         $programs = Program::query()
             ->where('status', 'active')
             ->orderByRaw('COALESCE(title, name)')
@@ -142,9 +130,7 @@ class AdmissionController extends Controller
             'end_time' => $b->end_time,
         ])->values()->toArray();
 
-        $selectedCampusId = $canSelectCampus
-            ? (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0)
-            : $campusScopeId;
+        $selectedCampusId = (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0);
         $previewCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
             : ($sourceAdmission?->campus ?? $sourceRegistration?->campus ?? $lead?->campus ?? $campuses->first());
@@ -162,8 +148,6 @@ class AdmissionController extends Controller
 
         return view('admission.create', compact(
             'campuses',
-            'canSelectCampus',
-            'campusScopeId',
             'programs',
             'batches',
             'batchList',
@@ -199,8 +183,7 @@ class AdmissionController extends Controller
 
         $registrationNumber = null;
         if ($leadId) {
-            $lead = Lead::query()->findOrFail($leadId);
-            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+            Lead::query()->findOrFail($leadId);
 
             $existing = Registration::query()
                 ->where('lead_id', $leadId)
@@ -285,13 +268,6 @@ class AdmissionController extends Controller
         $validated['roll_number'] = $validated['roll_number'] ?? null;
         $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
-        // A user tied to one campus can only ever admit to that campus; ignore
-        // any other campus_id the form submitted (defends against tampering).
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        if ($campusScopeId) {
-            $validated['campus_id'] = $campusScopeId;
-        }
-
         try {
             // Everything below (lead, registration, admission, and the fee
             // collection row) is committed atomically: the admission must
@@ -338,14 +314,6 @@ class AdmissionController extends Controller
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
-
-                // Lead campus can legitimately differ from the source registration/admission's
-                // campus (e.g. a lead transferred campuses before registering). Access to those
-                // records is already validated above, so only gate directly on the lead's own
-                // campus when there is no already-authorized source registration/admission.
-                if (! $sourceRegistration && ! $sourceAdmission) {
-                    $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
-                }
             }
             if (! $lead) {
                 $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
