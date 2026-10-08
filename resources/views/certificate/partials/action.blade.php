@@ -6,7 +6,7 @@
     $approvedScopeOnly = ($activeScope ?? null) === 'approved';
     $printingScopeOnly = ($activeScope ?? null) === 'printing';
     $readyScopeOnly = ($activeScope ?? null) === 'ready';
-    $canEditRemarks = ($user?->isAdmin() ?? false) && ($user?->hasAnyPermission(['certificate.update']) ?? false);
+    $canEditRemarks = $user?->hasAnyPermission(['certificate.update']) ?? false;
     $canApprove = $user?->hasAnyPermission(['certificate.approve']) ?? false;
     $canReject = $user?->hasAnyPermission(['certificate.reject']) ?? false;
     $canSendToPrinting = $user?->hasAnyPermission(['certificate.send-to-printing']) ?? false;
@@ -15,7 +15,7 @@
     $canPreview = $user?->hasAnyPermission(['certificate.view']) ?? false;
     $canDelete = $user?->hasAnyPermission(['certificate.delete']) ?? false;
 
-    $showEditRemarks = ! $requestedScopeOnly && ! $approvedScopeOnly && ! $printingScopeOnly && ! $readyScopeOnly && $canEditRemarks;
+    $showEditRemarks = $canEditRemarks;
     $showApprove = $status === 'requested' && $canApprove;
     $showReject = ! $approvedScopeOnly && in_array($status, ['requested', 'approved'], true) && $canReject;
     $showSendToPrinting = ! $requestedScopeOnly && $status === 'approved' && $canSendToPrinting;
@@ -88,7 +88,7 @@
         @if($showEditRemarks)
             <a class="dropdown-item lead-action-item" href="{{ route('certificate.edit', $cert) }}">
                 <span class="lead-action-icon lead-icon-blue"><i class="fa fa-pencil"></i></span>
-                <span class="lead-action-label">Edit Remarks</span>
+                <span class="lead-action-label">Preview / Edit Remarks</span>
             </a>
         @endif
 

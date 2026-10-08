@@ -65,7 +65,7 @@ class LeadRegisteredFollowupTest extends TestCase
             ->from(route('leads.show', $lead))
             ->post(route('leads.followups.store', $lead), [
                 'method' => 'call',
-                'note' => 'Still deciding, will call back.',
+                'note' => str_pad('Still deciding, will call back.', 150, '.'),
                 'stage' => 'registered',
                 'probability' => 80,
                 'next_action_date' => now()->addDays(2)->format('Y-m-d\TH:i'),
@@ -103,7 +103,7 @@ class LeadRegisteredFollowupTest extends TestCase
             ->from(route('leads.show', $lead))
             ->post(route('leads.followups.store', $lead), [
                 'method' => 'call',
-                'note' => 'Trying to move backward.',
+                'note' => str_pad('Trying to move backward.', 150, '.'),
                 'stage' => 'contacted',
             ]);
 
@@ -128,7 +128,7 @@ class LeadRegisteredFollowupTest extends TestCase
             ->from(route('leads.show', $lead))
             ->post(route('leads.followups.store', $lead), [
                 'method' => 'call',
-                'note' => 'Decided against enrolling.',
+                'note' => str_pad('Decided against enrolling.', 150, '.'),
                 'stage' => 'not_interested_admission',
             ]);
 
@@ -141,7 +141,7 @@ class LeadRegisteredFollowupTest extends TestCase
             'lead_id' => $lead->id,
             'stage' => 'not_interested_admission',
             'lead_status' => 'not_interested_admission',
-            'note' => 'Decided against enrolling.',
+            'note' => str_pad('Decided against enrolling.', 150, '.'),
         ]);
 
         // Once declined, the lead becomes closed for further follow-ups.

@@ -12,8 +12,8 @@ Route::prefix('certificate')->name('certificate.')->group(function () {
     Route::patch('/bulk-mark-ready', [CertificateController::class, 'bulkMarkReady'])->middleware('permission:certificate.mark-ready')->name('bulk-mark-ready');
     Route::post('/bulk-preview', [CertificateController::class, 'bulkPreview'])->middleware('permission:certificate.view')->name('bulk-preview');
     Route::get('/{admission}/preview', [CertificateController::class, 'preview'])->middleware('permission:certificate.view')->name('preview');
-    Route::get('/{admission}/edit', [CertificateController::class, 'edit'])->middleware(['permission:certificate.update', 'admin'])->name('edit');
-    Route::put('/{admission}', [CertificateController::class, 'update'])->middleware(['permission:certificate.update', 'admin'])->name('update');
+    Route::get('/{admission}/edit', [CertificateController::class, 'edit'])->middleware('permission:certificate.update')->name('edit');
+    Route::put('/{admission}', [CertificateController::class, 'update'])->middleware('permission:certificate.update')->name('update');
     Route::delete('/{admission}', [CertificateController::class, 'destroy'])->middleware('permission:certificate.delete')->name('destroy');
 
     // Workflow transitions

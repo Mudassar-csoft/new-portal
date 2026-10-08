@@ -403,7 +403,8 @@
             <label class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-        <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+            <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks" minlength="{{ $remarksMinLength }}" maxlength="1000" required>{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+            <small class="text-muted">Minimum {{ $remarksMinLength }} characters.</small>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror

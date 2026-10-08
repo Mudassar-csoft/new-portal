@@ -89,7 +89,7 @@
                 'status' => $receipt->receipt_type === 'security_refund'
                     ? 'refunded'
                     : ($receipt->paid_at ? 'paid' : 'pending'),
-                'due_date' => $receipt->paid_at ?? $receipt->created_at,
+                'due_date' => $receipt->due_date,
                 'collected_at' => $receipt->paid_at,
                 'voucher_url' => route('coworking-registrations.receipts.voucher', $receipt),
                 'receipt_number' => $receipt->receipt_number,
@@ -110,8 +110,10 @@
             ]);
         }
 
-        $showChargeModal = $errors->has('charge_date') || $errors->has('charge_amount');
-        $defaultChargeDate = old('charge_date', optional($member->next_due_date)->toDateString() ?: now()->toDateString());
+        $showChargeModal = $errors->has('charge_date')
+            || $errors->has('charge_amount')
+            || $errors->has('payment_method');
+        $defaultChargeDate = old('charge_date', now()->toDateString());
         $defaultChargeAmount = old('charge_amount', number_format((float) $member->coworking_charges, 2, '.', ''));
     @endphp
 
@@ -616,6 +618,20 @@
                                 <div class="fee-edit-field">
                                     <label class = " form-label">Due Date</label>
                                     <input type="text" value="{{ optional($member->next_due_date)->format('Y-m-d') ?: 'N/A' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="fee-edit-field">
+                                    <label class="form-label" for="charge_payment_method">Payment Method</label>
+                                    <select id="charge_payment_method" name="payment_method" required>
+                                        <option value="">- Select payment mode -</option>
+                                        <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
+                                        <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
+                                        <option value="online" @selected(old('payment_method') === 'online')>Online</option>
+                                    </select>
+                                    @error('payment_method')
+                                        <div class="field-error">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -1169,6 +1185,7 @@
         }
 
         .fee-edit-field input,
+        .fee-edit-field select,
         .fee-edit-field textarea {
             width: var(--dimension-coworking-registration-show-1);
             padding: 8px 10px;
@@ -1179,11 +1196,13 @@
         }
 
         .fee-edit-field input[readonly],
+        .fee-edit-field select[readonly],
         .fee-edit-field textarea[readonly] {
             background: var(--color-coworking-registration-show-8);
         }
 
         .fee-edit-field input:focus,
+        .fee-edit-field select:focus,
         .fee-edit-field textarea:focus {
             outline: 0;
             border-color: var(--color-coworking-registration-show-1);

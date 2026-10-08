@@ -64,7 +64,7 @@
                                             <path d="m9 12 2 2 4-4"/>
                                         </svg>
                                     </span>
-                                    <span class="lead-action-label">Enroll To Another Course</span>
+                                    <span class="lead-action-label">{{ $latestAdmission ? 'Enroll To Another Course' : 'Enroll Now' }}</span>
                                 </a>
                                 <a class="dropdown-item lead-action-item {{ $studentSmsUrl ? '' : 'is-disabled' }}" href="{{ $studentSmsUrl ?: '#' }}" @if(!$studentSmsUrl) aria-disabled="true" tabindex="-1" @endif>
                                     <span class="lead-action-icon lead-icon-yellow" aria-hidden="true">
@@ -539,6 +539,14 @@
                     <div class="fee-edit-field">
                         <label for="fee_collect_receipt">Receipt Number <span style="color:#dc3545;">*</span></label>
                         <input type="text" id="fee_collect_receipt" readonly>
+                    </div>
+                    <div class="fee-edit-field">
+                        <label for="fee_collect_payment_method">Payment Method</label>
+                        <select id="fee_collect_payment_method" name="payment_method" required>
+                            <option value="cash">Cash</option>
+                            <option value="bank">Bank</option>
+                            <option value="online">Online</option>
+                        </select>
                     </div>
                 </div>
                 <div class="fee-edit-footer">

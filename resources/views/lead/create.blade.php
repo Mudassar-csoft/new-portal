@@ -9,6 +9,7 @@
 		$prefillCity = old('city', $leadPrefill['city'] ?? 'Faisalabad');
 		$formAction = $formAction ?? route('leads.store');
 		$formMethod = strtoupper((string) ($formMethod ?? 'POST'));
+		$remarksMinLength = isset($lead) ? 5 : 250;
 		$formTitle = $formTitle ?? 'Create New Lead';
 		$formSubmitLabel = $formSubmitLabel ?? 'Create Lead';
 		$cancelUrl = $cancelUrl ?? url()->previous();

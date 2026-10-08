@@ -99,7 +99,7 @@
 					<path d="M9 12h6"/>
 					<path d="M9 15.5h6"/>
 				</svg>
-			</span><span class="lead-action-label">Enroll To Another Course</span>
+			</span><span class="lead-action-label">{{ $registration?->admission ? 'Enroll To Another Course' : 'Enroll Now' }}</span>
 		</a>
 
 		<a class="dropdown-item lead-action-item" href="#">

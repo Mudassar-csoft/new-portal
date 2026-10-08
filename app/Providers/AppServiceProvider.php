@@ -7,7 +7,6 @@ use App\Models\Batch;
 use App\Models\BatchTimetable;
 use App\Models\Campus;
 use App\Models\FeeCollection;
-use App\Models\FinanceOtherCharge;
 use App\Models\Lead;
 use App\Models\LeadFollowup;
 use App\Models\LeadTransfer;
@@ -15,9 +14,8 @@ use App\Models\Program;
 use App\Models\Registration;
 use App\Models\StudentAttendance;
 use App\Models\User;
-use App\Models\WebLead;
 use App\Observers\FeeCollectionObserver;
-use App\Support\ResolvesLeadFollowupNotifications;
+use App\Support\HeaderNotificationResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -27,8 +25,6 @@ use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
-    use ResolvesLeadFollowupNotifications;
-
     /**
      * Register any application services.
      */
@@ -50,151 +46,15 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.header', function ($view): void {
             $currentUser = auth()->user();
-            $webLeadSourceLabels = WebLead::leadManagementSourceLabels();
-            $webLeadNotificationCounts = array_fill_keys(array_keys($webLeadSourceLabels), 0);
-            $webLeadNotifications = [];
-            $followupNotifications = collect();
-            $followupNotificationCount = 0;
-            $invoiceOverdueNotifications = collect();
-            $invoiceOverdueNotificationCount = 0;
-            $canViewWebLeadNotifications = $currentUser?->hasAnyPermission(['web-lead.view']) ?? false;
-            $canViewFollowupNotifications = false;
-            $canViewInvoiceNotifications = false;
-            $dashboardCampuses = collect();
-            $activeDashboardCampus = null;
-            $dashboardAllowsAllCampuses = (bool) ($currentUser?->isAdmin() ?? false);
-            $activeDashboardCampusId = (int) session('dashboard_campus_id', 0);
-
-            foreach (array_keys($webLeadSourceLabels) as $sourceType) {
-                $webLeadNotifications[$sourceType] = collect();
-            }
-
-            try {
-                if (Schema::hasTable('campuses')) {
-                    if ($dashboardAllowsAllCampuses) {
-                        $dashboardCampuses = Campus::query()
-                            ->orderBy('name')
-                            ->get(['id', 'code', 'name', 'campus_type']);
-
-                        if ($activeDashboardCampusId > 0) {
-                            $activeDashboardCampus = $dashboardCampuses->firstWhere('id', $activeDashboardCampusId);
-                        }
-                    } elseif ($currentUser?->campus_id) {
-                        $dashboardCampuses = Campus::query()
-                            ->whereKey($currentUser->campus_id)
-                            ->get(['id', 'code', 'name', 'campus_type']);
-
-                        $activeDashboardCampus = $dashboardCampuses->first();
-
-                        if ($activeDashboardCampus) {
-                            session(['dashboard_campus_id' => $activeDashboardCampus->id]);
-                        } else {
-                            session()->forget('dashboard_campus_id');
-                        }
-                    } else {
-                        session()->forget('dashboard_campus_id');
-                    }
-                }
-
-                if ($canViewWebLeadNotifications && Schema::hasTable('web_leads')) {
-                    $allowedSourceTypes = array_keys($webLeadSourceLabels);
-
-                    $webLeadNotificationCounts = WebLead::query()
-                        ->pending()
-                        ->whereIn('source_type', $allowedSourceTypes)
-                        ->selectRaw('source_type, COUNT(*) as aggregate')
-                        ->groupBy('source_type')
-                        ->pluck('aggregate', 'source_type')
-                        ->map(fn ($count) => (int) $count)
-                        ->union($webLeadNotificationCounts)
-                        ->all();
-
-                    foreach (array_keys($webLeadSourceLabels) as $sourceType) {
-                        $webLeadNotifications[$sourceType] = WebLead::query()
-                            ->pending()
-                            ->ofSource($sourceType)
-                            ->latest('submitted_at')
-                            ->latest('id')
-                            ->take(5)
-                            ->get();
-                    }
-                }
-
-                if (Schema::hasTable('lead_followups') && Schema::hasTable('leads')) {
-                    $canViewFollowupNotifications = ($currentUser?->hasAnyPermission(['lead.followup.view']) ?? false)
-                        || ($currentUser?->hasAnyPermission(['lead.coworking.view']) ?? false);
-
-                    if ($currentUser?->hasAnyPermission(['lead.followup.view']) ?? false) {
-                        $followupNotifications = $followupNotifications->concat(
-                            $this->latestDueLeadFollowupNotifications(
-                                $currentUser,
-                                fn (Builder $leadQuery, ?User $user) => $this->scopeLeadQueryToUserCampus($leadQuery, $user),
-                                ['training', 'certification', 'study_abroad']
-                            )
-                        );
-                    }
-
-                    if ($currentUser?->hasAnyPermission(['lead.coworking.view']) ?? false) {
-                        $followupNotifications = $followupNotifications->concat(
-                            $this->latestDueLeadFollowupNotifications(
-                                $currentUser,
-                                fn (Builder $leadQuery, ?User $user) => $this->scopeLeadQueryToUserCampus($leadQuery, $user),
-                                ['coworking']
-                            )
-                        );
-                    }
-
-                    $followupNotifications = $followupNotifications
-                        ->sort(function ($left, $right) {
-                            $leftTimestamp = $left->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
-                            $rightTimestamp = $right->notification_due_at?->getTimestamp() ?? PHP_INT_MAX;
-
-                            return $leftTimestamp <=> $rightTimestamp ?: ($right->id <=> $left->id);
-                        })
-                        ->values();
-
-                    $followupNotificationCount = $followupNotifications->count();
-                    $followupNotifications = $followupNotifications->take(5)->values();
-                }
-
-                $canViewInvoiceNotifications = $currentUser?->hasAnyPermission(['finance.receivable.view', 'finance.receivable.update', 'finance.receivable.create']) ?? false;
-
-                if ($canViewInvoiceNotifications
-                    && Schema::hasTable('finance_other_charges')
-                    && Schema::hasColumn('finance_other_charges', 'due_date')
-                    && Schema::hasColumn('finance_other_charges', 'balance_amount')
-                ) {
-                    FinanceOtherCharge::syncLifecycleStatuses();
-
-                    $overdueInvoices = $this->scopeQueryToUserCampus(
-                        FinanceOtherCharge::query()->with(['campus:id,code,name']),
-                        $currentUser
-                    )
-                        ->where('status', 'overdue');
-
-                    $invoiceOverdueNotificationCount = (clone $overdueInvoices)->count();
-                    $invoiceOverdueNotifications = (clone $overdueInvoices)
-                        ->orderBy('due_date')
-                        ->orderByDesc('id')
-                        ->take(5)
-                        ->get(['id', 'campus_id', 'invoice_number', 'student_name', 'due_date', 'balance_amount']);
-                }
-            } catch (Throwable) {
-                // Keep empty notification data when the table is unavailable.
-            }
+            [
+                'dashboardCampuses' => $dashboardCampuses,
+                'activeDashboardCampus' => $activeDashboardCampus,
+                'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
+            ] = $this->resolveDashboardCampusSelectorData($currentUser);
+            $notificationPayload = app(HeaderNotificationResolver::class)->resolve($currentUser);
 
             $view->with([
-                'webLeadSourceLabels' => $webLeadSourceLabels,
-                'webLeadNotificationCounts' => $webLeadNotificationCounts,
-                'webLeadNotifications' => $webLeadNotifications,
-                'webLeadNotificationTotal' => array_sum($webLeadNotificationCounts),
-                'canViewWebLeadNotifications' => $canViewWebLeadNotifications,
-                'followupNotifications' => $followupNotifications,
-                'followupNotificationCount' => $followupNotificationCount,
-                'canViewFollowupNotifications' => $canViewFollowupNotifications,
-                'invoiceOverdueNotifications' => $invoiceOverdueNotifications,
-                'invoiceOverdueNotificationCount' => $invoiceOverdueNotificationCount,
-                'canViewInvoiceNotifications' => $canViewInvoiceNotifications,
+                ...$notificationPayload,
                 'dashboardCampuses' => $dashboardCampuses,
                 'activeDashboardCampus' => $activeDashboardCampus,
                 'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
@@ -228,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
             'coworking_followup_schedule' => 0,
             'coworking_all_leads' => 0,
             'coworking_today_leads' => 0,
+            'coworking_registered' => 0,
             'all_registrations' => 0,
             'all_admissions' => 0,
             'admission_today' => 0,
@@ -257,6 +118,7 @@ class AppServiceProvider extends ServiceProvider
             'program_create' => 0,
             'program_ongoing' => 0,
             'program_suspended' => 0,
+            'program_discounted' => 0,
             'program_all' => 0,
             'campus_create' => 0,
             'campus_all' => 0,
@@ -372,6 +234,13 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('lead', fn (Builder $leadQuery) => $this->scopeLeadQueryToUserCampus($leadQuery->coworking(), $user))
                     ->distinct()
                     ->count('lead_id');
+
+                $sidebarCounts['coworking_registered'] = $this->scopeLeadQueryToUserCampus(
+                    Lead::query()->coworking(),
+                    $user
+                )
+                    ->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->where('stage', 'registered'))
+                    ->count();
 
                 $sidebarCounts['coworking_followup_schedule'] = $this->scopeLeadQueryToUserCampus(
                     Lead::query()->coworking(),
@@ -558,6 +427,12 @@ class AppServiceProvider extends ServiceProvider
                 $sidebarCounts['program_create'] = (int) ($programSummary?->total ?? 0);
                 $sidebarCounts['program_ongoing'] = (int) ($programSummary?->program_ongoing ?? 0);
                 $sidebarCounts['program_suspended'] = (int) ($programSummary?->program_suspended ?? 0);
+
+                if (Schema::hasTable('program_campus_discounts')) {
+                    $sidebarCounts['program_discounted'] = Program::query()
+                        ->whereHas('campusDiscounts', fn (Builder $builder) => $builder->where('status', 'active'))
+                        ->count();
+                }
             }
 
             if (($can('campus.create') || $can('campus.view')) && Schema::hasTable('campuses')) {
@@ -598,6 +473,59 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return $sidebarCounts;
+    }
+
+    /**
+     * @return array{dashboardCampuses: \Illuminate\Support\Collection<int, Campus>, activeDashboardCampus: ?Campus, dashboardAllowsAllCampuses: bool}
+     */
+    private function resolveDashboardCampusSelectorData(?User $currentUser): array
+    {
+        $dashboardCampuses = collect();
+        $activeDashboardCampus = null;
+        $dashboardAllowsAllCampuses = (bool) ($currentUser?->isAdmin() ?? false);
+        $activeDashboardCampusId = (int) session('dashboard_campus_id', 0);
+
+        try {
+            if (! Schema::hasTable('campuses')) {
+                return [
+                    'dashboardCampuses' => $dashboardCampuses,
+                    'activeDashboardCampus' => $activeDashboardCampus,
+                    'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
+                ];
+            }
+
+            if ($dashboardAllowsAllCampuses) {
+                $dashboardCampuses = Campus::query()
+                    ->orderBy('name')
+                    ->get(['id', 'code', 'name', 'campus_type']);
+
+                if ($activeDashboardCampusId > 0) {
+                    $activeDashboardCampus = $dashboardCampuses->firstWhere('id', $activeDashboardCampusId);
+                }
+            } elseif ($currentUser?->campus_id) {
+                $dashboardCampuses = Campus::query()
+                    ->whereKey($currentUser->campus_id)
+                    ->get(['id', 'code', 'name', 'campus_type']);
+
+                $activeDashboardCampus = $dashboardCampuses->first();
+
+                if ($activeDashboardCampus) {
+                    session(['dashboard_campus_id' => $activeDashboardCampus->id]);
+                } else {
+                    session()->forget('dashboard_campus_id');
+                }
+            } else {
+                session()->forget('dashboard_campus_id');
+            }
+        } catch (Throwable) {
+            // Keep campus selector empty when campus metadata is unavailable.
+        }
+
+        return [
+            'dashboardCampuses' => $dashboardCampuses,
+            'activeDashboardCampus' => $activeDashboardCampus,
+            'dashboardAllowsAllCampuses' => $dashboardAllowsAllCampuses,
+        ];
     }
 
     private function scopeLeadQueryToUserCampus(Builder $query, ?User $user): Builder

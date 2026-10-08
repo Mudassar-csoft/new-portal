@@ -247,6 +247,23 @@
                             </div>
                         </div>
 
+                        @if(! $isEditMode)
+                            <div class="form-row">
+                                <div class="form-group col-md-6 col-lg-4">
+                                    <label class="form-label required">Payment Method</label>
+                                    <select class="form-control @error('payment_method') is-invalid @enderror" name="payment_method" required>
+                                        <option value="">- Select payment mode -</option>
+                                        <option value="cash" @selected(old('payment_method') === 'cash')>Cash</option>
+                                        <option value="bank" @selected(old('payment_method') === 'bank')>Bank</option>
+                                        <option value="online" @selected(old('payment_method') === 'online')>Online</option>
+                                    </select>
+                                    @error('payment_method')
+                                        <div class="field-error">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="form-row">
                             <div class="form-group col-12">
                                 <label class="form-label required">Remarks</label>
@@ -296,7 +313,7 @@
             --space-coworking-registration-create-4: 10px 14px;
             --space-coworking-registration-create-5: 8px;
             --typo-coworking-registration-create-font-weight-1: 600;
-        }0___
+        }
 
         .ci-inline-pad-04 {
             padding: 0.4rem !important;

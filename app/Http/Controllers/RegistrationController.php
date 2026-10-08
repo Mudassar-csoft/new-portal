@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
@@ -35,7 +36,10 @@ class RegistrationController extends Controller
         $campuses = Campus::query()
             ->orderBy('name')
             ->get();
-        $programs = Program::orderBy('title')->get();
+        $programs = Program::query()
+            ->where('status', 'active')
+            ->orderByRaw('COALESCE(title, name)')
+            ->get();
         $selectedCampusId = (int) ($request->old('campus_id', $lead?->campus_id) ?? 0);
         $selectedCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
@@ -68,6 +72,7 @@ class RegistrationController extends Controller
             $fee = 2000;
             $discount = 0;
             $net = $fee - $discount;
+            $paymentMethod = (string) ($validated['payment_method'] ?? 'cash');
 
             $lead = null;
             if (!empty($validated['lead_id'])) {
@@ -160,6 +165,7 @@ class RegistrationController extends Controller
                     'net_amount' => $net,
                     'receipt_number' => $registration->receipt_number,
                     'status' => 'paid',
+                    'payment_method' => $paymentMethod,
                     'paid_at' => Carbon::now(),
                     'created_by' => $request->user()?->id,
                     'notes' => 'Registration fee collected.',
@@ -380,7 +386,7 @@ class RegistrationController extends Controller
         return [
             'lead_id' => ['nullable', 'exists:leads,id'],
             'campus_id' => ['required', 'exists:campuses,id'],
-            'program_id' => ['required', 'exists:programs,id'],
+            'program_id' => ['required', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
             'student_name' => ['required', 'string', 'min:3', 'max:255'],
             'phone' => ['required', 'regex:/^03\d{9}$/', 'unique:registrations,phone'],
             'guardian_name' => ['required', 'string', 'min:3', 'max:255'],
@@ -394,6 +400,7 @@ class RegistrationController extends Controller
             'address' => ['required', 'string', 'min:10', 'max:1000'],
             'remarks' => ['nullable', 'string', 'max:2000'],
             'fee' => ['nullable', 'numeric', 'min:0'],
+            'payment_method' => ['required', 'in:cash,bank,online'],
         ];
     }
 
@@ -422,6 +429,7 @@ class RegistrationController extends Controller
             'passport_number' => 'passport number',
             'date_of_birth' => 'date of birth',
             'address' => 'postal address',
+            'payment_method' => 'payment method',
             'remarks' => 'remarks',
         ];
     }

@@ -814,7 +814,7 @@ height: 26vh !important;
 }
 
 .follow-footer {
-padding: 63px 2px !important;
+padding: 5px 2px !important;
 display: flex;
     align-items: baseline !important;
 }
@@ -3047,11 +3047,13 @@ margin-left: 0;
 			}
 
 			function buildExportDropdown($tools, context) {
-				if (!context.$table.length) {
+				if (!context.$table.length || context.$table.data('exportDisabled') === true) {
 					return;
 				}
 
 				var filename = (context.$table.attr('id') || 'table') + '.csv';
+				var exportUrl = context.$table.data('exportUrl') || (context.$wrapper && context.$wrapper.length ? context.$wrapper.data('exportUrl') : '');
+				var excelExportUrl = context.$table.data('excelExportUrl');
 				var $dropdown = $(
 					'<div class="follow-toolbar-dropdown dropdown">' +
 						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-label="Export">' +
@@ -3069,7 +3071,20 @@ margin-left: 0;
 					copyTableToClipboard(context.$table);
 				});
 
+				if (excelExportUrl) {
+					$dropdown.find('.dropdown-menu').append(
+						$('<li>').append(
+							$('<a>', { class: 'dropdown-item', href: String(excelExportUrl), text: 'Download All Excel' })
+						)
+					);
+				}
+
 				$dropdown.on('click', '[data-export="csv"]', function () {
+					if (exportUrl) {
+						window.location.href = String(exportUrl);
+						return;
+					}
+
 					exportTableToCsv(context.$table, filename);
 				});
 

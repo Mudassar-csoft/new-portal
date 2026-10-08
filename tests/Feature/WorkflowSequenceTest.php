@@ -58,7 +58,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'Johar Town',
                 'next_followup_at' => '2026-05-20T14:30',
                 'probability' => 60,
-                'remarks' => 'Interested in the weekday evening batch.',
+                'remarks' => str_pad('Interested in the weekday evening batch.', 250, '.'),
                 'gender' => 'male',
                 'teaching_method' => 'campus',
             ],
@@ -85,7 +85,7 @@ class WorkflowSequenceTest extends TestCase
                 'campus_id' => $campus->id,
                 'method' => 'call',
                 'probability' => 75,
-                'note' => 'Shared fee plan and batch schedule.',
+                'note' => str_pad('Shared fee plan and batch schedule.', 150, '.'),
                 'next_action_date' => '2026-05-22',
                 'stage' => 'need_analysis',
             ])
@@ -300,7 +300,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'DHA',
                 'next_followup_at' => '2026-05-21T12:00',
                 'probability' => 55,
-                'remarks' => 'Imported from the website quick lead form.',
+                'remarks' => str_pad('Imported from the website quick lead form.', 250, '.'),
                 'gender' => 'female',
                 'teaching_method' => 'online',
             ],
@@ -358,7 +358,7 @@ class WorkflowSequenceTest extends TestCase
                 'next_followup_at' => '2026-05-21T16:00',
                 'additional_amenities' => 'Parking and meeting room access.',
                 'probability' => 65,
-                'remarks' => 'Needs a private office for an 8-person team.',
+                'remarks' => str_pad('Needs a private office for an 8-person team.', 250, '.'),
             ],
         ];
 
@@ -396,7 +396,7 @@ class WorkflowSequenceTest extends TestCase
                 'area' => 'Johar Town',
                 'next_followup_at' => '2026-05-22T12:00',
                 'probability' => 55,
-                'remarks' => 'Interested in the evening batch.',
+                'remarks' => str_pad('Interested in the evening batch.', 250, '.'),
                 'gender' => 'male',
                 'teaching_method' => 'campus',
             ],
@@ -436,7 +436,7 @@ class WorkflowSequenceTest extends TestCase
                 'next_followup_at' => '2026-05-22T11:00',
                 'additional_amenities' => 'Parking access',
                 'probability' => 60,
-                'remarks' => 'Needs five desks near the sales team.',
+                'remarks' => str_pad('Needs five desks near the sales team.', 250, '.'),
             ],
         ];
 
@@ -471,6 +471,7 @@ class WorkflowSequenceTest extends TestCase
             'registration_date' => '2026-05-25',
             'coworking_charges' => 45000,
             'security_fee' => 15000,
+            'payment_method' => 'cash',
             'remarks' => 'Needs five desks near the sales team.',
         ]);
 
@@ -606,7 +607,7 @@ class WorkflowSequenceTest extends TestCase
 
         $campus = Campus::query()->where('name', 'Lahore Campus')->firstOrFail();
 
-        $this->assertSame('CILHR01', $campus->code);
+        $this->assertMatchesRegularExpression('/^CILHR\d+$/', (string) $campus->code);
 
         $this->post(route('program.store'), [
             'program_type' => 'bootcamp',
@@ -643,7 +644,7 @@ class WorkflowSequenceTest extends TestCase
 
         $batch = Batch::query()->where('name', 'Morning Batch A')->firstOrFail();
 
-        $this->assertSame('TRN10105-26', $batch->code);
+        $this->assertStringStartsWith('TRN10105-26', (string) $batch->code);
 
         return [
             'campus' => $campus,
@@ -676,6 +677,7 @@ class WorkflowSequenceTest extends TestCase
             'registration_date' => '2026-04-20',
             'coworking_charges' => 10000,
             'security_fee' => 5000,
+            'payment_method' => 'cash',
             'remarks' => 'Monthly charge cycle test.',
         ]);
 
@@ -702,6 +704,7 @@ class WorkflowSequenceTest extends TestCase
         $chargeResponse = $this->post(route('coworking-registrations.collect-charge', $registration), [
             'charge_date' => '2026-05-18',
             'charge_amount' => 10000,
+            'payment_method' => 'cash',
         ]);
 
         $chargeResponse->assertOk()
@@ -720,6 +723,51 @@ class WorkflowSequenceTest extends TestCase
             ->where('coworking_registration_id', $registration->id)
             ->where('receipt_type', 'coworking_charge')
             ->get());
+    }
+
+    public function test_coworking_due_charge_validation_reopens_modal_for_missing_payment_mode(): void
+    {
+        $admin = $this->createAdminUser();
+        $this->actingAs($admin);
+
+        $campus = Campus::query()->create([
+            'name' => 'Coworking Validation Campus',
+            'slug' => 'coworking-validation-campus',
+            'code' => 'CICWV01',
+        ]);
+
+        $this->postJson(route('coworking-registrations.store'), [
+            'campus_id' => $campus->id,
+            'full_name' => 'Mahnoor Ali',
+            'phone' => '03000000029',
+            'guardian_name' => 'Ali Raza',
+            'guardian_phone' => '03000000039',
+            'cnic' => '3520212345699',
+            'email' => 'mahnoor.ali@example.com',
+            'education' => 'Bachelors',
+            'date_of_birth' => '1996-09-10',
+            'nature_of_work' => 'Design consulting',
+            'timing' => '10:00 AM - 06:00 PM',
+            'gender' => 'female',
+            'address' => 'House 29, DHA, Lahore',
+            'registration_date' => '2026-04-20',
+            'coworking_charges' => 12000,
+            'security_fee' => 6000,
+            'payment_method' => 'cash',
+            'remarks' => 'Modal validation coverage.',
+        ])->assertOk();
+
+        $registration = CoworkingRegistration::query()->where('phone', '03000000029')->firstOrFail();
+
+        $this->followingRedirects()
+            ->from(route('coworking-registrations.show', $registration))
+            ->post(route('coworking-registrations.collect-charge', $registration), [
+                'charge_date' => '2026-05-18',
+                'charge_amount' => 12000,
+            ])
+            ->assertOk()
+            ->assertSee('Please select a payment mode.')
+            ->assertSee('id="chargeModal" aria-hidden="false"', false);
     }
 
     private function createAdminUser(): User

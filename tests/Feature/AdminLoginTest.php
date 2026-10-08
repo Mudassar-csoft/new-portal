@@ -70,4 +70,5 @@ class AdminLoginTest extends TestCase
             'Did not expect a remember-me cookie when the checkbox was left unchecked.'
         );
     }
+
 }

@@ -11,6 +11,7 @@ use App\Models\Program;
 use App\Models\Registration;
 use App\Models\User;
 use App\Models\WebLead;
+use App\Support\ExcelDownload;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +24,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -31,6 +33,70 @@ class LeadController extends Controller
     public function index(Request $request): View
     {
         return $this->renderLeadIndex('training', $request);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $validated = $request->validate([
+            'scope' => ['nullable', Rule::in(['all', 'selected'])],
+            'lead_ids' => ['required_if:scope,selected', 'array', 'min:1', 'max:100'],
+            'lead_ids.*' => ['integer', 'min:1', 'distinct'],
+        ]);
+        $selectedOnly = ($validated['scope'] ?? 'all') === 'selected';
+        $status = $this->normalizeLeadStatusFilter($request->query('status'), 'training');
+        $query = $this->applyLeadIndexStatusFilter($this->filteredLeadIndexQuery('training', $request), $status);
+
+        if ($selectedOnly) {
+            $query->whereKey($validated['lead_ids']);
+        }
+
+        return $this->downloadLeads($query, $selectedOnly ? 'leads-selected' : 'leads-' . ($status ?? 'all'));
+    }
+
+    public function exportLead(Lead $lead): StreamedResponse
+    {
+        $this->ensureLeadCampusAccess($lead);
+        abort_unless($lead->type === 'training', 404);
+
+        $query = $this->leadQueryForType('training')->whereKey($lead->id);
+        abort_unless((clone $query)->exists(), 403);
+
+        return $this->downloadLeads($query, 'lead-' . $lead->id);
+    }
+
+    private function downloadLeads(Builder $query, string $filename): StreamedResponse
+    {
+        $statuses = $this->leadIndexTabs('training');
+        $rows = $query
+            ->with(['program', 'campus', 'createdBy:id,name', 'latestFollowup'])
+            ->withCount('followups')
+            ->latest()
+            ->orderByDesc('id')
+            ->lazy(500)
+            ->map(fn (Lead $lead, int $index) => [
+                $index + 1,
+                $lead->id,
+                $lead->name,
+                $this->leadInterestValue($lead),
+                $lead->phone,
+                $lead->email,
+                $lead->campus?->code ?? $lead->campus?->name,
+                $lead->createdBy?->name ?? 'Unknown',
+                $statuses[$lead->status] ?? Str::headline($lead->status ?? 'pending'),
+                $lead->origin,
+                $lead->marketing_source,
+                $lead->city,
+                $lead->followups_count,
+                $lead->created_at?->format('Y-m-d H:i:s'),
+                data_get($lead->details, 'remarks', ''),
+                $lead->latestFollowup?->note,
+            ]);
+
+        return ExcelDownload::make($filename . '-' . now()->format('Ymd-His') . '.xlsx', [
+            'Sr', 'Lead ID', 'Name', 'Program', 'Primary Contact', 'Email', 'Campus Code',
+            'Created By', 'Status', 'Origin', 'Marketing Source', 'City', 'Follow Ups',
+            'Created At', 'Remarks', 'Last Follow-up Remarks',
+        ], $rows);
     }
 
     public function certificationIndex(Request $request): View
@@ -377,9 +443,7 @@ class LeadController extends Controller
             'probability' => $usesMinimalFields
                 ? ['nullable', 'integer', 'min:1', 'max:100']
                 : ['required', 'integer', 'min:1', 'max:100'],
-            'note' => in_array($selectedStage, ['not_interesting', 'not_interested_admission'], true)
-                ? ['required', 'string']
-                : ['nullable', 'string'],
+            'note' => ['required', 'string', 'min:100'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in($allowedStages)],
         ];
@@ -462,7 +526,7 @@ class LeadController extends Controller
                 $isTerminalStage ? null : $nextActionAt
             );
 
-            if ($isTerminalStage) {
+            if ($lead->status !== $leadStatusAfterFollowup) {
                 $lead->update([
                     'status' => $leadStatusAfterFollowup,
                 ]);
@@ -1101,20 +1165,16 @@ class LeadController extends Controller
         $campuses = $this->leadIndexCampusOptions();
         $programs = $this->leadIndexProgramOptions($type, $filters['program_id'], $filters['campus_id']);
 
-        $baseLeadQuery = $this->leadQueryForType($type);
-
-        if ($todayOnly) {
-            $baseLeadQuery->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
-        }
-
-        $this->applyLeadIndexFilters($baseLeadQuery, $filters);
+        $baseLeadQuery = $this->filteredLeadIndexQuery($type, $request);
 
         $tabs = $this->leadIndexTabs($type);
         $badgeColors = $this->leadIndexBadgeColors($type);
+        $stageMap = $this->followupStageConfig($type)['stageMap'];
         $countsByStatus = (clone $baseLeadQuery)
             ->select('status', DB::raw('COUNT(*) as aggregate'))
             ->groupBy('status')
             ->pluck('aggregate', 'status');
+        $countsByStatus['not_interesting'] = $this->applyLeadIndexStatusFilter(clone $baseLeadQuery, 'not_interesting')->count();
         $totalLeads = (int) (clone $baseLeadQuery)->count();
 
         $leadQuery = (clone $baseLeadQuery)
@@ -1122,21 +1182,22 @@ class LeadController extends Controller
                 'program',
                 'campus',
                 'createdBy:id,name',
+                'latestFollowup',
             ])
             ->withCount('followups')
             ->latest();
 
-        if ($status !== null) {
-            $leadQuery->where('status', $status);
-        }
+        $this->applyLeadIndexStatusFilter($leadQuery, $status);
 
         $leads = $leadQuery
             ->paginate($perPage)
             ->withQueryString();
 
         $leads->setCollection(
-            $leads->getCollection()->map(function (Lead $lead) {
+            $leads->getCollection()->map(function (Lead $lead) use ($type, $stageMap) {
                 $lead->interest_summary = $this->leadInterestValue($lead);
+                $lead->stage_key = $this->normalizeFollowupStage($type, $lead->latestFollowup?->stage);
+                $lead->stage_label = $stageMap[$lead->stage_key] ?? Str::headline($lead->stage_key);
 
                 return $lead;
             })
@@ -1168,6 +1229,33 @@ class LeadController extends Controller
             'campuses' => $campuses,
             'programs' => $programs,
         ]);
+    }
+
+    private function applyLeadIndexStatusFilter(Builder $query, ?string $status): Builder
+    {
+        if ($status === null) {
+            return $query;
+        }
+
+        $query->where('status', $status);
+
+        if ($status === 'not_interesting') {
+            // An old not-interested remark must not outlive a later stage change.
+            $query->whereHas('latestFollowup', fn (Builder $followupQuery) => $followupQuery->where('stage', 'not_interesting'));
+        }
+
+        return $query;
+    }
+
+    private function filteredLeadIndexQuery(string $type, Request $request): Builder
+    {
+        $query = $this->leadQueryForType($type);
+
+        if ($request->boolean('today')) {
+            $query->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()]);
+        }
+
+        return $this->applyLeadIndexFilters($query, $this->resolveLeadIndexFilters($request));
     }
 
     private function resolveLeadIndexFilters(Request $request): array
@@ -2032,7 +2120,7 @@ class LeadController extends Controller
             'enroll' => 'enrolled',
             'not_interesting' => 'not_interesting',
             'not_interested_admission' => 'not_interested_admission',
-            default => (string) ($lead->status ?? 'pending'),
+            default => $lead->status === 'not_interesting' ? 'pending' : (string) ($lead->status ?? 'pending'),
         };
     }
 
@@ -2149,7 +2237,10 @@ class LeadController extends Controller
             'campuses' => Campus::query()
                 ->orderBy('name')
                 ->get(),
-            'programs' => Program::orderBy('title')->get(),
+            'programs' => Program::query()
+                ->where('status', 'active')
+                ->orderByRaw('COALESCE(title, name)')
+                ->get(),
             'origins' => ['Walk-In', 'WhatsApp Business', 'Facebook', 'Google Business', 'Website', 'Instagram', 'LinkedIn', 'Referral', 'Other'],
             'marketingSources' => ['Alumni', 'Career team', 'Event/ Expo', 'Email', 'Facebook', 'Google', 'Instagram', 'LinkedIn', 'Referral', 'Website', 'Other'],
         ];
@@ -2225,7 +2316,7 @@ class LeadController extends Controller
         $payload = $webLead->payload ?? [];
         $programId = $payload['program_id'] ?? null;
 
-        if (is_numeric($programId) && Program::query()->whereKey((int) $programId)->exists()) {
+        if (is_numeric($programId) && Program::query()->whereKey((int) $programId)->where('status', 'active')->exists()) {
             return (int) $programId;
         }
 
@@ -2237,6 +2328,7 @@ class LeadController extends Controller
         $needle = Str::lower($candidate);
 
         return Program::query()
+            ->where('status', 'active')
             ->where(function (Builder $query) use ($needle) {
                 $query->whereRaw('LOWER(code) = ?', [$needle])
                     ->orWhereRaw('LOWER(title) = ?', [$needle])
@@ -2271,6 +2363,8 @@ class LeadController extends Controller
 
     private function leadStoreRules(string $type, ?Lead $lead = null): array
     {
+        $remarksMinLength = $lead ? 5 : 250;
+
         $rules = [
             'web_lead_id' => ['nullable', 'exists:web_leads,id'],
             'assigned_user_id' => ['nullable', 'exists:users,id'],
@@ -2282,14 +2376,14 @@ class LeadController extends Controller
             'origin' => ['required', 'string', 'max:255'],
             'marketing_source' => ['required', 'string', 'max:255'],
             'campus_id' => ['nullable', 'integer', 'exists:campuses,id'],
-            'program_id' => ['nullable', 'integer', 'exists:programs,id'],
+            'program_id' => ['nullable', 'integer', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
             'details' => ['nullable', 'array'],
             'details.country' => ['nullable', 'string', 'max:255'],
             'details.area' => ['nullable', 'string', 'min:2', 'max:255'],
             'details.gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'details.next_followup_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
             'details.probability' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'details.remarks' => ['nullable', 'string', 'min:5', 'max:1000'],
+            'details.remarks' => ['nullable', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             'details.teaching_method' => ['nullable', Rule::in(['campus', 'online', 'hybrid'])],
             'details.organization' => ['nullable', 'string', 'max:255'],
             'details.certification_title' => ['nullable', 'string', 'max:255'],
@@ -2308,11 +2402,11 @@ class LeadController extends Controller
 
         return match ($type) {
             'training' => array_merge($rules, [
-                'program_id' => ['required', 'integer', 'exists:programs,id'],
+                'program_id' => ['required', 'integer', Rule::exists('programs', 'id')->where(fn ($query) => $query->where('status', 'active'))],
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
                 'details.area' => ['required', 'string', 'min:2', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'certification' => array_merge($rules, [
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
@@ -2324,7 +2418,7 @@ class LeadController extends Controller
                 'details.certification_title' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'coworking' => array_merge($rules, [
                 'city' => ['required', 'string', 'max:255'],
@@ -2335,7 +2429,7 @@ class LeadController extends Controller
                 'details.space_required' => ['required', Rule::in(['Dedicated Desk', 'Shared Office', 'Private Office', 'Studio Space', 'Meeting Room', 'Event Hall', 'Virtual Office'])],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             'study_abroad' => array_merge($rules, [
                 'campus_id' => ['required', 'integer', 'exists:campuses,id'],
@@ -2347,7 +2441,7 @@ class LeadController extends Controller
                 'details.preferred_country' => ['required', 'string', 'max:255'],
                 'details.next_followup_at' => ['required', 'date_format:Y-m-d\TH:i'],
                 'details.probability' => ['required', 'integer', 'min:1', 'max:100'],
-                'details.remarks' => ['required', 'string', 'min:5', 'max:1000'],
+                'details.remarks' => ['required', 'string', 'min:' . $remarksMinLength, 'max:1000'],
             ]),
             default => $rules,
         };

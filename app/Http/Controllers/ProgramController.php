@@ -19,8 +19,9 @@ class ProgramController extends Controller
     public function index(Request $request): View
     {
         $scope = (string) $request->query('scope', 'all');
+        $perPage = $this->resolvePerPage($request);
 
-        $programs = Program::query()
+        $programs = $this->filteredProgramsQuery($request)
             ->with(['campusDiscounts.campus'])
             ->withCount([
                 'batches',
@@ -29,19 +30,17 @@ class ProgramController extends Controller
                 'campusDiscounts as active_discounts_count' => fn (Builder $builder) => $builder->where('status', 'active'),
             ]);
 
-        $this->applyScope($programs, $scope);
-        $this->applyFilters($programs, $request);
-
         $programs = $programs
             ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByRaw('COALESCE(title, name)')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         return view('program.index', [
             'programs' => $programs,
             'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name', 'city']),
             'typeOptions' => $this->typeOptions(),
+            'perPage' => $perPage,
             'filters' => [
                 'scope' => $scope,
                 'program_type' => $request->input('program_type'),
@@ -52,6 +51,56 @@ class ProgramController extends Controller
             'scopeCards' => $this->buildScopeCards($request),
             'pageTitle' => $this->resolvePageTitle($scope),
             'pageDescription' => $this->resolvePageDescription($scope),
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $scope = (string) $request->query('scope', 'all');
+        $programs = $this->filteredProgramsQuery($request)
+            ->with(['campusDiscounts.campus'])
+            ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
+            ->orderByRaw('COALESCE(title, name)')
+            ->get();
+
+        $filename = 'programmes-' . $scope . '-' . now()->format('Ymd-His') . '.csv';
+
+        return response()->streamDownload(function () use ($programs): void {
+            $handle = fopen('php://output', 'wb');
+
+            if ($handle === false) {
+                return;
+            }
+
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, ['Sr', 'Title', 'Code', 'Duration', 'Fee', 'Discounts', 'Status']);
+
+            foreach ($programs->values() as $index => $program) {
+                $discounts = $program->campusDiscounts
+                    ->sortBy(fn ($discount) => [$discount->campus_id === null ? 0 : 1, $discount->campus?->name ?? ''])
+                    ->map(function ($discount): string {
+                        $percent = rtrim(rtrim(number_format((float) $discount->discount_percent, 2), '0'), '.');
+                        $campus = $discount->campus?->name ?? 'All campuses';
+                        $status = ucfirst((string) ($discount->status ?? 'active'));
+
+                        return "{$percent}% {$campus} ({$status})";
+                    })
+                    ->implode(' | ');
+
+                fputcsv($handle, [
+                    $index + 1,
+                    $program->title ?? $program->name,
+                    $program->code,
+                    number_format((int) ($program->duration_weeks ?? 0)) . ' weeks',
+                    number_format((float) $program->fee, 2),
+                    $discounts !== '' ? $discounts : 'No discounts',
+                    ucfirst((string) ($program->status ?? 'active')),
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
@@ -322,6 +371,16 @@ class ProgramController extends Controller
             ->delete();
     }
 
+    private function filteredProgramsQuery(Request $request): Builder
+    {
+        $query = Program::query();
+
+        $this->applyScope($query, (string) $request->query('scope', 'all'));
+        $this->applyFilters($query, $request);
+
+        return $query;
+    }
+
     private function applyFilters(Builder $query, Request $request): void
     {
         $query
@@ -421,6 +480,13 @@ class ProgramController extends Controller
             'discounted' => 'Programmes with at least one active campus or global discount.',
             default => 'Manage programme setup, campus discounts, pricing, and linked batch activity.',
         };
+    }
+
+    private function resolvePerPage(Request $request): int
+    {
+        $perPage = (int) $request->integer('per_page', 10);
+
+        return in_array($perPage, [10, 20, 50, 100], true) ? $perPage : 10;
     }
 
     private function typeOptions(): array

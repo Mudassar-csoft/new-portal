@@ -64,7 +64,7 @@
             ];
         }
 
-        $showActionColumn = match ($activeScope) {
+        $showActionColumn = ($currentUser?->hasAnyPermission(['certificate.update']) ?? false) || match ($activeScope) {
             'requested' => $currentUser?->hasAnyPermission(['certificate.approve', 'certificate.reject']) ?? false,
             'approved' => $currentUser?->hasAnyPermission(['certificate.send-to-printing']) ?? false,
             'printing' => $currentUser?->hasAnyPermission(['certificate.mark-ready', 'certificate.view']) ?? false,

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('program')->name('program.')->group(function () {
     Route::get('/', [ProgramController::class, 'index'])->middleware('permission:program.view')->name('index');
+    Route::get('/export', [ProgramController::class, 'export'])->middleware('permission:program.view')->name('export');
     Route::get('/new', [ProgramController::class, 'create'])->middleware('permission:program.create')->name('create');
     Route::get('/{program}/outline', [ProgramController::class, 'outline'])->middleware('permission:program.view')->name('outline');
     Route::get('/{program}/edit', [ProgramController::class, 'edit'])->middleware(['permission:program.update', 'admin'])->name('edit');

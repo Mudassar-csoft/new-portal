@@ -184,7 +184,8 @@
     <div class="form-row">
         <div class="form-group col-12">
             <label class="form-label required">Remarks</label>
-            <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="4" placeholder="Remarks">{{ old('details.remarks', data_get($leadPrefill, 'details.remarks')) }}</textarea>
+            <textarea name="details[remarks]" class="form-control @error('details.remarks') is-invalid @enderror" rows="4" placeholder="Remarks" minlength="{{ $remarksMinLength }}" maxlength="1000" required>{{ old('details.remarks', data_get($leadPrefill, 'details.remarks')) }}</textarea>
+            <small class="text-muted">Minimum {{ $remarksMinLength }} characters.</small>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
             @enderror

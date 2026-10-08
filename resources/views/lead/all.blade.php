@@ -13,6 +13,7 @@
 			'not_interesting' => 'Not Interested',
 		];
 		$todayOnly = (bool) ($todayOnly ?? false);
+		$showLeadStage = ($type ?? 'training') === 'training';
 		$interestHeading = $interestHeading ?? 'Program';
 		$emptyStateMessage = $emptyStateMessage ?? 'No leads found.';
 		$indexRoute = $indexRoute ?? route('leads.index');
@@ -22,6 +23,8 @@
 		$campuses = $campuses ?? collect();
 		$programs = $programs ?? collect();
 		$showCampusFilter = $campuses->count() > 1;
+		$canExportLeads = ($type ?? 'training') === 'training' && (auth()->user()?->isAdmin() ?? false);
+		$exportQuery = request()->only(['status', 'today', 'campus_id', 'program_id', 'created_from', 'created_to', 'search']);
 		$resetQuery = array_filter([
 			'today' => $todayOnly ? 1 : null,
 			'status' => $selectedStatus !== 'all' ? $selectedStatus : null,
@@ -34,23 +37,27 @@
 
 		<div id="lead-status-content" class="follow-content">
 			<div class="follow-card box-typical box-typical-dashboard panel panel-default">
-				<div class="follow-tab-bar">
-					@foreach ($tabs as $key => $label)
-						@php
-							$tabQuery = request()->query();
-							unset($tabQuery['page']);
-							if ($key === 'all') {
-								unset($tabQuery['status']);
-							} else {
-								$tabQuery['status'] = $key;
-							}
-							$tabUrl = $indexRoute . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
-						@endphp
-						<a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStatus === $key ? 'active' : '' }}" data-status="{{ $key }}">
-							<span class="label-text">{{ $label }}</span>
-							<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
-						</a>
-					@endforeach
+				<div class="lead-tab-navigation" data-lead-tab-navigation>
+					<button type="button" class="lead-tab-scroll lead-tab-scroll-left" data-lead-tab-scroll="left" aria-label="Scroll tabs left" hidden>&lsaquo;</button>
+					<div class="follow-tab-bar" data-lead-tab-scroller>
+						@foreach ($tabs as $key => $label)
+							@php
+								$tabQuery = request()->query();
+								unset($tabQuery['page']);
+								if ($key === 'all') {
+									unset($tabQuery['status']);
+								} else {
+									$tabQuery['status'] = $key;
+								}
+								$tabUrl = $indexRoute . (count($tabQuery) ? '?' . http_build_query($tabQuery) : '');
+							@endphp
+							<a href="{{ $tabUrl }}" class="follow-tab {{ $selectedStatus === $key ? 'active' : '' }}" data-status="{{ $key }}">
+								<span class="label-text">{{ $label }}</span>
+								<span class="badge {{ $badgeColors[$key] ?? 'badge-secondary' }}">{{ $tabCounts[$key] ?? 0 }}</span>
+							</a>
+						@endforeach
+					</div>
+					<button type="button" class="lead-tab-scroll lead-tab-scroll-right" data-lead-tab-scroll="right" aria-label="Scroll tabs right" hidden>&rsaquo;</button>
 				</div>
 
 				<div class="box-typical-body panel-body follow-body">
@@ -59,6 +66,14 @@
 							<span>Showing today&apos;s leads only.</span>
 							<a href="{{ $indexRoute }}" class="lead-filter-banner-link">View all leads</a>
 						</div>
+					@endif
+					@if($canExportLeads)
+						<form method="GET" action="{{ route('leads.export') }}" id="lead-export-form">
+							<input type="hidden" name="scope" value="selected">
+							@foreach($exportQuery as $filterName => $filterValue)
+								<input type="hidden" name="{{ $filterName }}" value="{{ $filterValue }}">
+							@endforeach
+						</form>
 					@endif
 					<form method="GET" action="{{ $indexRoute }}" class="follow-controls" id="lead-filter-form">
 						@if($todayOnly)
@@ -76,6 +91,18 @@
 							</select>
 							<label class="">Entries</label>
 						</div>
+						@if($canExportLeads)
+							<div class="lead-export-actions">
+								<button type="submit" form="lead-export-form" id="lead-download-selected" class="btn btn-primary btn-sm" disabled>
+									<span class="fa fa-file-excel-o" aria-hidden="true"></span>
+									Download Selected<span id="lead-selected-count" aria-live="polite"></span>
+								</button>
+								<a href="{{ route('leads.export', $exportQuery) }}" id="lead-download-all" class="btn btn-primary btn-sm" title="Download all leads matching the current filters as Excel, across all pages">
+									<span class="fa fa-file-excel-o" aria-hidden="true"></span>
+									Download All
+								</a>
+							</div>
+						@endif
 
 						<div class="lead-filter-row">
 							@if($showCampusFilter)
@@ -127,16 +154,30 @@
 					</form>
 
 					<div class="table-responsive">
-						<table class="table table-bordered follow-table" id="lead-status-table">
+						<table class="table table-bordered follow-table" id="lead-status-table"
+							@if(($type ?? 'training') === 'training')
+								@if(auth()->user()?->isAdmin())
+									data-excel-export-url="{{ route('leads.export', $exportQuery) }}"
+								@else
+									data-export-disabled="true"
+								@endif
+							@endif>
 							<thead>
 								<tr>
-									<th>Sr</th>
+									<th>
+										<div class="lead-selection-cell">
+											@if($canExportLeads)
+												<input type="checkbox" id="lead-select-all" class="lead-export-checkbox" aria-label="Select all leads on this page" @disabled($leads->isEmpty())>
+											@endif
+											<span>Sr</span>
+										</div>
+									</th>
 									<th>Name</th>
 									<th>{{ $interestHeading }}</th>
 									<th>Primary Contact</th>
 									<th>Campus Code</th>
 									<th>Created By</th>
-									<th>Status</th>
+									<th>{{ $showLeadStage ? 'Lead Stage' : 'Status' }}</th>
 									<th>Origin	</th>
 									<th>Follow Ups</th>
 									<th class="text-left">Action</th>
@@ -147,17 +188,28 @@
 									@php
 										$actionId = 'action-' . Str::slug($row->name ?? 'lead') . '-' . $loop->iteration;
 										$statusKey = $row->status ?? 'pending';
-										$statusLabel = $statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
-										$labelClass = match ($statusKey) {
-											'pending' => 'label-primary',
-											'registered' => 'label-info',
-											'enrolled' => 'label-warning',
-											'not_interesting' => 'label-danger',
+										$displayKey = $showLeadStage ? $row->stage_key : $statusKey;
+										$displayLabel = $showLeadStage
+											? $row->stage_label
+											: ($statusLabels[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey)));
+										$labelClass = match ($displayKey) {
+											'pending', 'new' => 'label-primary',
+											'contacted', 'enroll' => 'label-success',
+											'registered', 'proposal_negotiation' => 'label-info',
+											'enrolled', 'need_analysis' => 'label-warning',
+											'not_interesting', 'not_interested_admission' => 'label-danger',
 											default => 'label-default',
 										};
 									@endphp
 									<tr data-status="{{ $statusKey }}">
-										<td class="text-center">{{ ($leads->firstItem() ?? 1) + $loop->index }}</td>
+										<td class="text-center">
+											<div class="lead-selection-cell">
+												@if($canExportLeads)
+													<input type="checkbox" class="lead-export-checkbox" name="lead_ids[]" value="{{ $row->id }}" form="lead-export-form" aria-label="Select lead {{ $row->name ?? $row->id }}">
+												@endif
+												<span>{{ ($leads->firstItem() ?? 1) + $loop->index }}</span>
+											</div>
+										</td>
 										<td>
 											<a href="{{ route('leads.show', $row) }}" class="lead-link">
 												{{ $row->name ?? 'N/A' }}
@@ -167,15 +219,15 @@
 										<td>{{ $row->phone ?? 'N/A' }}</td>
 										<td>{{ $row->campus?->code ?? $row->campus?->name ?? 'N/A' }}</td>
 										<td>{{ $row->createdBy?->name ?? 'Unknown' }}</td>
-										<td>
+										<td class="lead-status-cell">
 											<span class="label {{ $labelClass }}">
-												{{ $statusLabel }}
+												{{ $displayLabel }}
 											</span>
 										</td>
 										<td>{{ $row->origin ?? 'N/A' }}</td>
 										<td class="text-center">{{ (int) ($row->followups_count ?? 0) }}</td>
 										<td class=" action-cell">
-											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row])
+											@include('lead.partials.action', ['actionId' => $actionId, 'lead' => $row, 'showExcelDownload' => ($type ?? 'training') === 'training'])
 										</td>
 									</tr>
 								@empty
@@ -320,9 +372,88 @@
 			text-decoration: none;
 		}
 
+		.lead-tab-navigation {
+			display: flex;
+			align-items: stretch;
+			min-width: 0;
+			background: #f6f8fb;
+			border-bottom: 3px solid #008efb;
+			border-radius: 10px 10px 0 0;
+		}
+
+		.lead-tab-navigation .follow-tab-bar {
+			flex: 1 1 auto;
+			min-width: 0;
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			overflow-y: hidden;
+			border-bottom: 0;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+		}
+
+		.lead-tab-navigation .follow-tab-bar::-webkit-scrollbar {
+			display: none;
+		}
+
+		.lead-tab-navigation .follow-tab {
+			flex: 0 0 auto;
+			white-space: nowrap;
+		}
+
+		.lead-tab-navigation .lead-tab-scroll {
+			flex: 0 0 34px;
+			border: 0;
+			background: #f6f8fb;
+			color: #53708c;
+			font-size: 38px !important;
+			padding: 14px 0 0 !important;
+			line-height: 1;
+			cursor: pointer;
+		}
+
+		.lead-tab-scroll:hover,
+		.lead-tab-scroll:focus-visible {
+			background: #eaf2fa;
+			color: #0f3c6e;
+			outline: none;
+		}
+
+		.follow-table .lead-status-cell .label {
+			display: inline-block;
+			max-width: 100%;
+			white-space: normal;
+			line-height: 1.25;
+			text-align: center;
+			overflow-wrap: break-word;
+		}
+
 		.follow-controls {
 			gap: var(--space-lead-all-1);
 			flex-wrap: wrap;
+		}
+
+		.lead-export-actions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 8px;
+			margin-left: auto;
+		}
+
+		.lead-selection-cell {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+		}
+
+		.lead-export-checkbox {
+			width: 16px;
+			height: 16px;
+			flex: 0 0 16px;
+			margin: 0;
+			cursor: pointer;
 		}
 
 		.lead-filter-row {
@@ -512,6 +643,39 @@
 @push('scripts')
 	<script>
 		(function () {
+			function initLeadExport() {
+				var form = document.getElementById('lead-export-form');
+				var button = document.getElementById('lead-download-selected');
+				var selectAll = document.getElementById('lead-select-all');
+				var count = document.getElementById('lead-selected-count');
+				if (!form || !button || !selectAll || !count) return;
+
+				var checkboxes = Array.from(document.querySelectorAll('input[name="lead_ids[]"][form="lead-export-form"]'));
+
+				function updateSelection() {
+					var selectedCount = checkboxes.filter(function (checkbox) { return checkbox.checked; }).length;
+					button.disabled = selectedCount === 0;
+					count.textContent = selectedCount ? ' (' + selectedCount + ')' : '';
+					selectAll.checked = checkboxes.length > 0 && selectedCount === checkboxes.length;
+					selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+					selectAll.disabled = checkboxes.length === 0;
+				}
+
+				selectAll.addEventListener('click', function (event) { event.stopPropagation(); });
+				selectAll.addEventListener('change', function () {
+					checkboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
+					updateSelection();
+				});
+				checkboxes.forEach(function (checkbox) { checkbox.addEventListener('change', updateSelection); });
+				form.addEventListener('submit', function (event) {
+					if (!checkboxes.some(function (checkbox) { return checkbox.checked; })) {
+						event.preventDefault();
+					}
+				});
+				window.addEventListener('pageshow', updateSelection);
+				updateSelection();
+			}
+
 			function showAlert(title, text, type) {
 				if (window.swal) {
 					swal({ title: title, text: text, type: type });
@@ -606,8 +770,48 @@
 				}, 150);
 			}
 
+			function initLeadTabNavigation() {
+				var navigation = document.querySelector('[data-lead-tab-navigation]');
+				var scroller = navigation && navigation.querySelector('[data-lead-tab-scroller]');
+				if (!navigation || !scroller) return;
+
+				var leftButton = navigation.querySelector('[data-lead-tab-scroll="left"]');
+				var rightButton = navigation.querySelector('[data-lead-tab-scroll="right"]');
+
+				function updateButtons() {
+					var maxScroll = scroller.scrollWidth - scroller.clientWidth;
+					var scrollLeft = scroller.scrollLeft;
+					leftButton.hidden = scrollLeft <= 1;
+					rightButton.hidden = maxScroll <= 1 || scrollLeft >= maxScroll - 1;
+				}
+
+				function scrollTabs(direction) {
+					scroller.scrollBy({
+						left: direction * Math.max(scroller.clientWidth * 0.7, 180),
+						behavior: 'smooth'
+					});
+				}
+
+				leftButton.addEventListener('click', function () { scrollTabs(-1); });
+				rightButton.addEventListener('click', function () { scrollTabs(1); });
+				scroller.addEventListener('scroll', updateButtons, { passive: true });
+				window.addEventListener('resize', updateButtons);
+				if (window.ResizeObserver) {
+					new ResizeObserver(updateButtons).observe(scroller);
+				}
+				if (window.MutationObserver) {
+					new MutationObserver(updateButtons).observe(scroller, { childList: true, subtree: true, characterData: true });
+				}
+				if (document.fonts && document.fonts.ready) {
+					document.fonts.ready.then(updateButtons);
+				}
+				updateButtons();
+			}
+
 			document.addEventListener('DOMContentLoaded', function () {
+				initLeadExport();
 				initLeadModal();
+				initLeadTabNavigation();
 				revealLeadPage();
 
 				var dropdownButtons = document.querySelectorAll('.follow-action-dropdown .dropdown-toggle');

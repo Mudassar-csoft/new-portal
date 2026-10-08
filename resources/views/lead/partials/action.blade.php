@@ -149,6 +149,12 @@
 		Actions
 	</button>
 	<div class="dropdown-menu dropdown-menu-right lead-action-menu" aria-labelledby="{{ $actionId }}">
+		@if(($showExcelDownload ?? false) && !empty($leadId) && auth()->user()?->isAdmin())
+			<a class="dropdown-item lead-action-item" href="{{ route('leads.export-single', $leadId) }}">
+				<span class="lead-action-icon lead-icon-green fa fa-file-excel-o" aria-hidden="true"></span>
+				<span class="lead-action-label">Download Excel</span>
+			</a>
+		@endif
 
 			@if(!$editOnly)
 				@if(!empty($leadId))

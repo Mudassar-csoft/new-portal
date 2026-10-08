@@ -116,10 +116,21 @@ class BatchController extends Controller
 
     private function formPayload(Batch $batch): array
     {
+        $programs = Program::query()
+            ->where(function (Builder $query) use ($batch) {
+                $query->where('status', 'active');
+
+                if ($batch->exists && $batch->program_id) {
+                    $query->orWhereKey($batch->program_id);
+                }
+            })
+            ->orderByRaw('COALESCE(title, name)')
+            ->get(['id', 'code', 'title', 'name']);
+
         return [
             'batch' => $batch,
             'campuses' => Campus::query()->orderBy('name')->get(['id', 'code', 'name']),
-            'programs' => Program::query()->orderByRaw('COALESCE(title, name)')->get(['id', 'code', 'title', 'name']),
+            'programs' => $programs,
             'statusOptions' => [
                 'active' => 'Active',
                 'inactive' => 'Inactive',
@@ -138,7 +149,18 @@ class BatchController extends Controller
     {
         $validated = $request->validate([
             'campus_id' => ['required', 'exists:campuses,id'],
-            'program_id' => ['required', 'exists:programs,id'],
+            'program_id' => [
+                'required',
+                Rule::exists('programs', 'id')->where(function ($query) use ($batch) {
+                    $query->where(function ($builder) use ($batch) {
+                        $builder->where('status', 'active');
+
+                        if ($batch?->program_id) {
+                            $builder->orWhere('id', $batch->program_id);
+                        }
+                    });
+                }),
+            ],
             'name' => ['required', 'string', 'max:255'],
             'instructor' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],

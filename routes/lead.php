@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\PendingLeadFollowupController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/leads/create', [LeadController::class, 'create'])
@@ -28,6 +29,9 @@ Route::post('/leads/{lead}/followups', [LeadController::class, 'addFollowup'])
 Route::get('/leads/follow-ups', [LeadController::class, 'followups'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.followups');
+Route::get('/leads/pending-follow-ups', PendingLeadFollowupController::class)
+    ->middleware('permission:lead.followup.view,lead.coworking.view')
+    ->name('leads.pending-followups');
 Route::get('/leads/follow-up-schedule', [LeadController::class, 'followupSchedule'])
     ->middleware('permission:lead.followup.view')
     ->name('leads.followup-schedule');
@@ -63,6 +67,12 @@ Route::post('/lead-transfers/{transfer}/approve', [LeadController::class, 'appro
 Route::get('/leads', [LeadController::class, 'index'])
     ->middleware('permission:lead.view')
     ->name('leads.index');
+Route::get('/leads/export', [LeadController::class, 'export'])
+    ->middleware(['permission:lead.view', 'admin'])
+    ->name('leads.export');
+Route::get('/leads/{lead}/export', [LeadController::class, 'exportLead'])
+    ->middleware(['permission:lead.view', 'admin'])
+    ->name('leads.export-single');
 Route::get('/leads/certification-exam', [LeadController::class, 'certificationIndex'])
     ->middleware('permission:lead.view')
     ->name('leads.certification.index');

@@ -251,7 +251,7 @@ class LeadCampusScopeTest extends TestCase
                     'area' => 'Johar Town',
                     'next_followup_at' => '2026-06-05T12:00',
                     'probability' => 55,
-                    'remarks' => 'Lead assigned to another campus from create form.',
+                    'remarks' => str_pad('Lead assigned to another campus from create form.', 250, '.'),
                     'gender' => 'male',
                     'teaching_method' => 'campus',
                 ],

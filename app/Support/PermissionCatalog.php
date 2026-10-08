@@ -300,7 +300,7 @@ class PermissionCatalog
             'certificate.send-to-printing' => self::meta('certificate-management', null, 'Send To Printing', 10, 50),
             'certificate.mark-ready' => self::meta('certificate-management', null, 'Mark Ready', 10, 60),
             'certificate.mark-delivered' => self::meta('certificate-management', null, 'Mark Delivered', 10, 70),
-            'certificate.update' => self::meta('certificate-management', null, 'Update Certificate', 10, 80),
+            'certificate.update' => self::meta('certificate-management', null, 'Preview / Edit Remarks', 10, 80),
             'certificate.delete' => self::meta('certificate-management', null, 'Delete Certificate', 10, 90),
 
             'user.create' => self::meta('user-management', 'Users', 'Create User', 10, 10),

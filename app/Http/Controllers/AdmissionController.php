@@ -60,25 +60,13 @@ class AdmissionController extends Controller
 
         if ($request->filled('lead_id')) {
             $lead = Lead::with(['campus', 'program'])->findOrFail($request->integer('lead_id'));
-
-            // Lead campus can legitimately differ from the source registration/admission's
-            // campus (e.g. a lead transferred campuses before registering). Access to those
-            // records is already validated above, so only gate directly on the lead's own
-            // campus when there is no already-authorized source registration/admission.
-            if (! $sourceRegistration && ! $sourceAdmission) {
-                $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
-            }
         }
 
         if (! $lead) {
             $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
         }
 
-        // Only admins / users without a fixed campus get to pick a campus for
-        // the new admission; a user tied to one campus always admits there.
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        $canSelectCampus = $campusScopeId === null;
-        $campuses = $this->campusOptionsForUser($request->user());
+        $campuses = Campus::query()->orderBy('name')->get();
         $programs = Program::query()
             ->where('status', 'active')
             ->orderByRaw('COALESCE(title, name)')
@@ -142,9 +130,7 @@ class AdmissionController extends Controller
             'end_time' => $b->end_time,
         ])->values()->toArray();
 
-        $selectedCampusId = $canSelectCampus
-            ? (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0)
-            : $campusScopeId;
+        $selectedCampusId = (int) ($request->old('campus_id', $formDefaults['campus_id'] ?? ($lead?->campus_id ?? 0)) ?? 0);
         $previewCampus = $selectedCampusId > 0
             ? $campuses->firstWhere('id', $selectedCampusId)
             : ($sourceAdmission?->campus ?? $sourceRegistration?->campus ?? $lead?->campus ?? $campuses->first());
@@ -162,8 +148,6 @@ class AdmissionController extends Controller
 
         return view('admission.create', compact(
             'campuses',
-            'canSelectCampus',
-            'campusScopeId',
             'programs',
             'batches',
             'batchList',
@@ -199,8 +183,7 @@ class AdmissionController extends Controller
 
         $registrationNumber = null;
         if ($leadId) {
-            $lead = Lead::query()->findOrFail($leadId);
-            $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
+            Lead::query()->findOrFail($leadId);
 
             $existing = Registration::query()
                 ->where('lead_id', $leadId)
@@ -266,6 +249,7 @@ class AdmissionController extends Controller
             'discount_percent' => ['nullable', 'numeric'],
             'discounted_fee' => ['nullable', 'numeric'],
             'fee_type' => ['required', 'in:full,installments'],
+            'payment_method' => ['required', 'in:cash,bank,online'],
             'remarks' => ['required', 'string', 'max:1000'],
             'receipt_number' => ['nullable', 'string', 'max:100'],
         ], [
@@ -284,14 +268,13 @@ class AdmissionController extends Controller
         $validated['roll_number'] = $validated['roll_number'] ?? null;
         $validated['receipt_number'] = $validated['receipt_number'] ?? null;
 
-        // A user tied to one campus can only ever admit to that campus; ignore
-        // any other campus_id the form submitted (defends against tampering).
-        $campusScopeId = $this->userCampusScopeId($request->user());
-        if ($campusScopeId) {
-            $validated['campus_id'] = $campusScopeId;
-        }
-
         try {
+            // Everything below (lead, registration, admission, and the fee
+            // collection row) is committed atomically: the admission must
+            // never end up "enrolled" in the database unless its fee was
+            // saved successfully in the same submission. If any step fails
+            // (e.g. bad installment amounts), the whole thing rolls back.
+            $admission = DB::transaction(function () use ($request, $validated) {
             $campus = Campus::findOrFail($validated['campus_id']);
             $program = Program::findOrFail($validated['program_id']);
             $batch = Batch::query()
@@ -331,14 +314,6 @@ class AdmissionController extends Controller
             $lead = null;
             if (!empty($validated['lead_id'])) {
                 $lead = Lead::query()->findOrFail($validated['lead_id']);
-
-                // Lead campus can legitimately differ from the source registration/admission's
-                // campus (e.g. a lead transferred campuses before registering). Access to those
-                // records is already validated above, so only gate directly on the lead's own
-                // campus when there is no already-authorized source registration/admission.
-                if (! $sourceRegistration && ! $sourceAdmission) {
-                    $this->ensureCampusAccess((int) ($lead->campus_id ?? 0), $request->user(), 'You are not allowed to use a lead from another campus.');
-                }
             }
             if (! $lead) {
                 $lead = $sourceRegistration?->lead ?? $sourceAdmission?->registration?->lead;
@@ -418,18 +393,18 @@ class AdmissionController extends Controller
                 $lead->update($leadUpdates);
             }
 
-            $registration = null;
+            // Reuse the student's existing registration whenever we have one so that
+            // additional courses stay linked to the same registration record instead
+            // of forking off a new registration (which would hide earlier courses on
+            // the student's registration page).
+            $registration = $sourceRegistration;
 
-            if (! $isAnotherCourseEnrollment) {
-                $registration = $sourceRegistration;
-
-                if (! $registration && $lead) {
-                    $registration = Registration::query()
-                        ->where('lead_id', $lead->id)
-                        ->where('program_id', $validated['program_id'])
-                        ->latest()
-                        ->first();
-                }
+            if (! $registration && ! $isAnotherCourseEnrollment && $lead) {
+                $registration = Registration::query()
+                    ->where('lead_id', $lead->id)
+                    ->where('program_id', $validated['program_id'])
+                    ->latest()
+                    ->first();
             }
             if (!$registration) {
                 $regNumbers = $this->previewNumbers($campus->code);
@@ -474,6 +449,7 @@ class AdmissionController extends Controller
                         'net_amount' => 2000,
                         'receipt_number' => $registration->receipt_number,
                         'status' => 'paid',
+                        'payment_method' => $validated['payment_method'],
                         'paid_at' => Carbon::now(),
                         'created_by' => $request->user()?->id,
                         'notes' => 'Registration fee auto-collected during admission.',
@@ -481,7 +457,11 @@ class AdmissionController extends Controller
 
                     $this->syncFeeCollectionSafely($registrationFee);
                 }
-            } else {
+            } elseif (! $isAnotherCourseEnrollment) {
+                // Enrolling in another course reuses the registration purely to keep
+                // the courses linked together; its own campus/program/profile fields
+                // stay as originally registered rather than being overwritten by the
+                // new course's details.
                 $registration->update([
                     'campus_id' => $validated['campus_id'],
                     'program_id' => $validated['program_id'],
@@ -687,6 +667,7 @@ class AdmissionController extends Controller
                         'net_amount' => $amount,
                         'receipt_number' => $receiptNumber,
                         'status' => $isPaid ? 'paid' : 'pending',
+                        'payment_method' => $isPaid ? $validated['payment_method'] : null,
                         'paid_at' => $isPaid ? $admissionDate : null,
                         'due_at' => $isInstallment
                             ? $admissionDate->copy()->addMonthsNoOverflow($index)
@@ -702,6 +683,9 @@ class AdmissionController extends Controller
                     }
                 }
             }
+
+            return $admission;
+            });
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -1156,9 +1140,9 @@ class AdmissionController extends Controller
     {
         $feePackage = round((float) (!is_null($program->fee) ? $program->fee : ($validated['fee_package'] ?? 0)), 2);
         $maxDiscountPercent = round($this->resolveDiscountPercent($program->id, $campus->id), 2);
-        $maxDiscountAmount = round($feePackage * ($maxDiscountPercent / 100), 2);
+        $maxDiscountAmount = round($feePackage * ($maxDiscountPercent / 100), -1);
         $submittedDiscountAmount = array_key_exists('discount_amount', $validated) && $validated['discount_amount'] !== null
-            ? round((float) $validated['discount_amount'], 2)
+            ? round((float) $validated['discount_amount'], -1)
             : $maxDiscountAmount;
 
         if ($submittedDiscountAmount < 0) {
@@ -1167,7 +1151,7 @@ class AdmissionController extends Controller
             ]);
         }
 
-        if ($submittedDiscountAmount > $maxDiscountAmount + 0.009) {
+        if ($submittedDiscountAmount > $maxDiscountAmount + 5) {
             throw ValidationException::withMessages([
                 'discount_amount' => ['Discount cannot exceed the allowed limit of ' . $maxDiscountAmount . ' (' . $maxDiscountPercent . '%).'],
             ]);
@@ -1177,7 +1161,7 @@ class AdmissionController extends Controller
         $discountPercent = $feePackage > 0
             ? round(($discountAmount / $feePackage) * 100, 2)
             : 0.0;
-        $discountedFee = round(max(0, $feePackage - $discountAmount), 2);
+        $discountedFee = round(max(0, $feePackage - $discountAmount), -1);
 
         return [
             'feePackage' => $feePackage,
@@ -1245,6 +1229,22 @@ class AdmissionController extends Controller
                 });
             } catch (QueryException $e) {
                 $msg = $e->getMessage();
+
+                // MySQL names the violated index in its message; SQLite (used in
+                // tests) instead lists the column pair. Match either so this stays
+                // reliable across both drivers.
+                $isRegistrationProgramConflict = str_contains($msg, 'admissions_registration_program_unique')
+                    || (str_contains($msg, 'registration_id') && str_contains($msg, 'program_id'));
+
+                if ($isRegistrationProgramConflict) {
+                    // Two concurrent submissions raced past the pre-insert
+                    // "already enrolled" check; the DB constraint is the real
+                    // guard, so surface the same friendly message here.
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'program_id' => ['This student is already enrolled in the selected course. Please choose a different course.'],
+                    ]);
+                }
+
                 if (str_contains($msg, 'UNIQUE') || str_contains($msg, 'Duplicate entry') || $e->getCode() === '23000') {
                     // If the user provided a number that conflicts, fail loudly
                     if ($providedRollNumber || $providedReceiptNumber) {

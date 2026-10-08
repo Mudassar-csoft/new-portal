@@ -224,6 +224,7 @@ class CampusModuleScopeTest extends TestCase
                 'postal_address' => '123 Testing Street, Lahore, Pakistan',
                 'admission_date' => now()->toDateString(),
                 'fee_type' => 'full',
+                'payment_method' => 'cash',
                 'remarks' => 'Campus scope test admission.',
             ])
             ->assertOk()

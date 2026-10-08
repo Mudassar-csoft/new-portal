@@ -105,6 +105,11 @@
     $canCertificateView = $can('certificate.view');
     $showCertificateModule = $canCertificateCreate || $canCertificateView;
 
+    $canReportLeads = $can('report.leads');
+    $canReportAdmissions = $can('report.admissions');
+    $canReportFinance = $can('report.finance');
+    $showReportsModule = $canReportLeads || $canReportAdmissions || $canReportFinance;
+
     $canUserCreate = $can('user.create');
     $canUserView = $can('user.view');
     $canRoleCreate = $can('role.create', 'role.manage');
@@ -135,11 +140,11 @@
                         <li><a href="{{ route('leads.create') }}"><span class="lbl">Create New Lead</span></a></li>
                     @endif
 
-                    <li>
+                    <!-- <li>
                         <a href="https://portal.career.edu.pk/" target="_blank" rel="noopener noreferrer">
                             <span class="lbl">Old Lead Portal</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     @if($showTrainingLeads)
                         <li class="with-sub">
@@ -180,6 +185,7 @@
                                     <li><a href="{{ route('leads.coworking.followup-schedule') }}" class="stage-link"><span class="lbl">Follow-up Schedule</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_followup_schedule'] ?? 0)) }}</span></a></li>
                                     <li><a href="{{ route('leads.coworking.index', ['today' => 1]) }}" class="stage-link"><span class="lbl">Today Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_today_leads'] ?? 0)) }}</span></a></li>
                                     <li><a href="{{ route('leads.coworking.index') }}" class="stage-link"><span class="lbl">All Leads</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_all_leads'] ?? 0)) }}</span></a></li>
+                                    <li><a href="{{ route('leads.coworking.followups', ['stage' => 'registered']) }}" class="stage-link"><span class="lbl">Registered Coworker</span><span class="label label-custom label-pill label-danger stage-count">{{ number_format((int) ($sidebarCounts['coworking_registered'] ?? 0)) }}</span></a></li>
                                 @endif
                             </ul>
                         </li>
@@ -538,6 +544,20 @@
             </li>
         @endif
 
+        @if($showReportsModule)
+            <li class="brown with-sub">
+                <span>
+                    <img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Reports">
+                    <span class="lbl">Reports</span>
+                </span>
+                <ul>
+                    @if($canReportLeads || $canReportAdmissions || $canReportFinance)
+                        <li><a href="{{ route('reports.dbr') }}"><span class="lbl">DBR Report</span></a></li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
         @if($isAdmin)
             <li class="gold orange">
                 <a href="{{ route('admin.coming-soon', ['module' => 'event-management']) }}">
@@ -550,13 +570,6 @@
                 <a href="{{ route('admin.coming-soon', ['module' => 'marketing-management']) }}">
                     <img class="font-icon-dashboard" src="img/navbarIcons/marketing.webp" alt="Marketing Management">
                     <span class="lbl">Marketing Management</span>
-                </a>
-            </li>
-
-            <li class="brown">
-                <a href="{{ route('admin.coming-soon', ['module' => 'reports']) }}">
-                    <img class="font-icon-dashboard" src="img/navbarIcons/reports.webp" alt="Reports">
-                    <span class="lbl">Reports</span>
                 </a>
             </li>
 
