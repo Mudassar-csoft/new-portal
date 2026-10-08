@@ -40,6 +40,14 @@ class AppServiceProvider extends ServiceProvider
     {
         FeeCollection::observe(FeeCollectionObserver::class);
 
+        View::share('versionedAsset', static function (string $path): string {
+            $path = ltrim($path, '/');
+            $absolutePath = public_path($path);
+            $url = asset($path);
+
+            return is_file($absolutePath) ? $url . '?v=' . filemtime($absolutePath) : $url;
+        });
+
         View::composer('layouts.nav', function ($view): void {
             $view->with('sidebarCounts', $this->resolveSidebarCounts(auth()->user()));
         });

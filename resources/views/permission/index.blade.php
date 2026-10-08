@@ -53,7 +53,7 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
+    <link rel="stylesheet" href="{{ $versionedAsset('theme/lib/bootstrap-sweetalert/sweetalert.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
     <style>
         :root {
