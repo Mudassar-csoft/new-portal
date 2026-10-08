@@ -243,11 +243,11 @@
 
 								<div class="form-group col-md-9 followup-toggle">
 									<label class="form-label required">Remarks </label>
-									<textarea class="form-control" name="note" rows="2" minlength="150"
+									<textarea class="form-control" name="note" rows="2" minlength="100"
 										placeholder="Add remarks for this follow-up"
 										style="width:100%; height:80px !important;"
 										required>{{ old('note') }}</textarea>
-									<small class="text-muted">Minimum 150 characters.</small>
+									<small class="text-muted">Minimum 100 characters.</small>
 									<div class="field-error" data-error-for="note"></div>
 								</div>
 							</div>

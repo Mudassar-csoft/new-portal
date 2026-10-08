@@ -443,7 +443,7 @@ class LeadController extends Controller
             'probability' => $usesMinimalFields
                 ? ['nullable', 'integer', 'min:1', 'max:100']
                 : ['required', 'integer', 'min:1', 'max:100'],
-            'note' => ['required', 'string', 'min:150'],
+            'note' => ['required', 'string', 'min:100'],
             'next_action_date' => ['nullable', 'date'],
             'stage' => ['required', Rule::in($allowedStages)],
         ];
