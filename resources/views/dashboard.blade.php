@@ -591,9 +591,9 @@
 
 @push('styles')
 	<!-- <link rel="stylesheet" href="css/lib/lobipanel/lobipanel.min.css"> -->
-	<link rel="stylesheet" href="css/separate/vendor/lobipanel.min.css">
-	<link rel="stylesheet" href="css/lib/jqueryui/jquery-ui.min.css">
-	<link rel="stylesheet" href="css/separate/pages/widgets.min.css">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/separate/vendor/lobipanel.min.css') }}">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/lib/jqueryui/jquery-ui.min.css') }}">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/separate/pages/widgets.min.css') }}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css">
 	<style>
         :root {
