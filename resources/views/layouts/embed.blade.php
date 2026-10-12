@@ -15,11 +15,11 @@
     <link href="{{ asset('theme/img/favicon.png') }}" rel="icon" type="image/png">
     <link href="{{ asset('theme/img/favicon.ico') }}" rel="shortcut icon">
 
-    <link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
-    <link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ $versionedAsset('theme/css/lib/font-awesome/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ $versionedAsset('theme/css/lib/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
+    <link rel="stylesheet" href="{{ $versionedAsset('theme/css/main.css') }}">
+    <link rel="stylesheet" href="{{ $versionedAsset('theme/lib/bootstrap-sweetalert/sweetalert.css') }}">
 
     <style>
         html,

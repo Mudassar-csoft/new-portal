@@ -21,15 +21,15 @@
 	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
-	<link rel="stylesheet" href="css/lib/font-awesome/font-awesome.min.css">
-	<link rel="stylesheet" href="css/lib/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/lib/font-awesome/font-awesome.min.css') }}">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/lib/bootstrap/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 	<link rel="preload" href="fonts/Proxima_Nova_Regular.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="preload" href="fonts/Proxima_Nova_Semibold.woff2" as="font" type="font/woff2" crossorigin>
-	<link rel="stylesheet" href="css/main.css">
-	<link rel="stylesheet" href="lib/bootstrap-sweetalert/sweetalert.css">
-			<link rel="stylesheet" href="css/custom-responsive.css">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/css/main.css') }}">
+	<link rel="stylesheet" href="{{ $versionedAsset('theme/lib/bootstrap-sweetalert/sweetalert.css') }}">
+			<link rel="stylesheet" href="{{ $versionedAsset('theme/css/custom-responsive.css') }}">
 
 	@stack('styles')
 	<style>
