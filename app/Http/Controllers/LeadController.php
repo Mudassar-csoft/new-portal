@@ -940,7 +940,7 @@ class LeadController extends Controller
     /**
      * @return array<string, int>
      */
-    private function latestFollowupStageCounts(string $type, ?string $search = null): array
+    private function latestFollowupStageCounts(string $type, ?string $search = null, ?string $createdOn = null): array
     {
         $latestStageSubquery = LeadFollowup::query()
             ->select('stage')
@@ -955,6 +955,8 @@ class LeadController extends Controller
         if ($search !== null) {
             $this->applyFollowupSearch($stageQuery, $search, $type);
         }
+
+        $this->applyFollowupCreatedOnFilter($stageQuery, $createdOn);
 
         return DB::query()
             ->fromSub($stageQuery->toBase(), 'latest_lead_stages')
@@ -1587,6 +1589,7 @@ class LeadController extends Controller
     {
         $type = $this->normalizeLeadType($type);
         $search = $this->normalizeSearchTerm((string) $request->query('q', ''));
+        $createdOn = $this->normalizeLeadIndexDate($request->query('followup_created_on'));
         $selectedStage = $this->normalizeFollowupStageFilter($request->query('stage'), $type);
         $perPage = $this->resolvePerPage($request);
         $stageConfig = $this->followupStageConfig($type);
@@ -1601,8 +1604,10 @@ class LeadController extends Controller
             $this->applyFollowupSearch($followupQuery, $search, $type);
         }
 
+        $this->applyFollowupCreatedOnFilter($followupQuery, $createdOn);
+
         $totalFollowups = (int) (clone $followupQuery)->count();
-        $countsByStage = $this->latestFollowupStageCounts($type, $search);
+        $countsByStage = $this->latestFollowupStageCounts($type, $search, $createdOn);
 
         if ($selectedStage !== null) {
             $followupQuery->whereHas('latestFollowup', function (Builder $latestFollowupQuery) use ($selectedStage) {
@@ -1666,6 +1671,7 @@ class LeadController extends Controller
             'type' => $type,
             'selectedStage' => $selectedStage ?? 'all',
             'search' => $search ?? '',
+            'followupCreatedOn' => $createdOn ?? '',
             'perPage' => $perPage,
             'scheduleRoute' => route($this->leadFollowupScheduleRouteName($type)),
         ]);
@@ -1805,6 +1811,15 @@ class LeadController extends Controller
     private function applyFollowupSearch(Builder $query, string $search, string $type): Builder
     {
         return $this->applyLeadSearch($query, $search, $type, true);
+    }
+
+    private function applyFollowupCreatedOnFilter(Builder $query, ?string $createdOn): Builder
+    {
+        return $query->when($createdOn !== null, function (Builder $leadQuery) use ($createdOn): void {
+            $leadQuery->whereHas('followups', function (Builder $followupQuery) use ($createdOn): void {
+                $followupQuery->whereDate('lead_followups.created_at', $createdOn);
+            });
+        });
     }
 
     private function applyLeadSearch(Builder $query, string $search, string $type, bool $includeLatestFollower): Builder

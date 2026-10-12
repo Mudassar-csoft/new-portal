@@ -6,6 +6,7 @@
     @php
         $selectedStage = $selectedStage ?? 'all';
         $search = $search ?? '';
+        $followupCreatedOn = $followupCreatedOn ?? '';
         $perPage = (int) ($perPage ?? 25);
         $showProgram = ($type ?? 'training') === 'training';
         $currentPage = $followups->currentPage();
@@ -106,10 +107,15 @@
                             <label>Entries</label>
                         </div>
 
+                        <div class="follow-created-date">
+                            <label for="follow-created-on" class="mb-0">Follow-up Created On</label>
+                            <input type="date" name="followup_created_on" id="follow-created-on" class="form-control form-control-sm" value="{{ $followupCreatedOn }}" onchange="this.form.submit()">
+                        </div>
+
                         <div class="follow-search">
                             <input type="text" name="q" id="follow-search" class="form-control form-control-sm" placeholder="Search..." value="{{ $search }}">
                             <!-- <button type="submit" class="btn btn-primary btn-sm">Search</button> -->
-                            @if($search !== '' || $selectedStage !== 'all')
+                            @if($search !== '' || $selectedStage !== 'all' || $followupCreatedOn !== '')
                                 <a href="{{ request()->url() }}" class="btn btn-default btn-sm">Reset</a>
                             @endif
                             <i class="fa fa-search"></i>
@@ -362,6 +368,17 @@
         .follow-controls {
             gap: var(--space-lead-followups-1);
             flex-wrap: wrap;
+        }
+
+        .follow-created-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .follow-created-date .form-control {
+            width: 160px;
         }
 
         .follow-search {
