@@ -246,6 +246,7 @@
 									@include('lead.partials.remarks_counter', [
 										'inputId' => 'followup-remarks',
 										'value' => old('note'),
+										'minLength' => 100,
 									])
 									<textarea id="followup-remarks" aria-describedby="followup-remarks-counter" class="form-control" name="note" rows="2" minlength="100"
 										placeholder="Add remarks for this follow-up"

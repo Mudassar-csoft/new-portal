@@ -4,6 +4,7 @@
 
 <small id="{{ $inputId }}-counter" class="{{ $remarksCharacterCount < 250 ? 'text-danger' : 'text-muted' }} d-block mb-1" data-remarks-for="{{ $inputId }}" role="status" aria-live="polite" aria-atomic="true">
     <span data-remarks-written>{{ $remarksCharacterCount }}</span> characters written
+    &middot; {{ $minLength }} characters required
 </small>
 
 @once

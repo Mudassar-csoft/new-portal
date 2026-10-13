@@ -188,6 +188,7 @@
             @include('lead.partials.remarks_counter', [
                 'inputId' => 'lead-remarks',
                 'value' => $remarksValue,
+                'minLength' => $remarksMinLength,
             ])
             <textarea id="lead-remarks" name="details[remarks]" aria-describedby="lead-remarks-counter" class="form-control @error('details.remarks') is-invalid @enderror" rows="4" placeholder="Remarks" minlength="{{ $remarksMinLength }}" maxlength="1000" required>{{ $remarksValue }}</textarea>
             @error('details.remarks')
