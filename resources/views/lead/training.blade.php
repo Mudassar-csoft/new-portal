@@ -400,10 +400,17 @@
     <!-- Remarks -->
     <div class="row mt-lg-1">
         <div class="col-12 pr-0" style="padding-right:0 !important;">
-            <label class="form-label small fw-semibold text-dark required">
+            <label for="lead-remarks" class="form-label small fw-semibold text-dark required">
                 Remarks
             </label>
-            <textarea name="details[remarks]" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks" minlength="{{ $remarksMinLength }}" maxlength="1000" required>{{ old('details.remarks', data_get($leadPrefill, 'details.remarks', '')) }}</textarea>
+            @php($remarksValue = old('details.remarks', data_get($leadPrefill, 'details.remarks', '')))
+            @include('lead.partials.remarks_counter', [
+                'inputId' => 'lead-remarks',
+                'value' => $remarksValue,
+                'minLength' => $remarksMinLength,
+                'maxLength' => 1000,
+            ])
+            <textarea id="lead-remarks" name="details[remarks]" aria-describedby="lead-remarks-counter" class="form-control form-control-sm @error('details.remarks') is-invalid @enderror" rows="3" placeholder="Remarks" minlength="{{ $remarksMinLength }}" maxlength="1000" required>{{ $remarksValue }}</textarea>
             <small class="text-muted">Minimum {{ $remarksMinLength }} characters.</small>
             @error('details.remarks')
                 <div class="field-error">{{ $message }}</div>
