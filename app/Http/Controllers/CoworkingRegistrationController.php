@@ -200,11 +200,11 @@ class CoworkingRegistrationController extends Controller
 
                 $this->syncLeadFromRegistration($resolvedLead, $campus, $validated, $registration, $request);
 
+                app(FinanceAccountingService::class)->syncCoworkingReceipt($securityReceipt);
+                app(FinanceAccountingService::class)->syncCoworkingReceipt($chargeReceipt);
+
                 return compact('registration', 'securityReceipt', 'chargeReceipt', 'resolvedLead');
             });
-
-            app(FinanceAccountingService::class)->syncCoworkingReceipt($result['securityReceipt']);
-            app(FinanceAccountingService::class)->syncCoworkingReceipt($result['chargeReceipt']);
 
             $voucherUrls = [
                 route('coworking-registrations.voucher', $result['registration']),
@@ -230,16 +230,17 @@ class CoworkingRegistrationController extends Controller
             throw $e;
         } catch (Throwable $e) {
             report($e);
+            $message = $this->registrationFailureMessage($e);
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Unable to save the coworking registration right now. Please try again.',
+                    'message' => $message,
                 ], 500);
             }
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Unable to save the coworking registration right now. Please try again.');
+                ->with('error', $message);
         }
     }
 
@@ -795,6 +796,21 @@ class CoworkingRegistrationController extends Controller
         return str_contains($message, 'UNIQUE')
             || str_contains($message, 'Duplicate entry')
             || $e->getCode() === '23000';
+    }
+
+    private function registrationFailureMessage(Throwable $exception): string
+    {
+        if ($exception instanceof QueryException) {
+            $databaseMessage = $exception->getPrevious()?->getMessage() ?? '';
+            $missingColumn = in_array((string) $exception->getCode(), ['42S22', '42703'], true)
+                || str_contains($databaseMessage, 'no column named payment_method');
+
+            if ($missingColumn && str_contains($databaseMessage, 'payment_method')) {
+                return 'Coworking payments need a system update. Please contact your administrator.';
+            }
+        }
+
+        return 'Unable to save the coworking registration right now. Please try again.';
     }
 
     private function registrationRules(?CoworkingRegistration $registration = null): array

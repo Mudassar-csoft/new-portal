@@ -674,9 +674,11 @@
     @if(request()->boolean('embed'))
         <script>
             (function () {
+                var isEditMode = @json($isEditMode);
+
                 function clearErrors(form) {
                     form.querySelectorAll('.field-error').forEach(function (node) {
-                        if (node.closest('.form-group')) {
+                        if (node.closest('.form-group, .registration-gender-group')) {
                             node.textContent = '';
                         }
                     });
@@ -697,7 +699,7 @@
                             return;
                         }
 
-                        var formGroup = field.closest('.form-group');
+                        var formGroup = field.closest('.form-group, .registration-gender-group');
                         var invalidTarget = field.type === 'radio'
                             ? (formGroup ? formGroup.querySelector('.choice-group') : field)
                             : field;
@@ -705,6 +707,12 @@
 
                         if (invalidTarget) {
                             invalidTarget.classList.add('is-invalid');
+                        }
+
+                        if (!errorNode && formGroup) {
+                            errorNode = document.createElement('div');
+                            errorNode.className = 'field-error';
+                            formGroup.appendChild(errorNode);
                         }
 
                         if (errorNode) {
@@ -731,6 +739,10 @@
                     }
 
                     form.addEventListener('submit', async function (event) {
+                        if (event.defaultPrevented) {
+                            return;
+                        }
+
                         event.preventDefault();
                         clearErrors(form);
 
